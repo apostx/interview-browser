@@ -1,6 +1,6 @@
 {
   "name": "interview-browser",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Mobil-optimalizált keret-webapp interjú-felkészítő anyagok böngészésére",
   "scripts": {
