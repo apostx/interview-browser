@@ -1,0 +1,11 @@
+{
+  "name": "interview-browser",
+  "private": true,
+  "description": "Mobil-optimalizált keret-webapp interjú-felkészítő anyagok böngészésére",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "dev": "node scripts/serve.js",
+    "serve": "node scripts/serve.js",
+    "release": "node scripts/release.js"
+  }
+}

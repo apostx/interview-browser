@@ -30,13 +30,21 @@ Szabályok:
 
 ## Használat
 
+Élő oldal: **https://interviewbrowser.sallai.cc/**
+
 ```sh
 # lokális fejlesztés: build + szerver (nincs függőség, csak Node kell)
-node scripts/serve.js          # http://localhost:8080
+npm run dev                    # http://localhost:8080
 
 # csak build
-node scripts/build.js          # -> dist/
+npm run build                  # -> dist/
+
+# content release: build-ellenőrzés + a content/ változásainak commitja + push
+npm run release                     # automatikus commit üzenettel
+npm run release -- "saját üzenet"   # egyedi commit üzenettel
 ```
+
+A `release` csak a `content/` alatti változásokat commitolja (az app/script módosításokat nem), és a push után a GitHub Actions automatikusan deployol.
 
 ## Deploy
 
