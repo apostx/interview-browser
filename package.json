@@ -1,8 +1,8 @@
-{
+﻿{
   "name": "interview-browser",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
-  "description": "Mobil-optimalizált keret-webapp interjú-felkészítő anyagok böngészésére",
+  "description": "Mobil-optimalizÃ¡lt keret-webapp interjÃº-felkÃ©szÃ­tÅ‘ anyagok bÃ¶ngÃ©szÃ©sÃ©re",
   "scripts": {
     "build": "node scripts/build.js",
     "dev": "node scripts/serve.js",
