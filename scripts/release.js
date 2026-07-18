@@ -13,7 +13,7 @@
  * Usage:
  *   npm run release                          -> auto message + auto bump
  *   npm run release -- --major|--minor|--patch  -> bump override
- *   npm run release -- "feat(content): saját üzenet"  (flaggel kombinálható)
+ *   npm run release -- "feat(content): custom message"  (can be combined with a flag)
  */
 
 const fs = require('fs');
@@ -44,11 +44,11 @@ const changes = git(['status', '--porcelain', '--', 'content/'])
   .filter(Boolean);
 
 if (changes.length === 0) {
-  console.log('Nincs változás a content/ alatt — nincs mit release-elni.');
+  console.log('No changes under content/ — nothing to release.');
   process.exit(0);
 }
 
-console.log('\nVáltozások:');
+console.log('\nChanges:');
 for (const line of changes) console.log('  ' + line);
 
 // 3. Classify: added files -> feat + minor, otherwise fix + patch.
@@ -73,7 +73,7 @@ let body = null;
 if (!subject) {
   subject = `${commitType}(content): ${touchedList.join(', ')}`;
   if (subject.length > 72) {
-    subject = `${commitType}(content): ${touchedList.length} anyag frissítése`;
+    subject = `${commitType}(content): update ${touchedList.length} materials`;
     body = touchedList.join('\n');
   }
 }
@@ -101,5 +101,5 @@ git(['tag', '-a', `v${pkg.version}`, '-m', `v${pkg.version}`]);
 git(['push', '--follow-tags'], { stdio: 'inherit' });
 
 console.log(`\nRelease: v${pkg.version} (${bump} bump)`);
-console.log(`A deploy után élesben: ${LIVE_URL}`);
+console.log(`Live after deploy: ${LIVE_URL}`);
 console.log('Workflow: https://github.com/apostx/interview-browser/actions');
