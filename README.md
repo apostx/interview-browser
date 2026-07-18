@@ -39,12 +39,26 @@ npm run dev                    # http://localhost:8080
 # csak build
 npm run build                  # -> dist/
 
-# content release: build-ellenőrzés + a content/ változásainak commitja + push
-npm run release                     # automatikus commit üzenettel
-npm run release -- "saját üzenet"   # egyedi commit üzenettel
+# content release: build-ellenőrzés + conventional commit + szemver bump + tag + push
+npm run release                        # automatikus üzenet + automatikus bump
+npm run release -- --major             # bump felülbírálása (--major/--minor/--patch)
+npm run release -- "feat(content): saját üzenet"
 ```
 
 A `release` csak a `content/` alatti változásokat commitolja (az app/script módosításokat nem), és a push után a GitHub Actions automatikusan deployol.
+
+## Verziózás és commit konvenció
+
+A repo [conventional commits](https://www.conventionalcommits.org/) szerint commitol (`feat:`, `fix:`, `docs:`, `chore:`, `refactor:` …; content-hez a `(content)` scope), a projekt pedig [szemver](https://semver.org/) verziót követ (`package.json` + `vX.Y.Z` git tag).
+
+A `npm run release` default logikája:
+
+| Változás a content/ alatt | Commit | Bump |
+|---|---|---|
+| van új fájl (új anyag vagy verzió) | `feat(content): <anyag/verzió lista>` | minor |
+| csak módosítás/törlés | `fix(content): <anyag/verzió lista>` | patch |
+
+A content commit után külön `chore(release): vX.Y.Z` commit bumpolja a `package.json`-t, tageli a verziót, és `push --follow-tags`-szel tol ki mindent. App-oldali release-hez ugyanez kézzel: conventional commit + `npm version minor` (vagy `major`/`patch`).
 
 ## Deploy
 
