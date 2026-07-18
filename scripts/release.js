@@ -95,7 +95,7 @@ fs.writeFileSync(PKG_PATH, JSON.stringify(pkg, null, 2) + '\n');
 
 git(['add', '--', 'package.json']);
 git(['commit', '-m', `chore(release): v${pkg.version}`], { stdio: 'inherit' });
-git(['tag', `v${pkg.version}`]);
+git(['tag', '-a', `v${pkg.version}`, '-m', `v${pkg.version}`]);
 
 // 7. Push commits + tag.
 git(['push', '--follow-tags'], { stdio: 'inherit' });
