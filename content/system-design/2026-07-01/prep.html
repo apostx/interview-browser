@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Design felkészítő — 2026-07-01</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: "Segoe UI", sans-serif; background: #eff6ff; color: #1e3a5f; padding: 16px; line-height: 1.6; }
+  h1 { font-size: 24px; color: #1d4ed8; margin-bottom: 4px; }
+  .badge { display: inline-block; background: #1d4ed8; color: #fff; font-size: 12px; border-radius: 99px; padding: 3px 12px; margin-bottom: 16px; }
+  details { background: #fff; border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  summary { font-weight: 600; font-size: 16px; cursor: pointer; }
+  p { font-size: 15px; margin-top: 8px; color: #33517a; }
+</style>
+</head>
+<body>
+  <h1>System Design</h1>
+  <span class="badge">2026-07-01 — ez a default (legújabb verzió)</span>
+  <details open><summary>Interjú-keretrendszer</summary><p>1. Követelmények tisztázása → 2. becslés (QPS, storage) → 3. high-level dizájn → 4. mélyfúrás → 5. szűk keresztmetszetek.</p></details>
+  <details><summary>Üzenetsorok</summary><p>Kafka vs. RabbitMQ, at-least-once vs. exactly-once, dead letter queue.</p></details>
+  <details><summary>Konzisztencia</summary><p>CAP, eventual consistency, idempotencia — konkrét példával készülj!</p></details>
+</body>
+</html>

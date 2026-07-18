@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>React Hooks felkészítő</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; padding: 16px; line-height: 1.6; }
+  h1 { font-size: 24px; background: linear-gradient(90deg, #38bdf8, #a78bfa); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 4px; }
+  .tag { display: inline-block; font-size: 12px; background: #1e293b; border: 1px solid #334155; border-radius: 99px; padding: 2px 10px; margin: 8px 4px 16px 0; color: #94a3b8; }
+  section { background: #1e293b; border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+  h2 { font-size: 17px; color: #38bdf8; margin-bottom: 8px; }
+  code { background: #0f172a; padding: 2px 6px; border-radius: 6px; font-size: 14px; color: #fbbf24; }
+  ul { padding-left: 20px; }
+  li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+  <h1>React Hooks</h1>
+  <span class="tag">minta anyag</span><span class="tag">aktuális verzió</span>
+  <section>
+    <h2>useState</h2>
+    <ul>
+      <li>A state frissítés <strong>aszinkron batch</strong>-ben történik.</li>
+      <li>Függvényes forma: <code>setCount(c => c + 1)</code> — mikor kötelező?</li>
+    </ul>
+  </section>
+  <section>
+    <h2>useEffect</h2>
+    <ul>
+      <li>Dependency array szemantika: <code>[]</code> vs. kihagyva vs. <code>[x]</code>.</li>
+      <li>Cleanup függvény: mikor fut le pontosan?</li>
+      <li>Race condition fetch-nél — <code>AbortController</code> minta.</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Gyakori interjúkérdés</h2>
+    <p>Miért nem szabad hookot feltételes ágban hívni? Mi a hooks "rules" mögötti implementációs ok (fiber linked list)?</p>
+  </section>
+</body>
+</html>

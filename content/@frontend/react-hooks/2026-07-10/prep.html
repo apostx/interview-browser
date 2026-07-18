@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>React Hooks felkészítő — 2026-07-10</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Georgia, serif; background: #fdf6ec; color: #3d2b1f; padding: 20px; line-height: 1.7; }
+  h1 { font-size: 26px; border-bottom: 3px solid #d97706; padding-bottom: 8px; margin-bottom: 4px; }
+  .meta { font-size: 13px; color: #92735a; margin-bottom: 20px; font-style: italic; }
+  h2 { font-size: 18px; color: #b45309; margin: 18px 0 6px; }
+  p, li { font-size: 16px; }
+  ol { padding-left: 22px; }
+  blockquote { border-left: 4px solid #d97706; padding: 8px 12px; background: #faedd8; margin: 10px 0; border-radius: 0 8px 8px 0; }
+</style>
+</head>
+<body>
+  <h1>React Hooks — mélyvíz</h1>
+  <p class="meta">2026-07-10-es verzió · teljesen más dizájnnal, mint az aktuális — ez a lényeg: minden verzió független</p>
+  <h2>1. useMemo / useCallback</h2>
+  <ol>
+    <li>Mikor árt a memoizáció? (mérés nélkül soha ne)</li>
+    <li>Referencia-stabilitás és a <em>React.memo</em> kapcsolat.</li>
+  </ol>
+  <h2>2. useRef</h2>
+  <ol>
+    <li>Render-független mutable érték vs. DOM ref.</li>
+    <li>Miért nem triggerel újrarenderelést?</li>
+  </ol>
+  <blockquote>Tipp: készülj egy custom hook írós live coding feladatra (pl. <strong>useDebounce</strong>).</blockquote>
+</body>
+</html>

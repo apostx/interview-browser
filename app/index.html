@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101418" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <title>Interview Browser</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <div id="list-view">
+    <header class="app-bar">
+      <button id="up-btn" class="icon-btn" aria-label="Vissza" hidden>‹</button>
+      <h1 id="list-title">Interview Browser</h1>
+    </header>
+    <div class="search-row">
+      <input id="search" type="search" placeholder="Keresés…" autocomplete="off">
+    </div>
+    <nav id="items"></nav>
+    <p id="empty" class="empty" hidden>Nincs találat.</p>
+  </div>
+
+  <div id="viewer" hidden>
+    <header class="app-bar">
+      <button id="back-btn" class="icon-btn" aria-label="Vissza a listához">‹</button>
+      <h1 id="viewer-title"></h1>
+      <select id="version-select" aria-label="Verzió"></select>
+    </header>
+    <iframe id="frame" title="Anyag"></iframe>
+  </div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 420 595] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 607 >>
+stream
+BT /F1 20 Tf 40 540 Td (React Hooks - Cheatsheet) Tj ET
+BT /F2 12 Tf 40 500 Td (useState: lazy init - useState(() => expensive())) Tj ET
+BT /F2 12 Tf 40 476 Td (useEffect: cleanup runs before next effect + on unmount) Tj ET
+BT /F2 12 Tf 40 452 Td (useMemo: only after measuring, never by default) Tj ET
+BT /F2 12 Tf 40 428 Td (useCallback: reference stability for React.memo children) Tj ET
+BT /F2 12 Tf 40 404 Td (useRef: mutable value without re-render) Tj ET
+BT /F2 12 Tf 40 380 Td (Custom hook: extract logic, not UI) Tj ET
+BT /F2 12 Tf 40 332 Td ((PDF minta verzio - a PDF.js viewer tesztjehez)) Tj ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000251 00000 n 
+0000000908 00000 n 
+0000000983 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+1053
+%%EOF
