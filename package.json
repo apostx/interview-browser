@@ -1,8 +1,8 @@
-﻿{
+{
   "name": "interview-browser",
   "version": "1.2.0",
   "private": true,
-  "description": "Mobil-optimalizÃ¡lt keret-webapp interjÃº-felkÃ©szÃ­tÅ‘ anyagok bÃ¶ngÃ©szÃ©sÃ©re",
+  "description": "Mobile-first shell webapp for browsing versioned interview-prep materials",
   "scripts": {
     "build": "node scripts/build.js",
     "dev": "node scripts/serve.js",
