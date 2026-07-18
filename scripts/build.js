@@ -21,7 +21,7 @@ const APP_DIR = path.join(ROOT, 'app');
 const DIST_DIR = path.join(ROOT, 'dist');
 
 const GROUP_PREFIX = '@';
-const DIRECT_VERSION_NAME = 'aktuális';
+const DIRECT_VERSION_NAME = 'current';
 
 function naturalCompare(a, b) {
   return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
@@ -144,6 +144,18 @@ function build() {
   fs.cpSync(CONTENT_DIR, path.join(DIST_DIR, 'content'), { recursive: true });
 
   const { version } = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+
+  // Cache-bust app assets so a reloaded index.html always pulls the matching
+  // build instead of a stale cached copy (GitHub Pages serves max-age=600).
+  const indexPath = path.join(DIST_DIR, 'index.html');
+  fs.writeFileSync(
+    indexPath,
+    fs
+      .readFileSync(indexPath, 'utf8')
+      .replace('href="style.css"', `href="style.css?v=${version}"`)
+      .replace('src="app.js"', `src="app.js?v=${version}"`)
+  );
+
   const manifest = { version, generatedAt: new Date().toISOString(), items };
   fs.writeFileSync(path.join(DIST_DIR, 'manifest.json'), JSON.stringify(manifest, null, 2));
   fs.writeFileSync(path.join(DIST_DIR, '.nojekyll'), '');

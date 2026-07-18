@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="hu">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -13,24 +13,24 @@
 <body>
   <div id="list-view">
     <header class="app-bar">
-      <button id="up-btn" class="icon-btn" aria-label="Vissza" hidden>‹</button>
+      <button id="up-btn" class="icon-btn" aria-label="Back" hidden>‹</button>
       <h1 id="list-title">Interview Browser</h1>
     </header>
     <div class="search-row">
-      <input id="search" type="search" placeholder="Keresés…" autocomplete="off">
+      <input id="search" type="search" placeholder="Search…" autocomplete="off">
     </div>
     <nav id="items"></nav>
-    <p id="empty" class="empty" hidden>Nincs találat.</p>
+    <p id="empty" class="empty" hidden>No results.</p>
     <p id="version" class="version"></p>
   </div>
 
   <div id="viewer" hidden>
     <header class="app-bar">
-      <button id="back-btn" class="icon-btn" aria-label="Vissza a listához">‹</button>
+      <button id="back-btn" class="icon-btn" aria-label="Back to the list">‹</button>
       <h1 id="viewer-title"></h1>
-      <select id="version-select" aria-label="Verzió"></select>
+      <select id="version-select" aria-label="Version"></select>
     </header>
-    <iframe id="frame" title="Anyag"></iframe>
+    <iframe id="frame" title="Material"></iframe>
   </div>
 </body>
 </html>

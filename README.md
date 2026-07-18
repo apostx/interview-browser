@@ -10,7 +10,7 @@ Adding new material requires **no config or code changes**: just copy a folder u
 content/
   @frontend/              <- group (@ prefix, nestable to any depth)
     react-hooks/          <- material (unmarked folder)
-      index.html          <- default version ("aktuális")
+      index.html          <- default version ("current")
       2026-07-10/         <- version (subfolder of the material, any name)
         any-name.html
   system-design/          <- ungrouped material at the root
@@ -25,7 +25,7 @@ Rules:
 - **Group:** a folder with an `@` prefix (displayed without the prefix). May contain groups and materials, nested to any depth.
 - **Material:** any unmarked folder inside a group or at the root. Its subfolders are **versions** (named freely — dates, v1, anything).
 - **Content file** within a folder: `index.html` > alphabetically first `*.html` > first `*.pdf`. All other files (images, css, js) are copied verbatim, so relative references keep working.
-- **Default version:** if the material folder directly contains a content file, that is the default (shown as "aktuális"); otherwise the first version in descending name order (for date-named folders that is the newest).
+- **Default version:** if the material folder directly contains a content file, that is the default (shown as "current"); otherwise the first version in descending name order (for date-named folders that is the newest).
 - A subfolder without a content file is not a version but an asset folder — the build omits it from the list but still copies its files.
 
 ## Usage
@@ -68,7 +68,7 @@ The first run of the workflow tries to enable Pages on its own (`configure-pages
 
 ## Architecture
 
-- `app/` — the shell app: vanilla HTML/CSS/JS, hash-based routing (`#/@frontend/react-hooks?v=2026-07-10`), materials render in an iframe. PDFs are rendered by the vendored [PDF.js](https://mozilla.github.io/pdf.js/) viewer (`app/vendor/pdfjs/`), because on Android an iframed / new-tab PDF would behave as a download.
+- `app/` — the shell app: vanilla HTML/CSS/JS, hash-based routing (`#/@frontend/react-hooks?v=2026-07-10`), materials render in an iframe. PDFs are rendered chromeless by `app/pdf.html` — a minimal viewer built on the vendored [PDF.js](https://mozilla.github.io/pdf.js/) core (`app/vendor/pdfjs/`) that draws pages as plain full-width canvases (no toolbar/sidebar/own zoom), so a PDF feels like part of the site. A native iframed / new-tab PDF would behave as a download on Android.
 - `scripts/build.js` — zero-dependency scanner: walks `content/`, copies the app + content into `dist/`, and generates `dist/manifest.json`.
 - `scripts/serve.js` — zero-dependency local static server.
 - `scripts/release.js` — the content release flow described above.

@@ -77,7 +77,7 @@
   function materialSub(mat) {
     const n = mat.versions.length;
     const pdfBadge = mat.versions[0].kind === 'pdf' ? 'PDF' : '';
-    const count = n > 1 ? `${n} verzió` : '';
+    const count = n > 1 ? `${n} versions` : '';
     return [pdfBadge, count].filter(Boolean).join(' · ');
   }
 
@@ -116,7 +116,7 @@
               href: hashFor(item.path),
               icon: '📁',
               title: item.name,
-              sub: `${item.children.length} elem`,
+              sub: item.children.length === 1 ? '1 item' : `${item.children.length} items`,
               chevron: true,
             })
           : rowHtml({
@@ -131,7 +131,7 @@
 
   function frameSrcFor(version) {
     return version.kind === 'pdf'
-      ? 'vendor/pdfjs/web/viewer.html?file=' + encodeURIComponent('../../../' + version.file)
+      ? 'pdf.html?file=' + encodeURIComponent(version.file)
       : encodeURI(version.file);
   }
 
@@ -186,11 +186,11 @@
       indexTree(manifest.items, root, []);
       if (manifest.version) {
         document.getElementById('version').textContent =
-          `v${manifest.version} · ${new Date(manifest.generatedAt).toLocaleString('hu-HU')}`;
+          `v${manifest.version} · ${new Date(manifest.generatedAt).toLocaleString('en-GB')}`;
       }
       render();
     })
     .catch((err) => {
-      el.items.innerHTML = `<p class="empty">Nem sikerült betölteni a manifestet: ${escapeHtml(String(err))}</p>`;
+      el.items.innerHTML = `<p class="empty">Failed to load the manifest: ${escapeHtml(String(err))}</p>`;
     });
 })();
