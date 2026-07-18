@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Accenture – React JS interjú kérdéssor (tutorial)</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --ink:#1c2233; --muted:#5d6678; --line:#e4e8f0;
+    --brand:#3a5bd9; --brand-soft:#eaeefc; --brand-line:#c9d4f7; --brand-ink:#2f48ac;
+    --ok:#1f9d57; --ok-soft:#e6f6ec; --ok-line:#bce6cb; --ok-ink:#15703f;
+    --bad:#d23b3b; --bad-soft:#fcebeb; --bad-line:#f1c9c9; --bad-ink:#a82c2c;
+    --warn:#b9821a; --warn-soft:#fbf2dd; --warn-line:#ecd9a8; --warn-ink:#8a6112;
+    --violet:#7c5cd6; --violet-soft:#efeafc; --violet-line:#d9ccf5; --violet-ink:#5a3fb0;
+    --code-bg:#1e2433; --code-ink:#e8ecf6;
+    --mono:"SF Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --shadow:0 1px 2px rgba(20,30,60,.05),0 8px 24px rgba(20,30,60,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.65;padding:32px 16px 80px;}
+  .wrap{max-width:920px;margin:0 auto}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header.hero{background:linear-gradient(135deg,#3a5bd9,#5a78ec);color:#fff;border-radius:18px;padding:34px 34px 30px;box-shadow:var(--shadow);margin-bottom:24px;}
+  header.hero .kicker{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:700;opacity:.85;margin:0 0 8px;}
+  header.hero h1{margin:0 0 6px;font-size:28px;line-height:1.2;border:none;padding:0;color:#fff;}
+  header.hero p{margin:0;opacity:.94;font-size:15px;max-width:72ch;}
+  header.hero a{color:#fff;text-decoration:underline;}
+  .toc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:24px;box-shadow:var(--shadow);}
+  .toc-title{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;margin:0 0 14px;}
+  .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;}
+  .toc-grid a{display:flex;gap:8px;align-items:baseline;text-decoration:none;color:var(--ink);font-size:13px;font-weight:600;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:#fbfcfe;transition:background .15s,border-color .15s;}
+  .toc-grid a:hover{background:var(--brand-soft);border-color:var(--brand-line);color:var(--brand-ink);text-decoration:none;}
+  .toc-grid a .tnum{color:var(--brand);font-weight:800;flex:0 0 auto;min-width:1.6em;}
+  .section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 26px;margin-bottom:20px;box-shadow:var(--shadow);border-left:6px solid var(--brand);scroll-margin-top:16px;}
+  .section.cat-html{border-left-color:#b9821a}
+  .section.cat-js{border-left-color:#e0a90f}
+  .section.cat-react{border-left-color:#16b1c9}
+  .section.cat-code{border-left-color:#1f9d57}
+  h1{color:var(--ink);}
+  h2{font-size:19px;font-weight:800;margin:0 0 10px;color:var(--ink);border:none;padding:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+  h2 .qnum{color:var(--brand);font-weight:800;}
+  h3{font-size:15px;font-weight:800;color:var(--brand-ink);margin:22px 0 8px;}
+  h4{font-size:14px;font-weight:800;color:var(--violet-ink);margin:16px 0 6px;}
+  .tag{display:inline-block;background:var(--brand-soft);color:var(--brand);padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;margin:0 6px 12px 0;}
+  .tag.t-html{background:var(--warn-soft);color:var(--warn-ink)}
+  .tag.t-js{background:#fbf1d2;color:#8a6112}
+  .tag.t-react{background:#d8f3f8;color:#0f7c8c}
+  .tag.t-code{background:var(--ok-soft);color:var(--ok-ink)}
+  p{margin:0 0 12px;font-size:15px;}
+  ul,ol{margin:0 0 14px;padding-left:22px;}
+  li{margin:5px 0;font-size:14.5px;}
+  b,strong{color:var(--ink);}
+  code{font-family:var(--mono);font-size:.92em;}
+  :not(pre)>code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;}
+  .ic{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);font-size:.9em;}
+  pre{background:var(--code-bg);border:none;border-radius:10px;padding:14px 16px;overflow-x:auto;margin:12px 0;}
+  pre code{background:none;color:var(--code-ink);padding:0;font-size:12.5px;line-height:1.55;}
+  .subsection{background:#fbfcfe;border:1px solid var(--line);border-left:4px solid var(--violet);border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0;}
+  .subsection h4{margin-top:0;}
+  .answer-box,.note,.trap-box{border-radius:11px;padding:14px 16px;margin:14px 0;font-size:14px;border:1px solid;}
+  .answer-box{background:var(--ok-soft);border-color:var(--ok-line);}
+  .answer-box strong,.answer-box b{color:var(--ok-ink);}
+  .note{background:var(--brand-soft);border-color:var(--brand-line);}
+  .note strong,.note b{color:var(--brand-ink);}
+  .trap-box{background:var(--warn-soft);border-color:var(--warn-line);}
+  .trap-box strong,.trap-box b{color:var(--warn-ink);}
+  .answer-box pre,.note pre,.trap-box pre,.subsection pre{margin:8px 0 0;}
+  .answer-box ul,.note ul,.trap-box ul,.subsection ul{margin:6px 0 0;}
+  .fig{display:flex;flex-direction:column;align-items:center;gap:12px;background:#fbfcfe;border:1px solid var(--line);border-radius:14px;padding:22px 18px;margin:16px 0;}
+  .fig svg{width:100%;height:auto;}
+  .fig .cap{color:var(--muted);font-size:13px;text-align:center;margin:0;max-width:64ch;}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px;background:var(--card);}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;}
+  th{background:var(--brand-soft);color:var(--brand-ink);font-weight:700;}
+  table tr:nth-child(even){background:#f7f9fd;}
+  footer{color:var(--muted);font-size:12.5px;margin-top:36px;line-height:1.7;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);}
+  footer strong{color:var(--ink);}
+  footer code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);}
+  footer ul{margin:8px 0 0;}
+  @media(max-width:560px){body{padding:20px 10px 60px}header.hero{padding:24px 20px}.section{padding:18px 16px}.toc-grid{grid-template-columns:1fr}}
+  pre,code,.ic,.diagram{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="kicker">Accenture · React JS Developer interjú · Tutorial</p>
+    <h1>Accenture interjú-kérdéssor kidolgozva</h1>
+    <p>Egy Accenture React JS Developer interjú 15 technikai kérdése (LinkedIn-beszámolóból rekonstruálva), tutorial szinten kidolgozva: HTML/CSS, JavaScript, React belső működés és 3 kódolási feladat — ábrákkal, kóddal és kimondható válaszvázakkal. Kapcsolódó: <a href="12_adatszerkezetek.html">adatszerkezetek</a> · <a href="11_komplexitas.html">Big O</a> · <a href="09_tesco_hungary.html">Nagarro témakörök</a>.</p>
+  </header>
+
+  <nav class="toc">
+    <p class="toc-title">A 15 kérdés</p>
+    <div class="toc-grid">
+      <a href="#q1"><span class="tnum">1</span> Szemantikus HTML tagek</a>
+      <a href="#q2"><span class="tnum">2</span> CSS Grid vs Flexbox</a>
+      <a href="#q3"><span class="tnum">3</span> Div középre igazítása</a>
+      <a href="#q4"><span class="tnum">4</span> var vs let vs const</a>
+      <a href="#q5"><span class="tnum">5</span> Csomagkezelés, függőség-frissítés</a>
+      <a href="#q6"><span class="tnum">6</span> JSON és használata</a>
+      <a href="#q7"><span class="tnum">7</span> Hogyan működik a React belülről?</a>
+      <a href="#q8"><span class="tnum">8</span> React Fiber</a>
+      <a href="#q9"><span class="tnum">9</span> Diffing algoritmus</a>
+      <a href="#q10"><span class="tnum">10</span> React.memo</a>
+      <a href="#q11"><span class="tnum">11</span> useCallback</a>
+      <a href="#q12"><span class="tnum">12</span> React optimalizálás</a>
+      <a href="#q13"><span class="tnum">13</span> Kód: 2. legnagyobb elem</a>
+      <a href="#q14"><span class="tnum">14</span> Kód: debounce + throttle nulláról</a>
+      <a href="#q15"><span class="tnum">15</span> Kód: tömb laposítása</a>
+    </div>
+  </nav>
+
+  <!-- ════════ 1. SZEMANTIKUS HTML ════════ -->
+  <section class="section cat-html" id="q1">
+    <h2><span class="qnum">1.</span> Szemantikus HTML tagek</h2>
+    <span class="tag t-html">HTML</span> <span class="tag">a11y</span> <span class="tag">SEO</span>
+
+    <p>A szemantikus tag <strong>jelentést</strong> hordoz, nem csak dobozt: a <code>&lt;nav&gt;</code> azt mondja „ez navigáció", a <code>&lt;div&gt;</code> csak azt, hogy „ez egy doboz". Ettől ért belőle a képernyőolvasó, a kereső és a másik fejlesztő is.</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 860 300" role="img" aria-label="Div-leves és szemantikus oldalszerkezet összevetése">
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif">
+          <!-- bal: div-leves -->
+          <text x="145" y="30" font-size="13" font-weight="800" fill="#a82c2c" text-anchor="middle">ROSSZ: „div-leves"</text>
+          <g font-family="var(--mono)" font-size="12" text-anchor="middle">
+            <rect x="20" y="46"  width="250" height="38" rx="7" fill="#eef0f4" stroke="#c8cee0"/><text x="145" y="70"  fill="#5d6678">&lt;div class="top"&gt;</text>
+            <rect x="20" y="90"  width="250" height="38" rx="7" fill="#eef0f4" stroke="#c8cee0"/><text x="145" y="114" fill="#5d6678">&lt;div class="menu"&gt;</text>
+            <rect x="20" y="134" width="250" height="76" rx="7" fill="#eef0f4" stroke="#c8cee0"/><text x="145" y="176" fill="#5d6678">&lt;div class="stuff"&gt;</text>
+            <rect x="20" y="216" width="250" height="38" rx="7" fill="#eef0f4" stroke="#c8cee0"/><text x="145" y="240" fill="#5d6678">&lt;div class="bottom"&gt;</text>
+          </g>
+          <text x="145" y="282" font-size="11" fill="#a82c2c" text-anchor="middle">a gépnek semmit sem jelent</text>
+
+          <!-- jobb: szemantikus -->
+          <text x="580" y="30" font-size="13" font-weight="800" fill="#15703f" text-anchor="middle">JÓ: szemantikus szerkezet</text>
+          <g font-family="var(--mono)" font-size="12" text-anchor="middle">
+            <rect x="330" y="46" width="500" height="38" rx="7" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/><text x="580" y="70" fill="#2f48ac">&lt;header&gt;</text>
+            <rect x="330" y="90" width="500" height="32" rx="7" fill="#efeafc" stroke="#7c5cd6" stroke-width="2"/><text x="580" y="111" fill="#5a3fb0">&lt;nav&gt;</text>
+            <rect x="330" y="128" width="330" height="88" rx="7" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/><text x="495" y="166" fill="#15703f">&lt;main&gt;</text><text x="495" y="186" fill="#15703f" font-size="11">&lt;article&gt; · &lt;section&gt;</text>
+            <rect x="668" y="128" width="162" height="88" rx="7" fill="#fbf2dd" stroke="#b9821a" stroke-width="2"/><text x="749" y="176" fill="#8a6112">&lt;aside&gt;</text>
+            <rect x="330" y="222" width="500" height="34" rx="7" fill="#eef0f4" stroke="#c8cee0" stroke-width="2"/><text x="580" y="244" fill="#3f4654">&lt;footer&gt;</text>
+          </g>
+          <text x="580" y="282" font-size="11" fill="#15703f" text-anchor="middle">képernyőolvasó landmark-onként ugrál, a kereső érti a tartalmat</text>
+        </g>
+      </svg>
+      <p class="cap">Ugyanaz a layout kétféleképp: a szemantikus változatban minden blokknak szerepe van — a képernyőolvasók (landmark-navigáció), a keresők és a fejlesztők is ebből tájékozódnak.</p>
+    </div>
+
+    <h3>A legfontosabb szemantikus tagek</h3>
+    <table>
+      <tr><th>Tag</th><th>Szerep</th></tr>
+      <tr><td><code>&lt;header&gt;</code> / <code>&lt;footer&gt;</code></td><td>oldal vagy szekció fej-/lábléce</td></tr>
+      <tr><td><code>&lt;nav&gt;</code></td><td>navigációs linkek csoportja</td></tr>
+      <tr><td><code>&lt;main&gt;</code></td><td>az oldal fő tartalma (oldalanként EGY!)</td></tr>
+      <tr><td><code>&lt;article&gt;</code></td><td>önállóan is értelmes egység (poszt, hír, komment)</td></tr>
+      <tr><td><code>&lt;section&gt;</code></td><td>tematikus blokk, jellemzően saját címsorral</td></tr>
+      <tr><td><code>&lt;aside&gt;</code></td><td>kapcsolódó, de mellékes tartalom (oldalsáv)</td></tr>
+      <tr><td><code>&lt;figure&gt;</code>+<code>&lt;figcaption&gt;</code>, <code>&lt;time&gt;</code>, <code>&lt;mark&gt;</code></td><td>ábra+felirat, gépi dátum, kiemelés</td></tr>
+    </table>
+
+    <div class="answer-box"><strong>Válaszváz (kimondva):</strong> „A szemantikus tagek jelentést adnak a szerkezetnek: header/nav/main/article/aside/footer. Három ok, amiért használom: <strong>akadálymentesség</strong> (a screen readerek landmark-onként navigálnak), <strong>SEO</strong> (a kereső érti, mi a fő tartalom), és <strong>karbantarthatóság</strong> (beszédes a kód). Ráadásul natív viselkedést is kapunk — pl. a <code>&lt;button&gt;</code> billentyűzettel is működik, a <code>&lt;div onclick&gt;</code> nem."</div>
+  </section>
+
+  <!-- ════════ 2. GRID VS FLEXBOX ════════ -->
+  <section class="section cat-html" id="q2">
+    <h2><span class="qnum">2.</span> CSS Grid vs Flexbox</h2>
+    <span class="tag t-html">CSS</span> <span class="tag">Layout</span>
+
+    <p>A gyors szabály: <strong>Flexbox = 1 dimenzió</strong> (egy sor VAGY egy oszlop, a tartalom mérete vezérel), <strong>Grid = 2 dimenzió</strong> (sorok ÉS oszlopok egyszerre, a rácsot te definiálod előre).</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 760 250" role="img" aria-label="Flexbox egy dimenzió, Grid két dimenzió">
+        <defs><marker id="gf1" markerWidth="8" markerHeight="8" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5 Z" fill="#5d6678"/></marker></defs>
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif">
+          <!-- flexbox -->
+          <text x="190" y="30" font-size="13" font-weight="800" fill="#2f48ac" text-anchor="middle">Flexbox — 1 dimenzió</text>
+          <rect x="30" y="50" width="320" height="70" rx="10" fill="#fff" stroke="#c9d4f7" stroke-dasharray="5 4"/>
+          <rect x="45"  y="62" width="60" height="46" rx="7" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+          <rect x="115" y="62" width="90" height="46" rx="7" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+          <rect x="215" y="62" width="50" height="46" rx="7" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+          <rect x="275" y="62" width="60" height="46" rx="7" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+          <line x1="45" y1="140" x2="335" y2="140" stroke="#3a5bd9" stroke-width="2" marker-end="url(#gf1)"/>
+          <text x="190" y="162" font-size="11.5" fill="#2f48ac" text-anchor="middle">fő tengely — a tartalom mérete vezérel</text>
+          <text x="190" y="196" font-size="11" fill="#5d6678" text-anchor="middle">navbar · gombsor · kártya belseje · igazítás</text>
+
+          <!-- grid -->
+          <text x="570" y="30" font-size="13" font-weight="800" fill="#5a3fb0" text-anchor="middle">Grid — 2 dimenzió</text>
+          <g fill="#efeafc" stroke="#7c5cd6" stroke-width="2">
+            <rect x="440" y="50" width="80" height="40" rx="6"/><rect x="530" y="50" width="80" height="40" rx="6"/><rect x="620" y="50" width="80" height="40" rx="6"/>
+            <rect x="440" y="100" width="80" height="40" rx="6"/><rect x="530" y="100" width="170" height="40" rx="6"/>
+            <rect x="440" y="150" width="260" height="40" rx="6"/>
+          </g>
+          <line x1="440" y1="208" x2="700" y2="208" stroke="#7c5cd6" stroke-width="2" marker-end="url(#gf1)"/>
+          <line x1="422" y1="50" x2="422" y2="190" stroke="#7c5cd6" stroke-width="2" marker-end="url(#gf1)"/>
+          <text x="570" y="228" font-size="11.5" fill="#5a3fb0" text-anchor="middle">sorok ÉS oszlopok — a rácsot te tervezed</text>
+        </g>
+      </svg>
+      <p class="cap">Flexbox: elemek egy tengely mentén, a tartalomhoz igazodva (content-first). Grid: előre definiált rács, amelybe a tartalom belesimul (layout-first) — cellák össze is vonhatók.</p>
+    </div>
+
+<pre><code>/* FLEXBOX – komponensen belül (pl. navbar) */
+.navbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+
+/* GRID – oldal-layout, reszponzív kártya-rács media query NÉLKÜL */
+.cards  { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }</code></pre>
+
+    <div class="answer-box"><strong>Válaszváz:</strong> „Flexbox egy dimenzióban rendez — sor vagy oszlop —, és a tartalom mérete vezérli; Grid két dimenzióban, előre megtervezett ráccsal. A gyakorlatban a kettő <strong>kiegészíti egymást</strong>: Grid az oldal-szintű elrendezéshez, Flexbox a komponensen belüli igazításhoz. Nem verseny, hanem munkamegosztás."</div>
+  </section>
+
+  <!-- ════════ 3. KÖZÉPRE IGAZÍTÁS ════════ -->
+  <section class="section cat-html" id="q3">
+    <h2><span class="qnum">3.</span> Div középre igazítása — többféleképpen</h2>
+    <span class="tag t-html">CSS</span> <span class="tag">Klasszikus</span>
+
+    <p>Az örök klasszikus. Az interjúztató azt nézi, hány módszert ismersz és tudod-e, melyiket mikor. A cél: vízszintesen ÉS függőlegesen középre tenni egy elemet a szülőjében.</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 860 230" role="img" aria-label="Három középre igazítási módszer: flex, grid, absolute+transform">
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif" text-anchor="middle">
+          <!-- panel sablon: outer dashed, inner centered -->
+          <g>
+            <text x="155" y="28" font-size="12.5" font-weight="800" fill="#2f48ac">1) Flexbox</text>
+            <rect x="35" y="40" width="240" height="120" rx="10" fill="#fff" stroke="#3a5bd9" stroke-dasharray="5 4"/>
+            <rect x="125" y="80" width="60" height="40" rx="7" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+            <text x="155" y="182" font-size="10" font-family="var(--mono)" fill="#2f48ac">display:flex;</text>
+            <text x="155" y="197" font-size="10" font-family="var(--mono)" fill="#2f48ac">justify-content:center;</text>
+            <text x="155" y="212" font-size="10" font-family="var(--mono)" fill="#2f48ac">align-items:center;</text>
+          </g>
+          <g>
+            <text x="430" y="28" font-size="12.5" font-weight="800" fill="#5a3fb0">2) Grid (a legrövidebb)</text>
+            <rect x="310" y="40" width="240" height="120" rx="10" fill="#fff" stroke="#7c5cd6" stroke-dasharray="5 4"/>
+            <rect x="400" y="80" width="60" height="40" rx="7" fill="#efeafc" stroke="#7c5cd6" stroke-width="2"/>
+            <text x="430" y="188" font-size="10" font-family="var(--mono)" fill="#5a3fb0">display:grid;</text>
+            <text x="430" y="203" font-size="10" font-family="var(--mono)" fill="#5a3fb0">place-items:center;</text>
+          </g>
+          <g>
+            <text x="705" y="28" font-size="12.5" font-weight="800" fill="#8a6112">3) Absolute + transform</text>
+            <rect x="585" y="40" width="240" height="120" rx="10" fill="#fff" stroke="#b9821a" stroke-dasharray="5 4"/>
+            <rect x="675" y="80" width="60" height="40" rx="7" fill="#fbf2dd" stroke="#b9821a" stroke-width="2"/>
+            <text x="705" y="182" font-size="10" font-family="var(--mono)" fill="#8a6112">position:absolute;</text>
+            <text x="705" y="197" font-size="10" font-family="var(--mono)" fill="#8a6112">top:50%; left:50%;</text>
+            <text x="705" y="212" font-size="10" font-family="var(--mono)" fill="#8a6112">translate(-50%,-50%)</text>
+          </g>
+        </g>
+      </svg>
+      <p class="cap">A három leggyakoribb módszer — mindhárom vízszintesen és függőlegesen is középre tesz. A grid <code>place-items:center</code> a legrövidebb modern megoldás.</p>
+    </div>
+
+<pre><code>/* 1) Flexbox (a szülőn) */
+.parent { display: flex; justify-content: center; align-items: center; }
+
+/* 2) Grid – egyetlen sor */
+.parent { display: grid; place-items: center; }
+
+/* 3) Absolute + transform (ha a szülő position: relative) */
+.child  { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+/* 4) Csak vízszintes, fix szélességű blokk: */
+.child  { width: 300px; margin-inline: auto; }
+
+/* 5) Modern bónusz (Baseline 2024): align-content sima blokkon is működik! */
+.parent { align-content: center; }   /* display:flex/grid NÉLKÜL, függőleges közép */</code></pre>
+
+    <div class="trap-box"><strong>Csapdák:</strong> a <code>margin: auto</code> önmagában csak <em>vízszintesen</em> centráz (blokk-elrendezésben); a <code>text-align: center</code> csak az <em>inline</em> tartalmat; a <code>transform: translate(-50%,-50%)</code> nélküli <code>top/left: 50%</code> pedig a doboz <em>bal-felső sarkát</em> teszi középre, nem a közepét.</div>
+
+    <div class="answer-box"><strong>Válaszváz:</strong> „Flexbox-szal a szülőn <code>justify-content</code> + <code>align-items</code>; Grid-del elég a <code>place-items: center</code>; abszolút pozicionálással <code>top/left: 50%</code> + <code>translate(-50%,-50%)</code>. Csak vízszinteshez <code>margin: auto</code>. Bónuszként: 2024 óta az <code>align-content: center</code> sima blokkon is működik. Alapból a flex/grid megoldást választom, mert nem függ a gyerek méretétől."</div>
+  </section>
+
+  <!-- ════════ 4. VAR LET CONST ════════ -->
+  <section class="section cat-js" id="q4">
+    <h2><span class="qnum">4.</span> var vs let vs const</h2>
+    <span class="tag t-js">JavaScript</span> <span class="tag">Scope</span> <span class="tag">Hoisting</span>
+
+    <p>Három különbség-dimenzió: <strong>hatókör</strong> (scope), <strong>hoisting-viselkedés</strong> és <strong>újraértékadás</strong>. A leglátványosabb: a <code>var</code> <em>függvény</em>-szintű, a <code>let</code>/<code>const</code> <em>blokk</em>-szintű.</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 720 270" role="img" aria-label="var kiszökik a blokkból, let és const a blokkban marad">
+        <defs><marker id="vl1" markerWidth="8" markerHeight="8" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5 Z" fill="#d23b3b"/></marker></defs>
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif">
+          <rect x="30" y="30" width="560" height="215" rx="12" fill="#fff" stroke="#3a5bd9" stroke-width="2" stroke-dasharray="7 5"/>
+          <text x="48" y="56" font-size="12.5" font-weight="800" fill="#2f48ac" font-family="var(--mono)">function scope</text>
+          <rect x="60" y="76" width="330" height="140" rx="10" fill="#f7f5fd" stroke="#7c5cd6" stroke-width="2"/>
+          <text x="78" y="100" font-size="12.5" font-weight="800" fill="#5a3fb0" font-family="var(--mono)">{ blokk — pl. if / for }</text>
+          <g font-family="var(--mono)" font-size="12" font-weight="700" text-anchor="middle">
+            <rect x="85" y="118" width="120" height="32" rx="8" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/>
+            <text x="145" y="139" fill="#15703f">let x</text>
+            <rect x="220" y="118" width="140" height="32" rx="8" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/>
+            <text x="290" y="139" fill="#15703f">const y</text>
+            <rect x="85" y="164" width="120" height="32" rx="8" fill="#fcebeb" stroke="#d23b3b" stroke-width="2"/>
+            <text x="145" y="185" fill="#a82c2c">var z</text>
+          </g>
+          <line x1="207" y1="180" x2="470" y2="180" stroke="#d23b3b" stroke-width="2.5" marker-end="url(#vl1)"/>
+          <text x="480" y="172" font-size="11.5" fill="#a82c2c">a var „kiszökik" a blokkból —</text>
+          <text x="480" y="188" font-size="11.5" fill="#a82c2c">az egész függvényben látszik!</text>
+          <text x="230" y="238" font-size="11" fill="#15703f">a let/const csak a blokkon belül létezik</text>
+        </g>
+      </svg>
+      <p class="cap">A <code>var</code> figyelmen kívül hagyja a blokkhatárt (csak a függvényhatárt tiszteli), a <code>let</code>/<code>const</code> a legszűkebb blokkban marad. Ebből fakad a klasszikus <code>for + setTimeout</code> hiba is.</p>
+    </div>
+
+    <table>
+      <tr><th></th><th><code>var</code></th><th><code>let</code></th><th><code>const</code></th></tr>
+      <tr><td><strong>Scope</strong></td><td>függvény</td><td>blokk</td><td>blokk</td></tr>
+      <tr><td><strong>Hoisting</strong></td><td>igen, <code>undefined</code>-dal inicializálva</td><td>igen, de TDZ (hiba a deklaráció előtt)</td><td>igen, de TDZ</td></tr>
+      <tr><td><strong>Újraértékadás</strong></td><td>igen</td><td>igen</td><td>NEM (de az objektum belseje mutálható!)</td></tr>
+      <tr><td><strong>Újradeklarálás</strong></td><td>igen (veszélyes!)</td><td>nem</td><td>nem</td></tr>
+    </table>
+
+<pre><code>console.log(a); // undefined  (var: hoisting + undefined init)
+var a = 1;
+
+console.log(b); // HIBA: ReferenceError — TDZ (temporal dead zone)
+let b = 2;
+
+const arr = [1, 2];
+arr.push(3);     // MŰKÖDIK — a const a REFERENCIÁT védi, nem a tartalmat
+arr = [];        // HIBA: TypeError — a referencia nem írható felül</code></pre>
+
+    <h3>A klasszikus hiba: for + setTimeout — ebből él ez a kérdés!</h3>
+<pre><code>for (var i = 0; i &lt; 3; i++) {
+  setTimeout(() =&gt; console.log(i), 100);
+}
+// Amit várnál:   0, 1, 2
+// Ami történik:  3, 3, 3   ← EZ A HIBA</code></pre>
+
+    <p>Két dolog találkozásából jön a hiba:</p>
+    <ol>
+      <li><strong>Időzítés (event loop):</strong> a <code>setTimeout</code> callbackjei csak a <em>teljes szinkron kód</em> — tehát a ciklus — lefutása UTÁN kerülnek sorra. Mire az első callback fut, a ciklus rég véget ért, és a számláló a kilépési értékén áll: <code>i === 3</code>.</li>
+      <li><strong>Scope (a var bűne):</strong> a closure nem az <em>értéket</em> menti el, hanem magát a <em>változót</em> zárja be. A <code>var</code> függvény-szintű, ezért az egész ciklus alatt <strong>egyetlen közös <code>i</code></strong> létezik — mindhárom callback ugyanarra az egy változóra mutat, és a végállapotát (3) olvassa.</li>
+    </ol>
+
+    <div class="fig">
+      <svg viewBox="0 0 860 255" role="img" aria-label="var: mindhárom callback egy közös i változót zár be; let: iterációnként saját i jön létre">
+        <defs>
+          <marker id="fs1" markerWidth="8" markerHeight="8" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5 Z" fill="#d23b3b"/></marker>
+          <marker id="fs2" markerWidth="8" markerHeight="8" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5 Z" fill="#1f9d57"/></marker>
+        </defs>
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif" text-anchor="middle" font-size="11.5">
+          <!-- bal: var -->
+          <rect x="15" y="18" width="405" height="220" rx="12" fill="#fff" stroke="#f1c9c9"/>
+          <text x="217" y="42" font-size="12.5" font-weight="800" fill="#a82c2c">HIBÁS — var: EGYETLEN közös változó</text>
+          <rect x="157" y="56" width="120" height="38" rx="9" fill="#fcebeb" stroke="#d23b3b" stroke-width="2.5"/>
+          <text x="217" y="81" font-family="var(--mono)" font-size="14" font-weight="800" fill="#a82c2c">i = 3</text>
+          <g font-family="var(--mono)" font-size="11" font-weight="700">
+            <rect x="55"  y="150" width="95" height="32" rx="8" fill="#eef0f4" stroke="#c8cee0"/><text x="102" y="171" fill="#3f4654">callback ①</text>
+            <rect x="170" y="150" width="95" height="32" rx="8" fill="#eef0f4" stroke="#c8cee0"/><text x="217" y="171" fill="#3f4654">callback ②</text>
+            <rect x="285" y="150" width="95" height="32" rx="8" fill="#eef0f4" stroke="#c8cee0"/><text x="332" y="171" fill="#3f4654">callback ③</text>
+          </g>
+          <g stroke="#d23b3b" stroke-width="1.8">
+            <line x1="102" y1="148" x2="187" y2="98" marker-end="url(#fs1)"/>
+            <line x1="217" y1="148" x2="217" y2="98" marker-end="url(#fs1)"/>
+            <line x1="332" y1="148" x2="247" y2="98" marker-end="url(#fs1)"/>
+          </g>
+          <text x="217" y="212" fill="#a82c2c">mind ugyanazt az egy i-t olvassa → 3, 3, 3</text>
+
+          <!-- jobb: let -->
+          <rect x="440" y="18" width="405" height="220" rx="12" fill="#fff" stroke="#bce6cb"/>
+          <text x="642" y="42" font-size="12.5" font-weight="800" fill="#15703f">HELYES — let: iterációnként ÚJ változó</text>
+          <g font-family="var(--mono)" font-size="13" font-weight="800">
+            <rect x="480" y="56" width="90" height="38" rx="9" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/><text x="525" y="81" fill="#15703f">i = 0</text>
+            <rect x="597" y="56" width="90" height="38" rx="9" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/><text x="642" y="81" fill="#15703f">i = 1</text>
+            <rect x="714" y="56" width="90" height="38" rx="9" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/><text x="759" y="81" fill="#15703f">i = 2</text>
+          </g>
+          <g font-family="var(--mono)" font-size="11" font-weight="700">
+            <rect x="478" y="150" width="95" height="32" rx="8" fill="#eef0f4" stroke="#c8cee0"/><text x="525" y="171" fill="#3f4654">callback ①</text>
+            <rect x="595" y="150" width="95" height="32" rx="8" fill="#eef0f4" stroke="#c8cee0"/><text x="642" y="171" fill="#3f4654">callback ②</text>
+            <rect x="712" y="150" width="95" height="32" rx="8" fill="#eef0f4" stroke="#c8cee0"/><text x="759" y="171" fill="#3f4654">callback ③</text>
+          </g>
+          <g stroke="#1f9d57" stroke-width="1.8">
+            <line x1="525" y1="148" x2="525" y2="98" marker-end="url(#fs2)"/>
+            <line x1="642" y1="148" x2="642" y2="98" marker-end="url(#fs2)"/>
+            <line x1="759" y1="148" x2="759" y2="98" marker-end="url(#fs2)"/>
+          </g>
+          <text x="642" y="212" fill="#15703f">mindegyik a SAJÁT példányát zárta be → 0, 1, 2</text>
+        </g>
+      </svg>
+      <p class="cap">A closure a <em>változót</em> zárja be, nem az értékét. <code>var</code>-ral egy közös változó van (mindenki a végértéket látja), <code>let</code>-tel a ciklus <em>minden iterációhoz új kötést</em> hoz létre — ezt írja elő a nyelvi specifikáció.</p>
+    </div>
+
+<pre><code>// 1. javítás: let — iterációnként saját i
+for (let i = 0; i &lt; 3; i++) {
+  setTimeout(() =&gt; console.log(i), 100);       // kimenet: 0, 1, 2
+}
+
+// 2. javítás var mellett: IIFE — az értéket paraméterként „befagyasztjuk"
+for (var i = 0; i &lt; 3; i++) {
+  ((j) =&gt; setTimeout(() =&gt; console.log(j), 100))(i);   // kimenet: 0, 1, 2
+}
+
+// 3. javítás: a setTimeout extra argumentuma a callback paramétere lesz
+for (var i = 0; i &lt; 3; i++) {
+  setTimeout((j) =&gt; console.log(j), 100, i);   // kimenet: 0, 1, 2
+}</code></pre>
+
+    <div class="note"><strong>Még mélyebbre:</strong> a teljes levezetés (hoisting, TDZ, event loop lépésről lépésre) a <a href="09_tesco_hungary.html">Nagarro-doksi 12. szakaszában</a> van kidolgozva.</div>
+
+    <div class="answer-box"><strong>Válaszváz:</strong> „A var függvény-szintű és undefined-dal hoistolódik; a let/const blokk-szintű és a TDZ miatt a deklaráció előtt hibát dob. A const a referencia-újraértékadást tiltja, a tartalom mutálását nem. A klasszikus buktató a <strong>for + setTimeout</strong>: var-ral mindhárom callback ugyanazt az egy i-t zárja be, és a ciklus után a végértéket látja (3,3,3) — let-tel iterációnként új kötés jön létre, így 0,1,2 jön ki. A gyakorlatban: alapból <code>const</code>, ha újraértékadás kell, <code>let</code> — <code>var</code>-t új kódban nem használok."</div>
+  </section>
+
+  <!-- ════════ 5. CSOMAGKEZELÉS ════════ -->
+  <section class="section cat-js" id="q5">
+    <h2><span class="qnum">5.</span> Csomagkezelés — függőségek frissítése</h2>
+    <span class="tag t-js">npm</span> <span class="tag">semantic versioning</span>
+
+    <p>A kulcsfogalom a <strong>szemantikus verziózás</strong> (angolul <strong>semantic versioning</strong> — a szakzsargonban használt „semver" rövidítés ebből jön): a verziószám három tagja mást-mást ígér, és a <code>package.json</code>-beli tartomány-jelölések (<code>^</code>, <code>~</code>) erre az ígéretre építenek.</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 760 235" role="img" aria-label="Semantic versioning: MAJOR.MINOR.PATCH és a ^ ~ tartományok">
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif" text-anchor="middle">
+          <g font-family="var(--mono)" font-size="26" font-weight="800">
+            <rect x="205" y="34" width="100" height="52" rx="10" fill="#fcebeb" stroke="#d23b3b" stroke-width="2"/><text x="255" y="70" fill="#a82c2c">4</text>
+            <text x="322" y="70" fill="#5d6678">.</text>
+            <rect x="340" y="34" width="100" height="52" rx="10" fill="#fbf2dd" stroke="#b9821a" stroke-width="2"/><text x="390" y="70" fill="#8a6112">2</text>
+            <text x="457" y="70" fill="#5d6678">.</text>
+            <rect x="475" y="34" width="100" height="52" rx="10" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/><text x="525" y="70" fill="#15703f">1</text>
+          </g>
+          <g font-size="11.5">
+            <text x="255" y="110" fill="#a82c2c" font-weight="800">MAJOR</text>
+            <text x="255" y="126" fill="#a82c2c">törő változás</text>
+            <text x="390" y="110" fill="#8a6112" font-weight="800">MINOR</text>
+            <text x="390" y="126" fill="#8a6112">új funkció, kompatibilis</text>
+            <text x="525" y="110" fill="#15703f" font-weight="800">PATCH</text>
+            <text x="525" y="126" fill="#15703f">hibajavítás</text>
+          </g>
+          <g font-size="12">
+            <rect x="120" y="155" width="240" height="58" rx="10" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+            <text x="240" y="178" font-family="var(--mono)" font-weight="800" fill="#2f48ac">"^4.2.1"</text>
+            <text x="240" y="198" fill="#2f48ac" font-size="11">MINOR+PATCH frissülhet (4.x.x)</text>
+            <rect x="400" y="155" width="240" height="58" rx="10" fill="#efeafc" stroke="#7c5cd6" stroke-width="2"/>
+            <text x="520" y="178" font-family="var(--mono)" font-weight="800" fill="#5a3fb0">"~4.2.1"</text>
+            <text x="520" y="198" fill="#5a3fb0" font-size="11">csak PATCH frissülhet (4.2.x)</text>
+          </g>
+        </g>
+      </svg>
+      <p class="cap">A <code>^</code> (npm-alapértelmezés) a MAJOR-t zárolja, a <code>~</code> a MINOR-t is. A MAJOR-ugrás törő változást jelenthet — azt sosem húzza be automatikusan.</p>
+    </div>
+
+    <h3>A frissítési munkafolyamat</h3>
+<pre><code>npm outdated              # mi frissíthető? (current / wanted / latest oszlopok)
+npm update                # a megadott verzió-tartományON BELÜL frissít (^ szerint)
+npm install lodash@latest # egy csomag MAJOR-frissítése (tudatosan!)
+npm audit                 # ismert sebezhetőségek; npm audit fix
+npm ci                    # CI-ben: PONTOSAN a lockfile szerint telepít (gyors, determinisztikus)</code></pre>
+
+    <div class="note"><strong>A lockfile (package-lock.json) szerepe:</strong> a <code>package.json</code> <em>tartományokat</em> ír le, a lockfile a ténylegesen feloldott <em>pontos</em> verziókat rögzíti — ettől lesz minden gépen és CI-ben ugyanaz a telepítés. Mindig verziókezelésbe való!</div>
+
+    <div class="answer-box"><strong>Válaszváz:</strong> „A függőségeket semantic versioning — szemantikus verziózás — szerint kezelem: <code>npm outdated</code>-del nézem meg, mi frissíthető; a tartományon belüli frissítést az <code>npm update</code> intézi, MAJOR-ugrást csak tudatosan, changelog-olvasás és tesztfuttatás mellett csinálok. A lockfile garantálja a reprodukálhatóságot, CI-ben <code>npm ci</code>-t használok, és az <code>npm audit</code>-tal figyelem a sebezhetőségeket."</div>
+  </section>
+
+  <!-- ════════ 6. JSON ════════ -->
+  <section class="section cat-js" id="q6">
+    <h2><span class="qnum">6.</span> JSON és használata</h2>
+    <span class="tag t-js">JavaScript</span> <span class="tag">Adatformátum</span>
+
+    <p><strong>JSON = JavaScript Object Notation</strong> — nyelvfüggetlen, szöveges adatcsere-formátum. A JS-objektum szintaxisából származik, de annál szigorúbb: a kulcsok mindig idézőjelesek, nincs komment, nincs trailing vessző, nincs függvény.</p>
+
+<pre><code>// Szerializálás: JS objektum → JSON string (pl. API-nak küldéshez)
+const user = { name: "Anna", age: 28, tags: ["dev", "js"] };
+const json = JSON.stringify(user);
+// '{"name":"Anna","age":28,"tags":["dev","js"]}'
+
+// Deszerializálás: JSON string → JS objektum (pl. API-válasz feldolgozása)
+const obj = JSON.parse(json);   // { name: "Anna", age: 28, tags: [...] }
+
+// Hasznos extrák:
+JSON.stringify(user, null, 2);            // szép, 2 szóközzel tagolt kimenet
+JSON.parse(localStorage.getItem('u'));    // tárolás/olvasás localStorage-ból
+structuredClone(user);                    // mély másolás — JOBB, mint a parse(stringify) trükk</code></pre>
+
+    <h3>Hol használjuk?</h3>
+    <ul>
+      <li><strong>API-kommunikáció:</strong> a REST/GraphQL válaszok szinte mindig JSON-ok (<code>Content-Type: application/json</code>).</li>
+      <li><strong>Konfiguráció:</strong> <code>package.json</code>, <code>tsconfig.json</code>.</li>
+      <li><strong>Tárolás:</strong> <code>localStorage</code> csak stringet tárol → JSON-nal oda-vissza.</li>
+    </ul>
+
+    <div class="trap-box"><strong>Korlátok (követő kérdésnek jön):</strong> a <code>JSON.stringify</code> a <code>function</code>/<code>undefined</code> értékeket kihagyja, a <code>Date</code>-ből string lesz (a parse NEM állítja vissza), a <code>Map</code>/<code>Set</code> üres objektummá válik, a körkörös referencia és a <code>BigInt</code> hibát dob. Mély másoláshoz ezért ma már <code>structuredClone()</code> a helyes válasz, nem a <code>JSON.parse(JSON.stringify(...))</code>.</div>
+
+    <div class="answer-box"><strong>Válaszváz:</strong> „A JSON nyelvfüggetlen szöveges adatformátum — API-k, konfigfájlok és a localStorage nyelve. JS-ben a <code>JSON.stringify</code>/<code>JSON.parse</code> párossal konvertálok. Tudom a korlátait is: függvény és undefined kiesik, a Date string lesz, körkörös referencia hibát dob — mély másoláshoz ezért structuredClone-t használok."</div>
+  </section>
+
+  <!-- ════════ 7. REACT BELÜLRŐL ════════ -->
+  <section class="section cat-react" id="q7">
+    <h2><span class="qnum">7.</span> Hogyan működik a React belülről?</h2>
+    <span class="tag t-react">React</span> <span class="tag">Internals</span>
+
+    <p>A React alapötlete: <strong>a UI az állapot függvénye</strong> (<code>UI = f(state)</code>). Nem te módosítod a DOM-ot — leírod, hogy <em>minek kellene látszania</em>, és a React kitalálja a legkevesebb DOM-műveletet hozzá. A folyamat két nagy fázisra bomlik: <strong>render</strong> (kitalálás, megszakítható) és <strong>commit</strong> (DOM-írás, szinkron).</p>
+
+    <h3>Első lépés: mi lesz a JSX-ből? (Ez nem varázslat — sima objektum!)</h3>
+<pre><code>// 1) Amit TE írsz (JSX — a böngésző ezt nem érti):
+&lt;button className="btn"&gt;Kattints: {count}&lt;/button&gt;
+
+// 2) Amivé a fordító (Babel/SWC) alakítja build-kor — sima függvényhívás:
+jsx('button', { className: 'btn', children: ['Kattints: ', count] })
+
+// 3) A hívás eredménye — egy KÖNNYŰ JS-objektum. Ez a "virtuális DOM"
+//    egyetlen csomópontja. Nincs benne semmi mágia:
+{
+  type: 'button',
+  props: { className: 'btn', children: ['Kattints: ', 0] }
+}</code></pre>
+    <p>Vagyis a „virtuális DOM" nem más, mint <strong>egymásba ágyazott, olcsó JS-objektumok fája</strong>, ami leírja, hogy minek kellene a képernyőn lennie. Ilyen objektumokat gyártani és összehasonlítani sokkal olcsóbb, mint a valódi DOM-ot piszkálni.</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 880 190" role="img" aria-label="React pipeline: JSX-től a DOM-ig">
+        <defs><marker id="rp1" markerWidth="8" markerHeight="8" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5 Z" fill="#5d6678"/></marker></defs>
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif" text-anchor="middle" font-size="12">
+          <rect x="15"  y="55" width="110" height="58" rx="10" fill="#d8f3f8" stroke="#16b1c9" stroke-width="2"/>
+          <text x="70" y="80" font-weight="800" fill="#0f7c8c">JSX</text>
+          <text x="70" y="99" font-size="10.5" fill="#0f7c8c">&lt;App /&gt;</text>
+          <rect x="165" y="55" width="130" height="58" rx="10" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+          <text x="230" y="80" font-weight="800" fill="#2f48ac">createElement</text>
+          <text x="230" y="99" font-size="10.5" fill="#2f48ac">(fordító csinálja)</text>
+          <rect x="335" y="55" width="130" height="58" rx="10" fill="#efeafc" stroke="#7c5cd6" stroke-width="2"/>
+          <text x="400" y="80" font-weight="800" fill="#5a3fb0">Element-fa</text>
+          <text x="400" y="99" font-size="10.5" fill="#5a3fb0">„virtuális DOM"</text>
+          <rect x="505" y="55" width="140" height="58" rx="10" fill="#fbf2dd" stroke="#b9821a" stroke-width="2"/>
+          <text x="575" y="80" font-weight="800" fill="#8a6112">Reconciler</text>
+          <text x="575" y="99" font-size="10.5" fill="#8a6112">diff: mi változott?</text>
+          <rect x="685" y="55" width="80" height="58" rx="10" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/>
+          <text x="725" y="80" font-weight="800" fill="#15703f">Commit</text>
+          <text x="725" y="99" font-size="10.5" fill="#15703f">DOM-írás</text>
+          <rect x="795" y="55" width="70" height="58" rx="10" fill="#eef0f4" stroke="#c8cee0" stroke-width="2"/>
+          <text x="830" y="88" font-weight="800" fill="#3f4654">DOM</text>
+          <g stroke="#5d6678" stroke-width="1.8">
+            <line x1="125" y1="84" x2="163" y2="84" marker-end="url(#rp1)"/>
+            <line x1="295" y1="84" x2="333" y2="84" marker-end="url(#rp1)"/>
+            <line x1="465" y1="84" x2="503" y2="84" marker-end="url(#rp1)"/>
+            <line x1="645" y1="84" x2="683" y2="84" marker-end="url(#rp1)"/>
+            <line x1="765" y1="84" x2="793" y2="84" marker-end="url(#rp1)"/>
+          </g>
+          <path d="M575,120 Q 400,175 230,120" fill="none" stroke="#16b1c9" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#rp1)"/>
+          <text x="400" y="165" font-size="11" fill="#0f7c8c">state változás (setState) → újra render, majd csak a KÜLÖNBSÉG kerül a DOM-ba</text>
+          <text x="330" y="34" font-size="11.5" fill="#8a6112" font-weight="700">RENDER fázis (megszakítható)</text>
+          <text x="762" y="34" font-size="11.5" fill="#15703f" font-weight="700">COMMIT (szinkron)</text>
+        </g>
+      </svg>
+      <p class="cap">A JSX-ből elem-fa (könnyű JS-objektumok) épül; state-változásnál a React új fát épít, a reconciler összeveti a régivel (diffing), és a commit fázisban csak a tényleges különbséget írja a lassú DOM-ba.</p>
+    </div>
+
+    <h3>Kövessük végig egy kattintáson — lépésről lépésre</h3>
+<pre><code>function Counter() {
+  const [count, setCount] = useState(0);
+  return &lt;button onClick={() =&gt; setCount(count + 1)}&gt;Kattints: {count}&lt;/button&gt;;
+}</code></pre>
+    <p>A felhasználó rákattint a gombra. Ekkor pontosan ez történik, ebben a sorrendben:</p>
+    <ol>
+      <li><strong>Trigger:</strong> lefut az <code>onClick</code>, benne a <code>setCount(1)</code>. Ez <em>nem</em> változtat meg azonnal semmit — csak <strong>beütemez</strong> egy újrarenderelést („ennek a komponensnek friss state-je van, dolgozni kell vele").</li>
+      <li><strong>Render fázis:</strong> a React <strong>újra meghívja</strong> a <code>Counter()</code> függvényt — most már <code>count = 1</code>-gyel. Az eredmény egy <strong>új elem-fa</strong> (új objektumok, mint fent a 3-as pontban).</li>
+      <li><strong>Diffing:</strong> a React összehasonlítja az új fát az előző rendereléskor eltárolttal: „a <code>button</code> maradt <code>button</code>, a className nem változott… csak a szöveg más: <code>Kattints: 0</code> → <code>Kattints: 1</code>."</li>
+      <li><strong>Commit fázis:</strong> a React beírja a DOM-ba a <em>minimális</em> változást — itt egyetlen szövegcsomópont frissül. Nem épül újra a gomb, nem épül újra semmi más.</li>
+      <li><strong>Böngésző fest</strong>, a felhasználó látja az 1-est.</li>
+      <li>A festés <em>után</em> futnak le az esedékes <code>useEffect</code>-ek.</li>
+    </ol>
+
+    <div class="trap-box"><strong>A leggyakoribb félreértés: „renderel" ≠ „DOM-ot ír"!</strong> Amikor azt mondjuk, egy komponens „újrarenderel", az csak annyit jelent: <em>a függvénye újra lefut</em>, és új elem-objektumokat gyárt. Ha a diff nem talál különbséget, a DOM-hoz hozzá sem nyúl a React. Ezért nem tragédia pár felesleges render — és ezért kell mérni, mielőtt optimalizálsz (lásd 12. kérdés).</div>
+
+    <h3>Render fázis vs commit fázis — ezt kérdezik vissza</h3>
+    <table>
+      <tr><th></th><th>Render fázis</th><th>Commit fázis</th></tr>
+      <tr><td><strong>Mi történik?</strong></td><td>a komponens-függvények lefutnak, elkészül az új elem-fa + a diff</td><td>a kiszámolt változások beírása a valódi DOM-ba</td></tr>
+      <tr><td><strong>Megszakítható?</strong></td><td>igen — a Fiber ezt teszi lehetővé (8. kérdés)</td><td>nem, egyben (szinkron) fut le, hogy ne látszódjon félkész UI</td></tr>
+      <tr><td><strong>Szabad mellékhatás?</strong></td><td>nem! A renderelésnek tisztának kell lennie (a React akár el is dobhatja és újrakezdheti)</td><td>igen — itt állítódnak a ref-ek, itt fut a <code>useLayoutEffect</code></td></tr>
+      <tr><td><strong>És a useEffect?</strong></td><td>–</td><td>nem itt: a commit ÉS a festés után, aszinkron fut</td></tr>
+    </table>
+
+    <h3>Miért éri meg a „virtuális DOM"?</h3>
+    <ul>
+      <li>A valódi DOM-műveletek <strong>drágák</strong> (layout, paint) — a JS-objektumok összevetése olcsó.</li>
+      <li>A React <strong>kötegeli</strong> (batch) a state-frissítéseket: több <code>setState</code> → egyetlen render.</li>
+      <li>Deklaratív kód: te az <em>állapotot</em> kezeled, nem DOM-mutációk sorozatát.</li>
+    </ul>
+
+    <div class="answer-box"><strong>Válaszváz:</strong> „A JSX <code>createElement</code>-hívásokká fordul, amikből egy könnyűsúlyú elem-fa (virtuális DOM) épül. State-változásnál a React újrarendereli az érintett komponenseket, az új fát a reconciler összehasonlítja a régivel, és csak a különbséget commitolja a DOM-ba. Két fázis: a render megszakítható (Fiber), a commit szinkron — a ref-ek és a useLayoutEffect a commitban futnak, a useEffect a festés után. Fontos, hogy a render csak a függvény lefutása, nem DOM-írás — DOM-ot csak a diff eredménye alapján, a commitban módosít a React."</div>
+  </section>
+
+  <!-- ════════ 8. REACT FIBER ════════ -->
+  <section class="section cat-react" id="q8">
+    <h2><span class="qnum">8.</span> React Fiber</h2>
+    <span class="tag t-react">React</span> <span class="tag">Architektúra</span>
+
+    <p>A <strong>Fiber</strong> a React 16-ban bevezetett újraírt reconciler-architektúra. A lényege: a renderelés <strong>kis munkaegységekre (fiber)</strong> bomlik, amelyek <strong>megszakíthatók és priorizálhatók</strong> — így egy nagy renderelés nem fagyasztja le a felületet.</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 860 260" role="img" aria-label="Régi stack reconciler blokkol, a Fiber szeletelt és megszakítható">
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif">
+          <text x="20" y="30" font-size="12.5" font-weight="800" fill="#a82c2c">Régi (stack) reconciler — megszakíthatatlan</text>
+          <rect x="20" y="44" width="560" height="34" rx="8" fill="#fcebeb" stroke="#d23b3b" stroke-width="2"/>
+          <text x="300" y="66" font-size="11.5" fill="#a82c2c" text-anchor="middle">egyetlen hosszú, szinkron render — a main thread foglalt</text>
+          <text x="330" y="106" font-size="12" fill="#a82c2c" text-anchor="middle">⌨ a felhasználó gépel… de az input csak a render VÉGÉN reagál</text>
+
+          <text x="20" y="152" font-size="12.5" font-weight="800" fill="#2f48ac">Fiber — munkaegységekre szeletelve, priorizálva</text>
+          <g>
+            <rect x="20"  y="166" width="90" height="34" rx="8" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+            <rect x="118" y="166" width="90" height="34" rx="8" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+            <rect x="216" y="166" width="110" height="34" rx="8" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2.5"/>
+            <rect x="334" y="166" width="90" height="34" rx="8" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+            <rect x="432" y="166" width="90" height="34" rx="8" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+          </g>
+          <text x="271" y="188" font-size="10.5" font-weight="800" fill="#15703f" text-anchor="middle">⌨ input MOST!</text>
+          <text x="65"  y="188" font-size="10.5" fill="#2f48ac" text-anchor="middle">munka #1</text>
+          <text x="163" y="188" font-size="10.5" fill="#2f48ac" text-anchor="middle">munka #2</text>
+          <text x="379" y="188" font-size="10.5" fill="#2f48ac" text-anchor="middle">munka #3</text>
+          <text x="477" y="188" font-size="10.5" fill="#2f48ac" text-anchor="middle">munka #4</text>
+          <text x="300" y="232" font-size="11.5" fill="#15703f" text-anchor="middle">a szeletek közt a React „felnéz": ha sürgős munka jött (input), azt veszi előre</text>
+        </g>
+      </svg>
+      <p class="cap">A régi reconciler rekurzívan, megszakítás nélkül dolgozott. A Fiber láncolt-listás fát épít, egységenként dolgozik, és a szeletek között át tudja engedni a sürgős munkát (pl. gépelés) — ez az alapja a React 18 concurrent funkcióinak.</p>
+    </div>
+
+    <h3>Mi is egy fiber valójában? Egy sima JS-objektum</h3>
+    <p>Semmi egzotikus: minden komponens-példányhoz (és minden DOM-elemhez) tartozik <strong>egy objektum</strong>, ami mindent tud róla, ami a munkához kell:</p>
+<pre><code>// Egy fiber-csomópont (erősen leegyszerűsítve):
+{
+  type: Header,             // MI ez? — a komponens-függvény vagy pl. 'div'
+  stateNode: [DOM-elem],    // a hozzá tartozó VALÓDI DOM-csomópont
+  memoizedProps: { ... },   // az előző render propjai (ehhez diffel)
+  memoizedState: { ... },   // a hookok LÁNCOLT LISTÁJA (useState, useEffect…)
+
+  child:   [fiber],         // mutató: az ELSŐ gyerekre
+  sibling: [fiber],         // mutató: a KÖVETKEZŐ testvérre
+  return:  [fiber],         // mutató: VISSZA a szülőre
+
+  lanes: ...,               // milyen sürgős munka vár rá (prioritás)
+  flags: ...,               // mi a teendő commitkor: Update / Placement / Deletion
+}</code></pre>
+
+    <h3>A trükk a három mutatóban van: child / sibling / return</h3>
+    <p>A régi reconciler <strong>rekurzióval</strong> járta be a fát — a „hol tartok?" információ a JS hívási vermében élt, ezért <em>nem lehetett félbehagyni</em> (egy rekurziót nem tudsz kimenteni a veremből). A Fiber-fa ezzel szemben <strong>láncolt lista</strong>: minden csomópontból mutató vezet a következőre, így a bejárás <strong>bármelyik csomópontnál megállítható</strong>, és később pontosan onnan folytatható — a „hol tartok?" maga a fiber, amin épp állunk.</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 760 300" role="img" aria-label="Fiber-fa child, sibling és return mutatókkal">
+        <defs>
+          <marker id="fb1" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#3a5bd9"/></marker>
+          <marker id="fb2" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#1f9d57"/></marker>
+          <marker id="fb3" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#8a94ad"/></marker>
+        </defs>
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif">
+          <rect x="230" y="20" width="130" height="40" rx="9" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+          <text x="295" y="45" font-size="12.5" font-weight="800" fill="#2f48ac" text-anchor="middle">App</text>
+
+          <rect x="90" y="130" width="130" height="40" rx="9" fill="#f7f8fc" stroke="#c6cdde" stroke-width="2"/>
+          <text x="155" y="155" font-size="12.5" font-weight="700" fill="#3d4a68" text-anchor="middle">Header</text>
+
+          <rect x="370" y="130" width="130" height="40" rx="9" fill="#f7f8fc" stroke="#c6cdde" stroke-width="2"/>
+          <text x="435" y="155" font-size="12.5" font-weight="700" fill="#3d4a68" text-anchor="middle">Main</text>
+
+          <rect x="370" y="235" width="130" height="40" rx="9" fill="#f7f8fc" stroke="#c6cdde" stroke-width="2"/>
+          <text x="435" y="260" font-size="12.5" font-weight="700" fill="#3d4a68" text-anchor="middle">List</text>
+
+          <line x1="250" y1="60" x2="170" y2="128" stroke="#3a5bd9" stroke-width="2.2" marker-end="url(#fb1)"/>
+          <text x="140" y="95" font-size="11" font-weight="800" fill="#2f48ac" text-anchor="start">child</text>
+
+          <line x1="222" y1="150" x2="368" y2="150" stroke="#1f9d57" stroke-width="2.2" marker-end="url(#fb2)"/>
+          <text x="255" y="142" font-size="11" font-weight="800" fill="#15703f" text-anchor="start">sibling</text>
+
+          <line x1="420" y1="130" x2="330" y2="64" stroke="#8a94ad" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#fb3)"/>
+          <text x="388" y="98" font-size="11" font-weight="700" fill="#5b6784" text-anchor="start">return</text>
+
+          <line x1="435" y1="170" x2="435" y2="233" stroke="#3a5bd9" stroke-width="2.2" marker-end="url(#fb1)"/>
+          <text x="443" y="205" font-size="11" font-weight="800" fill="#2f48ac" text-anchor="start">child</text>
+
+          <text x="20" y="292" font-size="11" fill="#5b6784" text-anchor="start">kék = child (első gyerek) · zöld = sibling (következő testvér) · szürke szaggatott = return (vissza a szülőhöz)</text>
+        </g>
+      </svg>
+      <p class="cap">Bejárás rekurzió nélkül: App → (child) Header → (sibling) Main → (child) List → (return) vissza. A React bármelyik nyílnál megállhat, átengedheti a böngészőnek a festést, majd pontosan ott folytatja.</p>
+    </div>
+
+    <h3>A work loop — így néz ki a „megszakíthatóság" kódban</h3>
+<pre><code>// A Fiber work loop (erősen leegyszerűsítve, a lényeg kedvéért):
+while (vanMégMunka &amp;&amp; vanMégIdőEbbenAFrameben()) {
+  aktuálisFiber = feldolgoz(aktuálisFiber);   // EGY komponens = EGY munkaegység
+}
+
+// Ha elfogyott az idő (~5 ms után):
+//   → a React visszaadja a vezérlést, a böngésző fest / kezeli az inputot,
+//   → majd a KÖVETKEZŐ szabad időszeletben PONTOSAN innen folytatja.
+// Ha közben SÜRGŐSEBB frissítés érkezett (pl. a felhasználó gépelt):
+//   → a félkész, ráérős munkát ELDOBJA, és a sürgőssel kezd.</code></pre>
+    <p>Ezt azért teheti meg biztonságosan, mert a render fázisnak <strong>tisztának</strong> kell lennie (7. kérdés): egy eldobott-újrakezdett render nem okoz kárt, hiszen DOM-ot csak a commit ír.</p>
+
+    <h3>Dupla puffer: current és workInProgress</h3>
+    <p>A React egyszerre <strong>két fát</strong> tart: a <code>current</code> az, ami most a képernyőn van; a <code>workInProgress</code> az, amin épp dolgozik. A commit végén nem másol semmit — egyetlen mutatót billent át: a workInProgress-ből lesz a current. Ezért <strong>atomi</strong> a commit: félkész állapot soha nem kerülhet a képernyőre.</p>
+
+    <h3>Prioritások (lane-ek) — ezt használod a useTransition-nel</h3>
+<pre><code>// SÜRGŐS (magas prioritású lane): a felhasználó gépel, azonnal látszania kell:
+setQuery(e.target.value);
+
+// RÁÉR (transition lane): a 10 000 elemű lista szűrése — megszakítható,
+// a gépelés bármikor megelőzheti:
+startTransition(() =&gt; {
+  setFilteredList(szűr(bigList, e.target.value));
+});</code></pre>
+
+    <div class="note"><strong>Bónusz-összefüggés, amivel kitűnhetsz: ezért vannak a hook-szabályok!</strong> A hookok a fiber <code>memoizedState</code> mezőjén ülnek, egy <em>láncolt listában, pozíció szerint</em> — a useState-eknek nincs nevük, csak sorrendjük. Ha egy hookot feltétel mögé raksz, és egyszer kimarad, a lista <em>elcsúszik</em>: a React a rossz hookhoz adja vissza a rossz state-et. Ezért szabály, hogy hookot mindig a komponens tetején, mindig ugyanabban a sorrendben hívunk.</div>
+
+    <div class="answer-box"><strong>Válaszváz:</strong> „A Fiber a React 16-os újraírt reconcilere. Minden komponenshez tartozik egy fiber-objektum (type, props, a hookok láncolt listája, és child/sibling/return mutatók), így a fa nem rekurzióval, hanem láncolt listaként járható be — ezért lehet a munkát bárhol felfüggeszteni és folytatni. A work loop kis egységekben dolgozik, két fát tart (current és workInProgress), a commit csak egy mutató-átbillentés, tehát atomi. A lane-alapú priorizálás miatt a sürgős input megelőzi a ráérős munkát — erre épül a useTransition és a React 18 concurrent renderelése."</div>
+  </section>
+
+  <!-- ════════ 9. DIFFING ════════ -->
+  <section class="section cat-react" id="q9">
+    <h2><span class="qnum">9.</span> Diffing algoritmus (reconciliation)</h2>
+    <span class="tag t-react">React</span> <span class="tag">Keys</span>
+
+    <p><strong>Mi a probléma, amit a diffing megold?</strong> Az előző kérdésben láttuk: state-változásnál a React elkészíti a felület <em>új</em> „tervrajzát" (elem-fáját). Ezután el kell döntenie, <em>mit kell ebből ténylegesen átírni a lassú DOM-ban</em> — ehhez a régi és az új tervrajzot hasonlítja össze. Ezt az összehasonlítást hívjuk <strong>diffingnek</strong>.</p>
+
+    <p>Az összehasonlítás <strong>három egyszerű szabály</strong> szerint történik — ennyit kell tudni:</p>
+
+    <div class="subsection">
+      <h4>1. szabály — MÁS lett az elem típusa? → Mindent újraépít.</h4>
+<pre><code>// régi:  &lt;div&gt; … &lt;/div&gt;          // új:  &lt;span&gt; … &lt;/span&gt;
+// A React nem elemezget: a teljes régi részfát KIDOBJA, és nulláról
+// újraépíti. FONTOS mellékhatás: a részfában lévő komponensek
+// state-je is ELVESZIK (pl. a beírt input-értékek).</code></pre>
+    </div>
+
+    <div class="subsection">
+      <h4>2. szabály — UGYANAZ a típus? → Csak a különbséget írja át.</h4>
+<pre><code>// régi:  &lt;button className="kek"&gt;Mentés&lt;/button&gt;
+// új:    &lt;button className="zold"&gt;Mentés&lt;/button&gt;
+// A button DOM-elem MEGMARAD, egyetlen dolog történik:
+// a class attribútum átírása "kek"-ről "zold"-ra.
+// Ezután a gyerekekre ugyanezt a 3 szabályt alkalmazza (rekurzió).</code></pre>
+    </div>
+
+    <div class="subsection">
+      <h4>3. szabály — Lista elemei? → A key mondja meg, ki kicsoda.</h4>
+      <p>Egy listánál a Reactnek tudnia kell: az új lista elemei <em>ugyanazok-e</em>, mint a régiek (csak pl. bővült a lista), vagy tényleg mások. Erre való a <code>key</code>: egy stabil azonosító minden elemen. <strong>Ha nincs key, a React kénytelen pozíció szerint párosítani</strong> — az alábbi ábra mutatja, ez miért baj:</p>
+    </div>
+
+    <div class="fig">
+      <svg viewBox="0 0 860 290" role="img" aria-label="Lista diffelése key nélkül és key-vel: elem beszúrása a lista elejére">
+        <defs><marker id="df1" markerWidth="8" markerHeight="8" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5 Z" fill="#d23b3b"/></marker><marker id="df2" markerWidth="8" markerHeight="8" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5 Z" fill="#1f9d57"/></marker></defs>
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif" text-anchor="middle" font-size="12">
+          <text x="430" y="24" font-size="12.5" font-weight="800" fill="#1c2233">Új elem beszúrása a lista ELEJÉRE (jelölése: „ÚJ")</text>
+          <!-- key nélkül -->
+          <text x="120" y="58" font-size="12" font-weight="800" fill="#a82c2c" text-anchor="start">ROSSZ — key nélkül: pozíció (index) szerint párosít</text>
+          <g font-family="var(--mono)" font-weight="800" font-size="14">
+            <rect x="120" y="70" width="60" height="36" rx="7" fill="#fff" stroke="#c8cee0"/><text x="150" y="94" fill="#5d6678">A</text>
+            <rect x="190" y="70" width="60" height="36" rx="7" fill="#fff" stroke="#c8cee0"/><text x="220" y="94" fill="#5d6678">B</text>
+            <rect x="260" y="70" width="60" height="36" rx="7" fill="#fff" stroke="#c8cee0"/><text x="290" y="94" fill="#5d6678">C</text>
+            <rect x="120" y="132" width="60" height="36" rx="7" fill="#fcebeb" stroke="#d23b3b" stroke-width="2"/><text x="150" y="156" fill="#a82c2c">ÚJ</text>
+            <rect x="190" y="132" width="60" height="36" rx="7" fill="#fcebeb" stroke="#d23b3b" stroke-width="2"/><text x="220" y="156" fill="#a82c2c">A</text>
+            <rect x="260" y="132" width="60" height="36" rx="7" fill="#fcebeb" stroke="#d23b3b" stroke-width="2"/><text x="290" y="156" fill="#a82c2c">B</text>
+            <rect x="330" y="132" width="60" height="36" rx="7" fill="#fcebeb" stroke="#d23b3b" stroke-width="2"/><text x="360" y="156" fill="#a82c2c">C</text>
+          </g>
+          <g stroke="#d23b3b" stroke-width="1.6">
+            <line x1="150" y1="108" x2="150" y2="129" marker-end="url(#df1)"/>
+            <line x1="220" y1="108" x2="220" y2="129" marker-end="url(#df1)"/>
+            <line x1="290" y1="108" x2="290" y2="129" marker-end="url(#df1)"/>
+          </g>
+          <text x="120" y="196" font-size="11" fill="#a82c2c" text-anchor="start">pozíció szerint: A→ÚJ, B→A, C→B átírás + C beszúrás = 4 DOM-művelet (és a belső state is keveredik!)</text>
+
+          <!-- key-vel -->
+          <text x="120" y="230" font-size="12" font-weight="800" fill="#15703f" text-anchor="start">JÓ — key-vel: stabil azonosító szerint párosít</text>
+          <g font-family="var(--mono)" font-weight="800" font-size="14">
+            <rect x="120" y="242" width="60" height="36" rx="7" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/><text x="150" y="266" fill="#15703f">ÚJ</text>
+            <rect x="190" y="242" width="60" height="36" rx="7" fill="#fff" stroke="#bce6cb"/><text x="220" y="266" fill="#5d6678">A</text>
+            <rect x="260" y="242" width="60" height="36" rx="7" fill="#fff" stroke="#bce6cb"/><text x="290" y="266" fill="#5d6678">B</text>
+            <rect x="330" y="242" width="60" height="36" rx="7" fill="#fff" stroke="#bce6cb"/><text x="360" y="266" fill="#5d6678">C</text>
+          </g>
+          <text x="415" y="266" font-size="11" fill="#15703f" text-anchor="start">A, B, C újrahasznosítva → csak az ÚJ beszúrása (1 művelet)</text>
+        </g>
+      </svg>
+      <p class="cap">Key nélkül a React pozíció szerint párosít — az eleji beszúrás minden elemet „átírat" vele. Stabil key-vel felismeri a régi elemeket, és csak az újat szúrja be. Ezért tilos az index-key olyan listánál, ami átrendeződhet.</p>
+    </div>
+
+    <div class="trap-box"><strong>Ezért tilos az index-et key-nek használni átrendeződő listánál:</strong> ha a key a pozíció (0, 1, 2…), akkor törlés/beszúrás után ugyanaz a key hirtelen <em>másik adathoz</em> tartozik. Tipikus tünet: beírsz valamit a lista 2. sorának input-mezőjébe, törlöd az 1. sort — és a beírt szöveg „átugrik" egy másik sorba, mert a React a key alapján azt hiszi, a 2. sor ugyanaz maradt. Jó key: az adat saját, stabil azonosítója (<code>item.id</code>). A key-nek csak a testvérek között kell egyedinek lennie.</div>
+
+    <div class="note"><strong>Háttér (ha rákérdeznek, miért így):</strong> két fa „tökéletes" összehasonlítása elméletben O(n³) költségű lenne — vállalhatatlanul drága. Ez a három gyakorlati szabály O(n)-re hozza le. Cserébe nem mindig találja meg a legkevesebb változtatást (típusváltásnál akkor is újraépít, ha ügyesebben is lehetne) — a gyakorlatban ez kiváló kompromisszum.</div>
+
+    <div class="answer-box"><strong>Válaszváz:</strong> „State-változásnál a React az új elem-fát a régivel veti össze három szabály szerint: ha más az elem típusa, az egész részfát újraépíti és a benne lévő state elveszik; ha ugyanaz a típus, a DOM-elem marad, csak a változott attribútumokat írja át, és a gyerekeken folytatja; listáknál pedig a key alapján azonosítja az elemeket. Ezért kell stabil, adat-alapú key — az index-key átrendezésnél state-keveredést okoz. Ez a heurisztika O(n), szemben az elméleti O(n³)-nel."</div>
+  </section>
+
+  <!-- ════════ 10. REACT.MEMO ════════ -->
+  <section class="section cat-react" id="q10">
+    <h2><span class="qnum">10.</span> React.memo</h2>
+    <span class="tag t-react">React</span> <span class="tag">Performance</span>
+
+    <p><strong>Először az alaphelyzet, amit sokan nem tudnak kimondani:</strong> ha egy komponens újrarenderel, a React alapból <em>az összes gyerek-komponensét is újrarendereli</em> — attól függetlenül, hogy a gyerekek propjai változtak-e. Kis komponensfánál ez olcsó és nem probléma. De ha a gyerek drága (pl. egy 500 soros lista), akkor minden szülő-renderelésnél feleslegesen újraszámolódik.</p>
+
+    <p>Erre való a <code>React.memo</code>: egy <strong>becsomagoló függvény</strong>. Odaadod neki a komponensedet, és visszaad egy „emlékező" változatot. Az emlékező változat renderelés előtt megnézi: <em>„változott bármelyik propom az előző rendereléshez képest?"</em> — és <strong>ha nem, kihagyja a renderelést</strong>, egyszerűen újra felhasználja az előző eredményt.</p>
+
+<pre><code>// 1. LÉPÉS — van egy teljesen átlagos komponensünk:
+function UserRow({ user, onSelect }) {
+  return &lt;li onClick={() =&gt; onSelect(user.id)}&gt;{user.name}&lt;/li&gt;;
+}
+
+// 2. LÉPÉS — becsomagoljuk: a React.memo VISSZAAD egy új, "emlékező" komponenst:
+const MemoUserRow = React.memo(UserRow);
+
+// 3. LÉPÉS — a szülőben a becsomagolt változatot használjuk:
+//    a szülő újrarenderelésekor a MemoUserRow CSAK akkor renderel újra,
+//    ha a user vagy az onSelect prop ténylegesen megváltozott.
+&lt;MemoUserRow user={u} onSelect={handleSelect} /&gt;</code></pre>
+
+    <h3>Mit jelent pontosan, hogy „sekélyen" hasonlítja a propokat?</h3>
+    <p>Proponként <code>Object.is</code>-szel — azaz <strong>referencia szerint</strong>, az objektumok belsejébe NEM néz bele:</p>
+<pre><code>"Anna"  vs "Anna"     → EGYENLŐ      (primitívnél az érték számít)
+42      vs 42         → EGYENLŐ
+{ a:1 } vs { a:1 }    → NEM EGYENLŐ! (két külön objektum a memóriában)
+fn      vs fn         → csak akkor egyenlő, ha SZÓ SZERINT ugyanaz a függvény-objektum</code></pre>
+
+    <div class="trap-box"><strong>A sekély összehasonlítás csapdája:</strong> a memo <strong>referenciákat</strong> hasonlít. Ha a szülő renderelésenként <em>új</em> objektumot/tömböt/függvényt ad át propként (<code>style=&#123;&#123;...&#125;&#125;</code>, inline arrow), a memo <em>mindig</em> „változást" lát, és hiába van ott. Pont ezt oldja meg a <code>useCallback</code>/<code>useMemo</code> → következő kérdés. Fordítva is igaz: ha egy propként kapott objektumot <em>mutálsz</em> (ugyanaz a referencia), a memo NEM veszi észre a változást.</div>
+
+    <div class="note"><strong>Extra tudás:</strong> a memo második argumentumként saját összehasonlító függvényt is elfogad: <code>React.memo(UserRow, (prevProps, nextProps) =&gt; prevProps.user.id === nextProps.user.id)</code>. Ha ez true-t ad vissza, azt mondod a Reactnek: „számomra nem változott semmi, NE renderelj újra".</div>
+
+    <div class="answer-box"><strong>Válaszváz:</strong> „Alapból a szülő minden renderelése a gyerekeket is újrarendereli, a propjaiktól függetlenül. A React.memo egy becsomagoló: a komponensből emlékező változatot készít, ami renderelés előtt sekélyen — proponként, referencia szerint — összehasonlítja az új propokat a régiekkel, és ha azonosak, kihagyja a renderelést. Mivel referencia-alapú, immutable adatkezelést és stabil függvény-referenciákat igényel — ez utóbbit adja a useCallback. Nem teszem rá mindenre, csak mérhetően drága komponensekre."</div>
+  </section>
+
+  <!-- ════════ 11. USECALLBACK ════════ -->
+  <section class="section cat-react" id="q11">
+    <h2><span class="qnum">11.</span> useCallback</h2>
+    <span class="tag t-react">React</span> <span class="tag">Hooks</span>
+
+    <p><strong>A probléma, amit megold:</strong> a komponensed törzse minden rendereléskor újra lefut — így a benne definiált függvények is <em>minden alkalommal vadonatúj függvény-objektumként</em> jönnek létre. Az előző kérdésben láttuk, hogy a memo referencia szerint hasonlít: számára egy új függvény-objektum = megváltozott prop. Vagyis <strong>ha függvényt adsz át propként, a memo önmagában soha nem fog spórolni</strong>.</p>
+    <p>Ezt oldja meg a <code>useCallback(függvény, függőségek)</code>: <strong>elteszi a függvényt az első rendereléskor, és a további rendereléseken ugyanazt a példányt adja vissza</strong> — egészen addig, amíg a függőség-listában felsorolt értékek meg nem változnak.</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 860 260" role="img" aria-label="useCallback nélkül a memo gyerek mindig újrarenderel, useCallback-kel nem">
+        <defs><marker id="uc1" markerWidth="8" markerHeight="8" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5 Z" fill="#5d6678"/></marker></defs>
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif" text-anchor="middle" font-size="11.5">
+          <!-- bal: nelkul -->
+          <rect x="15" y="20" width="405" height="225" rx="12" fill="#fff" stroke="#f1c9c9"/>
+          <text x="217" y="44" font-size="12.5" font-weight="800" fill="#a82c2c">useCallback NÉLKÜL — a probléma</text>
+          <rect x="60" y="58" width="140" height="40" rx="9" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+          <text x="130" y="83" font-weight="800" fill="#2f48ac">Parent render #1</text>
+          <rect x="235" y="58" width="140" height="40" rx="9" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+          <text x="305" y="83" font-weight="800" fill="#2f48ac">Parent render #2</text>
+          <g font-family="var(--mono)" font-size="11" font-weight="700">
+            <rect x="75" y="116" width="110" height="30" rx="8" fill="#fcebeb" stroke="#d23b3b" stroke-width="2"/><text x="130" y="136" fill="#a82c2c">1. függvény</text>
+            <rect x="250" y="116" width="110" height="30" rx="8" fill="#fcebeb" stroke="#d23b3b" stroke-width="2"/><text x="305" y="136" fill="#a82c2c">2. függvény</text>
+          </g>
+          <line x1="130" y1="98" x2="130" y2="114" stroke="#5d6678" stroke-width="1.6" marker-end="url(#uc1)"/>
+          <line x1="305" y1="98" x2="305" y2="114" stroke="#5d6678" stroke-width="1.6" marker-end="url(#uc1)"/>
+          <text x="217" y="172" font-size="12" fill="#a82c2c">a két függvény-objektum KÜLÖNBÖZIK → prop-változásnak tűnik</text>
+          <rect x="120" y="186" width="195" height="36" rx="9" fill="#fcebeb" stroke="#d23b3b" stroke-width="2"/>
+          <text x="217" y="209" font-weight="800" fill="#a82c2c">MemoUserRow ÚJRARENDEREL</text>
+
+          <!-- jobb: vele -->
+          <rect x="440" y="20" width="405" height="225" rx="12" fill="#fff" stroke="#bce6cb"/>
+          <text x="642" y="44" font-size="12.5" font-weight="800" fill="#15703f">useCallback-KEL — a megoldás</text>
+          <rect x="485" y="58" width="140" height="40" rx="9" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+          <text x="555" y="83" font-weight="800" fill="#2f48ac">Parent render #1</text>
+          <rect x="660" y="58" width="140" height="40" rx="9" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+          <text x="730" y="83" font-weight="800" fill="#2f48ac">Parent render #2</text>
+          <rect x="575" y="116" width="135" height="30" rx="8" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/>
+          <text x="642" y="136" font-family="var(--mono)" font-size="11" font-weight="700" fill="#15703f">UGYANAZ a függvény</text>
+          <line x1="555" y1="98" x2="615" y2="114" stroke="#5d6678" stroke-width="1.6" marker-end="url(#uc1)"/>
+          <line x1="730" y1="98" x2="670" y2="114" stroke="#5d6678" stroke-width="1.6" marker-end="url(#uc1)"/>
+          <text x="642" y="172" font-size="12" fill="#15703f">ugyanaz a függvény-objektum → nincs prop-változás</text>
+          <rect x="545" y="186" width="195" height="36" rx="9" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/>
+          <text x="642" y="209" font-weight="800" fill="#15703f">MemoUserRow KIHAGYVA</text>
+        </g>
+      </svg>
+      <p class="cap">Balra a probléma: a Parent minden renderelése új függvény-objektumot ad át propként, ezért a MemoUserRow hiába van memo-ban — mindig újrarenderel. Jobbra a megoldás: a useCallback ugyanazt a függvény-példányt adja vissza, így a memo tényleg tud spórolni.</p>
+    </div>
+
+<pre><code>function Parent() {
+  const [items, setItems] = useState([]);
+
+  // A PROBLÉMA — ha simán így írnánk:
+  //   const handleSelect = (id) =&gt; setItems(…);
+  // ez a sor MINDEN rendereléskor VADONATÚJ függvényt hozna létre.
+  // A MemoUserRow (előző kérdés!) ezt új prop-nak látná,
+  // és hiába csomagoltuk memo-ba: MINDIG újrarenderelne.
+
+  // A MEGOLDÁS — useCallback: a függvény példánya megmarad a renderek között:
+  const handleSelect = useCallback((id) =&gt; {
+    setItems(prev =&gt; prev.filter(x =&gt; x.id !== id));
+    // (a prev-alapú frissítés miatt az items-t nem kell függőségként felvenni)
+  }, []);   // üres függőség-lista → a referencia SOHA nem cserélődik
+
+  return items.map(u =&gt; &lt;MemoUserRow key={u.id} user={u} onSelect={handleSelect} /&gt;);
+}</code></pre>
+
+    <div class="note"><strong>useCallback vs useMemo:</strong> a <code>useCallback(fn, deps)</code> a <em>függvényt magát</em> memoizálja (≡ <code>useMemo(() =&gt; fn, deps)</code>), a <code>useMemo</code> a függvény <em>visszatérési értékét</em>. Önmagában a useCallback nem gyorsít — akkor ér valamit, ha a fogadó oldal (memo-zott gyerek, useEffect dep) referencia-egyenlőségre épít.</div>
+
+    <div class="answer-box"><strong>Válaszváz:</strong> „Minden rendereléskor a komponens törzse újra lefut, így a benne definiált függvények új objektumként jönnek létre — a memo-zott gyerek ezt prop-változásnak látja. A useCallback ugyanazt a függvény-példányt adja vissza a renderelések között, amíg a függőségei nem változnak. Párban jár a React.memo-val: önmagában nem gyorsít semmit, az értéke a stabil referencia — memo-zott gyerek-propnál és effect-függőségeknél."</div>
+  </section>
+
+  <!-- ════════ 12. OPTIMALIZÁLÁS ════════ -->
+  <section class="section cat-react" id="q12">
+    <h2><span class="qnum">12.</span> React alkalmazás optimalizálása — módszerek</h2>
+    <span class="tag t-react">React</span> <span class="tag">Performance</span>
+
+    <p>Az interjún strukturált válasz kell: <strong>először mérj, aztán célzottan optimalizálj</strong>, több szinten:</p>
+
+    <h3>1) Felesleges renderelések ellen</h3>
+    <ul>
+      <li><code>React.memo</code> + <code>useCallback</code> / <code>useMemo</code> (stabil referenciák, drága számítások cache-elése)</li>
+      <li>Helyes <code>key</code>-k a listákban (lásd 9. kérdés)</li>
+      <li><strong>State lejjebb tolása</strong> (colocation): a gyakran változó state ne a fa tetején legyen; <em>children-minta</em> (a nem változó részfa propként jön, nem renderelődik újra)</li>
+      <li><code>useTransition</code> / <code>useDeferredValue</code>: a nehéz frissítés alacsony prioritással fusson</li>
+    </ul>
+
+    <p>A leghatásosabb (és ingyen van, mert nem kell hozzá semmilyen memo): a <strong>state lejjebb tolása</strong>. Nézd meg a különbséget:</p>
+<pre><code>// LASSÚ — a keresőmező state-je a fa TETEJÉN él:
+function App() {
+  const [query, setQuery] = useState('');
+  return (
+    &lt;&gt;
+      &lt;SearchInput value={query} onChange={setQuery} /&gt;
+      &lt;HugeTable /&gt;   {/* MINDEN leütésnél újrarenderel — pedig semmi köze a query-hez */}
+      &lt;HugeChart /&gt;   {/* ez is! az App state-változása a TELJES részfát újrafuttatja */}
+    &lt;/&gt;
+  );
+}
+
+// GYORS — a state oda költözött, ahol tényleg kell (colocation):
+function App() {
+  return (
+    &lt;&gt;
+      &lt;SearchSection /&gt;   {/* a query state EBBEN él — a gépelés csak EZT rendereli */}
+      &lt;HugeTable /&gt;       {/* a gépelés többé nem érinti */}
+      &lt;HugeChart /&gt;
+    &lt;/&gt;
+  );
+}</code></pre>
+
+    <p>És a párja, a <strong>children-minta</strong> — amikor a gyakran változó state-et nem tudod lejjebb tolni, mert „körbeöleli" a drága tartalmat:</p>
+<pre><code>// A gyakran változó state egy WRAPPER komponensben él, a drága tartalom
+// pedig children-ként érkezik. A children-t a SZÜLŐ hozta létre (kész
+// elem-objektum!), ezért a wrapper state-változása NEM rendereli újra:
+function ScrollTracker({ children }) {
+  const [y, setY] = useState(0);          // sűrűn változik görgetésnél…
+  useEffect(() =&gt; { /* scroll-listener, setY */ }, []);
+  return &lt;div&gt;Pozíció: {y}px {children}&lt;/div&gt;;   // …de a children érintetlen
+}
+
+&lt;ScrollTracker&gt;&lt;HugeTable /&gt;&lt;/ScrollTracker&gt;
+
+// Drága számítás cache-elése — csak akkor számol újra, ha a bemenet változott:
+const sorted = useMemo(() =&gt; [...rows].sort(byDate), [rows]);</code></pre>
+
+    <h3>2) Bundle és betöltés</h3>
+    <ul>
+      <li><strong>Code splitting:</strong> <code>React.lazy</code> + <code>Suspense</code> — route-onkénti lazy betöltés</li>
+      <li>Production build, tree-shaking, bundle-analízis; képek/fontok optimalizálása</li>
+    </ul>
+
+    <h3>3) Nagy adatmennyiség</h3>
+    <ul>
+      <li><strong>Virtualizálás</strong> (react-window / TanStack Virtual): 10 000 sorból csak a látható ~20 renderelődik</li>
+      <li>Lapozás / végtelen görgetés, adat-cache (TanStack Query)</li>
+    </ul>
+
+<pre><code>// Code splitting: a Settings csak akkor töltődik le, amikor kell
+const Settings = React.lazy(() =&gt; import('./Settings'));
+
+&lt;Suspense fallback={&lt;Spinner /&gt;}&gt;
+  &lt;Settings /&gt;
+&lt;/Suspense&gt;
+
+// Virtualizálás: 10 000 sorból csak a látható ~15 kerül a DOM-ba,
+// görgetéskor ugyanazok a DOM-elemek kapnak új tartalmat:
+import { FixedSizeList } from 'react-window';
+
+&lt;FixedSizeList height={600} itemCount={rows.length} itemSize={40} width="100%"&gt;
+  {({ index, style }) =&gt; &lt;div style={style}&gt;{rows[index].name}&lt;/div&gt;}
+&lt;/FixedSizeList&gt;</code></pre>
+
+    <h3>Tünet → megoldás gyorstérkép (interjún aranyat ér)</h3>
+    <table>
+      <tr><th>Tünet</th><th>Először ezt nézd meg</th><th>Tipikus megoldás</th></tr>
+      <tr><td>gépelés akad egy inputban</td><td>hol él a query state? mi renderel vele együtt?</td><td>state lejjebb tolása; nagy listánál <code>useDeferredValue</code></td></tr>
+      <tr><td>hosszú lista görgetése akad</td><td>hány sor van egyszerre a DOM-ban?</td><td>virtualizálás (react-window)</td></tr>
+      <tr><td>lassú az első betöltés</td><td>bundle mérete (analyzer)</td><td>code splitting (<code>lazy</code>+<code>Suspense</code>), production build</td></tr>
+      <tr><td>egy kattintásra „minden" újrarenderel</td><td>Profiler: ki renderelt és MIÉRT</td><td><code>React.memo</code> + <code>useCallback</code>, vagy children-minta</td></tr>
+      <tr><td>drága számítás fut minden renderen</td><td>Profiler: melyik komponens lassú önmagában</td><td><code>useMemo</code> a számításra</td></tr>
+    </table>
+
+    <h3>Hogyan mérj? — React DevTools Profiler, lépésről lépésre</h3>
+<pre><code>1. React DevTools → "Profiler" fül → felvétel indítása (kerek gomb)
+2. Végezd el a lassúnak érzett műveletet (gépelés, kattintás, görgetés)
+3. Állítsd le → lángdiagram (flamegraph): melyik komponens mennyi ideig renderelt
+4. Fogaskerék → kapcsold be: "Record why each component rendered"
+   → minden komponensnél kiírja az OKOT is:
+     "props changed" / "state changed" / "the parent re-rendered"
+   → ez utóbbi a leggyakoribb — és pont ez ellen való a colocation + memo</code></pre>
+
+    <div class="note"><strong>Mérés előbb!</strong> Optimalizálni csak <em>mért</em> szűk keresztmetszetet érdemes — a mindenhová szórt memo maga is költség (minden rendernél összehasonlítgat). Emlékezz a 7. kérdésre: a „felesleges render" gyakran csak egy olcsó függvényhívás, DOM-írás nélkül. (Megjegyzés: a React Compiler célja épp az, hogy a memo/useCallback kézi kirakását automatizálja.)</div>
+
+    <div class="answer-box"><strong>Válaszváz:</strong> „Mindig méréssel kezdem: React Profiler, »record why each component rendered« — így látom, ki renderel feleslegesen és miért. Utána tünet szerint nyúlok hozzá: render-szinten először state-colocationnel és a children-mintával (ez ingyen van), aztán ha kell, memo + useCallback + useMemo és jó key-k; betöltés-szinten code splitting lazy+Suspense-szel és production build; adat-szinten virtualizálás és cache. Csak a bizonyított szűk keresztmetszetre optimalizálok, mert a memo maga sem ingyenes."</div>
+  </section>
+
+  <!-- ════════ 13. MÁSODIK LEGNAGYOBB ════════ -->
+  <section class="section cat-code" id="q13">
+    <h2><span class="qnum">13.</span> Kódolás: a második legnagyobb elem</h2>
+    <span class="tag t-code">Coding</span> <span class="tag">O(n)</span>
+
+    <p>Feladat: add vissza a tömb <strong>második legnagyobb</strong> elemét. A naiv válasz a rendezés (O(n log n)) — a jó válasz egyetlen végigjárás <strong>két követett értékkel</strong>: O(n) idő, O(1) tér.</p>
+
+<pre><code>function secondLargest(arr) {
+  let max = -Infinity, second = -Infinity;
+
+  for (const x of arr) {
+    if (x &gt; max) {            // új csúcs: a régi csúcs lecsúszik másodiknak
+      second = max;
+      max = x;
+    } else if (x &gt; second &amp;&amp; x &lt; max) {   // a kettő közé esik
+      second = x;
+    }                          // x === max (duplikátum) → szándékosan kihagyjuk
+  }
+  return second === -Infinity ? null : second;   // nincs 2. külön érték
+}
+
+secondLargest([3, 8, 1, 8, 5]);  // 5  (a dupla 8 nem számít másodiknak)
+secondLargest([7]);              // null
+secondLargest([2, 2, 2]);        // null</code></pre>
+
+    <h3>Végigkövetés: <code>[3, 8, 1, 8, 5]</code></h3>
+    <table>
+      <tr><th>x</th><th>döntés</th><th>max</th><th>second</th></tr>
+      <tr><td>3</td><td>3 &gt; -∞ → új csúcs</td><td>3</td><td>-∞</td></tr>
+      <tr><td>8</td><td>8 &gt; 3 → új csúcs, a 3 lecsúszik</td><td>8</td><td>3</td></tr>
+      <tr><td>1</td><td>1 &lt; 3 → semmi</td><td>8</td><td>3</td></tr>
+      <tr><td>8</td><td>= max (duplikátum) → kihagyva</td><td>8</td><td>3</td></tr>
+      <tr><td>5</td><td>3 &lt; 5 &lt; 8 → új második</td><td>8</td><td><strong>5</strong> ← ez az eredmény</td></tr>
+    </table>
+
+    <div class="trap-box"><strong>Kérdezz rá (edge case-ek):</strong> a duplikált maximum második-e (itt: nem — ha igen lenne, az <code>x &lt; max</code> feltételt kell elhagyni); üres / 1 elemű tömb (→ <code>null</code>); negatív számok (a <code>-Infinity</code> kezdőérték miatt működik, a <code>0</code> kezdőérték BUG lenne!).</div>
+
+    <div class="answer-box"><strong>Válaszváz:</strong> „Egy menetben követem a legnagyobbat és a másodikat: ha az elem új csúcs, a régi csúcs lecsúszik másodiknak; ha a kettő közé esik, ő az új második. O(n) idő, O(1) tér — és előre tisztázom, hogy a duplikált maximum számít-e másodiknak." (Komplexitás-háttér: <a href="11_komplexitas.html">Big O doksi</a>.)</div>
+  </section>
+
+  <!-- ════════ 14. DEBOUNCE ════════ -->
+  <section class="section cat-code" id="q14">
+    <h2><span class="qnum">14.</span> Kódolás: debounce (és throttle) nulláról</h2>
+    <span class="tag t-code">Coding</span> <span class="tag">Closure</span> <span class="tag">Timer</span>
+
+    <p>A <strong>debounce</strong> addig halogatja a függvényhívást, amíg a hívások „el nem csendesednek": minden új hívás <strong>újraindítja az időzítőt</strong>, és csak az utolsó után <code>delay</code>-jel fut le ténylegesen. Klasszikus használat: keresőmező — ne minden leütésre menjen API-hívás.</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 860 220" role="img" aria-label="Debounce idővonal: a gépelés újraindítja az időzítőt, egyetlen hívás a szünet után">
+        <defs><marker id="db1" markerWidth="8" markerHeight="8" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5 Z" fill="#1f9d57"/></marker></defs>
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif">
+          <line x1="30" y1="120" x2="830" y2="120" stroke="#1c2233" stroke-width="1.5"/>
+          <text x="30" y="145" font-size="11" fill="#5d6678">idő →</text>
+          <!-- esemenyek -->
+          <g>
+            <line x1="80"  y1="120" x2="80"  y2="88" stroke="#3a5bd9" stroke-width="2.5"/>
+            <line x1="130" y1="120" x2="130" y2="88" stroke="#3a5bd9" stroke-width="2.5"/>
+            <line x1="165" y1="120" x2="165" y2="88" stroke="#3a5bd9" stroke-width="2.5"/>
+            <line x1="230" y1="120" x2="230" y2="88" stroke="#3a5bd9" stroke-width="2.5"/>
+          </g>
+          <text x="155" y="70" font-size="12" font-weight="700" fill="#2f48ac" text-anchor="middle">⌨ leütések — mindegyik ÚJRAINDÍTJA az időzítőt</text>
+          <!-- ujrainditott timerek (elvetve) -->
+          <g stroke="#c8cee0" stroke-width="1.5" stroke-dasharray="4 3" fill="none">
+            <path d="M80,132 h50"/><path d="M130,146 h35"/><path d="M165,160 h65"/>
+          </g>
+          <g font-size="9.5" fill="#aeb6c4">
+            <text x="105" y="128">eldobva</text><text x="148" y="142">eldobva</text><text x="198" y="156">eldobva</text>
+          </g>
+          <!-- vegso timer -->
+          <path d="M230,174 h180" stroke="#1f9d57" stroke-width="2.5" fill="none"/>
+          <text x="320" y="192" font-size="11" fill="#15703f" text-anchor="middle">az UTOLSÓ leütés utáni teljes delay (pl. 300 ms) — csend</text>
+          <line x1="410" y1="174" x2="410" y2="126" stroke="#1f9d57" stroke-width="2" marker-end="url(#db1)"/>
+          <circle cx="410" cy="120" r="9" fill="#1f9d57"/>
+          <text x="410" y="98" font-size="12" font-weight="800" fill="#15703f" text-anchor="middle">EGYETLEN tényleges hívás</text>
+          <text x="640" y="150" font-size="11" fill="#5d6678">4 leütés → 1 API-hívás a szünet után</text>
+        </g>
+      </svg>
+      <p class="cap">Minden leütés eldobja az előző időzítőt és újat indít — a becsomagolt függvény csak akkor fut le, amikor a hívások után letelt egy teljes, megszakítás nélküli <code>delay</code>.</p>
+    </div>
+
+<pre><code>function debounce(fn, delay) {
+  let timerId;                              // a closure őrzi a hívások között!
+
+  function debounced(...args) {
+    clearTimeout(timerId);                  // az előző várakozó hívás elvetése
+    timerId = setTimeout(() =&gt; {
+      fn.apply(this, args);                 // this + argumentumok továbbadása
+    }, delay);
+  }
+
+  // cancel: a MÉG FÜGGŐBEN LÉVŐ hívás visszavonása (a lodash is így csinálja)
+  debounced.cancel = () =&gt; clearTimeout(timerId);
+
+  return debounced;
+}
+
+// Használat:
+const search = debounce((q) =&gt; fetch('/api?q=' + q), 300);
+input.addEventListener('input', (e) =&gt; search(e.target.value));</code></pre>
+
+    <h3>Miért kell a cancel()? — a „szellem-hívás" probléma</h3>
+    <p>A debounce-olt hívás <strong>a jövőben</strong> fut le — addigra a világ megváltozhatott. Tipikus eset React-ben: a felhasználó gépel, majd elnavigál; a komponens unmountol, de a 300 ms-os időzítő <em>még ketyeg</em>, és lejártakor egy már nem létező komponens nevében indít API-hívást (vagy rosszabb: state-et akarna írni). Ezért unmountkor <strong>kötelező visszavonni</strong>:</p>
+<pre><code>useEffect(() =&gt; {
+  const search = debounce(runSearch, 300);
+  const input = inputRef.current;
+  input.addEventListener('input', search);
+
+  return () =&gt; {                       // cleanup unmountkor:
+    input.removeEventListener('input', search);
+    search.cancel();                   // a még függőben lévő hívás törlése!
+  };
+}, []);</code></pre>
+
+    <h3>A párja: throttle — erre is számíts, írd meg nulláról</h3>
+    <p>A debounce a <em>csendre</em> vár — folyamatos esemény-áradat alatt (pl. görgetés közben) <strong>egyáltalán nem fut le</strong>. Ha görgetés KÖZBEN is kell frissítés, csak ritkítva, az a <strong>throttle</strong>: legfeljebb <em>intervallumonként egy</em> hívást enged át.</p>
+<pre><code>function throttle(fn, interval) {
+  let lastCall = 0;                          // az utolsó TÉNYLEGES hívás időpontja
+
+  return function (...args) {
+    const now = Date.now();
+    if (now - lastCall &gt;= interval) {        // eltelt már elég idő az előző óta?
+      lastCall = now;
+      fn.apply(this, args);                  // ha igen: hívunk, és nullázzuk az órát
+    }
+    // ha nem: ez az esemény egyszerűen KIMARAD (nem gyűlik, nem vár)
+  };
+}
+
+// Használat: scroll-pozíció követése legfeljebb 100 ms-onként
+window.addEventListener('scroll', throttle(updateProgressBar, 100));</code></pre>
+
+    <h3>És van-e cancel() a throttle-nál?</h3>
+    <p>Jó kérdés — a válasz kétfelé bomlik, és ezt interjún is érdemes így elmondani:</p>
+    <ul>
+      <li>A fenti <strong>egyszerű (időbélyeges) throttle-nál nincs mit visszavonni</strong>: nem ütemez semmit a jövőbe, csak dönt („most átengedem / most eldobom"), és a köztes események végleg elvesznek. Nincs függőben lévő hívás → a cancel értelmetlen lenne.</li>
+      <li>A gyakorlatban viszont többnyire a <strong>„trailing" változatot</strong> használjuk (a lodash <code>_.throttle</code> is ilyen): az ablakon belül érkező <em>utolsó</em> eseményt egy <code>setTimeout</code>-tal elütemezi az ablak végére, hogy az se vesszen el. Itt <strong>már van függőben lévő hívás — tehát kell és van cancel()</strong>, ugyanazzal az unmount-indokkal, mint a debounce-nál.</li>
+    </ul>
+<pre><code>// „Trailing" throttle cancel()-lel — az UTOLSÓ eseményt sem veszíti el:
+function throttle(fn, interval) {
+  let lastCall = 0;
+  let timerId = null;
+  let lastArgs = null;                   // a LEGUTOLSÓ hívás argumentumai
+
+  function throttled(...args) {
+    const now = Date.now();
+    const remaining = interval - (now - lastCall);   // ennyi van hátra az ablakból
+    lastArgs = args;                     // minden hívásnál frissítjük — így a
+                                         // trailing hívás a legfrissebbel fut
+
+    if (remaining &lt;= 0) {                // az ablak letelt → hívunk AZONNAL
+      lastCall = now;
+      fn.apply(this, lastArgs);
+    } else if (timerId === null) {       // ablakon belül → az ablak VÉGÉRE ütemezzük
+      timerId = setTimeout(() =&gt; {
+        lastCall = Date.now();
+        timerId = null;
+        fn.apply(this, lastArgs);        // a legutolsó esemény adataival fut le
+      }, remaining);
+    }
+  }
+
+  throttled.cancel = () =&gt; {             // itt MÁR van mit visszavonni!
+    clearTimeout(timerId);
+    timerId = null;
+  };
+
+  return throttled;
+}</code></pre>
+
+    <table>
+      <tr><th></th><th>Debounce</th><th>Throttle</th></tr>
+      <tr><td><strong>Mikor hív?</strong></td><td>a hívások elcsendesedése UTÁN, egyszer</td><td>az áradat KÖZBEN, legfeljebb X ms-onként</td></tr>
+      <tr><td><strong>Folyamatos esemény alatt</strong></td><td>egyáltalán nem fut le</td><td>szabályos időközönként lefut</td></tr>
+      <tr><td><strong>Tipikus használat</strong></td><td>keresőmező, automatikus mentés gépelés után, ablak-átméretezés vége</td><td>scroll-pozíció, egérmozgás-követés, játék-input</td></tr>
+      <tr><td><strong>A belső állapota</strong></td><td>timer-azonosító (amit újraindít)</td><td>az utolsó hívás időbélyege</td></tr>
+    </table>
+
+    <div class="note"><strong>Követő kérdések, amikre készülj:</strong>
+      <ul>
+        <li><strong>Miért function és nem arrow a visszaadott wrapper?</strong> Hogy a <code>this</code> a hívóhoz kötődjön (pl. eseménykezelőben), és az <code>apply</code>-jal továbbadható legyen.</li>
+        <li><strong>Leading-edge debounce:</strong> változat, ami <em>először azonnal</em> hív, és utána csendesít (pl. gombnyomás dupla-kattintás ellen) — egy <code>if (!timerId) fn(...)</code> ág a setTimeout előtt.</li>
+        <li><strong>flush():</strong> a cancel párja a lodash-ban — nem eldobja, hanem <em>azonnal lefuttatja</em> a függőben lévő hívást (pl. form beküldése előtt ne vesszen el a debounce-olt mentés).</li>
+      </ul>
+    </div>
+
+    <div class="answer-box"><strong>Válaszváz:</strong> „A debounce egy closure-ben tárolt timer-azonosítóra épül: minden hívás clearTimeout-tal elveti az előzőt és új setTimeout-ot indít, így csak az utolsó hívás után delay-jel fut le a függvény. A this-t és az argumentumokat apply-jal adom tovább, és teszek rá cancel() metódust is — React-ben unmountkor kötelező visszavonni a függőben lévő hívást. Throttle-tól az különbözteti meg, hogy az időszakosan enged, a debounce a csendre vár; az egyszerű throttle-nál nincs mit visszavonni, de a gyakorlatban használt trailing változatnál ugyanúgy kell a cancel."</div>
+  </section>
+
+  <!-- ════════ 15. FLATTEN ════════ -->
+  <section class="section cat-code" id="q15">
+    <h2><span class="qnum">15.</span> Kódolás: tömb laposítása (flatten)</h2>
+    <span class="tag t-code">Coding</span> <span class="tag">Rekurzió</span>
+
+    <p>Feladat: egy tetszőleges mélységben egymásba ágyazott tömböt „laposíts ki" egyetlen szintre. A rekurzió tankönyvi esete: ha az elem tömb → menj bele, ha nem → tedd az eredménybe.</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 760 210" role="img" aria-label="Beágyazott tömb laposítása egy szintre">
+        <defs><marker id="fl1" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#1f9d57"/></marker></defs>
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif" text-anchor="middle">
+          <!-- nested -->
+          <rect x="120" y="30" width="520" height="66" rx="12" fill="#fff" stroke="#3a5bd9" stroke-width="2"/>
+          <g font-family="var(--mono)" font-size="15" font-weight="800">
+            <rect x="140" y="46" width="46" height="36" rx="7" fill="#eaeefc" stroke="#3a5bd9"/><text x="163" y="70" fill="#2f48ac">1</text>
+            <rect x="198" y="40" width="230" height="48" rx="9" fill="#f7f5fd" stroke="#7c5cd6" stroke-width="2"/>
+            <rect x="212" y="46" width="46" height="36" rx="7" fill="#efeafc" stroke="#7c5cd6"/><text x="235" y="70" fill="#5a3fb0">2</text>
+            <rect x="270" y="44" width="144" height="40" rx="8" fill="#fdf6ea" stroke="#b9821a" stroke-width="2"/>
+            <rect x="284" y="48" width="46" height="32" rx="7" fill="#fbf2dd" stroke="#b9821a"/><text x="307" y="70" fill="#8a6112">3</text>
+            <rect x="340" y="48" width="60" height="32" rx="7" fill="#fbf2dd" stroke="#b9821a"/><text x="370" y="70" fill="#8a6112">[4]</text>
+            <rect x="440" y="46" width="46" height="36" rx="7" fill="#eaeefc" stroke="#3a5bd9"/><text x="463" y="70" fill="#2f48ac">5</text>
+          </g>
+          <text x="620" y="26" font-size="11" fill="#5d6678">[1, [2, [3, [4]]], 5]</text>
+          <line x1="380" y1="100" x2="380" y2="132" stroke="#1f9d57" stroke-width="2.5" marker-end="url(#fl1)"/>
+          <text x="470" y="122" font-size="11.5" fill="#15703f">flatten (rekurzívan kicsomagol)</text>
+          <!-- flat -->
+          <g font-family="var(--mono)" font-size="15" font-weight="800">
+            <rect x="230" y="142" width="50" height="38" rx="7" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/><text x="255" y="167" fill="#15703f">1</text>
+            <rect x="290" y="142" width="50" height="38" rx="7" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/><text x="315" y="167" fill="#15703f">2</text>
+            <rect x="350" y="142" width="50" height="38" rx="7" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/><text x="375" y="167" fill="#15703f">3</text>
+            <rect x="410" y="142" width="50" height="38" rx="7" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/><text x="435" y="167" fill="#15703f">4</text>
+            <rect x="470" y="142" width="50" height="38" rx="7" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/><text x="495" y="167" fill="#15703f">5</text>
+          </g>
+          <text x="380" y="202" font-size="11" fill="#15703f">[1, 2, 3, 4, 5]</text>
+        </g>
+      </svg>
+      <p class="cap">A doboz-a-dobozban szerkezetből egyetlen sor lesz: minden tömb-elemet rekurzívan kibontunk, a primitíveket változatlanul visszük át.</p>
+    </div>
+
+<pre><code>// 1) Rekurzív reduce — a klasszikus interjú-válasz
+function flatten(arr) {
+  return arr.reduce(
+    (acc, x) =&gt; acc.concat(Array.isArray(x) ? flatten(x) : x),
+    []
+  );
+}
+flatten([1, [2, [3, [4]]], 5]);   // [1, 2, 3, 4, 5]
+
+// 2) Beépített (említsd meg, hogy tudod!):
+[1, [2, [3, [4]]], 5].flat(Infinity);
+
+// 3) Iteratív, stack-kel — nagyon mély beágyazásnál nem lesz stack overflow
+function flattenIter(arr) {
+  const stack = [...arr], out = [];
+  while (stack.length) {
+    const x = stack.pop();
+    if (Array.isArray(x)) stack.push(...x);
+    else out.push(x);
+  }
+  return out.reverse();     // a pop miatt fordítva jött ki
+}</code></pre>
+
+    <div class="note"><strong>Kapcsolódó:</strong> az <em>objektum</em>-laposítás (<code>&#123;a:&#123;b:1&#125;&#125;</code> → <code>"a.b": 1</code>) hasonló rekurzió, kidolgozva a <a href="09_tesco_hungary.html">Nagarro-doksi 13. szakaszában</a>; az adatszerkezet-oldala pedig a <a href="12_adatszerkezetek.html">12-es doksiban</a>.</div>
+
+    <div class="answer-box"><strong>Válaszváz:</strong> „Rekurzív reduce-szal: ha az elem tömb, rekurzívan laposítom és konkatenálom, különben hozzáfűzöm. Megemlítem, hogy létezik beépített <code>arr.flat(Infinity)</code>, és hogy extrém mélységnél iteratív, stack-alapú változatot írnék a call-stack túlcsordulás ellen. O(n) az összes elem számában."</div>
+  </section>
+
+  <footer>
+    <p><strong>📋 Kidolgozási &amp; karbantartási napló</strong></p>
+    <p>
+      <strong>Készítette:</strong> Claude Fable 5 (1M kontextus) · modell-azonosító <code>claude-fable-5[1m]</code><br>
+      <strong>Kidolgozás dátuma:</strong> 2026-07-18 · <strong>A modell tudásvágása:</strong> 2026. január (a tanítóadat vége — az azóta eltelt időszak változásait nem garantáltan ismeri, ezt frissítéskor ellenőrizni kell)<br>
+      <strong>Precíziós szint:</strong> tutorial-szintű kidolgozás a közös világos témában, 13 SVG-vizualizációval, az <code>interju-doc</code> skill szerint; minden kódmegoldás kézzel végigvezetve (a 13-asnál trace-táblázattal). <strong>Pótlás (ugyanaznap):</strong> a 4. kérdés kiegészítve a klasszikus <code>for + setTimeout</code> hiba teljes kifejtésével (kimenet, event loop + closure magyarázat, közös-változó vs iterációnkénti-kötés SVG, 3 javítási mód). <strong>Érthetőségi átdolgozás (ugyanaznap):</strong> az ÖSSZES ❌/✅/✗/✓ emoji-jelölés szöveges címkére cserélve (ROSSZ/JÓ, HIBÁS/HELYES, igen/nem) a kódkommentekben és SVG-kben — hogy ne legyen összetéveszthető tartalmi jelöléssel (pl. az X listaelemmel); a 9. szekció (diffing) „probléma → 3 szabály kódpéldával → ábra → index-key csapda" felépítésre újraírva, az O(n³)-háttér a végére került; a 10. szekció (memo) lépcsőzetes példára átírva (sima komponens → React.memo becsomagolás → MemoUserRow használat) + az Object.is-alapú sekély összehasonlítás konkrét egyenlőség-példákkal; a 11. szekció (useCallback) kódja és SVG-je összekapcsolva a 10-es MemoUserRow-val, kimondott PROBLÉMA/MEGOLDÁS szerkezettel, a rejtjeles „fn①" feliratok kiírva. A 14. kérdés kiegészítve teljes <strong>throttle</strong>-implementációval és debounce–throttle összehasonlító táblázattal. A kód-fontstackből eltávolítva a ligatúrás betűtípusok (Fira/Cascadia Code) és letiltva a ligatúra-renderelés — a <code>===</code> mostantól karakterhűen jelenik meg, nem ≡-ként (ez az összes 0N_*.html-ben és a skill-sablonban is megtörtént). <strong>Mélyítés (ugyanaznap):</strong> a 7. kérdés kibővítve a JSX→objektum fordítás bemutatásával, egy kattintás 6 lépéses végigkövetésével és render-vs-commit fázis táblázattal; a 8. kérdés (Fiber) tutorial-mélységűre bővítve: fiber-objektum felépítése kódban, child/sibling/return mutatós fa-bejárás új SVG-vel (marker: fb1–fb3), work loop pszeudokód, dupla puffer, lane-példa, hook-szabályok magyarázata; a 12. kérdés kibővítve state-colocation előtte/utána kóddal, children-mintával, virtualizálás-kódrészlettel, „tünet → megoldás" táblázattal és Profiler-használati útmutatóval; a 14. kérdésben a debounce cancel() metódust kapott (+ unmount-cleanup példa, „szellem-hívás" magyarázat), és bekerült a trailing throttle cancel()-lel + annak kifejtése, hogy az egyszerű throttle-nál miért nincs mit visszavonni.
+    </p>
+    <p><strong>Forrás:</strong> az <code>accenture_li/</code> mappa 2 LinkedIn-képernyőfotója (Accenture React JS Developer interjú-beszámoló). A kérésnek megfelelően <strong>csak a kérdéssor</strong> lett feldolgozva (15 tétel: 3 HTML/CSS + 3 JS + 6 React + 3 kódfeladat) — a poszt személyes története és a hashtagek ignorálva. Minden kérdésnél: magyarázat, ábra/kód, csapdák és kimondható „válaszváz".</p>
+    <p><strong>🔧 Ha 1 év múlva technikailag frissíteni kell:</strong></p>
+    <ul>
+      <li><strong>Dizájnrendszer:</strong> világos téma a <code>:root</code> CSS-változókban; <code>.wrap</code> &gt; <code>header.hero</code> + <code>nav.toc</code> + <code>.section</code> kártyák; kategória-színek a bal szegélyen (<code>.cat-html/.cat-js/.cat-react/.cat-code</code>); ábrák inline <code>&lt;svg&gt;</code> a <code>.fig</code>-ben (egyedi marker-id-k: gf1, vl1, rp1, df1, df2, uc1, db1, fl1). Az <code>interju-doc</code> skill a sablon.</li>
+      <li><strong>KÖTELEZŐ:</strong> kódblokkban escape-eld a <code>&lt;</code>/<code>&gt;</code>/<code>&amp;</code> karaktereket (sok JSX/arrow van).</li>
+      <li><strong>Verzió-érzékeny:</strong> a React-szakaszok (7–12) a React 18/19 állapotot tükrözik — ellenőrizendő: React Compiler státusza (a kézi memo/useCallback szükségességét csökkentheti), concurrent API-k; a CSS-nél az <code>align-content</code> block-layout support (Baseline 2024). A JS-alapok és a kódfeladatok időtállók.</li>
+      <li><strong>Kereszthivatkozások:</strong> <code>09_tesco_hungary.html</code> (var+setTimeout, objektum-flatten), <code>11_komplexitas.html</code>, <code>12_adatszerkezetek.html</code> — átnevezésnél frissítendők.</li>
+    </ul>
+  </footer>
+
+</div>
+</body>
+</html>

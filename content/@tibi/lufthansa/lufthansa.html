@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lufthansa – JavaScript interjú kérdések</title>
+  <style>
+    :root{
+      --bg:#f4f6fb; --card:#ffffff; --ink:#1c2233; --muted:#5d6678; --line:#e4e8f0;
+      --brand:#3a5bd9; --brand-soft:#eaeefc; --brand-ink:#2f48ac;
+      --ok:#1f9d57; --ok-soft:#e6f6ec; --ok-line:#bce6cb; --ok-ink:#15703f;
+      --warn:#b9821a; --warn-soft:#fbf2dd; --warn-line:#ecd9a8; --warn-ink:#8a6112;
+      --code-bg:#1e2433; --code-ink:#e8ecf6;
+      --mono:"SF Mono",ui-monospace,SFMono-Regular,Menlo,'Fira Code','Cascadia Code',Consolas,monospace;
+      --shadow:0 1px 2px rgba(20,30,60,.05),0 8px 24px rgba(20,30,60,.07);
+    }
+    *{box-sizing:border-box}
+    html{-webkit-text-size-adjust:100%}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6;padding:32px 16px 80px;}
+    .wrap{max-width:900px;margin:0 auto}
+
+    /* Hero */
+    header.hero{background:linear-gradient(135deg,#3a5bd9,#5a78ec);color:#fff;border-radius:18px;padding:34px 34px 30px;box-shadow:var(--shadow);margin-bottom:24px;}
+    header.hero .kicker{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:700;opacity:.85;margin:0 0 8px;}
+    header.hero h1{margin:0 0 6px;font-size:28px;line-height:1.2;border:none;padding:0;color:#fff;}
+    header.hero p{margin:0;opacity:.94;font-size:15px;max-width:66ch;}
+
+    /* Table of contents */
+    .toc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:24px;box-shadow:var(--shadow);}
+    .toc-title{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;margin:0 0 14px;}
+    .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;}
+    .toc-grid a{display:flex;gap:8px;align-items:baseline;text-decoration:none;color:var(--ink);font-size:13.5px;padding:8px 11px;border-radius:8px;border:1px solid var(--line);background:#fbfcfe;transition:background .15s,border-color .15s;}
+    .toc-grid a:hover{background:var(--brand-soft);border-color:#c9d4f7;}
+    .toc-grid a .tnum{color:var(--brand);font-weight:800;flex:0 0 auto;min-width:1.4em;}
+
+    /* Question cards */
+    .section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 26px;margin-bottom:20px;box-shadow:var(--shadow);border-left:6px solid var(--brand);scroll-margin-top:16px;}
+
+    h1{color:var(--ink);}
+    h2{font-size:18px;font-weight:800;margin:0 0 10px;color:var(--ink);border:none;padding:0;}
+    h3{font-size:12.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:20px 0 8px;}
+
+    /* Topic tags */
+    .tag{display:inline-block;background:var(--brand-soft);color:var(--brand);padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;margin:0 6px 14px 0;}
+
+    p{margin:0 0 12px;font-size:15px;}
+    ul,ol{margin:0 0 14px;padding-left:22px;}
+    li{margin:4px 0;font-size:14.5px;}
+
+    /* Code */
+    code{font-family:var(--mono);font-size:.92em;}
+    :not(pre) > code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;}
+    .ic{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);font-size:.9em;}
+    pre{background:var(--code-bg);border:none;border-radius:10px;padding:14px 16px;overflow-x:auto;margin:14px 0;}
+    pre code{background:none;color:var(--code-ink);padding:0;font-size:13px;line-height:1.55;}
+
+    /* Quiz options */
+    .options{list-style:none;margin:0 0 16px;padding:0;}
+    .options li{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:9px;border:1px solid var(--line);margin-bottom:6px;font-size:14.5px;background:#fbfcfe;font-family:var(--mono);}
+    .options li .letter{flex:0 0 auto;width:26px;height:26px;border-radius:7px;border:2px solid #c8cee0;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--muted);background:#fff;font-family:inherit;}
+    .options li.correct{background:var(--ok-soft);border-color:var(--ok-line);}
+    .options li.correct .letter{background:var(--ok);border-color:var(--ok);color:#fff;}
+    .options li.trap{background:var(--warn-soft);border-color:var(--warn-line);border-style:dashed;}
+    .options li.trap .letter{border-color:var(--warn);color:var(--warn);}
+    .options li.wrong{opacity:.7;}
+
+    /* Callout boxes */
+    .answer-box,.trap-box,.note{border-radius:11px;padding:14px 16px;margin:14px 0;font-size:14px;border:1px solid;}
+    .answer-box{background:var(--ok-soft);border-color:var(--ok-line);}
+    .answer-box strong{color:var(--ok-ink);}
+    .trap-box{background:var(--warn-soft);border-color:var(--warn-line);}
+    .trap-box strong{color:var(--warn-ink);}
+    .note{background:var(--brand-soft);border-color:#d3dbf7;}
+    .note strong{color:var(--brand-ink);}
+    .answer-box ul,.trap-box ul,.note ul{margin:8px 0 0;}
+    .answer-box pre,.trap-box pre,.note pre{margin:10px 0 0;}
+
+    footer{color:var(--muted);font-size:12.5px;margin-top:36px;line-height:1.7;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);}
+    footer strong{color:var(--ink);}
+    footer code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);}
+    a{color:var(--brand);}
+
+    @media(max-width:560px){
+      body{padding:20px 10px 60px}
+      header.hero{padding:24px 20px}
+      .section{padding:18px 16px}
+      .toc-grid{grid-template-columns:1fr}
+      .options li{flex-wrap:wrap}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="kicker">Lufthansa · JavaScript &amp; TypeScript interjú</p>
+    <h1>JavaScript &amp; TypeScript interjú kérdések</h1>
+    <p>Online teszt megoldókulcs (a 24 kérdésből 16 rögzítve). Minden kérdésnél: helyes válasz, részletes magyarázat és a becsapós opciók elemzése.</p>
+  </header>
+
+  <nav class="toc">
+    <p class="toc-title">Kérdések (16)</p>
+    <div class="toc-grid">
+      <a href="#q1"><span class="tnum">1</span> == loose equality / coercion</a>
+      <a href="#q2"><span class="tnum">2</span> Nem valós string metódus</a>
+      <a href="#q3"><span class="tnum">3</span> String + Number összeadás</a>
+      <a href="#q4"><span class="tnum">4</span> Template literal szintaxis</a>
+      <a href="#q5"><span class="tnum">5</span> Nem valós operátor</a>
+      <a href="#q6"><span class="tnum">6</span> const tömb módosítása</a>
+      <a href="#q7"><span class="tnum">7</span> Array method chaining</a>
+      <a href="#q8"><span class="tnum">8</span> Promise .catch() helye</a>
+      <a href="#q9"><span class="tnum">9</span> Module bundler</a>
+      <a href="#q10"><span class="tnum">10</span> Érvényes TS típusok</a>
+      <a href="#q11"><span class="tnum">11</span> TS union type</a>
+      <a href="#q12"><span class="tnum">12</span> TS generic class</a>
+      <a href="#q13"><span class="tnum">13</span> TS structural typing</a>
+      <a href="#q14"><span class="tnum">14</span> Interface extends class</a>
+      <a href="#q15"><span class="tnum">15</span> TS array union type</a>
+      <a href="#q16"><span class="tnum">16</span> Point3D: extend &amp; intersection</a>
+    </div>
+  </nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Q1 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q1">
+<h2>1. kérdés – == (loose equality) típuskoerció</h2>
+<span class="tag">JavaScript</span> <span class="tag">Type coercion</span>
+
+<h3>Kérdés</h3>
+<p>Choose the correct answer with the result of <code>C</code> in JavaScript:</p>
+<pre><code>A = 10;
+B = '10';
+C = (A == B);</code></pre>
+
+<ul class="options">
+  <li class="wrong"><span class="letter">A</span> false</li>
+  <li class="correct"><span class="letter">B</span> true</li>
+  <li class="wrong"><span class="letter">C</span> 1</li>
+</ul>
+
+<div class="answer-box">
+  <strong>Helyes válasz: B) true</strong>
+</div>
+
+<h3>Magyarázat</h3>
+<p>A <span class="ic">==</span> operátor (loose equality / abstract equality) <strong>típuskonverziót végez</strong> az összehasonlítás előtt. Mivel az <span class="ic">A</span> egy szám (<code>10</code>) és a <span class="ic">B</span> egy string (<code>'10'</code>), a JavaScript a string-et számmá konvertálja: <code>Number('10')</code> → <code>10</code>. Ezután <code>10 == 10</code> → <code>true</code>.</p>
+
+<pre><code>// A háttérben ez történik:
+10 == '10'
+10 == Number('10')
+10 == 10
+// → true
+
+// Ha === (strict equality) lenne:
+10 === '10'  // → false (nincs típuskonverzió, szám !== string)</code></pre>
+
+<div class="trap-box">
+  <strong>Becsapós opciók:</strong>
+  <ul>
+    <li><strong>A) false</strong> – Erre gondolnál, ha összekevered a <span class="ic">==</span>-t a <span class="ic">===</span>-vel. A <code>===</code> (strict equality) tényleg <code>false</code>-t adna, mert nem végez típuskonverziót. De a kérdésben <code>==</code> van!</li>
+    <li><strong>C) 1</strong> – Egyes nyelvekben (pl. C, PHP régi verziók) a boolean összehasonlítás eredménye <code>1</code> vagy <code>0</code> szám. A JavaScriptben az <code>==</code> eredménye mindig <strong>boolean</strong> (<code>true</code>/<code>false</code>), nem szám. Bár <code>Number(true) === 1</code>, maga az eredmény <code>true</code>, nem <code>1</code>.</li>
+  </ul>
+</div>
+
+<div class="note">
+  <strong>Ökölszabály:</strong> Mindig használj <code>===</code>-t (strict equality), hacsak nincs nagyon jó okod a <code>==</code>-re. Az ESLint <code>eqeqeq</code> szabály pont ezt kényszeríti ki.
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Q2 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q2">
+<h2>2. kérdés – Melyik NEM valós string metódus?</h2>
+<span class="tag">JavaScript</span> <span class="tag">String methods</span>
+
+<h3>Kérdés</h3>
+<p>Which of the following is <em>not</em> a valid string method in JavaScript?</p>
+
+<ul class="options">
+  <li class="wrong"><span class="letter">A</span> .padStart()</li>
+  <li class="trap"><span class="letter">B</span> .padLeft()</li>
+  <li class="wrong"><span class="letter">C</span> .trim()</li>
+  <li class="wrong"><span class="letter">D</span> .substr()</li>
+  <li class="wrong"><span class="letter">E</span> .localeCompare()</li>
+  <li class="wrong"><span class="letter">F</span> .includes()</li>
+  <li class="correct"><span class="letter">G</span> .str()</li>
+</ul>
+
+<div class="answer-box">
+  <strong>Helyes válasz: G) .str()</strong> – és valószínűleg <strong>B) .padLeft()</strong> is helyes válasz (mindkettő nem létezik).
+</div>
+
+<h3>Magyarázat</h3>
+<p>A <span class="ic">.str()</span> egyszerűen <strong>nem létezik</strong> a JavaScript String prototípusán. Ez a legnyilvánvalóbban hamis opció. A <span class="ic">.padLeft()</span> szintén <strong>nem létezik</strong> – a helyes metódus neve <span class="ic">.padStart()</span>. Ha a kérdés csak egy választ enged, a <code>.str()</code> a legbiztosabb, mert az teljesen kitalált név. A <code>.padLeft()</code> egy gyakori tévedés – más nyelvekben (pl. Python, C#) létezik ilyen, de JS-ben nem.</p>
+
+<pre><code>// Valós string metódusok:
+"hello".padStart(10, ".")    // ".....hello"  – ES2017 (ES8)
+"hello".padEnd(10, ".")      // "hello....."
+"  hello  ".trim()           // "hello"
+"hello".substr(1, 3)         // "ell" (⚠️ deprecated – .substring() ajánlott)
+"a".localeCompare("b")       // -1 (nyelvi összehasonlítás)
+"hello".includes("ell")      // true – ES2015 (ES6)
+
+// NEM létezők:
+"hello".padLeft(10)          // ❌ TypeError – nincs .padLeft()
+"hello".str()                // ❌ TypeError – nincs .str()</code></pre>
+
+<div class="trap-box">
+  <strong>Becsapós opciók:</strong>
+  <ul>
+    <li><strong>B) .padLeft()</strong> – Ez a legrafináltabb csapda! Más nyelvekben létezik (<code>PadLeft</code> C#-ban), és logikus lenne a neve, de JS-ben <code>.padStart()</code> / <code>.padEnd()</code> a helyes (nem left/right). Ha rohanásban vagy, könnyen valósnak nézheted.</li>
+    <li><strong>D) .substr()</strong> – Sokan gondolják, hogy ez már nem valid, mert <strong>deprecated</strong> (elavult). De deprecated ≠ nem létezik! A <code>.substr()</code> még mindig működik minden böngészőben, csak nem ajánlott. A helyes alternatíva: <code>.substring()</code> vagy <code>.slice()</code>.</li>
+  </ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Q3 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q3">
+<h2>3. kérdés – String + Number összeadás</h2>
+<span class="tag">JavaScript</span> <span class="tag">Type coercion</span>
+
+<h3>Kérdés</h3>
+<p>Please choose the correct answer with the result of the following calculation:</p>
+<pre><code>var a = "10";
+var b = 0.11;
+// What is the output of a+b?</code></pre>
+
+<ul class="options">
+  <li class="wrong"><span class="letter">A</span> 10.11</li>
+  <li class="correct"><span class="letter">B</span> 100.11</li>
+  <li class="wrong"><span class="letter">C</span> Error</li>
+</ul>
+
+<div class="answer-box">
+  <strong>Helyes válasz: B) 100.11</strong> — pontosabban a <code>"100.11"</code> <strong>string</strong>. A <code>+</code> operátor string operandus mellett összefűz (konkatenál), nem összead: <code>"10" + 0.11</code> → <code>"10" + "0.11"</code> → <code>"100.11"</code>.
+</div>
+
+<h3>Magyarázat – pontosan mi történik?</h3>
+<p>Az <span class="ic">a</span> egy <strong>string</strong> (<code>"10"</code>), a <span class="ic">b</span> egy <strong>szám</strong> (<code>0.11</code>). Amikor a <code>+</code> operátor egyik oldalán string van, a JavaScript <strong>string konkatenációt</strong> végez (nem numerikus összeadást). Tehát a <code>b</code> számot string-gé konvertálja, és összefűzi:</p>
+
+<pre><code>var a = "10";   // string
+var b = 0.11;   // number
+
+a + b
+// 1. a + operátor: az egyik oldal string → konkatenáció
+// 2. b-t string-gé konvertálja: String(0.11) → "0.11"
+// 3. "10" + "0.11" → "100.11"
+
+console.log(a + b);        // "100.11" (string!)
+console.log(typeof (a + b)); // "string"
+
+// Ha NUMERIKUS összeadást akarnál:
+console.log(Number(a) + b);  // 10.11 (number)
+console.log(+a + b);         // 10.11 (unary + konvertál számmá)
+console.log(parseInt(a) + b); // 10.11</code></pre>
+
+<div class="trap-box">
+  <strong>Becsapós opciók:</strong>
+  <ul>
+    <li><strong>A) 10.11</strong> – Erre gondolnál, ha nem veszed észre, hogy az <code>a</code> string, és "normális" matematikai összeadást várnál. De a <code>+</code> operátor string mellett MINDIG konkatenál. Az eredmény <code>"100.11"</code>, nem <code>10.11</code>. (Megjegyzés: ha a kérdés készítői <code>"100.11"</code>-et akartak írni, akkor ez a helyes; ha szám <code>10.11</code>-et, akkor a kérdés félrevezető.)</li>
+    <li><strong>B) 100.11</strong> – Ez valójában a <strong>helyes kimenet</strong> szövegesen! A <code>"10" + "0.11"</code> = <code>"100.11"</code>. Ha a válaszok string-ként értendők, ez a jó válasz.</li>
+    <li><strong>C) Error</strong> – JavaScript <strong>soha nem dob hibát</strong> string + szám összeadásnál. Más nyelvek (pl. Java strict, Python) hibát dobnának, de a JS csendben konvertál. Ez a "biztos rossz" opció.</li>
+  </ul>
+</div>
+
+<div class="note">
+  <strong>Fontos:</strong> A kérdés válaszlehetőségei alapján a <strong>B) 100.11</strong> a tényleges helyes kimenet (string konkatenáció: <code>"10" + "0.11"</code> = <code>"100.11"</code>). A teszt valószínűleg erre teszteli, hogy észreveszed-e: a <code>+</code> string mellett nem összeadás, hanem összefűzés.
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Q4 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q4">
+<h2>4. kérdés – Template literal szintaxis</h2>
+<span class="tag">ES6</span> <span class="tag">Template literals</span>
+
+<h3>Kérdés</h3>
+<p>Which expression evaluates to <code>Hello, ES6!</code>, if <code>x = "ES6"</code>?</p>
+
+<ul class="options">
+  <li class="wrong"><span class="letter">A</span> <code>`Hello, $x!`</code></li>
+  <li class="wrong"><span class="letter">B</span> <code>'''Hello, ${x}!'''</code></li>
+  <li class="wrong"><span class="letter">C</span> <code>'''Hello, $x!'''</code></li>
+  <li class="correct"><span class="letter">D</span> <code>`Hello, ${x}!`</code></li>
+  <li class="wrong"><span class="letter">E</span> <code>'''Hello, $(x)!'''</code></li>
+  <li class="wrong"><span class="letter">F</span> <code>`Hello, $(x)!`</code></li>
+</ul>
+
+<div class="answer-box">
+  <strong>Helyes válasz: D) <code>`Hello, ${x}!`</code></strong>
+</div>
+
+<h3>Magyarázat</h3>
+<p>Az ES6 <strong>template literal</strong> szintaxisához <strong>két dolog</strong> kell egyszerre:</p>
+<ol>
+  <li><strong>Backtick</strong> (<code>`</code>) – a string határolója (NEM aposztróf <code>'</code> és nem idézőjel <code>"</code>)</li>
+  <li><strong><code>${kifejezés}</code></strong> – a változó/kifejezés beágyazása dollárjellel és kapcsos zárójelben</li>
+</ol>
+
+<pre><code>const x = "ES6";
+
+// ✅ HELYES:
+`Hello, ${x}!`          // "Hello, ES6!"
+
+// ❌ ROSSZ – hiányzik a kapcsos zárójel:
+`Hello, $x!`            // "Hello, $x!"  (szó szerint "$x"-et ír ki)
+
+// ❌ ROSSZ – aposztróf nem template literal:
+'Hello, ${x}!'          // "Hello, ${x}!" (szó szerint, nincs interpoláció)
+'''Hello, ${x}!'''      // SyntaxError (JS-ben nincs triple-quote!)
+
+// ❌ ROSSZ – kerek zárójel nem jó:
+`Hello, $(x)!`          // "Hello, $(x)!" (szó szerint)</code></pre>
+
+<div class="trap-box">
+  <strong>Becsapós opciók:</strong>
+  <ul>
+    <li><strong>A) <code>`Hello, $x!`</code></strong> – A legveszélyesebb csapda! Backtick-et használ (jó), és dollárjelet (jó), de <strong>hiányzik a <code>{}</code></strong>. A <code>$x</code> szó szerint jelenik meg, nem a változó értéke. Rohanásban könnyen kihagyod a kapcsos zárójelet.</li>
+    <li><strong>B, C, E) <code>'''...'''</code></strong> – Pythonból ismert triple-quote szintaxis. JavaScriptben <strong>nem létezik</strong>! Három aposztróf egymás után SyntaxError.</li>
+    <li><strong>F) <code>`Hello, $(x)!`</code></strong> – Backtick-et használ (jó), de <strong>kerek zárójelet</strong> a kapcsos helyett. Bash/shell scriptben használatos a <code>$()</code> szintaxis, de JS-ben <code>${}</code> kell.</li>
+  </ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Q5 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q5">
+<h2>5. kérdés – Melyik NEM valós JavaScript operátor?</h2>
+<span class="tag">JavaScript</span> <span class="tag">Operátorok</span>
+
+<h3>Kérdés</h3>
+<p>Which of the following is <strong>NOT</strong> a valid JavaScript operator?</p>
+
+<ul class="options">
+  <li class="wrong"><span class="letter">A</span> <code>&&</code></li>
+  <li class="wrong"><span class="letter">B</span> <code>||</code></li>
+  <li class="wrong"><span class="letter">C</span> <code>**</code></li>
+  <li class="wrong"><span class="letter">D</span> <code>!!</code></li>
+  <li class="wrong"><span class="letter">E</span> <code>??</code></li>
+  <li class="correct"><span class="letter">F</span> <code>^^</code></li>
+</ul>
+
+<div class="answer-box">
+  <strong>Helyes válasz: F) <code>^^</code></strong> – ez NEM létezik JavaScriptben.
+</div>
+
+<h3>Magyarázat</h3>
+<p>Nézzük végig az összes opciót:</p>
+
+<pre><code>// A) && – logikai ÉS (logical AND) ✅ LÉTEZIK
+true && false   // false
+"hello" && 42   // 42 (short-circuit: ha az első truthy, a másodikat adja vissza)
+
+// B) || – logikai VAGY (logical OR) ✅ LÉTEZIK
+false || "fallback"  // "fallback"
+null || "default"    // "default"
+
+// C) ** – hatványozás (exponentiation) ✅ LÉTEZIK (ES2016 / ES7)
+2 ** 10    // 1024
+3 ** 2     // 9
+// Egyenértékű: Math.pow(2, 10)
+
+// D) !! – dupla negáció (boolean-ra konvertál) ✅ LÉTEZIK
+// Technikusan két ! operátor egymás után, nem egy önálló operátor
+!!"hello"  // true
+!!0        // false
+!!null     // false
+!!""       // false
+
+// E) ?? – nullish coalescing ✅ LÉTEZIK (ES2020)
+null ?? "default"      // "default"
+undefined ?? "default" // "default"
+0 ?? "default"         // 0 (⚠️ a 0 NEM nullish!)
+"" ?? "default"        // "" (⚠️ az üres string NEM nullish!)
+// Különbség a ||-tól: a ?? CSAK null/undefined-ra reagál
+
+// F) ^^ – NEM LÉTEZIK ❌
+// A ^ (egyetlen kalap) a BITWISE XOR operátor:
+5 ^ 3      // 6  (0101 XOR 0011 = 0110)
+// De a ^^ (dupla kalap) NEM operátor!
+// Logikai XOR-t kézzel kell: (a || b) && !(a && b)
+// Vagy: Boolean(a) !== Boolean(b)</code></pre>
+
+<div class="trap-box">
+  <strong>Becsapós opciók:</strong>
+  <ul>
+    <li><strong>C) <code>**</code></strong> – Sokan nem ismerik, mert viszonylag új (ES2016). Hajlamosak azt gondolni, hogy csak <code>Math.pow()</code> létezik. De a <code>**</code> teljesen valós operátor.</li>
+    <li><strong>D) <code>!!</code></strong> – Trükkös, mert <strong>technikusan nem egy operátor</strong>, hanem a <code>!</code> operátor kétszeri alkalmazása. Mégis, a <code>!!</code> mint kifejezés tökéletesen valid JS szintaxis, és széles körben használt boolean konverzióra.</li>
+    <li><strong>E) <code>??</code></strong> – Viszonylag új (ES2020), sokan nem ismerik. Könnyen gondolhatod, hogy kitalált, de létező és nagyon hasznos operátor (nullish coalescing).</li>
+    <li><strong>F) <code>^^</code></strong> – A csapda az, hogy a <code>&&</code> és <code>||</code> mintájára logikus lenne egy <code>^^</code> (logikai XOR). De a JS-ben <strong>nincs logikai XOR operátor</strong> – csak a bitwise <code>^</code> létezik.</li>
+  </ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Q6 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q6">
+<h2>6. kérdés – const tömb módosítása</h2>
+<span class="tag">ES6</span> <span class="tag">const</span> <span class="tag">Referencia vs érték</span>
+
+<h3>Kérdés</h3>
+<p>Which expression(s) does <em>NOT</em> throw an error, if <code>const foo = [123, 456]</code> in JavaScript?</p>
+
+<ul class="options">
+  <li class="correct"><span class="letter">A</span> <code>foo.push(789)</code></li>
+  <li class="correct"><span class="letter">B</span> <code>foo[1] = 789</code></li>
+  <li class="wrong"><span class="letter">C</span> <code>foo = 789</code></li>
+  <li class="correct"><span class="letter">D</span> <code>let bar = foo</code></li>
+</ul>
+
+<div class="answer-box">
+  <strong>Helyes válasz: A), B) és D) – ezek NEM dobnak hibát.</strong><br>
+  Csak <strong>C)</strong> dob hibát (<code>TypeError: Assignment to constant variable</code>).
+</div>
+
+<h3>Magyarázat</h3>
+<p>A <span class="ic">const</span> nem azt jelenti, hogy az érték "fagyasztott" (immutable) – csak azt, hogy a <strong>változó referenciája</strong> nem írható felül. A tömb (és objektum) <strong>belső tartalma szabadon módosítható</strong>, mert a referencia (a memóriacím) nem változik – csak az, amire mutat.</p>
+
+<pre><code>const foo = [123, 456];
+
+// A) foo.push(789) ✅ NEM dob hibát
+foo.push(789);
+console.log(foo); // [123, 456, 789]
+// A tömb TARTALMA változott, de a referencia (memóriacím) ugyanaz maradt
+
+// B) foo[1] = 789 ✅ NEM dob hibát
+foo[1] = 789;
+console.log(foo); // [123, 789]
+// Egy meglévő elem felülírása – a referencia nem változik
+
+// C) foo = 789 ❌ TypeError!
+foo = 789;
+// TypeError: Assignment to constant variable
+// A const referenciáját próbáljuk felülírni → TILOS
+
+// Ezek is hibát dobnának:
+foo = [1, 2, 3];   // ❌ – új tömb referencia
+foo = [];           // ❌ – új üres tömb referencia
+
+// D) let bar = foo ✅ NEM dob hibát
+let bar = foo;
+// Ez nem módosítja a foo-t! Egy ÚJ változó (bar) kap referenciát
+// ugyanarra a tömbre. A const foo érintetlen marad.
+console.log(bar === foo); // true – ugyanarra a tömbre mutat!</code></pre>
+
+<div class="trap-box">
+  <strong>Becsapós opciók:</strong>
+  <ul>
+    <li><strong>A) <code>foo.push(789)</code></strong> – Sokan gondolják, hogy <code>const</code> = "semmit sem lehet módosítani". De a <code>const</code> csak a <strong>referenciát</strong> (binding-ot) védi, nem a tartalmat. A <code>.push()</code> a tömb tartalmát módosítja, nem a referenciát → működik.</li>
+    <li><strong>B) <code>foo[1] = 789</code></strong> – Ugyanaz a félreértés: a tömbelem felülírása a tartalom módosítása, nem a referenciáé → működik.</li>
+    <li><strong>D) <code>let bar = foo</code></strong> – Ez nem is módosítja a <code>foo</code>-t semmilyen módon – egyszerűen egy új változó kap értéket. Nincs köze a <code>const</code> korlátozáshoz.</li>
+  </ul>
+</div>
+
+<div class="note">
+  <strong>Ha valóban immutable tömböt akarsz:</strong>
+<pre><code>const foo = Object.freeze([123, 456]);
+foo.push(789);   // ❌ TypeError (strict mode-ban)
+foo[0] = 999;    // ❌ TypeError (strict mode-ban)
+// De ez is shallow freeze – beágyazott objektumokra nem hat!</code></pre>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Q7 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q7">
+<h2>7. kérdés – Array method chaining (from, reverse, fill, map, filter, reduce)</h2>
+<span class="tag">JavaScript</span> <span class="tag">ES6</span> <span class="tag">Array methods</span>
+
+<h3>Kérdés</h3>
+<p>What should be put in the places of <code>__A__</code>, <code>__B__</code>, and <code>__C__</code> to obtain <strong>42</strong> as a result of the following computation in JavaScript?</p>
+<pre><code>Array
+  .from({__A__: 6}, (value, index) => index)
+  .reverse()
+  .fill(1, 2, 3)
+  .map(value => value - 1)
+  .filter(value => __B__)
+  .reduce((sum, value) => sum + value, __C__);</code></pre>
+
+<ul class="options">
+  <li class="wrong"><span class="letter">A</span> A: size, B: value &lt; 3, C: 34</li>
+  <li class="wrong"><span class="letter">B</span> A: length, B: value &lt; 3, C: 34</li>
+  <li class="trap"><span class="letter">C</span> A: size, B: value &gt; 0, C: 42</li>
+  <li class="correct"><span class="letter">D</span> A: size, B: value &lt; 3, C: 42</li>
+</ul>
+
+<div class="answer-box">
+  <strong>Szándékolt helyes válasz: D) A: size, B: value &lt; 3, C: 42</strong> — de figyelem: mivel <code>size</code> esetén a tömb üres, a <code>filter</code> sosem fut le, így a <strong>C opció is 42-t ad</strong>. A kérdés emiatt kétértelmű (lásd lent).
+</div>
+
+<h3>Magyarázat</h3>
+<p>A kulcs: <span class="ic">Array.from()</span> a <strong><code>length</code></strong> property-t olvassa, NEM a <code>size</code>-t! Tehát <code>{size: 6}</code> egy üres tömböt eredményez (<code>length</code> = <code>undefined</code> → <code>0</code>).</p>
+
+<pre><code>// Ha A = "size":
+Array.from({size: 6}, (v, i) => i)
+// → [] (üres tömb, mert nincs .length property)
+
+// Üres tömbön a chain:
+[].reverse()          // → []
+[].fill(1, 2, 3)      // → []
+[].map(v => v - 1)    // → []
+[].filter(v => v < 3) // → []
+[].reduce((sum, v) => sum + v, 42) // → 42 (initial value visszaadása)
+
+// Eredmény: 42 ✅</code></pre>
+
+<p>Ha <strong>A = "length"</strong> lenne (opció B), a lánc így működne:</p>
+
+<pre><code>// Ha A = "length":
+Array.from({length: 6}, (v, i) => i) // → [0, 1, 2, 3, 4, 5]
+  .reverse()                         // → [5, 4, 3, 2, 1, 0]
+  .fill(1, 2, 3)                     // → [5, 4, 1, 2, 1, 0]  (index 2-t kitölti 1-gyel)
+  .map(v => v - 1)                   // → [4, 3, 0, 1, 0, -1]
+  .filter(v => v < 3)                // → [0, 1, 0, -1]
+  .reduce((sum, v) => sum + v, 34)   // → 34 + 0 + 1 + 0 + (-1) = 34
+
+// Eredmény: 34 (nem 42!) → ezért opció B nem jó</code></pre>
+
+<div class="trap-box">
+  <strong>Trükk kérdés — és egy fontos pontosítás!</strong>
+  <ul>
+    <li><strong>A opció</strong> (size, value &lt; 3, <strong>34</strong>): üres tömb → a <code>reduce</code> a kezdőértéket adja vissza → <strong>34</strong>.</li>
+    <li><strong>B opció</strong> (length, value &lt; 3, 34): ez a "valódi" lánc, de az eredmény <strong>34</strong> (lásd fent), nem 42.</li>
+    <li><strong>C és D opció</strong> egyaránt <code>size</code>-t és <code>42</code> kezdőértéket használ. Mivel a tömb üres, a <code>filter</code> predikátuma (<code>value &gt; 0</code> vs. <code>value &lt; 3</code>) <strong>sosem fut le</strong> — így <strong>mindkettő 42-t ad</strong>! Szigorúan véve tehát C és D is helyes kimenetet produkál; a teszt szándékolt megoldása a D, de a kérdés kétértelmű.</li>
+    <li><strong>Tanulság:</strong> az <code>Array.from()</code> a <code>length</code> property-t olvassa, nem a <code>size</code>-t. A <code>Map</code>/<code>Set</code> használ <code>size</code>-t, az <code>Array.from()</code> nem!</li>
+  </ul>
+</div>
+
+<div class="note">
+  <strong>Array.fill() emlékeztető:</strong> <code>.fill(value, start, end)</code> — kitölti az indexeket <code>start</code>-tól (inkluzív) <code>end</code>-ig (exkluzív). <code>.fill(1, 2, 3)</code> → csak index 2 kap 1-es értéket.
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Q8 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q8">
+<h2>8. kérdés – Promise chaining: .catch() elhelyezése</h2>
+<span class="tag">JavaScript</span> <span class="tag">Promises</span> <span class="tag">Error handling</span>
+
+<h3>Kérdés</h3>
+<p>The code below is supposed to:</p>
+<ul>
+  <li>Render user profile, if <code>fetchUserProfile()</code> succeeded</li>
+  <li>Render error message for any error thrown during <code>fetchUserProfile()</code></li>
+  <li>Ignore any error thrown during <code>trackActivity("fetch_profile")</code></li>
+</ul>
+<p>To meet this criteria, in which line should <code>.catch(() => {})</code> be placed?</p>
+<pre><code>fetchUserProfile() // &lt;-- returns Promise
+  .then(profile =>
+    trackActivity("fetch_profile") // &lt;-- returns Promise
+      // Line A
+      .then(() => profile)
+      // Line B
+  )
+  // Line C
+  .then(profile => renderProfile(profile))
+  // Line D
+  .catch(error => renderErrorMessage(error))</code></pre>
+
+<ul class="options">
+  <li class="correct"><span class="letter">A</span> Line A</li>
+  <li class="wrong"><span class="letter">B</span> Line B</li>
+  <li class="wrong"><span class="letter">C</span> Line C</li>
+  <li class="wrong"><span class="letter">D</span> Line D</li>
+</ul>
+
+<div class="answer-box">
+  <strong>Helyes válasz: A) Line A</strong>
+</div>
+
+<h3>Magyarázat</h3>
+<p>A <code>.catch(() => {})</code>-t a <strong>Line A</strong>-ba kell helyezni — közvetlenül a <code>trackActivity()</code> UTÁN, de a <code>.then(() => profile)</code> ELŐTT.</p>
+
+<pre><code>fetchUserProfile()
+  .then(profile =>
+    trackActivity("fetch_profile")
+      .catch(() => {})       // ← Line A: trackActivity hibáit elnyeljük
+      .then(() => profile)   // majd visszaadjuk a profile-t
+  )
+  .then(profile => renderProfile(profile))
+  .catch(error => renderErrorMessage(error))  // fetchUserProfile hibáit elkapjuk</code></pre>
+
+<h3>Miért működik?</h3>
+<pre><code>// 1. Ha fetchUserProfile() SIKERES + trackActivity() SIKERES:
+//    profile → trackActivity → .catch (skip) → profile → renderProfile ✅
+
+// 2. Ha fetchUserProfile() SIKERES + trackActivity() HIBÁT DOB:
+//    profile → trackActivity → .catch(() => {}) elnyelődik → profile → renderProfile ✅
+
+// 3. Ha fetchUserProfile() HIBÁT DOB:
+//    .then(profile => ...) KIHAGYVA → .catch(error => renderErrorMessage) ✅</code></pre>
+
+<div class="trap-box">
+  <strong>Miért nem a többi sor?</strong>
+  <ul>
+    <li><strong>Line B</strong> (a <code>.then(() => profile)</code> után): Túl késő — ha trackActivity hibázik, a <code>.then(() => profile)</code> már nem futna le, és a hiba feljebb buborékolna.</li>
+    <li><strong>Line C</strong> (a külső <code>.then</code> előtt): Ez a fetchUserProfile hibáit is elnyelné — a belső .then egész eredményét catch-elné, ami nem jó.</li>
+    <li><strong>Line D</strong> (az utolsó <code>.catch</code> előtt): Ez az összes hibát elnyelné (fetchUserProfile + trackActivity), tehát a renderErrorMessage soha nem hívódna meg.</li>
+  </ul>
+</div>
+
+<div class="note">
+  <strong>Promise chain szabály:</strong> A <code>.catch()</code> mindig az <strong>előtte lévő láncszemet</strong> kapja el. Ha szűk scope-ban akarsz hibát kezelni, a catch-et közvetlenül az adott Promise után kell elhelyezni, mielőtt a lánc tovább folytatódna.
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Q9 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q9">
+<h2>9. kérdés – Melyik a module bundler?</h2>
+<span class="tag">Tooling</span> <span class="tag">JavaScript</span> <span class="tag">Web Development</span>
+
+<h3>Kérdés</h3>
+<p>Which of the following is considered a module <em>bundler</em> in JavaScript?</p>
+
+<ul class="options">
+  <li class="wrong"><span class="letter">A</span> SystemJS</li>
+  <li class="correct"><span class="letter">B</span> Webpack</li>
+  <li class="wrong"><span class="letter">C</span> CommonJS</li>
+  <li class="wrong"><span class="letter">D</span> RequireJS</li>
+</ul>
+
+<div class="answer-box">
+  <strong>Helyes válasz: B) Webpack</strong>
+</div>
+
+<h3>Magyarázat</h3>
+<p>A <strong>Webpack</strong> az egyetlen igazi <strong>module bundler</strong> a listában. A bundler az összes modult (JS, CSS, képek) egyetlen vagy néhány fájlba csomagolja a böngésző számára.</p>
+
+<pre><code>// Module bundlerek: összepakolják a fájlokat
+Webpack       – a legelterjedtebb bundler (code splitting, tree shaking, loaderek)
+Rollup        – ES Module-fókuszú bundler (library-khez ideális)
+Parcel        – zero-config bundler
+esbuild       – Go-ban írt, ultra gyors bundler
+Vite          – dev serverrel kombinált bundler (esbuild + Rollup)
+
+// Module LOADEREK: futásidőben töltik be a modulokat (NEM bundlerek!)
+SystemJS      – univerzális module loader (AMD, CommonJS, ES Modules)
+RequireJS     – AMD (Asynchronous Module Definition) loader
+
+// Module SPECIFIKÁCIÓK: szabványok/formátumok (NEM eszközök!)
+CommonJS      – Node.js modul rendszer (require / module.exports)
+AMD           – Asynchronous Module Definition (define / require)
+ES Modules    – natív JS modul rendszer (import / export)</code></pre>
+
+<div class="trap-box">
+  <strong>Becsapós opciók:</strong>
+  <ul>
+    <li><strong>SystemJS</strong> – Module <em>loader</em>, nem bundler. Futásidőben tölti be a modulokat a böngészőben.</li>
+    <li><strong>CommonJS</strong> – Module <em>specifikáció</em> (nem eszköz!). A Node.js <code>require()</code> / <code>module.exports</code> szintaxis.</li>
+    <li><strong>RequireJS</strong> – AMD module <em>loader</em>. Aszinkron modul betöltés a böngészőben.</li>
+  </ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Q10 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q10">
+<h2>10. kérdés – Érvényes TypeScript változótípusok</h2>
+<span class="tag">TypeScript</span> <span class="tag">Types</span>
+
+<h3>Kérdés</h3>
+<p>Which of the following are valid TypeScript variable types?</p>
+
+<ul class="options">
+  <li class="correct"><span class="letter">A</span> Array&lt;number&gt;</li>
+  <li class="correct"><span class="letter">B</span> number[]</li>
+  <li class="wrong"><span class="letter">C</span> Object&lt;number&gt;</li>
+  <li class="wrong"><span class="letter">D</span> number{}</li>
+  <li class="wrong"><span class="letter">E</span> char</li>
+  <li class="correct"><span class="letter">F</span> [string, number]</li>
+  <li class="correct"><span class="letter">G</span> any</li>
+  <li class="correct"><span class="letter">H</span> (foo: number) =&gt; string</li>
+</ul>
+
+<div class="answer-box">
+  <strong>Helyes válaszok: A, B, F, G, H</strong>
+</div>
+
+<h3>Magyarázat</h3>
+<pre><code>// ✅ ÉRVÉNYES TypeScript típusok:
+
+let a: Array&lt;number&gt;;          // A) Generic array szintaxis
+let b: number[];               // B) Shorthand array szintaxis (ugyanaz mint A)
+let f: [string, number];       // F) Tuple típus (fix hossz, fix típusok)
+let g: any;                    // G) Any típus (bármi lehet)
+let h: (foo: number) => string;// H) Függvény típus (number → string)
+
+// ❌ NEM érvényes:
+
+let c: Object&lt;number&gt;;         // C) ❌ Object nem generikus a TS-ben!
+                               //    Helyes: Record&lt;string, number&gt; vagy { [key: string]: number }
+let d: number{};               // D) ❌ Szintaktikai hiba, nem létező szintaxis
+let e: char;                   // E) ❌ Nincs char típus a TS-ben!
+                               //    Használd: string (TypeScript nem különböztet char/string között)</code></pre>
+
+<div class="note">
+  <strong>Emlékeztető – TS típus szintaxisok:</strong>
+  <ul>
+    <li><code>number[]</code> és <code>Array&lt;number&gt;</code> — ugyanaz, tömb</li>
+    <li><code>[string, number]</code> — tuple (fix szerkezetű tömb)</li>
+    <li><code>(x: number) =&gt; string</code> — függvény típus</li>
+    <li><code>Record&lt;string, number&gt;</code> — objektum típus (kulcs→érték mapping)</li>
+    <li><code>any</code>, <code>unknown</code>, <code>never</code>, <code>void</code> — speciális TS típusok</li>
+  </ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Q11 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q11">
+<h2>11. kérdés – TypeScript union type deklaráció</h2>
+<span class="tag">TypeScript</span> <span class="tag">Union types</span>
+
+<h3>Kérdés</h3>
+<p>Which of the following statements will declare a variable <code>code</code> that can hold either a <code>number</code> or a <code>string</code>?</p>
+
+<ul class="options">
+  <li class="trap"><span class="letter">A</span> let code: any;</li>
+  <li class="correct"><span class="letter">B</span> let code: number | string;</li>
+  <li class="wrong"><span class="letter">C</span> let code: number or string;</li>
+  <li class="correct"><span class="letter">D</span> let code: string | number;</li>
+  <li class="wrong"><span class="letter">E</span> let code: string or number;</li>
+  <li class="wrong"><span class="letter">F</span> This is not possible in TypeScript.</li>
+</ul>
+
+<div class="answer-box">
+  <strong>Helyes válaszok: B, D</strong>
+</div>
+
+<h3>Magyarázat</h3>
+<p>A TypeScript <strong>union type</strong> szintaxisa a <code>|</code> (pipe) karakter. A sorrend nem számít: <code>number | string</code> és <code>string | number</code> ugyanaz.</p>
+
+<pre><code>// ✅ Helyes union type:
+let code: number | string;    // B) ✅
+let code: string | number;    // D) ✅ (sorrend nem számít)
+
+// ❌ Nem helyes:
+let code: number or string;   // C) ❌ "or" nem TS szintaxis!
+let code: string or number;   // E) ❌ ugyanaz a hiba
+
+// ⚠️ Technikailag működik, de NEM helyes válasz:
+let code: any;                // A) ⚠️ Elfogad number-t és string-et is,
+                              //    DE bármit elfogad (object, boolean, stb.)
+                              //    → nem specifikusan "number VAGY string"</code></pre>
+
+<div class="trap-box">
+  <strong>Becsapós opciók:</strong>
+  <ul>
+    <li><strong>A) <code>any</code></strong> – Technikailag "működik" (elfogad number-t és string-et is), de az <code>any</code> MINDENT elfogad. A kérdés specifikusan number VAGY string-et kér, nem "bármit". Az <code>any</code> a type safety teljes feladása.</li>
+    <li><strong>C, E) <code>or</code> kulcsszó</strong> – Nem létezik a TypeScript-ben! Nem Java/Python szintaxis. A TS a <code>|</code> (pipe) operátort használja union típusokhoz.</li>
+    <li><strong>F) "nem lehetséges"</strong> – Természetesen lehetséges, a union type a TS egyik alapfunkciója.</li>
+  </ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Q12 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q12">
+<h2>12. kérdés – TypeScript generic class definíció</h2>
+<span class="tag">TypeScript</span> <span class="tag">Generics</span>
+
+<h3>Kérdés</h3>
+<p>What is the correct way to define a generic class in TypeScript?</p>
+
+<ul class="options">
+  <li class="wrong"><span class="letter">A</span> <code>class List { private data: T[]; }</code></li>
+  <li class="correct"><span class="letter">B</span> <code>class List&lt;T&gt; { private data: T[]; }</code></li>
+  <li class="wrong"><span class="letter">C</span> <code>class &lt;T&gt;List { private data: T[]; }</code></li>
+  <li class="wrong"><span class="letter">D</span> <code>class List : T { private data: T[]; }</code></li>
+</ul>
+
+<div class="answer-box">
+  <strong>Helyes válasz: B) <code>class List&lt;T&gt; { private data: T[]; }</code></strong>
+</div>
+
+<h3>Magyarázat</h3>
+<p>A TypeScript generic szintaxisban a típusparaméter <strong>a név UTÁN</strong>, <code>&lt;szögzárójelben&gt;</code> áll:</p>
+
+<pre><code>// ✅ Helyes generic class szintaxis:
+class List&lt;T&gt; {
+  private data: T[];
+
+  add(item: T): void {
+    this.data.push(item);
+  }
+
+  get(index: number): T {
+    return this.data[index];
+  }
+}
+
+// Használat:
+const numbers = new List&lt;number&gt;();
+numbers.add(42);     // ✅ OK
+numbers.add("hello");// ❌ Type error!
+
+const strings = new List&lt;string&gt;();
+strings.add("hello");// ✅ OK</code></pre>
+
+<div class="trap-box">
+  <strong>Miért nem jó a többi?</strong>
+  <ul>
+    <li><strong>A) <code>class List { private data: T[]; }</code></strong> – A <code>T</code> nincs deklarálva generic paraméterként → <code>T</code> ismeretlen típusként hibát dob: "Cannot find name 'T'".</li>
+    <li><strong>C) <code>class &lt;T&gt;List</code></strong> – A szögzárójel a név ELŐTT van → szintaktikai hiba. A helyes sorrend: <code>class Név&lt;Paraméter&gt;</code>.</li>
+    <li><strong>D) <code>class List : T</code></strong> – A <code>:</code> más nyelvekben (pl. C#) az öröklődés szintaxisa, TypeScript-ben <code>extends</code>-t használunk. De még <code>extends T</code> sem lenne helyes generic definíció.</li>
+  </ul>
+</div>
+
+<div class="note">
+  <strong>Generic szintaxis összefoglaló:</strong>
+<pre><code>// Class:
+class Box&lt;T&gt; { value: T; }
+
+// Function:
+function identity&lt;T&gt;(arg: T): T { return arg; }
+
+// Interface:
+interface Pair&lt;K, V&gt; { key: K; value: V; }
+
+// Type alias:
+type Result&lt;T&gt; = { data: T; error: string | null; }</code></pre>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Q13 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q13">
+<h2>13. kérdés – TypeScript type compatibility (strukturális típusosság)</h2>
+<span class="tag">TypeScript</span> <span class="tag">Type compatibility</span> <span class="tag">Structural typing</span>
+
+<h3>Kérdés</h3>
+<p>In TypeScript, we say that type X is compatible with type Y if an expression of type X can be assigned to a variable of type Y.</p>
+<p>Given the following TypeScript definitions:</p>
+<pre><code>type A = { amount: number }
+interface B { amount: number }
+class C { amount: number }</code></pre>
+
+<ul class="options">
+  <li class="correct"><span class="letter">A</span> A is compatible with B</li>
+  <li class="correct"><span class="letter">B</span> B is compatible with A</li>
+  <li class="correct"><span class="letter">C</span> A is compatible with C</li>
+  <li class="correct"><span class="letter">D</span> C is compatible with A</li>
+  <li class="correct"><span class="letter">E</span> B is compatible with C</li>
+  <li class="correct"><span class="letter">F</span> C is compatible with B</li>
+  <li class="trap"><span class="letter">G</span> Code above might result in an error, depending on compilation flags</li>
+  <li class="trap"><span class="letter">H</span> All of the options are correct</li>
+</ul>
+
+<div class="answer-box">
+  <strong>Helyes válaszok: A, B, C, D, E, F (mind kompatibilis egymással)</strong><br>
+  <strong>G is igaz</strong> (strictPropertyInitialization miatt), <strong>H vitatható</strong>.
+</div>
+
+<h3>Magyarázat</h3>
+<p>A TypeScript <strong>strukturális típusrendszert</strong> (structural typing / duck typing) használ. Ez azt jelenti: ha két típusnak <strong>ugyanaz a szerkezete</strong> (property-k és típusaik), akkor kompatibilisek – függetlenül attól, hogy <code>type</code>, <code>interface</code> vagy <code>class</code>.</p>
+
+<pre><code>type A = { amount: number }       // type alias
+interface B { amount: number }     // interface
+class C { amount: number }         // class
+
+// Mindháromnak UGYANAZ a szerkezete: { amount: number }
+// Ezért MIND kompatibilisek egymással:
+
+let a: A = { amount: 10 };
+let b: B = a;    // ✅ A kompatibilis B-vel (A→B)
+let a2: A = b;   // ✅ B kompatibilis A-val (B→A)
+
+let c: C = new C();
+c.amount = 10;
+let a3: A = c;   // ✅ C kompatibilis A-val (C→A)
+let b2: B = c;   // ✅ C kompatibilis B-vel (C→B)
+
+// Fordított irányban is:
+let c2: C = { amount: 20 };  // ✅ A struktúra megegyezik</code></pre>
+
+<div class="trap-box">
+  <strong>G opció – strictPropertyInitialization:</strong>
+  <p>A <code>class C { amount: number }</code> kód <strong>hibát dobhat</strong>, ha a <code>strictPropertyInitialization</code> flag be van kapcsolva a <code>tsconfig.json</code>-ban:</p>
+<pre><code>// Ha strictPropertyInitialization: true
+class C { amount: number }
+// ❌ Error: Property 'amount' has no initializer
+//    and is not definitely assigned in the constructor.
+
+// Megoldás:
+class C { amount: number = 0; }         // alapértékkel
+class C { amount!: number; }            // definite assignment assertion
+class C { constructor(public amount: number) {} }  // konstruktorban</code></pre>
+</div>
+
+<div class="note">
+  <strong>Strukturális vs Nominális típusosság:</strong>
+  <ul>
+    <li><strong>TypeScript (strukturális):</strong> "Ha úgy néz ki, mint egy kacsa, és úgy hápog, mint egy kacsa, akkor az egy kacsa" — a típus neve nem számít, csak a szerkezet.</li>
+    <li><strong>Java/C# (nominális):</strong> "Csak akkor kacsa, ha a Kacsa osztályból származik" — a típus neve/öröklődése számít.</li>
+  </ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Q14 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q14">
+<h2>14. kérdés – Interface extends class in TypeScript</h2>
+<span class="tag">TypeScript</span> <span class="tag">Interface</span> <span class="tag">Inheritance</span>
+
+<h3>Kérdés</h3>
+<p>Select answer(s) that are true regarding the interface extending a class in TypeScript.</p>
+
+<ul class="options">
+  <li class="wrong"><span class="letter">A</span> Interfaces cannot extend classes</li>
+  <li class="correct"><span class="letter">B</span> Classes can implement interfaces.</li>
+  <li class="wrong"><span class="letter">C</span> An interface can be implemented by only one class.</li>
+  <li class="correct"><span class="letter">D</span> Interfaces can extend classes and get members of the class without defining them.</li>
+  <li class="wrong"><span class="letter">E</span> Interfaces can extend only one class.</li>
+</ul>
+
+<div class="answer-box">
+  <strong>Helyes válaszok: B, D</strong>
+</div>
+
+<h3>Magyarázat</h3>
+<pre><code>// B) ✅ Classes can implement interfaces:
+interface Printable {
+  print(): void;
+}
+class Document implements Printable {
+  print() { console.log("Printing..."); }
+}
+
+// D) ✅ Interfaces can extend classes and get their members:
+class Animal {
+  name: string;
+  move(distance: number) { /* ... */ }
+}
+interface Pet extends Animal {
+  owner: string;   // Pet-nek van: name, move() + owner
+}
+
+// Több interfacet is implementálhat egy class:
+class Dog implements Pet {
+  name = "Rex";
+  owner = "John";
+  move(d: number) { /* ... */ }
+}</code></pre>
+
+<div class="trap-box">
+  <strong>Miért nem jó a többi?</strong>
+  <ul>
+    <li><strong>A) "Interfaces cannot extend classes"</strong> – HAMIS! TypeScript-ben az interface-ek KÉPESEK class-okat extend-álni: <code>interface Pet extends Animal {}</code>.</li>
+    <li><strong>C) "only one class"</strong> – HAMIS! Bármennyi class implementálhatja ugyanazt az interface-t. <code>class Cat implements Printable {}</code>, <code>class Dog implements Printable {}</code> — mindkettő ok.</li>
+    <li><strong>E) "extend only one class"</strong> – HAMIS! Egy interface több class-t/interface-t is extend-álhat: <code>interface Hybrid extends ClassA, InterfaceB {}</code>.</li>
+  </ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Q15 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q15">
+<h2>15. kérdés – TypeScript array union type deklaráció</h2>
+<span class="tag">TypeScript</span> <span class="tag">Arrays</span> <span class="tag">Union types</span>
+
+<h3>Kérdés</h3>
+<p>Which of the following are correct ways to declare an array <code>arr</code> that can hold <strong>any number of elements</strong> of any of the following types: <code>string</code>, <code>boolean</code> or <code>number</code>?</p>
+
+<ul class="options">
+  <li class="wrong"><span class="letter">A</span> <code>let arr: Array&lt;String, Number, Boolean&gt;;</code></li>
+  <li class="correct"><span class="letter">B</span> <code>let arr: (string | number | boolean)[];</code></li>
+  <li class="trap"><span class="letter">C</span> <code>let arr: string[] | number[] | boolean[];</code></li>
+  <li class="wrong"><span class="letter">D</span> <code>let arr: [string, number, boolean];</code></li>
+  <li class="wrong"><span class="letter">E</span> Typescript doesn't support arrays of union types.</li>
+</ul>
+
+<div class="answer-box">
+  <strong>Helyes válasz: B) <code>let arr: (string | number | boolean)[];</code></strong>
+</div>
+
+<h3>Magyarázat</h3>
+<pre><code>// B) ✅ Union type array – HELYES
+let arr: (string | number | boolean)[];
+arr = ["hello", 42, true, "world", 99];  // ✅ Bármilyen sorrend, bármennyi elem
+
+// Ekvivalens generic szintaxissal:
+let arr: Array&lt;string | number | boolean&gt;;  // ugyanaz, egy type paraméterrel</code></pre>
+
+<div class="trap-box">
+  <strong>Becsapós opciók:</strong>
+  <ul>
+    <li><strong>A) <code>Array&lt;String, Number, Boolean&gt;</code></strong> – <code>Array&lt;T&gt;</code> csak <strong>EGY</strong> type paramétert fogad! Nem adhatunk meg többet vesszővel. Helyes: <code>Array&lt;string | number | boolean&gt;</code>. Plusz: <code>String</code>/<code>Number</code>/<code>Boolean</code> (nagybetűs) a wrapper objektum típusok, nem a primitívek — mindig <code>string</code>/<code>number</code>/<code>boolean</code> (kisbetűs) kell.</li>
+    <li><strong>C) <code>string[] | number[] | boolean[]</code></strong> – Ez NEM kevert tömb! Ez azt jelenti: <em>vagy</em> tiszta string tömb, <em>vagy</em> tiszta number tömb, <em>vagy</em> tiszta boolean tömb. <code>["hello", 42]</code> nem lenne érvényes, mert egyik sem tiszta típusú.</li>
+    <li><strong>D) <code>[string, number, boolean]</code></strong> – Ez egy <strong>tuple</strong>: pontosan 3 elem, a megadott sorrendben (1. string, 2. number, 3. boolean). Nem "bármennyi elem".</li>
+    <li><strong>E)</strong> – Természetesen támogatja a TypeScript.</li>
+  </ul>
+</div>
+
+<div class="note">
+  <strong>Fontos különbség:</strong>
+<pre><code>(string | number)[]     // → kevert tömb: ["hello", 42, "world", 99] ✅
+string[] | number[]     // → vagy tiszta string[], vagy tiszta number[]
+[string, number]        // → tuple: pontosan ["hello", 42], 2 elem, fix sorrend</code></pre>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Q16 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q16">
+<h2>16. kérdés – TypeScript Point3D: interface extend és intersection type</h2>
+<span class="tag">TypeScript</span> <span class="tag">Interface extension</span> <span class="tag">Intersection types</span>
+
+<h3>Kérdés</h3>
+<p>Given the following interface:</p>
+<pre><code>interface Point {
+  x: number; y: number;
+}</code></pre>
+<p>Which of the following are proper ways to create an interface/type <code>Point3D</code> which would include all properties of <code>Point</code> and additionally <code>z: number</code>, so <code>Point3D</code> will be accepted in all places expecting <code>Point</code>?</p>
+
+<ul class="options">
+  <li class="wrong"><span class="letter">A</span> <code>type Point3D = Point&lt;{ z: number }&gt;</code></li>
+  <li class="correct"><span class="letter">B</span> <code>type Point3D = Record&lt;"x" | "y" | "z", number&gt;</code></li>
+  <li class="correct"><span class="letter">C</span> <code>type Point3D = Point &amp; { z: number }</code></li>
+  <li class="correct"><span class="letter">D</span> <code>interface Point3D extends Point { z: number; }</code></li>
+  <li class="wrong"><span class="letter">E</span> <code>interface Point3D implements Point { z: number; }</code></li>
+</ul>
+
+<div class="answer-box">
+  <strong>Helyes válaszok: C, D (és B strukturálisan)</strong>
+</div>
+
+<h3>Magyarázat</h3>
+<pre><code>// C) ✅ Intersection type – a leggyakoribb "type" megoldás:
+type Point3D = Point &amp; { z: number };
+// Point3D = { x: number; y: number; z: number }
+// Az &amp; (intersection) összeolvasztja a két típust
+
+// D) ✅ Interface extends – a klasszikus OOP megoldás:
+interface Point3D extends Point {
+  z: number;
+}
+// Point3D örökli az x, y property-ket + hozzáad z-t
+
+// B) ✅ Record utility type – strukturálisan helyes:
+type Point3D = Record&lt;"x" | "y" | "z", number&gt;;
+// Létrehozza: { x: number; y: number; z: number }
+// Strukturálisan kompatibilis Point-tal (x, y megvan)
+// De: ha Point-hoz új property kerül, Record nem követi automatikusan!</code></pre>
+
+<div class="trap-box">
+  <strong>Miért nem jó a többi?</strong>
+  <ul>
+    <li><strong>A) <code>Point&lt;{ z: number }&gt;</code></strong> – A <code>Point</code> interface NEM generikus! Nincs <code>&lt;T&gt;</code> paramétere, tehát <code>Point&lt;...&gt;</code> szintaktikai hiba.</li>
+    <li><strong>E) <code>interface Point3D implements Point</code></strong> – Az <code>implements</code> kulcsszó <strong>class</strong>-oknál használatos, nem interface-eknél! Interface-ek <code>extends</code>-et használnak.</li>
+  </ul>
+</div>
+
+<div class="note">
+  <strong>Mikor melyiket válaszd?</strong>
+  <ul>
+    <li><code>interface extends</code> → ha a típusod mindig egy adott interface-re épül (tiszta, olvasható)</li>
+    <li><code>type &amp; {}</code> (intersection) → ha rugalmasan kombinálsz típusokat, különösen type alias-okkal</li>
+    <li><code>Record&lt;&gt;</code> → ha az összes property azonos típusú és előre ismert a kulcskészlet</li>
+  </ul>
+</div>
+</div>
+
+  <footer>
+    <p><strong>📋 Kidolgozási &amp; karbantartási napló</strong></p>
+    <p>
+      <strong>Készítette:</strong> Claude Opus 4.8 (1M kontextus) · modell-azonosító <code>claude-opus-4-8[1m]</code><br>
+      <strong>Kidolgozás dátuma:</strong> 2026-06-21 · <strong>A modell tudásvágása:</strong> 2026. január (a tanítóadat vége — az azóta eltelt időszak változásait nem garantáltan ismeri, ezt frissítéskor ellenőrizni kell)<br>
+      <strong>Precíziós szint:</strong> dizájn-modernizálás + teljes tartalmi ellenőrzés — mind a 16 kérdés kódja kézzel végigvezetve, ECMAScript / TypeScript szabvány + MDN szerint.
+    </p>
+    <p><strong>Elvégzett tartalmi javítások:</strong></p>
+    <ul>
+      <li><strong>Q3:</strong> a helyes opció (B) nem volt bejelölve, és a megoldás-szöveg önellentmondó volt → javítva (a <code>"10" + 0.11</code> eredménye a <code>"100.11"</code> string).</li>
+      <li><strong>Q7:</strong> a korábbi „csak D ad 42-t" állítás pontatlan — <code>size</code> esetén a tömb üres, a <code>filter</code> sosem fut, így a C opció is 42-t ad; a kérdés kétértelmű. Pontosítva, C „csapdá"-ra jelölve.</li>
+      <li><strong>Q16:</strong> a kódblokkban nyers <code>&lt;</code>/<code>&gt;</code>/<code>&amp;</code> karakterek voltak (HTML-escape hiba) → escape-elve.</li>
+      <li>A többi 13 kérdés tartalmilag helyesnek bizonyult.</li>
+    </ul>
+    <p><strong>🔧 Ha 1 év múlva technikailag frissíteni kell — minden, amire szükség van:</strong></p>
+    <ul>
+      <li><strong>Dizájnrendszer:</strong> világos téma, a színek a <code>:root</code> CSS-változókban (<code>--brand</code>, <code>--ok</code>, <code>--warn</code>, <code>--code-bg</code> stb.). Layout: <code>.wrap</code> &gt; <code>header.hero</code> + <code>nav.toc</code> + <code>.section</code> kártyák.</li>
+      <li><strong>Kérdés-kártya sablon:</strong> <code>&lt;div class="section" id="qN"&gt;</code> → <code>&lt;h2&gt;</code> cím → <code>.tag</code>-ek → <code>&lt;h3&gt;Kérdés&lt;/h3&gt;</code> → <code>ul.options</code> → <code>.answer-box</code> → <code>&lt;h3&gt;Magyarázat&lt;/h3&gt;</code> → <code>.trap-box</code> / <code>.note</code>.</li>
+      <li><strong>Opció-jelölés:</strong> <code>li.correct</code> (zöld), <code>li.trap</code> (sárga szaggatott = csapda/kétértelmű), <code>li.wrong</code> (halvány), benne <code>&lt;span class="letter"&gt;</code> betűkör.</li>
+      <li><strong>KÖTELEZŐ szerkesztési szabály:</strong> kódblokkban (<code>&lt;pre&gt;&lt;code&gt;</code>) minden <code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code> karaktert escape-elni kell (<code>&amp;lt;</code> / <code>&amp;gt;</code> / <code>&amp;amp;</code>) — különben a böngésző tagként értelmezi (ez volt a Q16 hibája).</li>
+      <li><strong>Új kérdés hozzáadása:</strong> (1) új <code>.section</code> a helyére, (2) link a <code>.toc-grid</code>-be, (3) darabszám frissítése a hero alcímben és a <code>.toc-title</code>-ben.</li>
+      <li><strong>Verzió-/időérzékeny tartalom, amit újra kell ellenőrizni:</strong>
+        <ul>
+          <li><strong>Q2:</strong> <code>String.prototype.substr()</code> deprecation-státusza (most deprecated, de működik) — kivezették-e már.</li>
+          <li><strong>Q5:</strong> jött-e új JS operátor (pl. pipeline <code>|&gt;</code>), ami a „NEM valós operátor" választ érinti.</li>
+          <li><strong>Q9:</strong> bundler-tájkép (Webpack / Vite / esbuild / Rollup / Rolldown / Turbopack) — változott-e a „legelterjedtebb".</li>
+          <li><strong>Q10–Q16 (TypeScript):</strong> új TS-verzió hozhat új típusszintaxist; a <code>strictPropertyInitialization</code> (Q13) viselkedés a <code>tsconfig</code> default-jaitól függ.</li>
+          <li>Az ES-verziócímkék (padStart = ES2017, <code>**</code> = ES2016, <code>??</code> = ES2020) stabilak, de érdemes ránézni.</li>
+        </ul>
+      </li>
+      <li><strong>Ellenőrzés módja:</strong> minden állítást futtatható kódra vezess vissza (Node REPL / TS Playground), ne csak emlékezetből.</li>
+    </ul>
+  </footer>
+
+</div>
+</body>
+</html>

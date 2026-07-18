@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login, Session &amp; OAuth2/JWT Interjú</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --ink:#1c2233; --muted:#5d6678; --line:#e4e8f0;
+    --brand:#3a5bd9; --brand-soft:#eaeefc; --brand-line:#c9d4f7; --brand-ink:#2f48ac;
+    --ok:#1f9d57; --ok-soft:#e6f6ec; --ok-line:#bce6cb; --ok-ink:#15703f;
+    --warn:#b9821a; --warn-soft:#fbf2dd; --warn-line:#ecd9a8; --warn-ink:#8a6112;
+    --violet:#7c5cd6; --violet-soft:#efeafc; --violet-line:#d9ccf5; --violet-ink:#5a3fb0;
+    --code-bg:#1e2433; --code-ink:#e8ecf6;
+    --mono:"SF Mono",ui-monospace,SFMono-Regular,Menlo,'Fira Code','Cascadia Code',Consolas,monospace;
+    --shadow:0 1px 2px rgba(20,30,60,.05),0 8px 24px rgba(20,30,60,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.65;padding:32px 16px 80px;}
+  .wrap{max-width:920px;margin:0 auto}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header.hero{background:linear-gradient(135deg,#3a5bd9,#5a78ec);color:#fff;border-radius:18px;padding:34px 34px 30px;box-shadow:var(--shadow);margin-bottom:24px;}
+  header.hero .kicker{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:700;opacity:.85;margin:0 0 8px;}
+  header.hero h1{margin:0 0 6px;font-size:28px;line-height:1.2;border:none;padding:0;color:#fff;}
+  header.hero p{margin:0;opacity:.94;font-size:15px;max-width:70ch;}
+  .toc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:24px;box-shadow:var(--shadow);}
+  .toc-title{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;margin:0 0 14px;}
+  .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;}
+  .toc-grid a{display:flex;gap:8px;align-items:baseline;text-decoration:none;color:var(--ink);font-size:13px;font-weight:600;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:#fbfcfe;transition:background .15s,border-color .15s;}
+  .toc-grid a:hover{background:var(--brand-soft);border-color:var(--brand-line);color:var(--brand-ink);text-decoration:none;}
+  .toc-grid a .tnum{color:var(--brand);font-weight:800;flex:0 0 auto;min-width:1.4em;}
+  .section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 26px;margin-bottom:20px;box-shadow:var(--shadow);border-left:6px solid var(--brand);scroll-margin-top:16px;}
+  h1{color:var(--ink);}
+  h2{font-size:20px;font-weight:800;margin:0 0 10px;color:var(--ink);border:none;padding:0;}
+  h3{font-size:15px;font-weight:800;color:var(--brand-ink);margin:22px 0 8px;}
+  h4{font-size:14px;font-weight:800;color:var(--violet-ink);margin:16px 0 6px;}
+  .tag{display:inline-block;background:var(--brand-soft);color:var(--brand);padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;margin:0 6px 12px 0;}
+  p{margin:0 0 12px;font-size:15px;}
+  ul,ol{margin:0 0 14px;padding-left:22px;}
+  li{margin:5px 0;font-size:14.5px;}
+  b,strong{color:var(--ink);}
+  code{font-family:var(--mono);font-size:.92em;}
+  :not(pre)>code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;}
+  .ic{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);font-size:.9em;}
+  pre{background:var(--code-bg);border:none;border-radius:10px;padding:14px 16px;overflow-x:auto;margin:12px 0;}
+  pre code{background:none;color:var(--code-ink);padding:0;font-size:12.5px;line-height:1.55;}
+  .subsection{background:#fbfcfe;border:1px solid var(--line);border-left:4px solid var(--violet);border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0;}
+  .subsection h4{margin-top:0;}
+  .answer-box,.note,.trap-box{border-radius:11px;padding:14px 16px;margin:14px 0;font-size:14px;border:1px solid;}
+  .answer-box{background:var(--ok-soft);border-color:var(--ok-line);}
+  .answer-box strong,.answer-box b{color:var(--ok-ink);}
+  .note{background:var(--brand-soft);border-color:var(--brand-line);}
+  .note strong,.note b{color:var(--brand-ink);}
+  .trap-box{background:var(--warn-soft);border-color:var(--warn-line);}
+  .trap-box strong,.trap-box b{color:var(--warn-ink);}
+  .answer-box pre,.note pre,.trap-box pre,.subsection pre{margin:8px 0 0;}
+  .answer-box ul,.note ul,.trap-box ul,.subsection ul{margin:6px 0 0;}
+  .diagram{background:var(--code-bg);border:none;border-left:4px solid var(--violet);border-radius:10px;padding:16px 18px;margin:14px 0;font-family:var(--mono);font-size:12px;line-height:1.5;color:#a9c2e8;white-space:pre;overflow-x:auto;}
+  .fig{display:flex;flex-direction:column;align-items:center;gap:12px;background:#fbfcfe;border:1px solid var(--line);border-radius:14px;padding:22px 18px;margin:16px 0;}
+  .fig svg{width:100%;height:auto;}
+  .fig .cap{color:var(--muted);font-size:13px;text-align:center;margin:0;max-width:60ch;}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px;background:var(--card);}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;}
+  th{background:var(--brand-soft);color:var(--brand-ink);font-weight:700;}
+  table tr:nth-child(even){background:#f7f9fd;}
+  footer{color:var(--muted);font-size:12.5px;margin-top:36px;line-height:1.7;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);}
+  footer strong{color:var(--ink);}
+  footer code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);}
+  @media(max-width:560px){body{padding:20px 10px 60px}header.hero{padding:24px 20px}.section{padding:18px 16px}.toc-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="kicker">Webes autentikáció · Tutorial</p>
+    <h1>Login, Session &amp; OAuth2 / JWT</h1>
+    <p>Hogyan működik a modern autentikáció? Cookie attribútumok, Session vs Token, OAuth2 flow, JWT struktúra, token refresh, aktív session és biztonsági best practice-ek — lépésről lépésre.</p>
+  </header>
+
+  <nav class="toc">
+    <p class="toc-title">Tartalom</p>
+    <div class="toc-grid">
+      <a href="#cookies"><span class="tnum">1</span> Cookie attribútumok</a>
+      <a href="#basics"><span class="tnum">2</span> Session vs Token</a>
+      <a href="#jwt-structure"><span class="tnum">3</span> JWT struktúra</a>
+      <a href="#oauth2-flow"><span class="tnum">4</span> OAuth2 flow</a>
+      <a href="#oauth2-jwt"><span class="tnum">5</span> OAuth2 + JWT</a>
+      <a href="#token-refresh"><span class="tnum">6</span> Token refresh</a>
+      <a href="#active-session"><span class="tnum">7</span> Aktív session</a>
+      <a href="#security"><span class="tnum">8</span> Biztonság</a>
+      <a href="#summary"><span class="tnum">9</span> Interjúkérdések</a>
+    </div>
+  </nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- COOKIE ATTRIBÚTUMOK MAGYARÁZATA -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="cookies">
+<h2>Cookie attribútumok – részletes magyarázat</h2>
+<span class="tag">Web Security</span> <span class="tag">HTTP</span>
+
+<table>
+  <tr>
+    <th>Attribútum</th>
+    <th>Lehetséges értékek</th>
+    <th>Jelentés / Mire jó?</th>
+  </tr>
+  <tr>
+    <td><span class="ic">HttpOnly</span></td>
+    <td>true / nincs</td>
+    <td>Ha be van állítva, a cookie <b>nem olvasható JavaScript-ből</b> (document.cookie). Véd az XSS támadások ellen, a token nem szerezhető meg JS-ből.</td>
+  </tr>
+  <tr>
+    <td><span class="ic">Secure</span></td>
+    <td>true / nincs</td>
+    <td>Ha be van állítva, a cookie <b>csak HTTPS kapcsolaton</b> keresztül küldhető. HTTP-n nem megy át, így véd a lehallgatás ellen (pl. nyilvános wifi-n).</td>
+  </tr>
+  <tr>
+    <td><span class="ic">SameSite</span></td>
+    <td>Strict / Lax / None</td>
+    <td>
+      <b>Strict:</b> csak azonos domainről küldhető (pl. myapp.com → myapp.com), maximális CSRF védelem.<br>
+      <b>Lax:</b> alapértelmezett, GET navigációknál (pl. linkre kattintás) küldhető, de űrlap POST-nál nem.<br>
+      <b>None:</b> minden kérésnél küldhető (cross-site is), de csak <b>Secure</b> mellett!<br>
+      <b>CSRF támadások</b> ellen véd.
+    </td>
+  </tr>
+  <tr>
+    <td><span class="ic">Path</span></td>
+    <td>pl. /, /api, /admin</td>
+    <td>Meghatározza, hogy a cookie <b>mely útvonalakon</b> lesz elküldve. Pl. Path=/api csak /api alatt érvényes.</td>
+  </tr>
+  <tr>
+    <td><span class="ic">Domain</span></td>
+    <td>pl. .myapp.com</td>
+    <td>Meghatározza, hogy a cookie <b>mely domaineken</b> érvényes. Ha nincs, csak az aktuális domainen.</td>
+  </tr>
+  <tr>
+    <td><span class="ic">Expires</span> / <span class="ic">Max-Age</span></td>
+    <td>Expires: dátum<br>Max-Age: másodperc</td>
+    <td>Cookie <b>lejárati ideje</b>. Expires: konkrét dátum/idő. Max-Age: hány másodpercig él. Ha egyik sincs, session cookie (böngésző bezárásáig él).</td>
+  </tr>
+  <tr>
+    <td><span class="ic">Priority</span></td>
+    <td>Low / Medium / High</td>
+    <td>Cookie törlési prioritás böngészőben (ha túl sok cookie van, először a Low törlődik).</td>
+  </tr>
+  <tr>
+    <td><span class="ic">Partitioned</span></td>
+    <td>true / nincs</td>
+    <td>Csak a <b>partitioned storage</b>-ban elérhető (3rd-party cookie privacy védelme, újabb böngészőkben).</td>
+  </tr>
+  <tr>
+    <td><span class="ic">__Secure- prefix</span></td>
+    <td>cookie név elején</td>
+    <td>Csak akkor engedélyezett, ha <b>Secure</b> be van állítva. Pl. <code>Set-Cookie: __Secure-id=123; Secure</code></td>
+  </tr>
+  <tr>
+    <td><span class="ic">__Host- prefix</span></td>
+    <td>cookie név elején</td>
+    <td>Csak akkor engedélyezett, ha <b>Secure</b> be van állítva, <b>Path=/</b>, <b>Domain nincs megadva</b>. Pl. <code>Set-Cookie: __Host-id=123; Secure; Path=/</code></td>
+  </tr>
+</table>
+
+<div class="note">
+<b>Példák:</b><br>
+<code>Set-Cookie: refresh_token=abc123; HttpOnly; Secure; SameSite=Strict; Path=/api; Expires=Wed, 09 Jun 2027 10:18:14 GMT; Priority=High</code><br>
+<code>Set-Cookie: __Secure-id=xyz; Secure; HttpOnly; SameSite=Lax</code><br>
+<code>Set-Cookie: __Host-session=abc; Secure; Path=/; HttpOnly; SameSite=Strict</code><br>
+<ul>
+  <li><b>HttpOnly</b>: a cookie-t nem tudja JS ellopni (XSS ellen véd)</li>
+  <li><b>Secure</b>: csak HTTPS-en megy át (pl. wifi sniffing ellen véd)</li>
+  <li><b>SameSite=Strict</b>: csak saját domainről küldhető (CSRF ellen véd)</li>
+  <li><b>Path</b>: csak adott útvonalon érvényes</li>
+  <li><b>Domain</b>: több subdomainen is érvényes lehet</li>
+  <li><b>Expires/Max-Age</b>: automatikus lejárat</li>
+  <li><b>Priority</b>: böngésző törlési sorrend</li>
+  <li><b>Partitioned</b>: privacy védett, 3rd-party cookie</li>
+  <li><b>__Secure-</b>: csak Secure mellett, extra védettség</li>
+  <li><b>__Host-</b>: csak Secure + Path=/ + nincs Domain, legszigorúbb</li>
+</ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SESSION VS TOKEN ALAPOK -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="basics">
+<h2>1. Session vs Token alapok</h2>
+<span class="tag">Autentikáció</span> <span class="tag">Backend</span>
+
+<h3>Három különböző megközelítés:</h3>
+
+<div class="subsection">
+<h4>A) Szerver-oldali Session (hagyományos)</h4>
+<p><strong>Hogyan működik:</strong> A szerver létrehoz egy session-t, tárolja a memóriában (vagy Redis-ben), és egy session ID-t küld vissza a kliensnek cookie-ban.</p>
+<pre><code>
+USER LOGIN FLOW:
+1. POST /login { email, password }
+2. Server: password hash ellenőrzés
+3. Server: session létrehozása (id: "abc123xyz")
+   Server memória: {
+     "abc123xyz": {
+       user_id: 42,
+       email: "user@example.com",
+       logged_in_at: 1707036000000,
+       ip_address: "203.0.113.42",
+       user_agent: "Mozilla/5.0..."
+     }
+   }
+4. Response: Set-Cookie: session_id=abc123xyz; HttpOnly; Secure; SameSite=Strict
+5. Kliens: Böngésző automatikusan elküldi a session_id cookie-t minden kérésben
+
+KLIENS KÉRÉS:
+GET /api/profile
+Cookie: session_id=abc123xyz
+
+SERVER VÁLASZ:
+200 OK
+{
+  user_id: 42,
+  email: "user@example.com"
+}
+</code></pre>
+
+<table>
+<tr>
+  <th>Előny</th>
+  <th>Hátrány</th>
+</tr>
+<tr>
+  <td>Egyszerű (tanár/diák felség)</td>
+  <td>Server must store all sessions</td>
+</tr>
+<tr>
+  <td>Server-oldali logout (azonnal érvénytelen)</td>
+  <td>Skálázási probléma (több szerver = session sync szükséges)</td>
+</tr>
+<tr>
+  <td>Visszavonás könnyű</td>
+  <td>Session fixation támadás lehetséges</td>
+</tr>
+<tr>
+  <td>CSRF megoldható SameSite cookie-val</td>
+  <td>Cross-domain hozzáférés nehézkes</td>
+</tr>
+</table>
+</div>
+
+<div class="subsection">
+<h4>B) Token-based (JWT)</h4>
+<p><strong>Hogyan működik:</strong> A szerver egy aláírt tokent ad vissza. A token tartalmazza az összes szükséges információt (user ID, permissions), és a szerver NEM tárol semmit – csak ellenőrzi az aláírást.</p>
+<pre><code>
+USER LOGIN FLOW:
+1. POST /login { email, password }
+2. Server: password hash ellenőrzés
+3. Server: JWT token generálása (privát kulccsal aláírva)
+   Token tartalma: {
+     user_id: 42,
+     email: "user@example.com",
+     role: "admin",
+     iat: 1707036000,    // issued at
+     exp: 1707122400     // 24 óra múlva lejár
+   }
+   Aláírás: HMAC-SHA256(payload, secret_key)
+4. Response:
+   {
+     access_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+     expires_in: 86400,
+     token_type: "Bearer"
+   }
+5. Kliens: Tároljuk a token-t (localStorage vagy memory)
+
+KLIENS KÉRÉS:
+GET /api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+SERVER VÁLASZ:
+1. Token aláírás ellenőrzése (secret_key-vel)
+2. Exp dátum ellenőrzése
+3. User ID kivonása a tokenből → profil adatok visszaadása
+200 OK
+{
+  user_id: 42,
+  email: "user@example.com"
+}
+</code></pre>
+
+<table>
+<tr>
+  <th>Előny</th>
+  <th>Hátrány</th>
+</tr>
+<tr>
+  <td>Stateless (szerver nem tárol session-okat)</td>
+  <td>Logout = token még érvényes (blacklist szükséges)</td>
+</tr>
+<tr>
+  <td>Skálázható (minden szerver tudja ellenőrizni)</td>
+  <td>Token meglopás = hozzáférés mindaddig, amíg érvényes</td>
+</tr>
+<tr>
+  <td>Cross-domain / CORS támogatás</td>
+  <td>Token visszavonás nehézkes</td>
+</tr>
+<tr>
+  <td>Mobil-friendly</td>
+  <td>Nagyobb payload (minden token tartalmaz adatot)</td>
+</tr>
+</table>
+</div>
+
+<div class="subsection">
+<h4>C) OAuth2 (harmadik féltől jövő token)</h4>
+<p><strong>Hogyan működik:</strong> A felhasználó autentikálódik a Google/GitHub-nál, ők egy token-t adnak vissza, amit a mi szerver elfogad.</p>
+<pre><code>
+OAUTH2 AUTHORIZATION CODE FLOW:
+1. Felhasználó: "Bejelentkezés Google-lal"
+2. Böngésző → Google OAuth endpoint:
+   GET https://accounts.google.com/o/oauth2/v2/auth?
+     client_id=...
+     redirect_uri=https://myapp.com/callback
+     scope=openid profile email
+     state=random_string_123
+3. Google: Felhasználó bejelentkezik Google-ba
+4. Google → Böngésző → myapp.com/callback?code=auth_code_xyz&state=random_string_123
+5. Böngésző (kliens) NEM látja az auth_code-ot! A szerver backendje kapja!
+6. Backend: OAuth szerver felé küld:
+   POST https://oauth2.googleapis.com/token
+   {
+     code: "auth_code_xyz",
+     client_id: "...",
+     client_secret: "...",     // TITOK, kliens nem látja!
+     redirect_uri: "https://myapp.com/callback"
+   }
+7. Google: ID token + Access token visszaadása
+8. Backend: Felhasználó adatok kinyerése, saját JWT/session létrehozása
+9. Backend → Böngésző: JWT token cookie-ban vagy localStorage-ben
+10. Kliens: Mostantól a saját JWT token-nel dolgozik (Google token-nel nem kell tovább foglalkozni)
+</code></pre>
+
+<div class="note">
+<strong>Az OAuth2 fő pontja:</strong> Soha ne küldj client_secret-et a böngészőnek! A Google kódot ad vissza, amit a backended felhasznál a secret-tel együtt, hogy megkapja a valódi tokent.
+</div>
+</div>
+
+<h3>Összehasonlítás:</h3>
+
+<table>
+<tr>
+  <th>Aspektus</th>
+  <th>Session</th>
+  <th>JWT</th>
+  <th>OAuth2</th>
+</tr>
+<tr>
+  <td>Adat tárolása</td>
+  <td>Szerver memória/Redis</td>
+  <td>Token-ben (kliens)</td>
+  <td>Google/GitHub szerveren</td>
+</tr>
+<tr>
+  <td>Skálázás</td>
+  <td>Nehéz (session sync)</td>
+  <td>Könnyű (stateless)</td>
+  <td>Könnyű (stateless)</td>
+</tr>
+<tr>
+  <td>CSRF</td>
+  <td>SameSite cookie</td>
+  <td>X-CSRF-Token header</td>
+  <td>State paraméter</td>
+</tr>
+<tr>
+  <td>Logout</td>
+  <td>Szerver: session törlés</td>
+  <td>Blacklist szükséges</td>
+  <td>Szerver: token blacklist</td>
+</tr>
+<tr>
+  <td>Mobil támogatás</td>
+  <td>Cookie-s mobilakon nehézkes</td>
+  <td>Tökéletes (header-ben)</td>
+  <td>Tökéletes</td>
+</tr>
+</table>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- JWT STRUKTURA -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="jwt-structure">
+<h2>2. JWT Token Struktura</h2>
+<span class="tag">JWT</span> <span class="tag">Token</span>
+
+<h3>JWT formátum: három pont-tal elválasztott rész</h3>
+
+<div class="fig">
+<svg viewBox="0 0 760 230" role="img" aria-label="JWT struktúra: header.payload.signature">
+  <defs>
+    <style>
+      .lbl{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
+      .seg{font-family:"SF Mono",Consolas,monospace;font-size:11px;}
+    </style>
+  </defs>
+  <!-- title -->
+  <text x="380" y="26" text-anchor="middle" class="lbl" font-size="14" font-weight="700" fill="#1c2233">xxxxx.yyyyy.zzzzz — három Base64 szegmens</text>
+
+  <!-- HEADER -->
+  <rect x="20" y="46" width="220" height="54" rx="9" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+  <text x="130" y="68" text-anchor="middle" class="lbl" font-size="13" font-weight="800" fill="#2f48ac">HEADER</text>
+  <text x="130" y="88" text-anchor="middle" class="seg" fill="#3a5bd9">eyJhbG...VCJ9</text>
+
+  <!-- dot 1 -->
+  <text x="252" y="82" text-anchor="middle" class="seg" font-size="22" font-weight="800" fill="#5d6678">.</text>
+
+  <!-- PAYLOAD -->
+  <rect x="266" y="46" width="228" height="54" rx="9" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/>
+  <text x="380" y="68" text-anchor="middle" class="lbl" font-size="13" font-weight="800" fill="#15703f">PAYLOAD</text>
+  <text x="380" y="88" text-anchor="middle" class="seg" fill="#1f9d57">eyJzdWI...MDIyfQ</text>
+
+  <!-- dot 2 -->
+  <text x="506" y="82" text-anchor="middle" class="seg" font-size="22" font-weight="800" fill="#5d6678">.</text>
+
+  <!-- SIGNATURE -->
+  <rect x="520" y="46" width="220" height="54" rx="9" fill="#fbf2dd" stroke="#b9821a" stroke-width="2"/>
+  <text x="630" y="68" text-anchor="middle" class="lbl" font-size="13" font-weight="800" fill="#8a6112">SIGNATURE</text>
+  <text x="630" y="88" text-anchor="middle" class="seg" fill="#b9821a">SflKxw...sw5c</text>
+
+  <!-- decode arrows -->
+  <line x1="130" y1="108" x2="130" y2="132" stroke="#3a5bd9" stroke-width="1.5" marker-end="url(#a1)"/>
+  <line x1="380" y1="108" x2="380" y2="132" stroke="#1f9d57" stroke-width="1.5" marker-end="url(#a2)"/>
+  <line x1="630" y1="108" x2="630" y2="132" stroke="#b9821a" stroke-width="1.5" marker-end="url(#a3)"/>
+  <defs>
+    <marker id="a1" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3a5bd9"/></marker>
+    <marker id="a2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f9d57"/></marker>
+    <marker id="a3" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b9821a"/></marker>
+  </defs>
+
+  <!-- decoded meaning -->
+  <text x="130" y="150" text-anchor="middle" class="lbl" font-size="11" fill="#5d6678">Base64 decode</text>
+  <text x="130" y="166" text-anchor="middle" class="lbl" font-size="11.5" fill="#1c2233">alg + typ</text>
+  <text x="380" y="150" text-anchor="middle" class="lbl" font-size="11" fill="#5d6678">Base64 decode</text>
+  <text x="380" y="166" text-anchor="middle" class="lbl" font-size="11.5" fill="#1c2233">claims (user_id, exp…)</text>
+  <text x="630" y="150" text-anchor="middle" class="lbl" font-size="11" fill="#5d6678">HMAC / RSA</text>
+  <text x="630" y="166" text-anchor="middle" class="lbl" font-size="11.5" fill="#1c2233">aláírás (secret key)</text>
+
+  <!-- note -->
+  <text x="380" y="206" text-anchor="middle" class="lbl" font-size="11.5" font-style="italic" fill="#5d6678">A header és payload bárki által olvasható — csak az aláírás véd a hamisítás ellen.</text>
+</svg>
+<p class="cap">Egy JWT három, ponttal elválasztott Base64-szegmens: <b>HEADER</b> (algoritmus), <b>PAYLOAD</b> (claims) és <b>SIGNATURE</b> (a secret kulccsal számolt aláírás).</p>
+</div>
+
+<div class="subsection">
+<h4>1. HEADER (Base64 kódolt JSON)</h4>
+<pre><code>
+Eredeti:
+{
+  "alg": "HS256",    // Aláírási algoritmus: HMAC SHA256
+  "typ": "JWT"       // Token típus
+}
+
+Base64 Encoded:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+</code></pre>
+</div>
+
+<div class="subsection">
+<h4>2. PAYLOAD (Base64 kódolt JSON + claims)</h4>
+<pre><code>
+Eredeti:
+{
+  "user_id": 42,
+  "email": "anna@example.com",
+  "role": "admin",
+  "permissions": ["read:posts", "write:posts", "delete:posts"],
+  "iat": 1707036000,      // Issued At (UNIX timestamp)
+  "exp": 1707122400,      // Expires (24 óra múlva)
+  "nbf": 1707036000,      // Not Before (opcionális)
+  "jti": "unique_id_123"  // JWT ID (opcionális, logout-hoz)
+}
+
+Base64 Encoded:
+eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ
+
+Claims magyarázata:
+- user_id, email, role: Custom claims (amit TE adhatsz hozzá)
+- iat, exp, nbf: Standard claims (RFC 7519)
+- jti: Token azonosítás (logout/revocation-hoz szükséges)
+</code></pre>
+</div>
+
+<div class="subsection">
+<h4>3. SIGNATURE (aláírás a secret kulccsal)</h4>
+<pre><code>
+Számítás:
+HMAC-SHA256(
+  Base64(HEADER) + "." + Base64(PAYLOAD),
+  secret_key = "my-super-secret-key"
+)
+
+Eredmény:
+SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+Lényeg:
+- Csak a SZERVER tudja a secret_key-t
+- Ha bárki módosítja a payload-ot (claim-eket), az aláírás érvénytelen lesz
+- Ez GARANCIA, hogy a token nem hamis
+</code></pre>
+</div>
+
+<h3>Kliens-szintű JWT dekódolás:</h3>
+
+<pre><code>
+// JWT token olvasása (aláírás ellenőrzése NÉLKÜL!)
+function parseJWT(token) {
+  const [headerB64, payloadB64, signatureB64] = token.split('.');
+
+  const payload = JSON.parse(atob(payloadB64));
+  // { user_id: 42, email: "anna@example.com", exp: 1707122400, ... }
+
+  return payload;
+}
+
+// Kliens-szintű ellenőrzések:
+function isTokenValid(token) {
+  const payload = parseJWT(token);
+
+  // Ellenőrzés 1: Token lejárt-e?
+  const now = Math.floor(Date.now() / 1000);
+  if (payload.exp < now) {
+    return false; // Lejárt token
+  }
+
+  // Ellenőrzés 2: "Not Before" dátum?
+  if (payload.nbf && payload.nbf > now) {
+    return false; // Még nem érvényes
+  }
+
+  return true; // OK, lehet használni
+}
+
+// ⚠️ FONTOS: Az aláírás ellenőrzése CSAK a szeveren történhet!
+// A kliens nem tudja a secret kulcsot, ezért nem tudja ellenőrizni.
+// A szerver MINDIG ellenőrzi az aláírást és az exp dátumot a request-nél.
+</code></pre>
+
+<div class="trap-box">
+<strong>Gyakori hiba: localStorage vs localStorage-ben tárolás</strong>
+<ul>
+  <li><strong>localStorage:</strong> Könnyű XSS támadás (malware JS-ben olvassa ki)</li>
+  <li><strong>Cookie (HttpOnly, Secure, SameSite):</strong> Védett a JS elől, HTTPS-en küldendő</li>
+  <li><strong>Memory/Redux:</strong> Az oldal frissítésén, az token eltűnik (logout-szerű viselkedés)</li>
+</ul>
+<p><strong>Ajánlás:</strong> JWT token-t HttpOnly cookie-ban tárold, vagy ha localStorage-ben, akkor is kell egy refresh token stratégia.</p>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- OAuth2 FLOW RÉSZLETESEN -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="oauth2-flow">
+<h2>3. OAuth2 Authorization Code Flow</h2>
+<span class="tag">OAuth2</span> <span class="tag">Autentikáció</span>
+
+<h3>A teljes flow lépésről lépésre:</h3>
+
+<div class="fig">
+<svg viewBox="0 0 760 760" role="img" aria-label="OAuth2 Authorization Code flow">
+  <defs>
+    <style>
+      .ttl{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-weight:800;}
+      .sub{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
+      .step{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-weight:700;}
+    </style>
+    <marker id="oa" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#7c5cd6"/></marker>
+  </defs>
+
+  <!-- 1: Felhasználó -->
+  <rect x="250" y="14" width="260" height="46" rx="10" fill="#efeafc" stroke="#7c5cd6" stroke-width="2"/>
+  <text x="380" y="42" text-anchor="middle" class="ttl" font-size="14" fill="#5a3fb0">Felhasználó</text>
+
+  <line x1="380" y1="60" x2="380" y2="96" stroke="#7c5cd6" stroke-width="2" marker-end="url(#oa)"/>
+  <text x="392" y="82" class="step" font-size="11.5" fill="#5a3fb0">1. Kattint: „Bejelentkezés Google-lal”</text>
+
+  <!-- 2: Frontend -->
+  <rect x="230" y="100" width="300" height="56" rx="10" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+  <text x="380" y="124" text-anchor="middle" class="ttl" font-size="13.5" fill="#2f48ac">Frontend (myapp.com)</text>
+  <text x="380" y="143" text-anchor="middle" class="sub" font-size="11.5" fill="#3a5bd9">Gomb: „Login with Google”</text>
+
+  <line x1="380" y1="156" x2="380" y2="198" stroke="#7c5cd6" stroke-width="2" marker-end="url(#oa)"/>
+  <text x="392" y="174" class="step" font-size="11.5" fill="#5a3fb0">2. Redirect a Google OAuth endpointra</text>
+  <text x="392" y="190" class="sub" font-size="11" fill="#5d6678">+ client_id, redirect_uri, scope, state</text>
+
+  <!-- 3: Google OAuth Server -->
+  <rect x="210" y="202" width="340" height="76" rx="10" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/>
+  <text x="380" y="224" text-anchor="middle" class="ttl" font-size="13.5" fill="#15703f">Google OAuth Server</text>
+  <text x="380" y="242" text-anchor="middle" class="sub" font-size="11" fill="#1f9d57">accounts.google.com</text>
+  <text x="380" y="259" text-anchor="middle" class="sub" font-size="11" fill="#15703f">• Felhasználó bejelentkezik</text>
+  <text x="380" y="273" text-anchor="middle" class="sub" font-size="11" fill="#15703f">• Engedélykérés: profile, email</text>
+
+  <line x1="380" y1="278" x2="380" y2="320" stroke="#7c5cd6" stroke-width="2" marker-end="url(#oa)"/>
+  <text x="392" y="296" class="step" font-size="11.5" fill="#5a3fb0">3. Redirect a callback URL-re</text>
+  <text x="392" y="312" class="sub" font-size="11" fill="#5d6678">+ authorization code (+ state vissza)</text>
+
+  <!-- 4: Frontend -> Backend -->
+  <rect x="210" y="324" width="340" height="72" rx="10" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+  <text x="380" y="346" text-anchor="middle" class="ttl" font-size="13.5" fill="#2f48ac">Frontend → Backend</text>
+  <text x="380" y="364" text-anchor="middle" class="sub" font-size="11" fill="#3a5bd9">myapp.com/callback?code=abc</text>
+  <text x="380" y="382" text-anchor="middle" class="sub" font-size="11" fill="#d23b3b">• A kliens kód nem látja az auth code-ot!</text>
+
+  <line x1="380" y1="396" x2="380" y2="446" stroke="#7c5cd6" stroke-width="2" marker-end="url(#oa)"/>
+  <text x="392" y="414" class="step" font-size="11.5" fill="#5a3fb0">4. Backend POST a Google token endpointra</text>
+  <text x="392" y="430" class="sub" font-size="11" fill="#5d6678">+ code, client_id, client_secret (TITOK!), redirect_uri</text>
+
+  <!-- 5: Google Token Server -->
+  <rect x="210" y="450" width="340" height="76" rx="10" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/>
+  <text x="380" y="472" text-anchor="middle" class="ttl" font-size="13.5" fill="#15703f">Google Token Server</text>
+  <text x="380" y="490" text-anchor="middle" class="sub" font-size="11" fill="#15703f">• Ellenőrzés: client_secret OK?</text>
+  <text x="380" y="505" text-anchor="middle" class="sub" font-size="11" fill="#15703f">• Ellenőrzés: code érvényes?</text>
+  <text x="380" y="520" text-anchor="middle" class="sub" font-size="11" fill="#15703f">• Kiadás: ID token + access token</text>
+
+  <line x1="380" y1="526" x2="380" y2="568" stroke="#7c5cd6" stroke-width="2" marker-end="url(#oa)"/>
+  <text x="392" y="544" class="step" font-size="11.5" fill="#5a3fb0">5. Token válasz a backendnek</text>
+  <text x="392" y="560" class="sub" font-size="11" fill="#5d6678">{ id_token, access_token, expires_in: 3600 }</text>
+
+  <!-- 6: Backend -->
+  <rect x="210" y="572" width="340" height="88" rx="10" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+  <text x="380" y="594" text-anchor="middle" class="ttl" font-size="13.5" fill="#2f48ac">Backend (myapp.com)</text>
+  <text x="380" y="612" text-anchor="middle" class="sub" font-size="11" fill="#3a5bd9">• User adatok az id_tokenből (email, név)</text>
+  <text x="380" y="627" text-anchor="middle" class="sub" font-size="11" fill="#3a5bd9">• Saját JWT token generálása</text>
+  <text x="380" y="642" text-anchor="middle" class="sub" font-size="11" fill="#3a5bd9">• Adatbázis: user entry (új) vagy update</text>
+
+  <line x1="380" y1="660" x2="380" y2="702" stroke="#7c5cd6" stroke-width="2" marker-end="url(#oa)"/>
+  <text x="392" y="678" class="step" font-size="11.5" fill="#5a3fb0">6. Response a frontendnek</text>
+  <text x="392" y="694" class="sub" font-size="11" fill="#5d6678">{ access_token: saját JWT, user }</text>
+
+  <!-- 7: Frontend final -->
+  <rect x="230" y="706" width="300" height="46" rx="10" fill="#fbf2dd" stroke="#b9821a" stroke-width="2"/>
+  <text x="380" y="725" text-anchor="middle" class="ttl" font-size="13" fill="#8a6112">Frontend (myapp.com)</text>
+  <text x="380" y="742" text-anchor="middle" class="sub" font-size="11" fill="#8a6112">Token tárolása + dashboard</text>
+</svg>
+<p class="cap">Az Authorization Code flow: a böngésző sosem látja a <b>client_secret</b>-et; az authorization code-ot a backend váltja be valódi tokenre, majd saját JWT-t ad a frontendnek.</p>
+</div>
+
+<h3>Kód például (Node.js + Express + Google OAuth):</h3>
+
+<pre><code>
+// ═══ BACKEND ═══
+
+// npm install googleapis axios
+
+const { google } = require('googleapis');
+const axios = require('axios');
+
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  process.env.GOOGLE_CALLBACK_URL  // https://myapp.com/api/auth/callback
+);
+
+// 1. STEP: Felhasználó redirect-je a Google-ra
+app.get('/api/auth/google', (req, res) => {
+  // State: CSRF védelem (random string)
+  const state = Math.random().toString(36).substring(7);
+  req.session.oauth_state = state;
+
+  const authUrl = oauth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: ['openid', 'profile', 'email'],
+    state: state
+  });
+
+  res.redirect(authUrl);
+});
+
+// 2. STEP: Google callback – authorization code érkezik
+app.get('/api/auth/callback', async (req, res) => {
+  const { code, state } = req.query;
+
+  // CSRF védelem: state ellenőrzés
+  if (state !== req.session.oauth_state) {
+    return res.status(400).json({ error: 'Invalid state parameter' });
+  }
+
+  try {
+    // 3. STEP: Code → tokens csere (client_secret-tel!)
+    const { tokens } = await oauth2Client.getToken(code);
+    // tokens: { access_token, id_token, expires_in, ... }
+
+    // 4. STEP: ID token dekódolása
+    const ticket = await oauth2Client.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+    const payload = ticket.getPayload();
+    // payload: { sub, email, name, picture, ... }
+
+    // 5. STEP: Felhasználó keresése/létrehozása az adatbázisban
+    let user = await User.findOne({ google_id: payload.sub });
+    if (!user) {
+      user = await User.create({
+        google_id: payload.sub,
+        email: payload.email,
+        name: payload.name,
+        avatar: payload.picture
+      });
+    }
+
+    // 6. STEP: Saját JWT token generálása
+    const jwtToken = jwt.sign(
+      {
+        user_id: user.id,
+        email: user.email,
+        role: user.role
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    // 7. STEP: Token visszaküldése (session/cookie vagy localStorage)
+    res.redirect(`/dashboard?token=${jwtToken}`);
+    // VAGY:
+    // res.cookie('auth_token', jwtToken, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: 'Strict'
+    // });
+    // res.redirect('/dashboard');
+
+  } catch (error) {
+    console.error('OAuth callback error:', error);
+    res.status(500).json({ error: 'Authentication failed' });
+  }
+});
+
+// ═══ FRONTEND ═══
+
+// Bejelentkezés gomb
+function LoginWithGoogle() {
+  const handleClick = () => {
+    window.location.href = '/api/auth/google';
+    // Az oauth2Client.generateAuthUrl() eltávolít az accounts.google.com-ra
+  };
+
+  return (
+    &lt;button onClick={handleClick}&gt;
+      Bejelentkezés Google-lal
+    &lt;/button&gt;
+  );
+}
+
+// Callback oldalon (myapp.com/callback)
+function CallbackPage() {
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+
+    if (token) {
+      // Token tárolása
+      localStorage.setItem('auth_token', token);
+      // VAGY ha cookie-ban jött: nem kell tenni semmit
+      
+      // Redirect a dashboard-ra
+      window.location.href = '/dashboard';
+    }
+  }, []);
+
+  return &lt;p&gt;Bejelentkezés folyamatban...&lt;/p&gt;;
+}
+</code></pre>
+
+<div class="note">
+<strong>OAuth2 biztonsági pontok:</strong>
+<ul>
+  <li><strong>Client Secret:</strong> Soha ne küldd a böngészőnek! Csak backend-ben legyen!</li>
+  <li><strong>State paraméter:</strong> CSRF védelem – random string, ellenőrzés szükséges</li>
+  <li><strong>Authorization Code:</strong> Használati után érvénytelen (egy-szeri kód)</li>
+  <li><strong>Redirect URI whitelist:</strong> Google-nál beregisztrálva – csak engedélyezett URL-ek!</li>
+  <li><strong>HTTPS kötelező:</strong> Nem lehet HTTP-n OAuth2 (token lopás veszélye)</li>
+</ul>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- OAUTH2 + JWT KAPCSOLAT -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="oauth2-jwt">
+<h2>4. OAuth2 + JWT kapcsolat</h2>
+<span class="tag">OAuth2</span> <span class="tag">JWT</span> <span class="tag">Modern Auth</span>
+
+<h3>Az alapvető félreértés: nem ugyanaz!</h3>
+
+<div class="trap-box">
+<strong>❌ ROSSZ gondolat:</strong> "OAuth2 = JWT"<br>
+OAuth2 és JWT <strong>teljesen különböző dolgok</strong>. Az egyik protokoll, a másik token formátum.
+</div>
+
+<div class="answer-box">
+<strong>✓ HELYES gondolat:</strong><br>
+<ul>
+  <li><strong>OAuth2:</strong> Autorizációs protokoll (ki a felhasználó? milyen jogai vannak?)</li>
+  <li><strong>JWT:</strong> Token formátum (biztonságos adat csomagolása)</li>
+  <li><strong>Kapcsolat:</strong> OAuth2 <strong>HASZNÁLHAT</strong> JWT-t access tokenként, de nem kötelező</li>
+</ul>
+</div>
+
+<h3>Kettő típusú OAuth2 token kiadás:</h3>
+
+<div class="subsection">
+<h4>A) OAuth2 + Opaque token (tradicionális)</h4>
+<p>Google, Facebook, GitHub ezeket használ alapértelmezésben:</p>
+<pre><code>
+OAuth2 server (pl. Google) dönt:
+↓
+ID token: JWT (user info + signature)
+Access token: "ya29.a0AfH6SMB..." (opaque string)
+                      ↑
+                  random karakterek,
+                  szerver oldali lookup szükséges
+
+Backend use:
+GET https://www.googleapis.com/oauth2/v1/userinfo
+Authorization: Bearer ya29.a0AfH6SMB...
+
+Google szerver: lookup az opaque token-ben
+                ↓
+                { user_id: 12345, email: "..." }
+</code></pre>
+</div>
+
+<div class="subsection">
+<h4>B) OAuth2 + JWT access token (modern, decentralizált)</h4>
+<p>Sok modern app ezt választja (pl. Auth0, keycloak):</p>
+<pre><code>
+OAuth2 szerver dönt:
+↓
+ID token: JWT (user info)
+Access token: JWT (user info + scope + szignó)
+                  ↑
+                  Kód által olvasható, kliens-oldal ellenőrizhető
+
+Szignó verifikáció (aszimmetrikus):
+- OAuth2 szerver privát kulcssal írja alá
+- Kliens publikus kulcsot használhat az ellenőrzéshez
+- Backend nem kell a szerver felé query-zni
+
+Backend use:
+GET /api/profile
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
+
+Backend: JWT decode + signature verify
+         ↓
+         { user_id: 42, email: "...", scope: "read" }
+</code></pre>
+</div>
+
+<h3>Gyakorlati flow: Google OAuth2 + saját JWT</h3>
+
+<p>Ez a <strong>legjobb kombináció</strong> (amit a kódpéldánkban is csináltunk):</p>
+
+<div class="fig">
+<svg viewBox="0 0 760 700" role="img" aria-label="OAuth2 + saját JWT flow, 6 lépés">
+  <defs>
+    <style>
+      .ttl{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-weight:800;}
+      .sub{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
+      .step{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-weight:800;}
+    </style>
+    <marker id="oj" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#7c5cd6"/></marker>
+  </defs>
+
+  <!-- LÉPÉS 1 -->
+  <text x="40" y="28" class="step" font-size="12.5" fill="#5a3fb0">LÉPÉS 1 — Google OAuth2 (3rd party login)</text>
+  <rect x="40" y="36" width="680" height="62" rx="10" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/>
+  <text x="60" y="58" class="ttl" font-size="13" fill="#15703f">Google OAuth2 (protokoll) kibocsát:</text>
+  <text x="60" y="76" class="sub" font-size="11.5" fill="#1f9d57">• ID token (JWT – user info)</text>
+  <text x="60" y="92" class="sub" font-size="11.5" fill="#1f9d57">• Access token (opaque – API hozzáférés)</text>
+
+  <line x1="380" y1="98" x2="380" y2="124" stroke="#7c5cd6" stroke-width="2" marker-end="url(#oj)"/>
+
+  <!-- LÉPÉS 2 -->
+  <text x="40" y="142" class="step" font-size="12.5" fill="#5a3fb0">LÉPÉS 2 — Backend leolvas &amp; ellenőriz</text>
+  <rect x="40" y="150" width="680" height="62" rx="10" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+  <text x="60" y="172" class="ttl" font-size="13" fill="#2f48ac">Backend (Node.js)</text>
+  <text x="60" y="190" class="sub" font-size="11.5" fill="#3a5bd9">• ID token dekódolása  • User adatok kinyerése (email, name, google_id)</text>
+  <text x="60" y="206" class="sub" font-size="11.5" fill="#3a5bd9">• Adatbázis: user keresése / létrehozása</text>
+
+  <line x1="380" y1="212" x2="380" y2="238" stroke="#7c5cd6" stroke-width="2" marker-end="url(#oj)"/>
+
+  <!-- LÉPÉS 3 -->
+  <text x="40" y="256" class="step" font-size="12.5" fill="#5a3fb0">LÉPÉS 3 — Saját JWT token kibocsátása</text>
+  <rect x="40" y="264" width="680" height="96" rx="10" fill="#fbf2dd" stroke="#b9821a" stroke-width="2"/>
+  <text x="60" y="286" class="ttl" font-size="13" fill="#8a6112">Backend JWT token (csak az alkalmazás ismeri)</text>
+  <text x="60" y="304" class="sub" font-size="11.5" fill="#8a6112">Header: { alg: "HS256" }</text>
+  <text x="60" y="320" class="sub" font-size="11.5" fill="#8a6112">Payload: { user_id: 42, email, oauth_provider: "google", iat, exp }</text>
+  <text x="60" y="336" class="sub" font-size="11.5" fill="#8a6112">Signature: HMAC-SHA256(header.payload + alkalmazás secret key)</text>
+
+  <line x1="380" y1="360" x2="380" y2="386" stroke="#7c5cd6" stroke-width="2" marker-end="url(#oj)"/>
+
+  <!-- LÉPÉS 4 -->
+  <text x="40" y="404" class="step" font-size="12.5" fill="#5a3fb0">LÉPÉS 4 — Kliens tárolás (localStorage/cookie)</text>
+  <rect x="40" y="412" width="680" height="50" rx="10" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+  <text x="60" y="434" class="ttl" font-size="13" fill="#2f48ac">Frontend (React)</text>
+  <text x="60" y="452" class="sub" font-size="11.5" fill="#3a5bd9">localStorage.setItem('auth_token', eyJhbGc... — saját JWT)</text>
+
+  <line x1="380" y1="462" x2="380" y2="488" stroke="#7c5cd6" stroke-width="2" marker-end="url(#oj)"/>
+
+  <!-- LÉPÉS 5 -->
+  <text x="40" y="506" class="step" font-size="12.5" fill="#5a3fb0">LÉPÉS 5 — Minden API hívásban</text>
+  <rect x="40" y="514" width="680" height="50" rx="10" fill="#efeafc" stroke="#7c5cd6" stroke-width="2"/>
+  <text x="60" y="536" class="ttl" font-size="13" fill="#5a3fb0">GET /api/profile</text>
+  <text x="60" y="554" class="sub" font-size="11.5" fill="#5a3fb0">Authorization: Bearer eyJhbGc... (saját JWT, nem Google)</text>
+
+  <line x1="380" y1="564" x2="380" y2="590" stroke="#7c5cd6" stroke-width="2" marker-end="url(#oj)"/>
+
+  <!-- LÉPÉS 6 -->
+  <text x="40" y="608" class="step" font-size="12.5" fill="#5a3fb0">LÉPÉS 6 — Backend verifikál</text>
+  <rect x="40" y="616" width="680" height="72" rx="10" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/>
+  <text x="60" y="638" class="ttl" font-size="13" fill="#15703f">Backend: JWT decode + signature ellenőrzés (alkalmazás secret key)</text>
+  <text x="60" y="656" class="sub" font-size="11.5" fill="#1f9d57">→ { user_id: 42, ... } → adatbázis query → user info</text>
+  <text x="60" y="674" class="sub" font-size="11.5" fill="#15703f">→ 200 OK + user profile</text>
+</svg>
+<p class="cap">A „legjobb kombináció”: Google OAuth2 azonosítja a felhasználót (1–2), a backend saját JWT-t bocsát ki (3), amit a kliens minden API-híváshoz használ (4–5), a backend pedig csak az aláírást verifikálja (6) — nincs Google felé minden kérésnél lekérdezés.</p>
+</div>
+
+<h3>Miért Oauth2 + saját JWT kombináció?</h3>
+
+<table>
+<tr>
+  <th>Szempont</th>
+  <th>Csak OAuth2</th>
+  <th>OAuth2 + saját JWT</th>
+</tr>
+<tr>
+  <td><strong>Login</strong></td>
+  <td>Google handle-öli (könnyű)</td>
+  <td>Google handle-öli (könnyű)</td>
+</tr>
+<tr>
+  <td><strong>API hozzáférés</strong></td>
+  <td>Google token (opaque)</td>
+  <td>Saját JWT (legálisabb)</td>
+</tr>
+<tr>
+  <td><strong>Backend terhelés</strong></td>
+  <td>Google API lekérdezés minden kérésben</td>
+  <td>Csak JWT verifikáció (gyors)</td>
+</tr>
+<tr>
+  <td><strong>Skálázhatóság</strong></td>
+  <td>Google API rate limit</td>
+  <td>Korlátlan (csak titkod szükséges)</td>
+</tr>
+<tr>
+  <td><strong>Felhasználó kijelentkezés</strong></td>
+  <td>Google revoke szükséges</td>
+  <td>Helyi blacklist (gyorsabb)</td>
+</tr>
+<tr>
+  <td><strong>Jogok (roles/scopes)</strong></td>
+  <td>Google decides</td>
+  <td>Te dönthetsz (flexibilis)</td>
+</tr>
+<tr>
+  <td><strong>Token refresh</strong></td>
+  <td>Google refresh token</td>
+  <td>Saját refresh token (control)</td>
+</tr>
+</table>
+
+<h3>Kódpélda: OAuth2 + JWT kombináció</h3>
+
+<pre><code>
+// BACKEND: OAuth2 callback után
+
+app.get('/api/auth/callback', async (req, res) => {
+  const { code } = req.query;
+
+  // 1. Google token szerzése
+  const googleTokens = await getGoogleTokens(code);
+  // googleTokens:
+  // {
+  //   access_token: "ya29...",
+  //   id_token: "eyJ...",
+  //   expires_in: 3599
+  // }
+
+  // 2. Google ID token dekódolása
+  const payload = await verifyGoogleIdToken(googleTokens.id_token);
+  // payload: { sub, email, name, picture, ... }
+
+  // 3. User keresése/létrehozása
+  let user = await User.findOne({ oauth_id: payload.sub });
+  if (!user) {
+    user = await User.create({
+      oauth_id: payload.sub,
+      oauth_provider: 'google',
+      email: payload.email,
+      name: payload.name,
+      google_access_token: googleTokens.access_token,  // opaque, tároljuk a backenden
+      expires_at: new Date(Date.now() + 3599000)
+    });
+  }
+
+  // 4. SAJÁT JWT token kibocsátása
+  const myJWT = jwt.sign(
+    {
+      user_id: user.id,
+      email: user.email,
+      oauth_provider: user.oauth_provider,
+      role: user.role
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: '24h' }
+  );
+
+  // 5. Kliens response
+  res.json({
+    token: myJWT,           // ← Ez az amit az app használ
+    user: user,
+    // Megjegyzés: Google access_token titkos marad a backenden!
+  });
+});
+
+// FRONTEND: Token tárolása és API hívások
+
+function MyApp() {
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    // OAuth2 callback után
+    const params = new URLSearchParams(window.location.search);
+    const myJWT = params.get('token');
+
+    if (myJWT) {
+      // SAJÁT JWT tárolása (nem a Google token!)
+      localStorage.setItem('auth_token', myJWT);
+      setToken(myJWT);
+    }
+  }, []);
+
+  // API hívás
+  const fetchProfile = async () => {
+    const res = await fetch('/api/profile', {
+      headers: {
+        Authorization: `Bearer ${token}`  // Saját JWT!
+      }
+    });
+    return res.json();
+  };
+
+  // ...
+}
+
+// BACKEND: API végpont
+
+app.get('/api/profile', authenticateToken, (req, res) => {
+  // authenticateToken middleware:
+  // 1. JWT dekódolása (Authorization header-ből)
+  // 2. Signature verifikáció (JWT_SECRET-el)
+  // 3. req.user = { user_id, email, oauth_provider, role }
+
+  res.json({
+    user: req.user,
+    // Ha Google API-t kell hívnunk a user google_access_token-jával:
+    // const googleData = await fetch(..., {
+    //   headers: { Authorization: `Bearer ${user.google_access_token}` }
+    // });
+  });
+});
+</code></pre>
+
+<div class="note">
+<strong>Összefoglalás – OAuth2 vs JWT:</strong>
+<ul>
+  <li><strong>OAuth2:</strong> "Ki vagy?" kérdésre válasz (autentikáció + autorizáció protokoll)</li>
+  <li><strong>JWT:</strong> "Mit tudsz?" kérdésre válasz (token formátum – adat + szignó)</li>
+  <li><strong>Kombináció:</strong> Google OAuth2-vel felhasználót azonosítasz, majd saját JWT-vel dolgozol az appban</li>
+  <li><strong>Opaque token vs JWT:</strong> Opaque (sötét, szerver oldali lookup), JWT (fényes, Client-side ellenőrizés)</li>
+  <li><strong>Best practice:</strong> OAuth2 (login) + saját JWT (API access) + refresh token (felhasználó session)</li>
+</ul>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- TOKEN REFRESH MECHANIZMUS -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="token-refresh">
+<h2>5. Token Refresh Mechanizmus</h2>
+<span class="tag">JWT</span> <span class="tag">Session Management</span>
+
+<h3>A probléma: rövid élettartamú tokenek</h3>
+
+<p>A JWT tokeneket rövidebb élettartammal szokás kiadni (15 perc, 1 óra), hogy ha egy tokent ellopnak, a kár korlátozott. De mi van, ha a felhasználó továbbra is aktív marad az appban, és nem szeretné újra beírni a jelszavát?</p>
+
+<p><strong>Megoldás: Refresh token + Access token kettő</strong></p>
+
+<div class="subsection">
+<h4>Access Token: Rövid élettartam (15 perc)</h4>
+<ul>
+  <li>Minden API kéréshez ezt használjuk</li>
+  <li>Ha meglopják, korlátozott az idő amíg hasznos</li>
+  <li>Memória, localStorage vagy HttpOnly cookie-ban</li>
+</ul>
+</div>
+
+<div class="subsection">
+<h4>Refresh Token: Hosszú élettartam (7 nap, 30 nap)</h4>
+<ul>
+  <li>CSAK az access token megújítására használható</li>
+  <li>CSAK HttpOnly cookie-ban (JavaScript nem férhet hozzá)</li>
+  <li>Szerver oldali tracking (blacklist/whitelist)</li>
+</ul>
+</div>
+
+<h3>Flow diagram:</h3>
+
+<div class="fig">
+<svg viewBox="0 0 760 470" role="img" aria-label="Token refresh sequence diagram Client és Server között">
+  <defs>
+    <style>
+      .lane{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-weight:800;}
+      .msg{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
+      .num{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-weight:800;}
+    </style>
+    <marker id="rf" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#3a5bd9"/></marker>
+    <marker id="rb" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#1f9d57"/></marker>
+    <marker id="re" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#d23b3b"/></marker>
+  </defs>
+
+  <!-- lane heads -->
+  <rect x="120" y="14" width="180" height="40" rx="9" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+  <text x="210" y="40" text-anchor="middle" class="lane" font-size="14" fill="#2f48ac">Client</text>
+  <rect x="460" y="14" width="180" height="40" rx="9" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/>
+  <text x="550" y="40" text-anchor="middle" class="lane" font-size="14" fill="#15703f">Server</text>
+
+  <!-- lifelines -->
+  <line x1="210" y1="54" x2="210" y2="452" stroke="#c9d4f7" stroke-width="2"/>
+  <line x1="550" y1="54" x2="550" y2="452" stroke="#bce6cb" stroke-width="2"/>
+
+  <!-- 1. LOGIN request -->
+  <text x="210" y="84" text-anchor="middle" class="num" font-size="11.5" fill="#2f48ac">1. POST /api/auth/login { email, password }</text>
+  <line x1="210" y1="92" x2="548" y2="92" stroke="#3a5bd9" stroke-width="2" marker-end="url(#rf)"/>
+  <!-- login response -->
+  <text x="550" y="116" text-anchor="middle" class="msg" font-size="11" fill="#15703f">access_token (15p) + refresh_token (7n, HttpOnly cookie)</text>
+  <line x1="550" y1="124" x2="212" y2="124" stroke="#1f9d57" stroke-width="2" marker-end="url(#rb)"/>
+
+  <!-- 2. API request -->
+  <text x="210" y="158" text-anchor="middle" class="num" font-size="11.5" fill="#2f48ac">2. GET /api/profile — Bearer eyJ...</text>
+  <line x1="210" y1="166" x2="548" y2="166" stroke="#3a5bd9" stroke-width="2" marker-end="url(#rf)"/>
+  <text x="550" y="190" text-anchor="middle" class="msg" font-size="11" fill="#15703f">200 OK (user profil)</text>
+  <line x1="550" y1="198" x2="212" y2="198" stroke="#1f9d57" stroke-width="2" marker-end="url(#rb)"/>
+
+  <!-- 3. expired -->
+  <text x="210" y="232" text-anchor="middle" class="num" font-size="11.5" fill="#8a6112">3. GET /api/profile — Bearer eyJ... (lejárt, 15p után)</text>
+  <line x1="210" y1="240" x2="548" y2="240" stroke="#3a5bd9" stroke-width="2" marker-end="url(#rf)"/>
+  <text x="550" y="264" text-anchor="middle" class="msg" font-size="11.5" font-weight="700" fill="#d23b3b">401 Unauthorized</text>
+  <line x1="550" y1="272" x2="212" y2="272" stroke="#d23b3b" stroke-width="2" marker-end="url(#re)"/>
+
+  <!-- 4. refresh -->
+  <text x="210" y="306" text-anchor="middle" class="num" font-size="11.5" fill="#2f48ac">4. POST /api/auth/refresh (refresh_token a cookie-ban)</text>
+  <line x1="210" y1="314" x2="548" y2="314" stroke="#3a5bd9" stroke-width="2" marker-end="url(#rf)"/>
+  <!-- server self-processing box -->
+  <rect x="430" y="324" width="240" height="56" rx="8" fill="#fbfcfe" stroke="#bce6cb" stroke-width="1.5"/>
+  <text x="550" y="342" text-anchor="middle" class="msg" font-size="10.5" fill="#15703f">• refresh_token érvényes?</text>
+  <text x="550" y="356" text-anchor="middle" class="msg" font-size="10.5" fill="#15703f">• aktuális device-ből jön?</text>
+  <text x="550" y="370" text-anchor="middle" class="msg" font-size="10.5" fill="#15703f">• új access_token generálása</text>
+  <text x="380" y="400" text-anchor="middle" class="msg" font-size="11" fill="#15703f">access_token: "eyJ... (új)", expires_in: 900</text>
+  <line x1="550" y1="408" x2="212" y2="408" stroke="#1f9d57" stroke-width="2" marker-end="url(#rb)"/>
+
+  <!-- 5. retry -->
+  <text x="210" y="436" text-anchor="middle" class="num" font-size="11.5" fill="#2f48ac">5. GET /api/profile — Bearer eyJ... (új)  →  200 OK</text>
+  <line x1="210" y1="444" x2="548" y2="444" stroke="#3a5bd9" stroke-width="2" marker-end="url(#rf)"/>
+</svg>
+<p class="cap">A refresh-flow: a lejárt access token <b>401</b>-et vált ki; a kliens a HttpOnly cookie-ban tárolt refresh tokennel új access tokent kér, majd újrapróbálja az eredeti kérést — mindezt a felhasználó észre sem veszi.</p>
+</div>
+
+<h3>Kód implementáció (Node.js + Express):</h3>
+
+<pre><code>
+// Tokens generálása
+function generateTokens(userId) {
+  const accessToken = jwt.sign(
+    { user_id: userId },
+    process.env.JWT_SECRET,
+    { expiresIn: '15m' }  // 15 perc
+  );
+
+  const refreshToken = jwt.sign(
+    { user_id: userId, type: 'refresh' },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: '7d' }   // 7 nap
+  );
+
+  return { accessToken, refreshToken };
+}
+
+// LOGIN endpoint
+app.post('/api/auth/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  // Email + password ellenőrzés
+  const user = await User.findOne({ email });
+  if (!user || !bcrypt.compareSync(password, user.password_hash)) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+
+  const { accessToken, refreshToken } = generateTokens(user.id);
+
+  // Refresh token tárolása az adatbázisban (device tracking-hez)
+  await RefreshTokenSession.create({
+    user_id: user.id,
+    token_hash: hash(refreshToken),      // Soha ne tároljunk egyszerű token-t!
+    device_fingerprint: req.headers['user-agent'],
+    ip_address: req.ip,
+    expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    active: true
+  });
+
+  res.cookie('refresh_token', refreshToken, {
+    httpOnly: true,
+    secure: true,                   // Csak HTTPS
+    sameSite: 'Strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 nap
+  });
+
+  res.json({
+    access_token: accessToken,
+    expires_in: 900  // 15 perc másodpercben
+  });
+});
+
+// REFRESH endpoint
+app.post('/api/auth/refresh', async (req, res) => {
+  const refreshToken = req.cookies.refresh_token;
+
+  if (!refreshToken) {
+    return res.status(401).json({ error: 'Refresh token missing' });
+  }
+
+  try {
+    // Refresh token ellenőrzése
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+    // Adatbázisban ellenőrzés (blacklist?)
+    const session = await RefreshTokenSession.findOne({
+      user_id: decoded.user_id,
+      token_hash: hash(refreshToken),
+      active: true,
+      expires_at: { $gt: new Date() }
+    });
+
+    if (!session) {
+      return res.status(401).json({ error: 'Refresh token invalid or revoked' });
+    }
+
+    // Új access token
+    const accessToken = jwt.sign(
+      { user_id: decoded.user_id },
+      process.env.JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+
+    res.json({
+      access_token: accessToken,
+      expires_in: 900
+    });
+
+  } catch (error) {
+    res.status(401).json({ error: 'Token refresh failed' });
+  }
+});
+
+// LOGOUT endpoint
+app.post('/api/auth/logout', async (req, res) => {
+  const refreshToken = req.cookies.refresh_token;
+
+  if (refreshToken) {
+    // Adatbázisból deaktiválás
+    await RefreshTokenSession.updateOne(
+      { token_hash: hash(refreshToken) },
+      { active: false }
+    );
+  }
+
+  res.clearCookie('refresh_token');
+  res.json({ message: 'Logged out' });
+});
+</code></pre>
+
+<h3>Kliens-oldal (React):</h3>
+
+<pre><code>
+// API Interceptor – automatikus refresh
+import axios from 'axios';
+
+const api = axios.create({ baseURL: '/api' });
+
+// Request interceptor: access token hozzáadása
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Response interceptor: 401 esetén refresh + retry
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Ha 401 és még nem próbáltuk a refresh-t
+    if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        // Refresh token request
+        const { data } = await axios.post('/api/auth/refresh');
+        
+        // Új access token tárolása
+        localStorage.setItem('access_token', data.access_token);
+
+        // Eredeti kérés újrapróbálása új token-nel
+        originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
+        return api(originalRequest);
+
+      } catch (refreshError) {
+        // Refresh sikertelen – logout szükséges
+        localStorage.removeItem('access_token');
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+// Hook: Login
+function useLogin() {
+  const login = async (email, password) => {
+    const { data } = await api.post('/auth/login', { email, password });
+    localStorage.setItem('access_token', data.access_token);
+    // refresh_token automatikusan cookie-ba kerül
+    return data;
+  };
+  return { login };
+}
+
+// Hook: API hívás
+function useApi(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.get(url)
+      .then((res) => setData(res.data))
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+  }, [url]);
+
+  return { data, loading };
+}
+
+// Komponens
+function Dashboard() {
+  const { data: profile } = useApi('/profile');
+
+  if (!profile) return &lt;p&gt;Betöltés...&lt;/p&gt;;
+
+  return &lt;h1&gt;Üdvözlet, {profile.email}!&lt;/h1&gt;;
+}
+</code></pre>
+
+<div class="note">
+<strong>Token refresh best practices:</strong>
+<ul>
+  <li><strong>Access token:</strong> 15-30 perc élettartam, memória/localStorage</li>
+  <li><strong>Refresh token:</strong> 7-30 nap, HttpOnly cookie (JS nem érhet hozzá)</li>
+  <li><strong>Adatbázis tracking:</strong> Refresh token session-öket tárolni (logout, device management)</li>
+  <li><strong>Token rotation:</strong> Refresh után új refresh token kiadása (növelt biztonság)</li>
+  <li><strong>Device fingerprint:</strong> Azonos device-ről jövő refresh-ek csak, más device = újra login</li>
+</ul>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- AKTÍV SESSION TARTÁSA -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="active-session">
+<h2>6. Aktív Session Tartása</h2>
+<span class="tag">Session Management</span>
+
+<h3>Hogyan tartsd aktívnak a felhasználó session-jét?</h3>
+
+<p>Ha egy felhasználó az app-ban marad (de nem végez kéréseket), a token lejárhat. Három stratégia:</p>
+
+<div class="subsection">
+<h4>A) Silent refresh (Heartbeat)</h4>
+<p>Háttérben időnként (pl. 10 percenként) refresh a token-t.</p>
+<pre><code>
+useEffect(() => {
+  // Hartbeat: 10 percenként refresh
+  const interval = setInterval(async () => {
+    try {
+      const response = await fetch('/api/auth/refresh', {
+        method: 'POST',
+        credentials: 'include'  // Refresh cookie elküldése
+      });
+      if (response.ok) {
+        const { access_token } = await response.json();
+        localStorage.setItem('access_token', access_token);
+      }
+    } catch (error) {
+      console.error('Silent refresh failed:', error);
+    }
+  }, 10 * 60 * 1000);  // 10 perc
+
+  return () => clearInterval(interval);
+}, []);
+</code></pre>
+</div>
+
+<div class="subsection">
+<h4>B) Activity-based refresh</h4>
+<p>Felhasználó interakció után (click, keypress) refresh a token-t.</p>
+<pre><code>
+const useActivityRefresh = () => {
+  const handleActivity = async () => {
+    // Ellenőrizni: közel van-e a token lejárata?
+    const token = localStorage.getItem('access_token');
+    const payload = parseJWT(token);
+    const now = Math.floor(Date.now() / 1000);
+
+    // Ha 2 percen belül lejár: refresh
+    if (payload.exp - now < 120) {
+      try {
+        const response = await fetch('/api/auth/refresh', {
+          method: 'POST',
+          credentials: 'include'
+        });
+        const { access_token } = await response.json();
+        localStorage.setItem('access_token', access_token);
+      } catch (error) {
+        console.error('Refresh failed:', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('click', handleActivity);
+    window.addEventListener('keypress', handleActivity);
+
+    return () => {
+      window.removeEventListener('click', handleActivity);
+      window.removeEventListener('keypress', handleActivity);
+    };
+  }, []);
+};
+</code></pre>
+</div>
+
+<div class="subsection">
+<h4>C) Sliding window (automatikus hosszabbítás)</h4>
+<p>Minden kérés után automatikusan hosszabbítod az élettartamot.</p>
+<pre><code>
+// Backend: Refresh token-nél új session időpontot beállítani
+app.post('/api/auth/refresh', async (req, res) => {
+  const refreshToken = req.cookies.refresh_token;
+  
+  // ... token ellenőrzés ...
+
+  // Új refresh token kiadása (új 7 napos window)
+  const newRefreshToken = jwt.sign(
+    { user_id: decoded.user_id, type: 'refresh' },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: '7d' }
+  );
+
+  // Régi token invalidáció + új token tárolása
+  await RefreshTokenSession.updateOne(
+    { user_id: decoded.user_id },
+    {
+      token_hash: hash(newRefreshToken),
+      issued_at: new Date(),
+      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    }
+  );
+
+  res.cookie('refresh_token', newRefreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'Strict'
+  });
+
+  res.json({ access_token: newAccessToken });
+});
+</code></pre>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- BIZTONSÁGI BEST PRACTICES -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="security">
+<h2>7. Biztonsági Best Practices</h2>
+<span class="tag">Biztonság</span>
+
+<h3>Checklist:</h3>
+
+<div class="answer-box">
+<strong>✅ Kötelezően teljesítendő:</strong>
+<ul>
+  <li><span class="ic">HTTPS</span> – Soha ne HTTP! Token = jelszó</li>
+  <li><span class="ic">HttpOnly cookie</span> – Refresh token-nek (JS nem érheti el)</li>
+  <li><span class="ic">Secure flag</span> – Cookie csak HTTPS-en küldendő</li>
+  <li><span class="ic">SameSite=Strict</span> – Cookie csak saját domainről küldendő (CSRF védelem)</li>
+  <li><span class="ic">CORS konfiguráció</span> – Csak trusted origin-ek (pl. myapp.com)</li>
+  <li><span class="ic">Password hashing</span> – bcrypt, argon2, NEM MD5/SHA1!</li>
+  <li><span class="ic">Rate limiting</span> – Login: max 5 próbálkozás / 15 perc</li>
+  <li><span class="ic">Token expiry</span> – Access: 15-60 perc, Refresh: 7-30 nap</li>
+  <li><span class="ic">Signature verification</span> – Szerver: minden token-t ellenőrizni!</li>
+  <li><span class="ic">Logout invalidáció</span> – Refresh token adatbázisból törlése/deaktiválása</li>
+</ul>
+</div>
+
+<div class="trap-box">
+<strong>⚠️ Gyakori hibák:</strong>
+<ul>
+  <li><strong>localStorage + JWT:</strong> XSS támadás könnyű (malware JS-ben olvassa ki)</li>
+  <li><strong>Nincs aláírás ellenőrzés:</strong> Hamis token elfogadása</li>
+  <li><strong>Client-side logout:</strong> Token törlése a localStorage-ből, de szerver nem tudja (malware új request-et küldhet)</li>
+  <li><strong>HTTP-n OAuth2:</strong> Authorization code és token lopás</li>
+  <li><strong>Refresh token lejárta nélkül:</strong> Végtelen hozzáférés, ha token meglopásra kerül</li>
+  <li><strong>Nincs device tracking:</strong> Refresh token x device → más gépről nem működhet</li>
+  <li><strong>JWT secret kezelés:</strong> Client-side secret (nincs titkosság!)</li>
+</ul>
+</div>
+
+<h3>Teljes login flow kód (Node.js + React):</h3>
+
+<pre><code>
+// ═══ BACKEND (Express) ═══
+
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
+
+const app = express();
+app.use(express.json());
+app.use(cookieParser());
+
+// Middleware: JWT ellenőrzés
+const authMiddleware = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ error: 'No token' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.userId = decoded.user_id;
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
+// LOGIN
+app.post('/api/auth/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(401).json({ error: 'User not found' });
+  }
+
+  const isValid = await bcrypt.compare(password, user.password_hash);
+  if (!isValid) {
+    return res.status(401).json({ error: 'Invalid password' });
+  }
+
+  const accessToken = jwt.sign(
+    { user_id: user.id, email: user.email },
+    process.env.JWT_SECRET,
+    { expiresIn: '15m' }
+  );
+
+  const refreshToken = jwt.sign(
+    { user_id: user.id, type: 'refresh' },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: '7d' }
+  );
+
+  // Session tárolása az adatbázisban
+  await RefreshTokenSession.create({
+    user_id: user.id,
+    token_hash: hash(refreshToken),
+    expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+  });
+
+  res.cookie('refresh_token', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'Strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000
+  });
+
+  res.json({ access_token: accessToken, expires_in: 900 });
+});
+
+// REFRESH
+app.post('/api/auth/refresh', async (req, res) => {
+  const refreshToken = req.cookies.refresh_token;
+
+  if (!refreshToken) {
+    return res.status(401).json({ error: 'No refresh token' });
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+    const session = await RefreshTokenSession.findOne({
+      user_id: decoded.user_id,
+      token_hash: hash(refreshToken),
+      expires_at: { $gt: new Date() }
+    });
+
+    if (!session) {
+      return res.status(401).json({ error: 'Refresh token expired' });
+    }
+
+    const newAccessToken = jwt.sign(
+      { user_id: decoded.user_id },
+      process.env.JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+
+    res.json({ access_token: newAccessToken, expires_in: 900 });
+  } catch (error) {
+    return res.status(401).json({ error: 'Invalid refresh token' });
+  }
+});
+
+// PROTECTED ENDPOINT
+app.get('/api/profile', authMiddleware, async (req, res) => {
+  const user = await User.findById(req.userId);
+  res.json({ id: user.id, email: user.email });
+});
+
+// LOGOUT
+app.post('/api/auth/logout', async (req, res) => {
+  const refreshToken = req.cookies.refresh_token;
+  if (refreshToken) {
+    await RefreshTokenSession.deleteOne({ token_hash: hash(refreshToken) });
+  }
+  res.clearCookie('refresh_token');
+  res.json({ message: 'Logged out' });
+});
+
+// ═══ FRONTEND (React + Axios) ═══
+
+import axios from 'axios';
+import { useState, useContext, createContext } from 'react';
+
+const AuthContext = createContext();
+
+function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const login = async (email, password) => {
+    const { data } = await axios.post('/api/auth/login', { email, password });
+    localStorage.setItem('access_token', data.access_token);
+    setUser({ email });
+    return data;
+  };
+
+  const logout = async () => {
+    await axios.post('/api/auth/logout', {}, { withCredentials: true });
+    localStorage.removeItem('access_token');
+    setUser(null);
+  };
+
+  const refreshToken = async () => {
+    try {
+      const { data } = await axios.post('/api/auth/refresh', {}, { withCredentials: true });
+      localStorage.setItem('access_token', data.access_token);
+      return true;
+    } catch (error) {
+      logout();
+      return false;
+    }
+  };
+
+  // API instance interceptor
+  axios.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      if (error.response?.status === 401 && !error.config._retry) {
+        error.config._retry = true;
+        if (await refreshToken()) {
+          return axios(error.config);
+        }
+      }
+      return Promise.reject(error);
+    }
+  );
+
+  axios.interceptors.request.use((config) => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  });
+
+  return (
+    &lt;AuthContext.Provider value={{ user, login, logout, refreshToken }}&gt;
+      {children}
+    &lt;/AuthContext.Provider&gt;
+  );
+}
+
+function LoginForm() {
+  const { login } = useContext(AuthContext);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await login(email, password);
+      window.location.href = '/dashboard';
+    } catch (error) {
+      alert('Login failed: ' + error.response.data.error);
+    }
+  };
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" /&gt;
+      &lt;input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" type="password" /&gt;
+      &lt;button type="submit"&gt;Bejelentkezés&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}
+</code></pre>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- ÖSSZEFOGLALÁS -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="summary">
+<h2>Interjúkérdések – gyakorlat</h2>
+<span class="tag">Interjú</span>
+
+<h3>Tipikus kérdések:</h3>
+
+<div class="answer-box">
+<strong>K1: Mi a különbség a Session és JWT között?</strong>
+<p>Session: szerver tárol (memory/Redis), cookie-ban csak ID. JWT: tokenben minden adat, szerver stateless. Session: logout könnyű (szerver törlés). JWT: logout nehéz (blacklist szükséges).</p>
+</div>
+
+<div class="answer-box">
+<strong>K2: Hogyan védekezel a CSRF támadások ellen a modern loginban?</strong>
+<p>Cookie alapú session: SameSite=Strict flag. JWT/header: X-CSRF-Token header (custom header nem küldhető cross-origin). OAuth2: State paraméter.</p>
+</div>
+
+<div class="answer-box">
+<strong>K3: Miért kell a token frissítés?</strong>
+<p>Access token: rövid élettartam (15 perc), ha ellopják, korlátozott ideig hasznos. Refresh token: hosszú élettartam (7 nap), csak frissítésre használható, HttpOnly cookie-ban (JS nem érheti el).</p>
+</div>
+
+<div class="answer-box">
+<strong>K4: Hogyan tartod aktívnak a felhasználó session-jét?</strong>
+<p>Három módszer: 1) Silent refresh (10 percenként heartbeat), 2) Activity-based (user click/keypress után), 3) Sliding window (minden refresh után új 7 napos ablak).</p>
+</div>
+
+<div class="answer-box">
+<strong>K5: Milyen biztonsági intézkedések kellenek?</strong>
+<p>HTTPS, HttpOnly cookie, Secure flag, SameSite=Strict, password hashing (bcrypt), rate limiting, token expiry, signature ellenőrzés, logout invalidáció, CORS config.</p>
+</div>
+
+<div class="note">
+<strong>Interjú tipp:</strong> Ne csak a flow-t magyarázd el, hanem konkrét biztonsági okokkal is alátámaszd! Miért HttpOnly? Miért lejárat? Miért refresh token? Az interjúztatók ezt szeretik hallani.
+</div>
+
+</div>
+
+  <footer>
+    <p><strong>📋 Kidolgozási &amp; karbantartási napló</strong></p>
+    <p>
+      <strong>Készítette:</strong> Claude Opus 4.8 (1M kontextus) · modell-azonosító <code>claude-opus-4-8[1m]</code><br>
+      <strong>Kidolgozás dátuma:</strong> 2026-06-21 · <strong>A modell tudásvágása:</strong> 2026. január (a tanítóadat vége — az azóta eltelt időszak változásait nem garantáltan ismeri)<br>
+      <strong>Precíziós szint:</strong> dizájn a közös világos témára konvertálva + tutorial-részletességű kidolgozás, SVG-vizualizációkkal.
+    </p>
+    <p><strong>Elvégzett változtatások:</strong> sötét → világos kártyás téma; hero + tartalomjegyzék; az üres első szekció eltávolítva, a cím a hero-ba került; a kulcs flow-ábrák (OAuth2 Authorization Code, OAuth2+JWT, Token refresh) és a JWT-struktúra SVG-re cserélve; elgépelés-javítások.</p>
+    <p><strong>🔧 Ha 1 év múlva frissíteni kell:</strong> dizájn a <code>:root</code> CSS-változókban (<code>.wrap</code> &gt; <code>header.hero</code> + <code>nav.toc</code> + <code>.section</code>; ábrák: inline <code>&lt;svg&gt;</code> a <code>.fig</code>-ben). Kódblokkban escape-eld a &lt; &gt; &amp; karaktereket. Verzió-érzékeny: OAuth2.1 / PKCE ajánlások, SameSite default, cookie prefixek (__Host-), third-party cookie kivezetés — frissítendők.</p>
+  </footer>
+
+</div>
+</body>
+</html>

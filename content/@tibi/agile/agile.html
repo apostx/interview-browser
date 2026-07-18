@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agile – Részletes kifejtés – Interjú</title>
+  <style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --ink:#1c2233; --muted:#5d6678; --line:#e4e8f0;
+    --brand:#3a5bd9; --brand-soft:#eaeefc; --brand-line:#c9d4f7; --brand-ink:#2f48ac;
+    --ok:#1f9d57; --ok-soft:#e6f6ec; --ok-line:#bce6cb; --ok-ink:#15703f;
+    --warn:#b9821a; --warn-soft:#fbf2dd; --warn-line:#ecd9a8; --warn-ink:#8a6112;
+    --violet:#7c5cd6; --violet-soft:#efeafc; --violet-line:#d9ccf5; --violet-ink:#5a3fb0;
+    --code-bg:#1e2433; --code-ink:#e8ecf6;
+    --mono:"SF Mono",ui-monospace,SFMono-Regular,Menlo,'Fira Code','Cascadia Code',Consolas,monospace;
+    --shadow:0 1px 2px rgba(20,30,60,.05),0 8px 24px rgba(20,30,60,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.65;padding:32px 16px 80px;}
+  .wrap{max-width:920px;margin:0 auto}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header.hero{background:linear-gradient(135deg,#3a5bd9,#5a78ec);color:#fff;border-radius:18px;padding:34px 34px 30px;box-shadow:var(--shadow);margin-bottom:24px;}
+  header.hero .kicker{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:700;opacity:.85;margin:0 0 8px;}
+  header.hero h1{margin:0 0 6px;font-size:28px;line-height:1.2;border:none;padding:0;color:#fff;}
+  header.hero p{margin:0;opacity:.94;font-size:15px;max-width:70ch;}
+  header.hero a{color:#fff;text-decoration:underline;}
+  .toc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:24px;box-shadow:var(--shadow);}
+  .toc-title{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;margin:0 0 14px;}
+  .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;}
+  .toc-grid a{display:flex;gap:8px;align-items:baseline;text-decoration:none;color:var(--ink);font-size:13px;font-weight:600;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:#fbfcfe;transition:background .15s,border-color .15s;}
+  .toc-grid a:hover{background:var(--brand-soft);border-color:var(--brand-line);color:var(--brand-ink);text-decoration:none;}
+  .toc-grid a .tnum{color:var(--brand);font-weight:800;flex:0 0 auto;min-width:1.4em;}
+  .section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 26px;margin-bottom:20px;box-shadow:var(--shadow);border-left:6px solid var(--brand);scroll-margin-top:16px;}
+  h1{color:var(--ink);}
+  h2{font-size:20px;font-weight:800;margin:0 0 10px;color:var(--ink);border:none;padding:0;}
+  h3{font-size:15px;font-weight:800;color:var(--brand-ink);margin:22px 0 8px;}
+  h4{font-size:14px;font-weight:800;color:var(--violet-ink);margin:16px 0 6px;}
+  .tag{display:inline-block;background:var(--brand-soft);color:var(--brand);padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;margin:0 6px 12px 0;}
+  p{margin:0 0 12px;font-size:15px;}
+  ul,ol{margin:0 0 14px;padding-left:22px;}
+  li{margin:5px 0;font-size:14.5px;}
+  b,strong{color:var(--ink);}
+  code{font-family:var(--mono);font-size:.92em;}
+  :not(pre)>code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;}
+  .ic{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);font-size:.9em;}
+  pre{background:var(--code-bg);border:none;border-radius:10px;padding:14px 16px;overflow-x:auto;margin:12px 0;}
+  pre code{background:none;color:var(--code-ink);padding:0;font-size:12.5px;line-height:1.55;}
+  .subsection{background:#fbfcfe;border:1px solid var(--line);border-left:4px solid var(--violet);border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0;}
+  .subsection h4{margin-top:0;}
+  .answer-box,.note,.trap-box{border-radius:11px;padding:14px 16px;margin:14px 0;font-size:14px;border:1px solid;}
+  .answer-box{background:var(--ok-soft);border-color:var(--ok-line);}
+  .answer-box strong,.answer-box b{color:var(--ok-ink);}
+  .note{background:var(--brand-soft);border-color:var(--brand-line);}
+  .note strong,.note b{color:var(--brand-ink);}
+  .trap-box{background:var(--warn-soft);border-color:var(--warn-line);}
+  .trap-box strong,.trap-box b{color:var(--warn-ink);}
+  .answer-box pre,.note pre,.trap-box pre,.subsection pre{margin:8px 0 0;}
+  .answer-box ul,.note ul,.trap-box ul,.subsection ul{margin:6px 0 0;}
+  .diagram{background:var(--code-bg);border:none;border-left:4px solid var(--violet);border-radius:10px;padding:16px 18px;margin:14px 0;font-family:var(--mono);font-size:12px;line-height:1.5;color:#a9c2e8;white-space:pre;overflow-x:auto;}
+  .fig{display:flex;flex-direction:column;align-items:center;gap:12px;background:#fbfcfe;border:1px solid var(--line);border-radius:14px;padding:22px 18px;margin:16px 0;}
+  .fig svg{width:100%;height:auto;}
+  .fig .cap{color:var(--muted);font-size:13px;text-align:center;margin:0;max-width:60ch;}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px;background:var(--card);}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;}
+  th{background:var(--brand-soft);color:var(--brand-ink);font-weight:700;}
+  table tr:nth-child(even){background:#f7f9fd;}
+  footer{color:var(--muted);font-size:12.5px;margin-top:36px;line-height:1.7;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);}
+  footer strong{color:var(--ink);}
+  footer code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);}
+  @media(max-width:560px){body{padding:20px 10px 60px}header.hero{padding:24px 20px}.section{padding:18px 16px}.toc-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="kicker">Agile · Tutorial-részletességű kifejtés</p>
+    <h1>Agile – Részletes kifejtés</h1>
+    <p>Scrum, Kanban, XP, szerepkörök, ceremóniák, artefaktumok, User Story-k, becslés, metrikák, skálázás, anti-patternek. Vissza: <a href="modszertanok.html">modszertanok.html</a></p>
+  </header>
+
+  <nav class="toc">
+    <p class="toc-title">Tartalom</p>
+    <div class="toc-grid">
+      <a href="#manifesto"><span class="tnum">1</span> Agile Manifesto</a>
+      <a href="#scrum"><span class="tnum">2</span> Scrum keretrendszer</a>
+      <a href="#user-stories"><span class="tnum">3</span> User Story-k &amp; becslés</a>
+      <a href="#kanban"><span class="tnum">4</span> Kanban</a>
+      <a href="#xp"><span class="tnum">5</span> Extreme Programming</a>
+      <a href="#comparison"><span class="tnum">6</span> Scrum vs Kanban vs XP</a>
+      <a href="#metrics"><span class="tnum">7</span> Agile metrikák</a>
+      <a href="#scaling"><span class="tnum">8</span> Agile skálázás</a>
+      <a href="#anti-patterns"><span class="tnum">9</span> Anti-patternek</a>
+      <a href="#interview"><span class="tnum">10</span> Interjúkérdések</a>
+    </div>
+  </nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- AGILE MANIFESTO RÉSZLETESEN -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="manifesto">
+<h2>1. Agile Manifesto – Értékek és elvek</h2>
+<span class="tag">Agile</span> <span class="tag">Manifesto</span>
+
+<p>Az Agile Manifesto-t 2001-ben írta 17 szoftverfejlesztő (Ken Schwaber, Jeff Sutherland, Martin Fowler, Robert C. Martin, stb.). Nem egy módszertan, hanem <strong>értékrend</strong>.</p>
+
+<h3>4 alapérték:</h3>
+
+<div class="subsection">
+<table>
+<tr><th>#</th><th>Bal oldal (fontosabb)</th><th>vs</th><th>Jobb oldal (szintén fontos)</th></tr>
+<tr><td>1</td><td><strong>Egyének és interakciók</strong></td><td>fölött</td><td>Folyamatok és eszközök</td></tr>
+<tr><td>2</td><td><strong>Működő szoftver</strong></td><td>fölött</td><td>Átfogó dokumentáció</td></tr>
+<tr><td>3</td><td><strong>Ügyféllel való együttműködés</strong></td><td>fölött</td><td>Szerződéses tárgyalás</td></tr>
+<tr><td>4</td><td><strong>Változásra reagálás</strong></td><td>fölött</td><td>Terv követése</td></tr>
+</table>
+</div>
+
+<h3>12 alapelv – részletesen:</h3>
+
+<div class="subsection">
+<h4>1. Korai és folyamatos szállítás</h4>
+<p>"A legmagasabb prioritásunk az ügyfél elégedettség korai és folyamatos, értékes szoftver szállításával."</p>
+<p><strong>Gyakorlat:</strong> Ne 6 hónap után szállíts egy nagy release-t. Inkább 2 hetente szállíts egy kisebb, de működő verziót. Az ügyfél hamarabb lát eredményt, és korábban tud visszajelezni.</p>
+</div>
+
+<div class="subsection">
+<h4>2. Változó követelmények elfogadása</h4>
+<p>"Szívesen fogadjuk a változó követelményeket, akár a fejlesztés későbbi szakaszában is. Az agilis folyamatok a változást a megrendelő versenyelőnyére kamatoztatják."</p>
+<p><strong>Gyakorlat:</strong> Ha az ügyfél a sprint közepén rájön, hogy valami mást akar, az nem baj – a következő sprintbe bekerül. A Product Backlog élő dokumentum.</p>
+</div>
+
+<div class="subsection">
+<h4>3. Gyakori szállítás</h4>
+<p>"Működő szoftvert szállíts gyakran, néhány héttől pár hónapig, minél rövidebb időközönként."</p>
+<p><strong>Gyakorlat:</strong> Sprint = 1-4 hét. Minden sprint végén potenciálisan szállítható termék (potentially shippable increment).</p>
+</div>
+
+<div class="subsection">
+<h4>4. Üzleti és technikai emberek együttműködése</h4>
+<p>"Üzleti és technikai emberek nap mint nap együtt dolgoznak a projekt egész időtartama alatt."</p>
+<p><strong>Gyakorlat:</strong> A Product Owner (üzleti oldal) és a fejlesztők rendszeresen kommunikálnak. A PO részt vesz a daily standup-on, sprint review-n.</p>
+</div>
+
+<div class="subsection">
+<h4>5. Motivált egyének</h4>
+<p>"Motivált egyének köré szervezd a projekteket. Adj nekik megfelelő környezetet és támogatást, és bízz bennük."</p>
+<p><strong>Gyakorlat:</strong> Önszervező csapatok. A menedzsment nem mondja meg, HOW – csak a WHAT és WHY-t.</p>
+</div>
+
+<div class="subsection">
+<h4>6. Személyes kommunikáció</h4>
+<p>"Az információ átadásának leghatékonyabb módja a személyes beszélgetés."</p>
+<p><strong>Gyakorlat:</strong> Daily standup (személyesen vagy video), pair programming, whiteboard session-ök. Slack/email csak kiegészítő.</p>
+</div>
+
+<div class="subsection">
+<h4>7. Működő szoftver mint mérce</h4>
+<p>"Működő szoftver az elsődleges mércéje a haladásnak."</p>
+<p><strong>Gyakorlat:</strong> Nem a dokumentumok száma, nem a meeting-ek száma, hanem: hány feature van kész és működik? Sprint Demo-n megmutatjuk.</p>
+</div>
+
+<div class="subsection">
+<h4>8. Fenntartható tempó</h4>
+<p>"Az agilis folyamatok fenntartható fejlesztési tempót támogatnak. A szponzorok, fejlesztők és felhasználók képesek legyenek állandó tempót tartani."</p>
+<p><strong>Gyakorlat:</strong> Nem overtime, nem crunch – tartós, egyenletes tempó. A burnout az Agile ellensége.</p>
+</div>
+
+<div class="subsection">
+<h4>9. Technikai kiválóság</h4>
+<p>"A technikai kiválóságra és a jó tervezésre való folyamatos figyelem fokozza az agilitást."</p>
+<p><strong>Gyakorlat:</strong> Clean code, refactoring, TDD, code review, CI/CD. Technikai adósság kezelése minden sprintben.</p>
+</div>
+
+<div class="subsection">
+<h4>10. Egyszerűség</h4>
+<p>"Az egyszerűség – a nem elvégzett munka maximalizálásának művészete – alapvető."</p>
+<p><strong>Gyakorlat:</strong> YAGNI (You Ain't Gonna Need It). Ne építs előre feature-öket, amiket senki nem kért. A legegyszerűbb megoldás a legjobb.</p>
+</div>
+
+<div class="subsection">
+<h4>11. Önszervező csapatok</h4>
+<p>"A legjobb architektúrák, követelmények és tervek önszervező csapatoktól származnak."</p>
+<p><strong>Gyakorlat:</strong> A csapat dönti el, hogyan oldja meg a feladatot. Nincs mikromenedzsment.</p>
+</div>
+
+<div class="subsection">
+<h4>12. Rendszeres reflexió (Retrospektív)</h4>
+<p>"A csapat rendszeres időközönként elgondolkozik azon, hogyan lehetne hatékonyabb, és ennek megfelelően változtatja viselkedését."</p>
+<p><strong>Gyakorlat:</strong> Sprint Retrospective – minden sprint végén: mi ment jól? mi nem? mit változtatunk?</p>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SCRUM RÉSZLETESEN -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="scrum">
+<h2>2. Scrum – A legnépszerűbb Agile keretrendszer</h2>
+<span class="tag">Scrum</span> <span class="tag">Keretrendszer</span>
+
+<p>A Scrum egy <strong>könnyűsúlyú keretrendszer</strong> (nem módszertan!), amely segít csapatoknak komplex problémákat megoldani, miközben produktívan és kreatívan szállítanak értékes termékeket. Alkotók: Ken Schwaber és Jeff Sutherland (1995).</p>
+
+<h3>Scrum 3 pillére:</h3>
+
+<div class="subsection">
+<ol>
+  <li><strong>Átláthatóság (Transparency):</strong> Minden érintett látja a folyamatot, a backlog-ot, a sprint haladást</li>
+  <li><strong>Ellenőrzés (Inspection):</strong> Rendszeres ellenőrzés (Daily Standup, Sprint Review, Retrospective)</li>
+  <li><strong>Alkalmazkodás (Adaptation):</strong> Ha valami nem működik, változtatunk rajta</li>
+</ol>
+</div>
+
+<!-- SZEREPKÖRÖK -->
+<h3>Scrum szerepkörök (3 szerepkör):</h3>
+
+<div class="subsection">
+<h4>1. Product Owner (PO)</h4>
+<p>A termék "gazdája". Egyetlen személy, aki a termék értékéért felel.</p>
+<ul>
+  <li><strong>Felelősség:</strong> Product Backlog kezelése, prioritizálása</li>
+  <li><strong>Döntés:</strong> MIT fejlesszünk? Melyik feature fontosabb?</li>
+  <li><strong>Stakeholder:</strong> Az üzleti oldalt képviseli a csapat felé</li>
+  <li><strong>Acceptance Criteria:</strong> Meghatározza, mikor "kész" egy feature</li>
+  <li><strong>Sprint Review:</strong> Elfogadja vagy elutasítja a sprint eredményt</li>
+</ul>
+
+<div class="trap-box">
+<strong>Gyakori hiba:</strong> A PO "mindent akar, most". Jó PO = priorizál, nemet mond, fókuszál az értékre.
+</div>
+</div>
+
+<div class="subsection">
+<h4>2. Scrum Master (SM)</h4>
+<p>A Scrum folyamat "őre". Servant-leader – szolgáló vezető.</p>
+<ul>
+  <li><strong>Felelősség:</strong> Scrum szabályok betartatása, akadályok elhárítása</li>
+  <li><strong>Nem projekt menedzser!</strong> Nem mond a csapatnak, MIT csináljon</li>
+  <li><strong>Facilitátor:</strong> Ceremóniák levezénylése (standup, retro, planning)</li>
+  <li><strong>Coach:</strong> A csapat Agile érettségének fejlesztése</li>
+  <li><strong>Shield:</strong> Védi a csapatot a külső zavarástól (pl. ad-hoc kérések)</li>
+</ul>
+
+<div class="note">
+<strong>SM vs PM (Project Manager):</strong>
+<ul>
+  <li>PM: feladatokat oszt ki, ütemtervet készít, riportol a menedzsmentnek</li>
+  <li>SM: segíti a csapatot önszerveződni, akadályokat hárít el, coachol</li>
+  <li>Agile-ban nincs hagyományos PM – a PO és SM együtt töltik be ezt a szerepet</li>
+</ul>
+</div>
+</div>
+
+<div class="subsection">
+<h4>3. Development Team (Fejlesztői csapat)</h4>
+<p>A tényleges munkát végző csapat (fejlesztők, tesztelők, designer-ek).</p>
+<ul>
+  <li><strong>Méret:</strong> 3–9 fő (ideális: 5-7 fő). Kisebb = kommunikáció könnyebb, nagyobb = több kapacitás</li>
+  <li><strong>Cross-functional:</strong> Minden szükséges tudás a csapatban van (frontend, backend, teszt, DevOps)</li>
+  <li><strong>Önszervező:</strong> A csapat dönti el, HOGYAN oldják meg a feladatot</li>
+  <li><strong>Nincs hierarchia:</strong> Nincs "senior developer" pozíció a Scrum-ban – mindenki egyenlő fejlesztő</li>
+  <li><strong>Kollektív felelősség:</strong> A csapat együtt felel a sprint eredményéért</li>
+</ul>
+</div>
+
+<!-- ARTEFAKTUMOK -->
+<h3>Scrum artefaktumok (3 artefaktum):</h3>
+
+<div class="subsection">
+<h4>1. Product Backlog</h4>
+<p>A termékkel kapcsolatos összes ismert feladat <strong>priorizált listája</strong>. Egyetlen forrás az igazságra (single source of truth).</p>
+<ul>
+  <li>A <strong>Product Owner</strong> kezeli és priorizálja</li>
+  <li>Tartalmaz: User Story-kat, bug-okat, technikai feladatokat, spike-okat</li>
+  <li><strong>Élő dokumentum</strong> – folyamatosan változik, bővül, finomodik</li>
+  <li><strong>Refinement:</strong> A csapat rendszeresen (hetente) finomítja a backlog elemeit</li>
+</ul>
+
+<pre><code>Product Backlog (példa):
+┌────┬─────────────────────────────────────┬──────────┬───────┐
+│ #  │ Item                                │ Prioritás│ SP    │
+├────┼─────────────────────────────────────┼──────────┼───────┤
+│ 1  │ Felhasználó regisztráció            │ Must     │ 8     │
+│ 2  │ Email verifikáció                   │ Must     │ 5     │
+│ 3  │ Google OAuth login                  │ Should   │ 13    │
+│ 4  │ Jelszó reset                        │ Must     │ 5     │
+│ 5  │ Profil szerkesztés                  │ Should   │ 3     │
+│ 6  │ Avatar feltöltés                    │ Could    │ 3     │
+│ 7  │ Dark mode                           │ Won't    │ 2     │
+│ 8  │ [SPIKE] Redis cache kutatás         │ Should   │ 3     │
+│ 9  │ [BUG] Login 500 error iOS-on        │ Must     │ 2     │
+│ 10 │ [TECH] CI/CD pipeline beállítás     │ Must     │ 8     │
+└────┴─────────────────────────────────────┴──────────┴───────┘
+SP = Story Point</code></pre>
+</div>
+
+<div class="subsection">
+<h4>2. Sprint Backlog</h4>
+<p>A <strong>jelenlegi sprint</strong> feladatai – a Product Backlog egy részhalmaza, amelyet a csapat a Sprint Planning-en kiválasztott.</p>
+<ul>
+  <li>A fejlesztői csapat "tulajdona" – ők döntik el, mit vállalnak</li>
+  <li>A sprint alatt NEM változik (Sprint Goal fix)</li>
+  <li>Task-okra bontva: minden User Story-hoz konkrét feladatok</li>
+</ul>
+
+<pre><code>Sprint Backlog (Sprint #5):
+Sprint Goal: "Felhasználó be tud regisztrálni és be tud lépni"
+
+┌────────────────────────────┬──────────────┬──────────┐
+│ User Story                 │ Tasks        │ Status   │
+├────────────────────────────┼──────────────┼──────────┤
+│ US-1: Regisztráció         │ API endpoint │ Done     │
+│                            │ DB migráció  │ Done     │
+│                            │ Frontend form│ In Prog  │
+│                            │ Validáció    │ To Do    │
+│                            │ Unit tesztek │ To Do    │
+├────────────────────────────┼──────────────┼──────────┤
+│ US-2: Email verifikáció    │ Email service│ In Prog  │
+│                            │ Token gen.   │ To Do    │
+│                            │ Verify page  │ To Do    │
+├────────────────────────────┼──────────────┼──────────┤
+│ BUG-9: Login 500 iOS       │ Investigate  │ Done     │
+│                            │ Fix + test   │ In Prog  │
+└────────────────────────────┴──────────────┴──────────┘</code></pre>
+</div>
+
+<div class="subsection">
+<h4>3. Increment (Termék növekmény)</h4>
+<p>A sprint eredménye: <strong>potenciálisan szállítható termék</strong> (Potentially Shippable Increment). Minden sprint végén a korábbi incrementekre épül.</p>
+<ul>
+  <li>Meg kell felelnie a <strong>Definition of Done</strong> (DoD) követelményeknek</li>
+  <li>Nem "félig kész" – vagy teljes, vagy nem számít</li>
+  <li>Sprint Review-n bemutatjuk az érintetteknek</li>
+</ul>
+</div>
+
+<!-- CEREMÓNIÁK -->
+<h3>Scrum ceremóniák (5 esemény):</h3>
+
+<div class="subsection">
+<h4>1. Sprint Planning (Sprint tervezés)</h4>
+<table>
+<tr><th>Szempont</th><th>Részlet</th></tr>
+<tr><td><strong>Mikor?</strong></td><td>Sprint elején</td></tr>
+<tr><td><strong>Időtartam?</strong></td><td>Max 8 óra (4 hetes sprint), max 2 óra (1 hetes sprint)</td></tr>
+<tr><td><strong>Ki vesz részt?</strong></td><td>PO, SM, Development Team</td></tr>
+<tr><td><strong>Input?</strong></td><td>Product Backlog (priorizált)</td></tr>
+<tr><td><strong>Output?</strong></td><td>Sprint Backlog + Sprint Goal</td></tr>
+</table>
+
+<p><strong>Két kérdést válaszol meg:</strong></p>
+<ol>
+  <li><strong>MIT?</strong> – Mely backlog elemeket vállaljuk be erre a sprintre? (PO priorizál, csapat becsül)</li>
+  <li><strong>HOGYAN?</strong> – Hogyan oldjuk meg? Task-okra bontás, technikai tervezés</li>
+</ol>
+
+<pre><code>Sprint Planning menet:
+1. PO bemutatja a Sprint Goal-t és a top backlog item-eket
+2. Csapat kérdez, tisztáz, megérti az acceptance criteria-t
+3. Csapat becsli a story point-okat (ha még nincs)
+4. Csapat kiválasztja, mennyit vállal (velocity alapján)
+5. Task-okra bontás (minden item → 2-8 órás feladatok)
+6. Sprint Backlog véglegesítés
+
+Példa Sprint Goal:
+"A felhasználó regisztrálhat email-lel, verifikálhatja fiókját,
+ és bejelentkezhet. A login 500 iOS bug javítva."</code></pre>
+</div>
+
+<div class="subsection">
+<h4>2. Daily Scrum (Daily Standup)</h4>
+<table>
+<tr><th>Szempont</th><th>Részlet</th></tr>
+<tr><td><strong>Mikor?</strong></td><td>Minden nap, ugyanabban az időben</td></tr>
+<tr><td><strong>Időtartam?</strong></td><td>Max 15 perc (SZIGORÚAN!)</td></tr>
+<tr><td><strong>Ki vesz részt?</strong></td><td>Development Team (SM facilitál, PO opcionális)</td></tr>
+<tr><td><strong>Állva!</strong></td><td>Ezért "standup" – a rövid formát ösztönzi</td></tr>
+</table>
+
+<p><strong>Minden csapattag 3 kérdésre válaszol:</strong></p>
+<ol>
+  <li><strong>Tegnap</strong> mit csináltam, ami segíti a Sprint Goal elérését?</li>
+  <li><strong>Ma</strong> mit fogok csinálni?</li>
+  <li>Van-e <strong>akadály</strong> (impediment), ami blokkolja a munkámat?</li>
+</ol>
+
+<div class="trap-box">
+<strong>Anti-pattern-ek:</strong>
+<ul>
+  <li>"A standup 45 percig tart" → Nem standup, hanem meeting. Max 15 perc!</li>
+  <li>"Mindenki a Scrum Master-nek beszél" → A csapat egymásnak beszél, nem a SM-nek</li>
+  <li>"Részletes technikai megbeszélés" → Utána, "parking lot"-ban</li>
+  <li>"Csak státusz riport" → Nem riport, hanem szinkronizálás és akadályok felszínre hozása</li>
+</ul>
+</div>
+</div>
+
+<div class="subsection">
+<h4>3. Sprint Review (Sprint bemutató)</h4>
+<table>
+<tr><th>Szempont</th><th>Részlet</th></tr>
+<tr><td><strong>Mikor?</strong></td><td>Sprint végén</td></tr>
+<tr><td><strong>Időtartam?</strong></td><td>Max 4 óra (4 hetes sprint), max 1 óra (1 hetes sprint)</td></tr>
+<tr><td><strong>Ki vesz részt?</strong></td><td>PO, SM, Dev Team + stakeholderek (menedzsment, ügyfél)</td></tr>
+<tr><td><strong>Cél?</strong></td><td>A kész increment bemutatása, visszajelzés gyűjtése</td></tr>
+</table>
+
+<p><strong>Menet:</strong></p>
+<ol>
+  <li>A csapat <strong>demózza a működő szoftvert</strong> (nem prezentáció, hanem éles demo!)</li>
+  <li>PO jelzi, mely backlog itemek "Done" és melyek nem</li>
+  <li>Stakeholderek visszajeleznek, kérdeznek, javaslatot tesznek</li>
+  <li>Product Backlog frissítése a visszajelzések alapján</li>
+</ol>
+
+<div class="trap-box">
+<strong>Anti-pattern:</strong> "PowerPoint prezentáció" a Sprint Review-n → TILOS! Működő szoftvert mutass, ne slideokat.
+</div>
+</div>
+
+<div class="subsection">
+<h4>4. Sprint Retrospective (Visszatekintés)</h4>
+<table>
+<tr><th>Szempont</th><th>Részlet</th></tr>
+<tr><td><strong>Mikor?</strong></td><td>Sprint végén, a Sprint Review UTÁN</td></tr>
+<tr><td><strong>Időtartam?</strong></td><td>Max 3 óra (4 hetes sprint), max 45 perc (1 hetes sprint)</td></tr>
+<tr><td><strong>Ki vesz részt?</strong></td><td>SM + Development Team (PO opcionális)</td></tr>
+<tr><td><strong>Cél?</strong></td><td>Folyamatjavítás – hogyan dolgozzunk jobban?</td></tr>
+</table>
+
+<p><strong>Népszerű formátumok:</strong></p>
+
+<pre><code>A) "Start – Stop – Continue":
+   ┌─────────────────┬─────────────────┬─────────────────┐
+   │ START           │ STOP            │ CONTINUE        │
+   │ (Amit kezdjünk) │ (Amit hagyjunk)│ (Ami jól megy)  │
+   ├─────────────────┼─────────────────┼─────────────────┤
+   │ Pair programming│ Esti deploy     │ Code review     │
+   │ TDD alkalmazása │ 1 órás standup  │ Sprint demos    │
+   │ Spike-ok sprint │ Scope creep     │ Automatizált    │
+   │   elején        │                 │   tesztek       │
+   └─────────────────┴─────────────────┴─────────────────┘
+
+B) "Mad – Sad – Glad":
+   😡 Mad:  "A deploy pipeline 20 percig tart"
+   😢 Sad:  "Nem volt elég idő a refaktorálásra"
+   😊 Glad: "A csapat jól kommunikált, a sprint goal teljesült"
+
+C) "4L – Liked, Learned, Lacked, Longed for":
+   Liked:    "A pair programming session hasznos volt"
+   Learned:  "Docker compose-t tanultunk"
+   Lacked:   "Kevés volt a tesztelési idő"
+   Longed:   "Automatizált E2E teszteket szeretnénk"</code></pre>
+
+<p><strong>A retro eredménye:</strong> 1-3 konkrét action item, amit a következő sprintben megvalósítunk.</p>
+</div>
+
+<div class="subsection">
+<h4>5. Backlog Refinement (Grooming)</h4>
+<table>
+<tr><th>Szempont</th><th>Részlet</th></tr>
+<tr><td><strong>Mikor?</strong></td><td>Sprint közben, hetente 1-2 óra</td></tr>
+<tr><td><strong>Ki vesz részt?</strong></td><td>PO + Development Team</td></tr>
+<tr><td><strong>Cél?</strong></td><td>A Product Backlog finomítása: story-k tisztázása, becslés, prioritás frissítése</td></tr>
+</table>
+
+<ul>
+  <li>User Story-k <strong>részletezése</strong> (acceptance criteria hozzáadása)</li>
+  <li><strong>Becslés</strong> (story pointok meghatározása)</li>
+  <li>Túl nagy story-k <strong>splittelése</strong> (bontása)</li>
+  <li>Irreleváns item-ek <strong>eltávolítása</strong></li>
+</ul>
+</div>
+
+<!-- SPRINT LIFECYCLE -->
+<h3>Sprint lifecycle – teljes áttekintés:</h3>
+
+<div class="fig">
+<svg viewBox="0 0 760 250" role="img" aria-label="Sprint életciklus idővonal">
+  <defs>
+    <marker id="slArrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#5d6678"/>
+    </marker>
+  </defs>
+  <text x="380" y="24" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="800" fill="#1c2233">Sprint #5 életciklus (2 hetes sprint)</text>
+
+  <!-- baseline timeline -->
+  <line x1="40" y1="150" x2="720" y2="150" stroke="#5d6678" stroke-width="2" marker-end="url(#slArrow)"/>
+
+  <!-- Day markers -->
+  <text x="44" y="178" font-family="sans-serif" font-size="11" fill="#5d6678">1. nap (hétfő)</text>
+  <text x="555" y="178" font-family="sans-serif" font-size="11" fill="#5d6678">10. nap (péntek)</text>
+
+  <!-- Planning -->
+  <rect x="40" y="100" width="120" height="40" rx="8" fill="#eaeefc" stroke="#c9d4f7"/>
+  <text x="100" y="118" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#2f48ac">Sprint Planning</text>
+  <text x="100" y="133" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#5d6678">2–4 óra · Goal + Backlog</text>
+  <line x1="100" y1="140" x2="100" y2="150" stroke="#5d6678" stroke-width="2"/>
+
+  <!-- Dailies (repeated) -->
+  <g font-family="sans-serif">
+    <circle cx="230" cy="150" r="6" fill="#1f9d57"/>
+    <circle cx="300" cy="150" r="6" fill="#1f9d57"/>
+    <circle cx="370" cy="150" r="6" fill="#1f9d57"/>
+    <circle cx="440" cy="150" r="6" fill="#1f9d57"/>
+  </g>
+  <text x="335" y="200" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#15703f">Daily Standup (minden nap, 15 perc)</text>
+  <line x1="335" y1="186" x2="335" y2="158" stroke="#bce6cb" stroke-width="2"/>
+
+  <!-- Refinement -->
+  <rect x="365" y="100" width="120" height="40" rx="8" fill="#efeafc" stroke="#d9ccf5"/>
+  <text x="425" y="118" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#5a3fb0">Refinement</text>
+  <text x="425" y="133" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#5d6678">sprint közben · 1–2 óra</text>
+  <line x1="425" y1="140" x2="425" y2="150" stroke="#5d6678" stroke-width="2"/>
+
+  <!-- Review -->
+  <rect x="540" y="60" width="130" height="38" rx="8" fill="#fbf2dd" stroke="#ecd9a8"/>
+  <text x="605" y="78" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#8a6112">Sprint Review</text>
+  <text x="605" y="92" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#5d6678">demo · 1–2 óra</text>
+  <line x1="605" y1="98" x2="605" y2="150" stroke="#ecd9a8" stroke-width="2"/>
+
+  <!-- Retro -->
+  <rect x="540" y="106" width="130" height="38" rx="8" fill="#e6f6ec" stroke="#bce6cb"/>
+  <text x="605" y="124" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#15703f">Retrospective</text>
+  <text x="605" y="138" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#5d6678">action itemek · 1 óra</text>
+  <line x1="605" y1="144" x2="605" y2="150" stroke="#5d6678" stroke-width="2"/>
+
+  <!-- Result -->
+  <rect x="40" y="216" width="680" height="26" rx="8" fill="#ffffff" stroke="#e4e8f0"/>
+  <text x="380" y="233" text-anchor="middle" font-family="sans-serif" font-size="11.5" fill="#1c2233"><tspan font-weight="700">Eredmény:</tspan> Potentially Shippable Increment → Sprint #6 Planning a következő hétfőn</text>
+</svg>
+<p class="cap">A sprint idővonala: Planning a nyitón, napi standupok végig, Refinement menet közben, majd Review és Retrospective a zárónapon.</p>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- USER STORY-K ÉS ESTIMATION -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="user-stories">
+<h2>3. User Story-k és becslés (Estimation)</h2>
+<span class="tag">User Story</span> <span class="tag">Estimation</span>
+
+<h3>User Story formátum:</h3>
+
+<div class="subsection">
+<pre><code>Mint [felhasználói szerep],
+szeretnék [funkciót / cselekvést],
+azért, hogy [üzleti érték / cél].
+
+Példák:
+
+US-1: "Mint felhasználó, szeretnék regisztrálni email-lel,
+       azért, hogy hozzáférhessek a szolgáltatáshoz."
+
+US-2: "Mint admin, szeretnék felhasználókat listázni,
+       azért, hogy moderálhassam a fiókokat."
+
+US-3: "Mint vásárló, szeretném a kosárba tenni a terméket,
+       azért, hogy később megvásárolhassam."</code></pre>
+</div>
+
+<h3>INVEST kritériumok (jó User Story):</h3>
+
+<table>
+<tr><th>Betű</th><th>Jelentés</th><th>Magyarázat</th></tr>
+<tr><td><strong>I</strong></td><td>Independent</td><td>Más story-tól függetlenül fejleszthető</td></tr>
+<tr><td><strong>N</strong></td><td>Negotiable</td><td>Részletek megbeszélhetők (nem merev specifikáció)</td></tr>
+<tr><td><strong>V</strong></td><td>Valuable</td><td>Üzleti értéket szállít a felhasználónak</td></tr>
+<tr><td><strong>E</strong></td><td>Estimable</td><td>A csapat meg tudja becsülni a méretét</td></tr>
+<tr><td><strong>S</strong></td><td>Small</td><td>Elég kicsi, hogy egy sprintbe beférjen</td></tr>
+<tr><td><strong>T</strong></td><td>Testable</td><td>Egyértelmű, mikor "kész" (acceptance criteria)</td></tr>
+</table>
+
+<h3>Acceptance Criteria (AC) – elfogadási kritériumok:</h3>
+
+<div class="subsection">
+<pre><code>US-1: Felhasználó regisztráció
+
+Given: A felhasználó a /register oldalon van
+When:  Kitölti az email, jelszó, jelszó megerősítés mezőket
+       és megnyomja a "Regisztráció" gombot
+Then:  A rendszer:
+       - Létrehozza a felhasználó fiókot
+       - Küld egy verifikációs emailt
+       - Átirányítja a /verify oldalra
+       - Hibaüzenet jelenik meg, ha az email már foglalt
+       - Hibaüzenet jelenik meg, ha a jelszó &lt; 8 karakter
+       - Hibaüzenet jelenik meg, ha a két jelszó nem egyezik</code></pre>
+</div>
+
+<h3>Definition of Done (DoD):</h3>
+
+<div class="answer-box">
+<strong>Egy story akkor "Done", ha:</strong>
+<ul>
+  <li>A kód megírva és code review-n átment</li>
+  <li>Unit tesztek megírva és zöldek (min. 80% coverage)</li>
+  <li>Integrációs tesztek megírva és zöldek</li>
+  <li>Acceptance criteria-k teljesülnek</li>
+  <li>CI/CD pipeline-on átment (build + test + lint)</li>
+  <li>Staging környezeten tesztelve</li>
+  <li>Dokumentáció frissítve (ha szükséges)</li>
+  <li>PO elfogadta a Sprint Review-n</li>
+</ul>
+</div>
+
+<h3>Story Point becslés:</h3>
+
+<div class="subsection">
+<h4>Mi a Story Point?</h4>
+<p>A feladat <strong>relatív méretének/komplexitásának</strong> mértéke. NEM idő! Három tényező kombinációja:</p>
+<ul>
+  <li><strong>Komplexitás:</strong> Mennyire bonyolult a megoldás?</li>
+  <li><strong>Erőfeszítés:</strong> Mennyi munka van benne?</li>
+  <li><strong>Bizonytalanság:</strong> Mennyire ismeretlen a terület?</li>
+</ul>
+</div>
+
+<div class="subsection">
+<h4>Fibonacci skála:</h4>
+<pre><code>1, 2, 3, 5, 8, 13, 21 (néha: ∞, ?, ☕)
+
+Referencia példák:
+  1 SP  = Gomb szövegének megváltoztatása, apró CSS fix
+  2 SP  = Egyszerű CRUD végpont (GET /users)
+  3 SP  = Form validáció + hibaüzenet megjelenítés
+  5 SP  = Komplett felhasználó regisztráció (API + UI + teszt)
+  8 SP  = OAuth2 integráció (Google login)
+  13 SP = Komplett fizetési flow (Stripe integráció)
+  21 SP = Teljes keresési rendszer (Elasticsearch + UI)
+  ∞     = Túl nagy → bontani kell!
+  ?     = Nem tudjuk megbecsülni → spike szükséges</code></pre>
+</div>
+
+<div class="subsection">
+<h4>Planning Poker:</h4>
+<p>A legelterjedtebb becslési technika. A csapat egyszerre "szavaz" a story méretéről.</p>
+
+<pre><code>Planning Poker menet:
+1. PO elmagyarázza a User Story-t
+2. Csapat kérdez, tisztáz
+3. Mindenki TITOKBAN választ egy Fibonacci kártyát
+4. Egyszerre felfedik (nem befolyásolják egymást!)
+5. Ha nagy eltérés van (pl. 3 vs 13):
+   - A legkisebb és a legnagyobb érték megindokolja
+   - Második kör szavazás
+6. Konszenzus → Story Point rögzítése
+
+Példa:
+  Story: "Google OAuth2 login"
+  Anna: 8    (mert ismeri az OAuth-ot)
+  Péter: 13  (mert sosem csinált OAuth-ot)
+  Gábor: 8   (mert hasonlót csinált)
+
+  Megbeszélés: Péter-nek nincs tapasztalata, de Anna segít
+  Második kör: 8, 8, 8 → Konszenzus: 8 SP</code></pre>
+</div>
+
+<h3>Velocity (csapat sebesség):</h3>
+
+<div class="subsection">
+<p>A velocity a csapat által <strong>egy sprint alatt teljesített story pontok száma</strong>. Az előző 3-5 sprint átlaga alapján számítjuk.</p>
+
+<pre><code>Sprint velocity példa:
+  Sprint #1: 18 SP (új csapat, tanulás)
+  Sprint #2: 24 SP
+  Sprint #3: 28 SP
+  Sprint #4: 26 SP
+  Sprint #5: 30 SP
+
+  Átlagos velocity: (18+24+28+26+30) / 5 = 25.2 SP
+
+  Sprint #6 Planning:
+  → A csapat ~25 SP-nyi munkát vállalhat be
+  → Nem többet! (fenntartható tempó)</code></pre>
+
+<div class="trap-box">
+<strong>Anti-pattern-ek a velocity-val:</strong>
+<ul>
+  <li>"A menedzsment összehasonlítja a csapatok velocity-ját" → TILOS! A SP relatív, csapatonként más</li>
+  <li>"Növeljük a velocity-t!" → A cél nem a velocity növelése, hanem az értékszállítás</li>
+  <li>"Story point inflation" → A csapat egyre nagyobb pontokat ad, hogy jobb legyen a velocity</li>
+</ul>
+</div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- KANBAN -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="kanban">
+<h2>4. Kanban</h2>
+<span class="tag">Kanban</span> <span class="tag">Folyamatos flow</span>
+
+<p>A Kanban a Toyota Production System-ből származik (japánul: "vizuális kártya"). Fő elve: <strong>vizualizáld a munkát, korlátozd a folyamatban lévő feladatokat (WIP), optimalizáld a flow-t</strong>.</p>
+
+<h3>Kanban 4 alapelve:</h3>
+
+<div class="subsection">
+<ol>
+  <li><strong>Vizualizáld a munkát</strong> – Kanban board (oszlopok: To Do, In Progress, Review, Done)</li>
+  <li><strong>WIP limit (Work In Progress limit)</strong> – Max. hány feladat lehet egy-egy oszlopban</li>
+  <li><strong>Flow kezelése</strong> – Figyeld a feladatok áramlási sebességét (lead time, cycle time)</li>
+  <li><strong>Folyamatos fejlesztés</strong> – Rendszeresen javítsd a folyamatot (kaizen)</li>
+</ol>
+</div>
+
+<h3>Kanban board:</h3>
+
+<div class="fig">
+<svg viewBox="0 0 760 320" role="img" aria-label="Kanban board WIP limitekkel">
+  <!-- columns -->
+  <g font-family="sans-serif">
+    <!-- column headers -->
+    <g>
+      <rect x="14"  y="14" width="138" height="36" rx="7" fill="#eaeefc" stroke="#c9d4f7"/>
+      <text x="83"  y="32" text-anchor="middle" font-size="12.5" font-weight="800" fill="#2f48ac">BACKLOG</text>
+      <text x="83"  y="45" text-anchor="middle" font-size="10.5" fill="#5d6678">(∞)</text>
+
+      <rect x="160" y="14" width="138" height="36" rx="7" fill="#eaeefc" stroke="#c9d4f7"/>
+      <text x="229" y="32" text-anchor="middle" font-size="12.5" font-weight="800" fill="#2f48ac">TO DO</text>
+      <text x="229" y="45" text-anchor="middle" font-size="10.5" fill="#8a6112" font-weight="700">WIP: 5</text>
+
+      <rect x="306" y="14" width="138" height="36" rx="7" fill="#fbf2dd" stroke="#ecd9a8"/>
+      <text x="375" y="32" text-anchor="middle" font-size="12.5" font-weight="800" fill="#8a6112">IN PROGRESS</text>
+      <text x="375" y="45" text-anchor="middle" font-size="10.5" fill="#d23b3b" font-weight="800">WIP: 3</text>
+
+      <rect x="452" y="14" width="138" height="36" rx="7" fill="#efeafc" stroke="#d9ccf5"/>
+      <text x="521" y="32" text-anchor="middle" font-size="12.5" font-weight="800" fill="#5a3fb0">REVIEW</text>
+      <text x="521" y="45" text-anchor="middle" font-size="10.5" fill="#d23b3b" font-weight="800">WIP: 2</text>
+
+      <rect x="598" y="14" width="148" height="36" rx="7" fill="#e6f6ec" stroke="#bce6cb"/>
+      <text x="672" y="32" text-anchor="middle" font-size="12.5" font-weight="800" fill="#15703f">DONE</text>
+      <text x="672" y="45" text-anchor="middle" font-size="10.5" fill="#5d6678">(∞)</text>
+    </g>
+
+    <!-- column lanes -->
+    <rect x="14"  y="58" width="138" height="248" rx="7" fill="#ffffff" stroke="#e4e8f0"/>
+    <rect x="160" y="58" width="138" height="248" rx="7" fill="#ffffff" stroke="#e4e8f0"/>
+    <rect x="306" y="58" width="138" height="248" rx="7" fill="#ffffff" stroke="#e4e8f0"/>
+    <rect x="452" y="58" width="138" height="248" rx="7" fill="#ffffff" stroke="#e4e8f0"/>
+    <rect x="598" y="58" width="148" height="248" rx="7" fill="#ffffff" stroke="#e4e8f0"/>
+
+    <!-- BACKLOG cards (lightweight list-style) -->
+    <g font-size="11" fill="#1c2233">
+      <rect x="24" y="68"  width="118" height="22" rx="5" fill="#f7f9fd" stroke="#e4e8f0"/><text x="34" y="83">Feature X</text>
+      <rect x="24" y="96"  width="118" height="22" rx="5" fill="#f7f9fd" stroke="#e4e8f0"/><text x="34" y="111">Feature Y</text>
+      <rect x="24" y="124" width="118" height="22" rx="5" fill="#f7f9fd" stroke="#e4e8f0"/><text x="34" y="139">Feature Z</text>
+      <rect x="24" y="152" width="118" height="22" rx="5" fill="#f7f9fd" stroke="#e4e8f0"/><text x="34" y="167">Bug #55</text>
+      <rect x="24" y="180" width="118" height="22" rx="5" fill="#f7f9fd" stroke="#e4e8f0"/><text x="34" y="195">Tech debt</text>
+    </g>
+
+    <!-- TO DO cards -->
+    <g font-size="11.5" font-weight="700">
+      <rect x="170" y="68"  width="118" height="30" rx="6" fill="#eaeefc" stroke="#c9d4f7"/><text x="180" y="87" fill="#2f48ac">Bug #42</text>
+      <rect x="170" y="104" width="118" height="30" rx="6" fill="#eaeefc" stroke="#c9d4f7"/><text x="180" y="123" fill="#2f48ac">US-14</text>
+      <rect x="170" y="140" width="118" height="30" rx="6" fill="#eaeefc" stroke="#c9d4f7"/><text x="180" y="159" fill="#2f48ac">US-15</text>
+    </g>
+
+    <!-- IN PROGRESS cards (column full: 3 = WIP limit) -->
+    <g font-size="11.5" font-weight="700">
+      <rect x="316" y="68"  width="118" height="30" rx="6" fill="#fbf2dd" stroke="#ecd9a8"/><text x="326" y="87" fill="#8a6112">US-12</text>
+      <rect x="316" y="104" width="118" height="30" rx="6" fill="#fbf2dd" stroke="#ecd9a8"/><text x="326" y="123" fill="#8a6112">Bug #38</text>
+      <rect x="316" y="140" width="118" height="30" rx="6" fill="#fcebeb" stroke="#d23b3b" stroke-dasharray="4 3"/><text x="326" y="159" fill="#d23b3b">WIP tele!</text>
+    </g>
+
+    <!-- REVIEW cards -->
+    <g font-size="11.5" font-weight="700">
+      <rect x="462" y="68"  width="118" height="30" rx="6" fill="#efeafc" stroke="#d9ccf5"/><text x="472" y="87" fill="#5a3fb0">US-10</text>
+    </g>
+
+    <!-- DONE cards -->
+    <g font-size="11.5" font-weight="700">
+      <rect x="608" y="68"  width="128" height="30" rx="6" fill="#e6f6ec" stroke="#bce6cb"/><text x="618" y="87" fill="#15703f">US-8</text>
+      <rect x="608" y="104" width="128" height="30" rx="6" fill="#e6f6ec" stroke="#bce6cb"/><text x="618" y="123" fill="#15703f">US-9</text>
+    </g>
+  </g>
+</svg>
+<p class="cap">Vizualizált munka oszloponként, explicit WIP limitekkel. Ha az „In Progress” betelik (WIP: 3), TILOS új feladatot elkezdeni, amíg egy el nem készül — ez a befejezésre kényszerít, nem az elkezdésre.</p>
+</div>
+
+<h3>Kanban metrikák:</h3>
+
+<table>
+<tr><th>Metrika</th><th>Definíció</th><th>Miért fontos?</th></tr>
+<tr>
+  <td><strong>Lead Time</strong></td>
+  <td>A feladat backlog-ba kerülésétől a Done-ig eltelt idő</td>
+  <td>Az ügyfél szemszögéből: mennyi időbe telt a kérés teljesítése?</td>
+</tr>
+<tr>
+  <td><strong>Cycle Time</strong></td>
+  <td>A feladat elkezdésétől (In Progress) a Done-ig eltelt idő</td>
+  <td>A csapat hatékonysága: milyen gyorsan dolgozzuk fel a feladatot?</td>
+</tr>
+<tr>
+  <td><strong>Throughput</strong></td>
+  <td>Egységnyi idő alatt elvégzett feladatok száma (pl. 12 item/hét)</td>
+  <td>A csapat kapacitása: hány feladatot tudunk kiszolgálni?</td>
+</tr>
+<tr>
+  <td><strong>WIP</strong></td>
+  <td>Folyamatban lévő feladatok száma</td>
+  <td>Ha magas → context switching, lassulás. Ha alacsony → kapacitás maradt</td>
+</tr>
+</table>
+
+<h3>Cumulative Flow Diagram (CFD):</h3>
+
+<div class="fig">
+<svg viewBox="0 0 720 360" role="img" aria-label="Cumulative Flow Diagram">
+  <!-- axes -->
+  <line x1="60" y1="30" x2="60" y2="300" stroke="#5d6678" stroke-width="1.5"/>
+  <line x1="60" y1="300" x2="640" y2="300" stroke="#5d6678" stroke-width="1.5"/>
+  <text x="60" y="20" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#5d6678">Items</text>
+  <text x="645" y="320" text-anchor="end" font-family="sans-serif" font-size="12" font-weight="700" fill="#5d6678">Idő →</text>
+
+  <!-- stacked bands (bottom = Done, top = To Do). Drawn bottom-up so upper bands overlay -->
+  <!-- Done (bottom band) -->
+  <path d="M60,300 L60,250 L300,200 L640,120 L640,300 Z" fill="#e6f6ec" stroke="#1f9d57" stroke-width="1.5"/>
+  <!-- Review band -->
+  <path d="M60,250 L60,225 L300,170 L640,95 L640,120 L300,200 L60,250 Z" fill="#efeafc" stroke="#7c5cd6" stroke-width="1.5"/>
+  <!-- In Progress band -->
+  <path d="M60,225 L60,200 L300,135 L640,65 L640,95 L300,170 L60,225 Z" fill="#fbf2dd" stroke="#b9821a" stroke-width="1.5"/>
+  <!-- To Do band (top) -->
+  <path d="M60,200 L60,170 L300,95 L640,45 L640,65 L300,135 L60,200 Z" fill="#eaeefc" stroke="#3a5bd9" stroke-width="1.5"/>
+
+  <!-- band labels at right -->
+  <g font-family="sans-serif" font-size="12" font-weight="700">
+    <text x="648" y="215" fill="#15703f">Done</text>
+    <text x="648" y="112" fill="#5a3fb0">Review</text>
+    <text x="648" y="82"  fill="#8a6112">In Progress</text>
+    <text x="648" y="55"  fill="#2f48ac">To Do</text>
+  </g>
+</svg>
+<p class="cap">Halmozott sávdiagram: minden sáv vastagsága egy munkaállapot itemszámát mutatja az idő függvényében. Ideális esetben a sávok egyenletesen, párhuzamosan emelkednek (stabil flow). Egyre vastagodó „Review” sáv → bottleneck a code review-ban; táguló „In Progress” → túl sok WIP, nincs befejezés.</p>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- EXTREME PROGRAMMING (XP) -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="xp">
+<h2>5. Extreme Programming (XP)</h2>
+<span class="tag">XP</span> <span class="tag">Technikai kiválóság</span>
+
+<p>Kent Beck, 1996. A technikai kiválóságra fókuszáló Agile keretrendszer. Az XP a programozási <strong>gyakorlatokat</strong> helyezi előtérbe (nem a menedzsmentet).</p>
+
+<h3>XP 5 értéke:</h3>
+
+<table>
+<tr><th>Érték</th><th>Magyarázat</th></tr>
+<tr><td><strong>Kommunikáció</strong></td><td>Folyamatos, nyílt kommunikáció a csapatban és az ügyféllel</td></tr>
+<tr><td><strong>Egyszerűség</strong></td><td>A legegyszerűbb megoldás, ami működik. YAGNI.</td></tr>
+<tr><td><strong>Visszajelzés</strong></td><td>Gyors feedback loop-ok: tesztek, ügyfél, csapat</td></tr>
+<tr><td><strong>Bátorság</strong></td><td>Bátran refaktorálj, dobj ki kódot, változtass</td></tr>
+<tr><td><strong>Tisztelet</strong></td><td>Mindenki hozzájárulása értékes</td></tr>
+</table>
+
+<h3>XP 12 gyakorlata:</h3>
+
+<div class="subsection">
+<h4>Programozási gyakorlatok:</h4>
+<table>
+<tr><th>Gyakorlat</th><th>Leírás</th></tr>
+<tr>
+  <td><strong>Pair Programming</strong></td>
+  <td>Két fejlesztő egy gépen: Driver (ír) + Navigator (gondolkodik). 15 percenként cserélnek. Jobb kódminőség, tudásmegosztás.</td>
+</tr>
+<tr>
+  <td><strong>TDD (Test-Driven Development)</strong></td>
+  <td>Red → Green → Refactor ciklus. Először teszt, aztán kód. Biztosítja, hogy a kód tesztelhető és helyes.</td>
+</tr>
+<tr>
+  <td><strong>Continuous Integration</strong></td>
+  <td>Naponta többször commit + build + teszt. Mindig integrálható állapotban van a kód.</td>
+</tr>
+<tr>
+  <td><strong>Refactoring</strong></td>
+  <td>Folyamatos kódjavítás a viselkedés megváltoztatása nélkül. Csökkenti a technikai adósságot.</td>
+</tr>
+<tr>
+  <td><strong>Simple Design</strong></td>
+  <td>A legegyszerűbb megoldás, ami átmegy a teszteken. Nincs over-engineering.</td>
+</tr>
+<tr>
+  <td><strong>Collective Code Ownership</strong></td>
+  <td>Bárki módosíthatja a kód bármely részét. Nincs "ez az én kódom".</td>
+</tr>
+<tr>
+  <td><strong>Coding Standards</strong></td>
+  <td>Egységes kódolási szabályok (lint, formázás, elnevezés). Könnyebb olvashatóság.</td>
+</tr>
+</table>
+</div>
+
+<div class="subsection">
+<h4>Tervezési és szállítási gyakorlatok:</h4>
+<table>
+<tr><th>Gyakorlat</th><th>Leírás</th></tr>
+<tr>
+  <td><strong>Planning Game</strong></td>
+  <td>Rövid tervezési session-ök, ahol az ügyfél priorizál és a csapat becsül (hasonló a Sprint Planning-hez).</td>
+</tr>
+<tr>
+  <td><strong>Small Releases</strong></td>
+  <td>Kis, gyakori release-ek (hetente vagy kéthetente). Gyors visszajelzés az ügyféltől.</td>
+</tr>
+<tr>
+  <td><strong>On-Site Customer</strong></td>
+  <td>Az ügyfél fizikailag jelen van a csapatnál (vagy nagyon elérhető). Azonnali kérdésmegválaszolás.</td>
+</tr>
+<tr>
+  <td><strong>Sustainable Pace</strong></td>
+  <td>40 órás munkahét, nincs overtime. Hosszú távon fenntartható tempó.</td>
+</tr>
+<tr>
+  <td><strong>Metaphor</strong></td>
+  <td>Közös nyelv a rendszer leírására ("a rendszer olyan, mint egy könyvtár" → catalog, shelf, borrow).</td>
+</tr>
+</table>
+</div>
+
+<h3>TDD ciklus részletesen:</h3>
+
+<div class="fig">
+<svg viewBox="0 0 560 360" role="img" aria-label="TDD ciklus: Red, Green, Refactor">
+  <defs>
+    <marker id="tddArrow" markerWidth="10" markerHeight="10" refX="6" refY="5" orient="auto">
+      <path d="M0,0 L9,5 L0,10 Z" fill="#5d6678"/>
+    </marker>
+  </defs>
+  <text x="280" y="28" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="800" fill="#1c2233">TDD ciklus</text>
+  <text x="280" y="48" text-anchor="middle" font-family="sans-serif" font-size="12.5" fill="#5d6678">Red → Green → Refactor</text>
+
+  <!-- curved arrows around the loop (3 segments) -->
+  <path d="M232,118 A140,140 0 0 1 328,118" fill="none" stroke="#5d6678" stroke-width="2" marker-end="url(#tddArrow)"/>
+  <path d="M372,170 A140,140 0 0 1 320,290" fill="none" stroke="#5d6678" stroke-width="2" marker-end="url(#tddArrow)"/>
+  <path d="M240,290 A140,140 0 0 1 188,170" fill="none" stroke="#5d6678" stroke-width="2" marker-end="url(#tddArrow)"/>
+
+  <!-- RED node (top-left) -->
+  <circle cx="180" cy="150" r="58" fill="#fcebeb" stroke="#d23b3b" stroke-width="2.5"/>
+  <text x="180" y="138" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="800" fill="#d23b3b">1. RED</text>
+  <text x="180" y="158" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5d6678">Írj egy FAILING</text>
+  <text x="180" y="172" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5d6678">tesztet</text>
+
+  <!-- GREEN node (top-right) -->
+  <circle cx="380" cy="150" r="58" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2.5"/>
+  <text x="380" y="138" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="800" fill="#1f9d57">2. GREEN</text>
+  <text x="380" y="158" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5d6678">Legegyszerűbb</text>
+  <text x="380" y="172" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5d6678">kód → PASS</text>
+
+  <!-- REFACTOR node (bottom) -->
+  <circle cx="280" cy="300" r="58" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2.5"/>
+  <text x="280" y="293" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="800" fill="#3a5bd9">3. REFACTOR</text>
+  <text x="280" y="311" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5d6678">Tisztítsd a kódot</text>
+  <text x="280" y="325" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5d6678">(tesztek zöldek)</text>
+</svg>
+<p class="cap">Az ismétlődő hurok: előbb a megbukó teszt (RED), majd a minimális implementáció ami zöldre vált (GREEN), végül a kód tisztítása megtartott zöld tesztekkel (REFACTOR) — aztán vissza a következő tesztre. Szabály: soha ne írj kódot teszt nélkül, és soha ne írj több kódot, mint ami a teszthez kell.</p>
+</div>
+
+<pre><code>// TDD példa: isEmailValid() függvény
+
+// 1. RED – Teszt (FAILING)
+test('valid email returns true', () => {
+  expect(isEmailValid('user@example.com')).toBe(true);
+});
+// → FAIL: isEmailValid is not defined
+
+// 2. GREEN – Minimális implementáció
+function isEmailValid(email) {
+  return email.includes('@');
+}
+// → PASS ✅
+
+// 3. RED – Következő teszt
+test('email without domain returns false', () => {
+  expect(isEmailValid('user@')).toBe(false);
+});
+// → FAIL
+
+// 4. GREEN – Bővítés
+function isEmailValid(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+// → PASS ✅
+
+// 5. REFACTOR – Konstansba kiemeljük a regex-et
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function isEmailValid(email) {
+  return EMAIL_REGEX.test(email);
+}
+// → Tesztek továbbra is PASS ✅</code></pre>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SCRUM vs KANBAN vs XP ÖSSZEHASONLÍTÁS -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="comparison">
+<h2>6. Scrum vs Kanban vs XP – Részletes összehasonlítás</h2>
+<span class="tag">Összehasonlítás</span>
+
+<table>
+<tr>
+  <th>Szempont</th>
+  <th>Scrum</th>
+  <th>Kanban</th>
+  <th>XP</th>
+</tr>
+<tr>
+  <td><strong>Iteráció</strong></td>
+  <td>Fix sprint (1-4 hét)</td>
+  <td>Nincs fix iteráció, folyamatos flow</td>
+  <td>Rövid iteráció (1-2 hét)</td>
+</tr>
+<tr>
+  <td><strong>Szerepkörök</strong></td>
+  <td>PO, SM, Dev Team (kötelező)</td>
+  <td>Nincs kötelező szerepkör</td>
+  <td>Coach, Customer, Programmer, Tester</td>
+</tr>
+<tr>
+  <td><strong>Tervezés</strong></td>
+  <td>Sprint Planning (sprint elején)</td>
+  <td>Just-in-time (amikor kell)</td>
+  <td>Planning Game (iteráció elején)</td>
+</tr>
+<tr>
+  <td><strong>Változás</strong></td>
+  <td>Sprint alatt NEM változik a Sprint Backlog</td>
+  <td>Bármikor jöhet új feladat</td>
+  <td>Iteráció alatt változhat</td>
+</tr>
+<tr>
+  <td><strong>Mérce</strong></td>
+  <td>Velocity (SP/sprint)</td>
+  <td>Lead Time, Cycle Time, Throughput</td>
+  <td>Velocity + kódminőség metrikák</td>
+</tr>
+<tr>
+  <td><strong>WIP limit</strong></td>
+  <td>Implicit (sprint kapacitás)</td>
+  <td>Explicit (oszloponként)</td>
+  <td>Implicit</td>
+</tr>
+<tr>
+  <td><strong>Board</strong></td>
+  <td>Sprint Board (sprint végén ürítjük)</td>
+  <td>Kanban Board (folyamatos)</td>
+  <td>Task Board</td>
+</tr>
+<tr>
+  <td><strong>Ceremóniák</strong></td>
+  <td>5 (Planning, Daily, Review, Retro, Refinement)</td>
+  <td>Opcionális (standup, review)</td>
+  <td>Planning Game, Standup, Retro</td>
+</tr>
+<tr>
+  <td><strong>Technikai gyakorlat</strong></td>
+  <td>Nem kötelező (de ajánlott)</td>
+  <td>Nem kötelező</td>
+  <td>Kötelező (TDD, Pair, CI, Refactoring)</td>
+</tr>
+<tr>
+  <td><strong>Fókusz</strong></td>
+  <td>Projekt menedzsment + szállítás</td>
+  <td>Folyamat optimalizálás + flow</td>
+  <td>Technikai kiválóság + kódminőség</td>
+</tr>
+<tr>
+  <td><strong>Ideális</strong></td>
+  <td>Termékfejlesztés, új feature-ök</td>
+  <td>Support, ops, karbantartás, folyamatos flow</td>
+  <td>Magas minőségű szoftver, komplex logika</td>
+</tr>
+</table>
+
+<div class="answer-box">
+<strong>A gyakorlatban: Scrum + XP kombináció a legnépszerűbb!</strong>
+<p>Scrum biztosítja a keretet (sprint, ceremóniák, szerepkörök), XP biztosítja a technikai gyakorlatokat (TDD, Pair Programming, CI, Refactoring). A kettő együtt erős.</p>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- AGILE METRIKÁK -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="metrics">
+<h2>7. Agile metrikák</h2>
+<span class="tag">Metrikák</span> <span class="tag">Mérés</span>
+
+<h3>Burndown Chart:</h3>
+
+<div class="fig">
+<svg viewBox="0 0 720 360" role="img" aria-label="Burndown chart">
+  <!-- axes -->
+  <line x1="64" y1="30" x2="64" y2="300" stroke="#5d6678" stroke-width="1.5"/>
+  <line x1="64" y1="300" x2="660" y2="300" stroke="#5d6678" stroke-width="1.5"/>
+  <text x="64" y="20" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#5d6678">Story Points</text>
+  <text x="660" y="322" text-anchor="end" font-family="sans-serif" font-size="12" font-weight="700" fill="#5d6678">Sprint napok →</text>
+
+  <!-- y gridlines/labels: 35 at y=40, 0 at y=300 (scale 260/35 ≈ 7.43) -->
+  <g font-family="sans-serif" font-size="10.5" fill="#5d6678">
+    <line x1="64" y1="40"  x2="640" y2="40"  stroke="#eef1f7"/><text x="58" y="44"  text-anchor="end">35</text>
+    <line x1="64" y1="114" x2="640" y2="114" stroke="#eef1f7"/><text x="58" y="118" text-anchor="end">25</text>
+    <line x1="64" y1="188" x2="640" y2="188" stroke="#eef1f7"/><text x="58" y="192" text-anchor="end">15</text>
+    <line x1="64" y1="263" x2="640" y2="263" stroke="#eef1f7"/><text x="58" y="267" text-anchor="end">5</text>
+    <text x="58" y="304" text-anchor="end">0</text>
+  </g>
+  <!-- x labels 1..10 across x=80..620 -->
+  <g font-family="sans-serif" font-size="10" fill="#5d6678" text-anchor="middle">
+    <text x="80"  y="316">1</text><text x="140" y="316">2</text><text x="200" y="316">3</text>
+    <text x="260" y="316">4</text><text x="320" y="316">5</text><text x="380" y="316">6</text>
+    <text x="440" y="316">7</text><text x="500" y="316">8</text><text x="560" y="316">9</text><text x="620" y="316">10</text>
+  </g>
+
+  <!-- ideal line: 35 SP day1 (y=40) to 0 day10 (y=300) -->
+  <line x1="80" y1="40" x2="620" y2="300" stroke="#3a5bd9" stroke-width="2.5" stroke-dasharray="7 5"/>
+  <text x="430" y="150" font-family="sans-serif" font-size="12" font-weight="700" fill="#2f48ac">Ideális vonal</text>
+
+  <!-- actual (zig-zag) line: starts behind ideal, dips below at end -->
+  <polyline points="80,40 140,55 200,70 260,95 320,150 380,170 440,200 500,235 560,275 620,300"
+            fill="none" stroke="#d23b3b" stroke-width="2.5"/>
+  <g fill="#d23b3b">
+    <circle cx="80"  cy="40"  r="3.5"/><circle cx="140" cy="55"  r="3.5"/><circle cx="200" cy="70"  r="3.5"/>
+    <circle cx="260" cy="95"  r="3.5"/><circle cx="320" cy="150" r="3.5"/><circle cx="380" cy="170" r="3.5"/>
+    <circle cx="440" cy="200" r="3.5"/><circle cx="500" cy="235" r="3.5"/><circle cx="560" cy="275" r="3.5"/><circle cx="620" cy="300" r="3.5"/>
+  </g>
+  <text x="250" y="115" font-family="sans-serif" font-size="12" font-weight="700" fill="#d23b3b">Tényleges haladás</text>
+</svg>
+<p class="cap">A maradék munka csökkenése sprint közben. Ha a tényleges vonal az ideális FÖLÖTT halad → lemaradás, veszélyben a Sprint Goal. Ha ALATTA → előbbre járunk, akár több munka is bevállalható.</p>
+</div>
+
+<h3>Burnup Chart:</h3>
+
+<div class="fig">
+<svg viewBox="0 0 720 360" role="img" aria-label="Burnup chart">
+  <!-- axes -->
+  <line x1="64" y1="30" x2="64" y2="300" stroke="#5d6678" stroke-width="1.5"/>
+  <line x1="64" y1="300" x2="660" y2="300" stroke="#5d6678" stroke-width="1.5"/>
+  <text x="64" y="20" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#5d6678">Story Points</text>
+  <text x="660" y="322" text-anchor="end" font-family="sans-serif" font-size="12" font-weight="700" fill="#5d6678">Sprint napok →</text>
+
+  <!-- y labels -->
+  <g font-family="sans-serif" font-size="10.5" fill="#5d6678">
+    <line x1="64" y1="60"  x2="640" y2="60"  stroke="#eef1f7"/><text x="58" y="64"  text-anchor="end">35</text>
+    <line x1="64" y1="120" x2="640" y2="120" stroke="#eef1f7"/><text x="58" y="124" text-anchor="end">25</text>
+    <line x1="64" y1="180" x2="640" y2="180" stroke="#eef1f7"/><text x="58" y="184" text-anchor="end">15</text>
+    <line x1="64" y1="240" x2="640" y2="240" stroke="#eef1f7"/><text x="58" y="244" text-anchor="end">5</text>
+    <text x="58" y="304" text-anchor="end">0</text>
+  </g>
+
+  <!-- total scope line: starts ~25 (y=120), rises in steps to 35 (y=60) as scope grows -->
+  <polyline points="80,120 200,120 200,90 380,90 380,60 620,60"
+            fill="none" stroke="#7c5cd6" stroke-width="2.5"/>
+  <text x="430" y="50" font-family="sans-serif" font-size="12" font-weight="700" fill="#5a3fb0">Total Scope</text>
+
+  <!-- done line: rises from 0 (y=300) towards meeting scope -->
+  <polyline points="80,300 140,288 200,258 260,228 320,198 380,162 440,132 500,108 560,78 620,60"
+            fill="none" stroke="#1f9d57" stroke-width="2.5"/>
+  <g fill="#1f9d57">
+    <circle cx="140" cy="288" r="3.5"/><circle cx="200" cy="258" r="3.5"/><circle cx="260" cy="228" r="3.5"/>
+    <circle cx="320" cy="198" r="3.5"/><circle cx="380" cy="162" r="3.5"/><circle cx="440" cy="132" r="3.5"/>
+    <circle cx="500" cy="108" r="3.5"/><circle cx="560" cy="78"  r="3.5"/><circle cx="620" cy="60"  r="3.5"/>
+  </g>
+  <text x="300" y="250" font-family="sans-serif" font-size="12" font-weight="700" fill="#15703f">Kész munka</text>
+</svg>
+<p class="cap">Egy emelkedő „kész munka” vonal és egy külön „total scope” vonal. Előny a burndown-nal szemben: a scope VÁLTOZÁSA is látszik — ha nő a hatókör, az nem rejti el a tényleges haladást.</p>
+</div>
+
+<h3>Összes fontos metrika:</h3>
+
+<table>
+<tr><th>Metrika</th><th>Scrum</th><th>Kanban</th><th>Mit mér?</th></tr>
+<tr>
+  <td><strong>Velocity</strong></td>
+  <td>Igen</td>
+  <td>Nem</td>
+  <td>Kész SP-k száma sprintenként</td>
+</tr>
+<tr>
+  <td><strong>Sprint Burndown</strong></td>
+  <td>Igen</td>
+  <td>Nem</td>
+  <td>Sprint haladás napról napra</td>
+</tr>
+<tr>
+  <td><strong>Lead Time</strong></td>
+  <td>Opcionális</td>
+  <td>Igen</td>
+  <td>Backlog-tól Done-ig eltelt idő</td>
+</tr>
+<tr>
+  <td><strong>Cycle Time</strong></td>
+  <td>Opcionális</td>
+  <td>Igen</td>
+  <td>In Progress-től Done-ig eltelt idő</td>
+</tr>
+<tr>
+  <td><strong>Throughput</strong></td>
+  <td>Opcionális</td>
+  <td>Igen</td>
+  <td>Elvégzett item-ek / időegység</td>
+</tr>
+<tr>
+  <td><strong>CFD</strong></td>
+  <td>Opcionális</td>
+  <td>Igen</td>
+  <td>Cumulative Flow – bottleneck-ek azonosítása</td>
+</tr>
+<tr>
+  <td><strong>Sprint Goal Success Rate</strong></td>
+  <td>Igen</td>
+  <td>Nem</td>
+  <td>Hány sprint-ben teljesítettük a sprint goal-t?</td>
+</tr>
+<tr>
+  <td><strong>Escaped Defects</strong></td>
+  <td>Mindkettő</td>
+  <td>Mindkettő</td>
+  <td>Élesben talált bugok száma</td>
+</tr>
+</table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- AGILE SKÁLÁZÁS -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="scaling">
+<h2>8. Agile skálázás – Több csapat koordinációja</h2>
+<span class="tag">SAFe</span> <span class="tag">LeSS</span> <span class="tag">Skálázás</span>
+
+<p>Amikor egy termékén <strong>több Scrum csapat</strong> dolgozik, szükség van a koordinációra. Három fő keretrendszer:</p>
+
+<table>
+<tr>
+  <th>Keretrendszer</th>
+  <th>Méret</th>
+  <th>Komplexitás</th>
+  <th>Fő jellemző</th>
+</tr>
+<tr>
+  <td><strong>SAFe</strong> (Scaled Agile Framework)</td>
+  <td>50–125+ fő</td>
+  <td>Magas</td>
+  <td>PI Planning, ART, portfólió szint</td>
+</tr>
+<tr>
+  <td><strong>LeSS</strong> (Large-Scale Scrum)</td>
+  <td>10–80 fő (2-8 csapat)</td>
+  <td>Közepes</td>
+  <td>Minimális szabály, egy Product Backlog, egy PO</td>
+</tr>
+<tr>
+  <td><strong>Scrum@Scale</strong></td>
+  <td>Bármilyen méret</td>
+  <td>Közepes</td>
+  <td>Scrum of Scrums, fraktál skálázás</td>
+</tr>
+</table>
+
+<h3>Scrum of Scrums:</h3>
+
+<div class="subsection">
+<p>A legegyszerűbb skálázási technika: minden csapat egy "nagykövetet" küld egy koordinációs standup-ra.</p>
+
+<div class="diagram">
+      Csapat A          Csapat B          Csapat C
+     (5-9 fő)          (5-9 fő)          (5-9 fő)
+         │                  │                  │
+         ↓                  ↓                  ↓
+     ┌────────────────────────────────────────────┐
+     │         SCRUM of SCRUMS                    │
+     │  (Hetente 2-3x, 15-30 perc)               │
+     │                                            │
+     │  Kérdések:                                 │
+     │  1. Mit csinált a csapatod az utolsó       │
+     │     Scrum of Scrums óta?                   │
+     │  2. Mit fog csinálni a következőig?        │
+     │  3. Milyen akadályok vannak?               │
+     │  4. Milyen függőségek vannak más            │
+     │     csapatok felé?                         │
+     └────────────────────────────────────────────┘</div>
+</div>
+
+<h3>SAFe PI Planning – részletesebben:</h3>
+
+<div class="subsection">
+<pre><code>PI Planning (Program Increment Planning)
+  - 2 napos, face-to-face esemény
+  - Minden csapat részt vesz (50-125 fő egy teremben)
+  - Negyedévente (10-12 hetente)
+
+1. NAP:
+  09:00 Business Context (menedzsment prezentáció)
+  10:00 Product/Solution Vision (PO-k bemutatják a roadmap-et)
+  11:00 Architecture Vision (tech lead-ek)
+  12:00 Ebéd
+  13:00 Team Breakouts #1 (csapatok terveznek)
+        → Minden csapat: Sprint planok a következő 5 sprintre
+        → Függőségek azonosítása (más csapatokkal)
+  16:00 Draft Plan Review (bemutatás és visszajelzés)
+  17:00 Management Review
+
+2. NAP:
+  09:00 Planning Adjustments (módosítások)
+  10:00 Team Breakouts #2 (véglegesítés)
+  12:00 Final Plan Review
+  13:00 PI Objectives és Risks
+  14:00 Confidence Vote (fist-of-five: 1-5 ujj)
+        → Ha az átlag &lt; 3: újratervezés szükséges!
+  15:00 PI Planning ZÁRT
+
+Eredmény:
+  - PI Objectives (csapatonként)
+  - Program Board (függőségek vizualizálása)
+  - Risks & Impediments lista</code></pre>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- ANTI-PATTERNEK -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="anti-patterns">
+<h2>9. Agile anti-patternek – Mit NE csinálj!</h2>
+<span class="tag">Anti-pattern</span> <span class="tag">Hibák</span>
+
+<div class="trap-box">
+<h3>Szervezeti anti-patternek:</h3>
+<table>
+<tr><th>Anti-pattern</th><th>Leírás</th><th>Megoldás</th></tr>
+<tr>
+  <td><strong>"Agile in name only"</strong></td>
+  <td>Waterfall-t csinálunk, de Scrum-nak hívjuk. A standup státusz riport, a sprint review PowerPoint.</td>
+  <td>Valódi Agile coaching, értékek internalizálása</td>
+</tr>
+<tr>
+  <td><strong>"Scrum-but"</strong></td>
+  <td>"Scrum-ot használunk, DE nincs retrospektív / nincs PO / nincs sprint review"</td>
+  <td>Scrum = csomag, nem választható menü. Minden elem fontos.</td>
+</tr>
+<tr>
+  <td><strong>"Micromanagement"</strong></td>
+  <td>A menedzsment megmondja a csapatnak, HOW-t, nem bízik az önszerveződésben</td>
+  <td>SM védi a csapatot, menedzsment csak WHAT és WHY-t ad</td>
+</tr>
+<tr>
+  <td><strong>"Velocity nyomás"</strong></td>
+  <td>A menedzsment megköveteli a velocity növelését → csapat inflálja a SP-ket</td>
+  <td>Velocity = tervezési eszköz, nem KPI. Soha ne hasonlíts csapatokat!</td>
+</tr>
+<tr>
+  <td><strong>"Nincs idő refaktorálásra"</strong></td>
+  <td>Minden sprint 100% feature → technikai adósság halmozódik → lassulás</td>
+  <td>20% kapacitás tech debt-re, minden sprintben</td>
+</tr>
+</table>
+</div>
+
+<div class="trap-box">
+<h3>Sprint anti-patternek:</h3>
+<table>
+<tr><th>Anti-pattern</th><th>Leírás</th><th>Megoldás</th></tr>
+<tr>
+  <td><strong>"Sprint túlvállalás"</strong></td>
+  <td>A csapat többet vállal, mint amit reálisan el tud végezni</td>
+  <td>Velocity alapú tervezés. Ha 25 SP az átlag, ne vállalj 40-et!</td>
+</tr>
+<tr>
+  <td><strong>"Scope creep"</strong></td>
+  <td>A PO sprint közben új feladatokat ad a Sprint Backlog-ba</td>
+  <td>Sprint Backlog NEM változik sprint közben. Új feature → következő sprint.</td>
+</tr>
+<tr>
+  <td><strong>"Carry-over"</strong></td>
+  <td>Minden sprintben maradnak befejezetlen story-k → bizonytalanság</td>
+  <td>Kisebb story-k, jobb becslés, vagy csökkentsd a sprint scope-ot</td>
+</tr>
+<tr>
+  <td><strong>"Retro nélkül"</strong></td>
+  <td>Kihagyjuk a retrospektívet ("nincs idő rá") → nincs fejlődés</td>
+  <td>A retro az Agile SZÍVE. Nélküle nincs folyamatos fejlődés.</td>
+</tr>
+<tr>
+  <td><strong>"45 perces standup"</strong></td>
+  <td>A daily standup meeting-gé válik, részletes technikai megbeszéléssel</td>
+  <td>Max 15 perc! Részletek "parking lot"-ban, a standup UTÁN</td>
+</tr>
+</table>
+</div>
+
+<div class="trap-box">
+<h3>Technikai anti-patternek:</h3>
+<table>
+<tr><th>Anti-pattern</th><th>Leírás</th><th>Megoldás</th></tr>
+<tr>
+  <td><strong>"Nincs CI/CD"</strong></td>
+  <td>"Kézzel deploy-olunk, mert a pipeline bonyolult"</td>
+  <td>CI/CD beállítás a #1 prioritás. Nélküle nincs Agile.</td>
+</tr>
+<tr>
+  <td><strong>"Nincs teszt"</strong></td>
+  <td>"Nincs idő teszteket írni" → több bug → több idő javítani</td>
+  <td>TDD, automatizált tesztek. A DoD része: tesztek megírva.</td>
+</tr>
+<tr>
+  <td><strong>"Big bang integration"</strong></td>
+  <td>Minden csapat külön fejleszt, sprint végén próbálják összerakni</td>
+  <td>Continuous Integration: naponta merge, automatikus build + teszt</td>
+</tr>
+</table>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- INTERJÚKÉRDÉSEK -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="interview">
+<h2>10. Interjúkérdések – Agile</h2>
+<span class="tag">Interjú</span>
+
+<div class="answer-box">
+<strong>K1: Milyen Agile tapasztalatod van? Meséld el!</strong>
+<p><strong>Tipp:</strong> Mesélj konkrétan: "2 hetes sprinteket használtunk Scrum-mal, 6 fős csapatban. Én voltam a [szerepkör]. A sprint planning-en becslést csináltunk Planning Poker-rel. A sprint review-n élő demót mutattunk a stakeholdereknek. A retrospektíven Start-Stop-Continue formátumot használtunk. A velocity-nk átlagosan 28 SP volt."</p>
+</div>
+
+<div class="answer-box">
+<strong>K2: Mi a User Story és hogyan írsz egyet?</strong>
+<p>"Mint [szerep], szeretnék [funkció], azért, hogy [üzleti érték]". Jó story: INVEST (Independent, Negotiable, Valuable, Estimable, Small, Testable). Minden story-hoz Acceptance Criteria kell (Given-When-Then).</p>
+</div>
+
+<div class="answer-box">
+<strong>K3: Mi a Definition of Done? Miért fontos?</strong>
+<p>A DoD a csapat által elfogadott minőségi követelmény-lista, amelyet MINDEN story-nak teljesítenie kell. Pl.: kód megírva, code review kész, unit tesztek zöldek, CI pipeline átment, staging-en tesztelve, PO elfogadta. Nélküle nincs közös minőségi mérce.</p>
+</div>
+
+<div class="answer-box">
+<strong>K4: Mi történik, ha a sprint közepén derül ki, hogy nem fogjuk teljesíteni a Sprint Goal-t?</strong>
+<p>1. A csapat a Daily Standup-on jelzi a problémát. 2. SM segít akadályokat elhárítani. 3. Ha kell, a csapat és a PO megbeszélik, mely story-kat húzzák ki (scope csökkentés). 4. A Sprint Goal NEM változhat, de a scope igen. 5. Retro-n elemezzük, miért történt, és mit változtatunk.</p>
+</div>
+
+<div class="answer-box">
+<strong>K5: Mi a különbség a Story Point és az óra-becslés között?</strong>
+<p>Óra-becslés: abszolút, emberspecifikus ("nekem 8 óra" vs "neked 16 óra"). Story Point: relatív méret ("ez kétszer akkora, mint a regisztráció"). SP jobb, mert: nem személyfüggő, kevésbé pontatlan, gyorsabb konszenzus, és a velocity-val tervezhetőbb.</p>
+</div>
+
+<div class="answer-box">
+<strong>K6: Hogyan kezeled a technikai adósságot (tech debt) Agile-ban?</strong>
+<p>1. A Product Backlog-ba kerül tech debt item-ként. 2. Minden sprintben ~20% kapacitás tech debt-re. 3. Refactoring a DoD része (folyamatos). 4. Spike-ok ismeretlen technikai kihívásokhoz. 5. A PO-val egyeztetés: tech debt hatása az üzletre (lassulás, bugok).</p>
+</div>
+
+<div class="answer-box">
+<strong>K7: Mi a Scrum Master szerepe? Miben különbözik a Project Manager-től?</strong>
+<p>SM: servant-leader, facilitátor, coach. Nem mondja meg a csapatnak, MIT csináljon – segíti, hogy HOGYAN dolgozzanak hatékonyan. Akadályokat hárít el, védi a csapatot, Scrum szabályokat tartatja be. PM: feladatokat oszt ki, ütemtervet készít, riportol. Agile-ban a PM feladatait a PO (mit) és SM (hogyan) osztja meg.</p>
+</div>
+
+<div class="answer-box">
+<strong>K8: Mit csinálsz, ha a stakeholder/ügyfél folyamatosan változtatja a követelményeket?</strong>
+<p>Ez az Agile lényege – a változás természetes! De: 1. A PO priorizálja a backlog-ot, nem a stakeholder közvetlenül. 2. Új követelmény → backlog-ba kerül, priorizálva. 3. Sprint közben NEM változik a Sprint Backlog. 4. Sprint Review-n megmutatjuk, mit csináltunk, és a PO dönt a prioritásokról.</p>
+</div>
+
+<div class="answer-box">
+<strong>K9: Mi a Kanban és mikor használnád Scrum helyett?</strong>
+<p>Kanban: folyamatos flow, WIP limitek, nincs fix sprint. Használnám: support/ops csapat (ticket-ek folyamatosan jönnek), karbantartás (nincs fix iteráció szükséglet), kis csapat gyorsan változó prioritásokkal. Scrum: termékfejlesztés, feature-központú munka, fix ütemezés szükséges.</p>
+</div>
+
+<div class="answer-box">
+<strong>K10: Mi a TDD? Miért fontos?</strong>
+<p>Test-Driven Development: Red → Green → Refactor. Először tesztet írsz (fail), aztán a minimális kódot (pass), aztán refaktorálsz. Előnyök: garantáltan tesztelhető kód, jobb design (mert a tesztből indul), kevesebb bug, bátran refaktorálható (van safety net), dokumentáció-szerű tesztek.</p>
+</div>
+
+<div class="note">
+<strong>Interjú tipp:</strong> Az Agile interjúkérdéseknél mindig <strong>konkrét példával</strong> válaszolj! Ne absztrakt elmélet legyen, hanem: "A mi csapatunkban ezt így csináltuk: ..." Ha nincs valós tapasztalatod, mondj egy szimulált példát, de tedd egyértelművé.
+</div>
+</div>
+
+  <footer>
+    <p><strong>📋 Kidolgozási &amp; karbantartási napló</strong></p>
+    <p>
+      <strong>Készítette:</strong> Claude Opus 4.8 (1M kontextus) · modell-azonosító <code>claude-opus-4-8[1m]</code><br>
+      <strong>Kidolgozás dátuma:</strong> 2026-06-21 · <strong>A modell tudásvágása:</strong> 2026. január (a tanítóadat vége — az azóta eltelt időszak változásait nem garantáltan ismeri)<br>
+      <strong>Precíziós szint:</strong> dizájn a közös világos témára konvertálva + tutorial-részletességű kidolgozás, SVG-vizualizációkkal.
+    </p>
+    <p><strong>Elvégzett változtatások:</strong> sötét → világos kártyás téma; hero + tartalomjegyzék; a kulcs ábrák (TDD ciklus, Kanban board, Burndown, Burnup, CFD) SVG-re cserélve; a backlog/poker táblázatok kódblokként megtartva.</p>
+    <p><strong>🔧 Ha 1 év múlva frissíteni kell:</strong> dizájn a <code>:root</code> CSS-változókban (<code>.wrap</code> &gt; <code>header.hero</code> + <code>nav.toc</code> + <code>.section</code>; ábrák: inline <code>&lt;svg&gt;</code> a <code>.fig</code>-ben). Kódblokkban escape-eld a &lt; &gt; &amp; karaktereket. A Scrum/Kanban/XP tartalom időtálló (Scrum Guide 2020); a konkrét eszköz-példák frissítendők.</p>
+  </footer>
+
+</div>
+</body>
+</html>

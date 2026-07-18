@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>API paradigmák – REST és alternatívái (tutorial)</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --ink:#1c2233; --muted:#5d6678; --line:#e4e8f0;
+    --brand:#3a5bd9; --brand-soft:#eaeefc; --brand-line:#c9d4f7; --brand-ink:#2f48ac;
+    --ok:#1f9d57; --ok-soft:#e6f6ec; --ok-line:#bce6cb; --ok-ink:#15703f;
+    --bad:#d23b3b; --bad-soft:#fcebeb; --bad-line:#f1c9c9; --bad-ink:#a82c2c;
+    --warn:#b9821a; --warn-soft:#fbf2dd; --warn-line:#ecd9a8; --warn-ink:#8a6112;
+    --violet:#7c5cd6; --violet-soft:#efeafc; --violet-line:#d9ccf5; --violet-ink:#5a3fb0;
+    --code-bg:#1e2433; --code-ink:#e8ecf6;
+    --mono:"SF Mono",ui-monospace,SFMono-Regular,Menlo,'Fira Code','Cascadia Code',Consolas,monospace;
+    --shadow:0 1px 2px rgba(20,30,60,.05),0 8px 24px rgba(20,30,60,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.65;padding:32px 16px 80px;}
+  .wrap{max-width:920px;margin:0 auto}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header.hero{background:linear-gradient(135deg,#3a5bd9,#5a78ec);color:#fff;border-radius:18px;padding:34px 34px 30px;box-shadow:var(--shadow);margin-bottom:24px;}
+  header.hero .kicker{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:700;opacity:.85;margin:0 0 8px;}
+  header.hero h1{margin:0 0 6px;font-size:28px;line-height:1.2;border:none;padding:0;color:#fff;}
+  header.hero p{margin:0;opacity:.94;font-size:15px;max-width:72ch;}
+  .toc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:24px;box-shadow:var(--shadow);}
+  .toc-title{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;margin:0 0 14px;}
+  .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;}
+  .toc-grid a{display:flex;gap:8px;align-items:baseline;text-decoration:none;color:var(--ink);font-size:13px;font-weight:600;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:#fbfcfe;transition:background .15s,border-color .15s;}
+  .toc-grid a:hover{background:var(--brand-soft);border-color:var(--brand-line);color:var(--brand-ink);text-decoration:none;}
+  .toc-grid a .tnum{color:var(--brand);font-weight:800;flex:0 0 auto;min-width:1.4em;}
+  .section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 26px;margin-bottom:20px;box-shadow:var(--shadow);border-left:6px solid var(--brand);scroll-margin-top:16px;}
+  h1{color:var(--ink);}
+  h2{font-size:20px;font-weight:800;margin:0 0 10px;color:var(--ink);border:none;padding:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+  h2 .qnum{color:var(--brand);font-weight:800;}
+  h3{font-size:15px;font-weight:800;color:var(--brand-ink);margin:22px 0 8px;}
+  h4{font-size:14px;font-weight:800;color:var(--violet-ink);margin:16px 0 6px;}
+  .tag{display:inline-block;background:var(--brand-soft);color:var(--brand);padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;margin:0 6px 12px 0;}
+  p{margin:0 0 12px;font-size:15px;}
+  ul,ol{margin:0 0 14px;padding-left:22px;}
+  li{margin:5px 0;font-size:14.5px;}
+  b,strong{color:var(--ink);}
+  code{font-family:var(--mono);font-size:.92em;}
+  :not(pre)>code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;}
+  .ic{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);font-size:.9em;}
+  pre{background:var(--code-bg);border:none;border-radius:10px;padding:14px 16px;overflow-x:auto;margin:12px 0;}
+  pre code{background:none;color:var(--code-ink);padding:0;font-size:12.5px;line-height:1.55;}
+  .subsection{background:#fbfcfe;border:1px solid var(--line);border-left:4px solid var(--violet);border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0;}
+  .subsection h4{margin-top:0;}
+  .answer-box,.note,.trap-box{border-radius:11px;padding:14px 16px;margin:14px 0;font-size:14px;border:1px solid;}
+  .answer-box{background:var(--ok-soft);border-color:var(--ok-line);}
+  .answer-box strong,.answer-box b{color:var(--ok-ink);}
+  .note{background:var(--brand-soft);border-color:var(--brand-line);}
+  .note strong,.note b{color:var(--brand-ink);}
+  .trap-box{background:var(--warn-soft);border-color:var(--warn-line);}
+  .trap-box strong,.trap-box b{color:var(--warn-ink);}
+  .answer-box pre,.note pre,.trap-box pre,.subsection pre{margin:8px 0 0;}
+  .answer-box ul,.note ul,.trap-box ul,.subsection ul{margin:6px 0 0;}
+  .fig{display:flex;flex-direction:column;align-items:center;gap:12px;background:#fbfcfe;border:1px solid var(--line);border-radius:14px;padding:22px 18px;margin:16px 0;}
+  .fig svg{width:100%;height:auto;}
+  .fig .cap{color:var(--muted);font-size:13px;text-align:center;margin:0;max-width:64ch;}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px;background:var(--card);}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;}
+  th{background:var(--brand-soft);color:var(--brand-ink);font-weight:700;}
+  table tr:nth-child(even){background:#f7f9fd;}
+  footer{color:var(--muted);font-size:12.5px;margin-top:36px;line-height:1.7;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);}
+  footer strong{color:var(--ink);}
+  footer code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);}
+  footer ul{margin:8px 0 0;}
+  @media(max-width:560px){body{padding:20px 10px 60px}header.hero{padding:24px 20px}.section{padding:18px 16px}.toc-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="kicker">Web API-k · Frontend interjú · Tutorial</p>
+    <h1>API paradigmák – REST és alternatívái</h1>
+    <p>„Mesélj a REST-ről!" — de mi az a kategória, amibe a REST esik, és mik az alternatívái? Ez a dokumentum végigveszi a kliens–szerver kommunikáció összes fő stílusát (REST, GraphQL, gRPC, SOAP, RPC, WebSocket, SSE, Webhook) tutorial szinten, sok ábrával, kódpéldával és interjú-tippel.</p>
+  </header>
+
+  <nav class="toc">
+    <p class="toc-title">Tartalom</p>
+    <div class="toc-grid">
+      <a href="#attekintes"><span class="tnum">1</span> Hova esik a REST? (térkép)</a>
+      <a href="#http"><span class="tnum">2</span> HTTP alapok</a>
+      <a href="#rest"><span class="tnum">3</span> REST részletesen</a>
+      <a href="#graphql"><span class="tnum">4</span> GraphQL</a>
+      <a href="#grpc"><span class="tnum">5</span> gRPC</a>
+      <a href="#soap"><span class="tnum">6</span> SOAP</a>
+      <a href="#rpc"><span class="tnum">7</span> RPC / JSON-RPC / tRPC</a>
+      <a href="#realtime"><span class="tnum">8</span> Realtime: WS / SSE / Webhook</a>
+      <a href="#osszehasonlitas"><span class="tnum">9</span> Nagy összehasonlítás</a>
+      <a href="#dontes"><span class="tnum">10</span> Mikor melyiket? (döntés)</a>
+      <a href="#cqrs"><span class="tnum">11</span> CQRS (kapcsolódó minta)</a>
+      <a href="#interju"><span class="tnum">12</span> Interjúkérdések</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════ 1. ÁTTEKINTÉS ═══════════════ -->
+  <section class="section" id="attekintes">
+    <h2><span class="qnum">1.</span> Hova esik a REST? – az API-stílusok térképe</h2>
+    <span class="tag">Alapfogalom</span> <span class="tag">Taxonómia</span>
+
+    <p>Az interjún a „mesélj a REST-ről" kérdés a <strong>web API-k / API-paradigmák</strong> témakörbe esik. A REST egy <strong>architekturális stílus</strong> (nem protokoll, nem szabvány!) a kliens és a szerver közti kommunikációra. Hogy lásd, hova illik, előbb térképezzük fel a tájat.</p>
+
+    <p>Két fő tengely mentén érdemes gondolkodni:</p>
+    <ul>
+      <li><strong>Interakciós modell:</strong> <em>kérés–válasz</em> (a kliens kér, a szerver válaszol) vagy <em>valós idejű / streaming</em> (folyamatos, push).</li>
+      <li><strong>Absztrakciós szint:</strong> <em>erőforrás-orientált</em> (REST), <em>lekérdezés-orientált</em> (GraphQL), vagy <em>művelet/függvény-orientált</em> (RPC, gRPC, SOAP).</li>
+    </ul>
+
+    <div class="fig">
+      <svg viewBox="0 0 880 360" role="img" aria-label="API-stílusok térképe: kérés-válasz vs valós idejű, és erőforrás/lekérdezés/RPC orientáció">
+        <defs>
+          <marker id="m1" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#5d6678"/></marker>
+        </defs>
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif" text-anchor="middle">
+          <!-- bal oszlop: kérés-válasz -->
+          <rect x="20" y="20" width="500" height="320" rx="14" fill="#eef2fb" stroke="#c9d4f7"/>
+          <text x="270" y="46" font-size="15" font-weight="800" fill="#2f48ac">KÉRÉS – VÁLASZ (request/response)</text>
+
+          <rect x="44" y="70" width="216" height="74" rx="10" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/>
+          <text x="152" y="98" font-size="14" font-weight="800" fill="#15703f">REST</text>
+          <text x="152" y="120" font-size="11" fill="#15703f">erőforrás-orientált · HTTP</text>
+          <text x="152" y="135" font-size="11" fill="#15703f">a web „alapértelmezett" API-ja</text>
+
+          <rect x="280" y="70" width="216" height="74" rx="10" fill="#efeafc" stroke="#7c5cd6" stroke-width="2"/>
+          <text x="388" y="98" font-size="14" font-weight="800" fill="#5a3fb0">GraphQL</text>
+          <text x="388" y="120" font-size="11" fill="#5a3fb0">lekérdezés-orientált</text>
+          <text x="388" y="135" font-size="11" fill="#5a3fb0">egy endpoint, pontos adat</text>
+
+          <rect x="44" y="160" width="216" height="74" rx="10" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+          <text x="152" y="188" font-size="14" font-weight="800" fill="#2f48ac">gRPC</text>
+          <text x="152" y="210" font-size="11" fill="#2f48ac">RPC · HTTP/2 · Protobuf</text>
+          <text x="152" y="225" font-size="11" fill="#2f48ac">gyors, microservice-ek közt</text>
+
+          <rect x="280" y="160" width="216" height="74" rx="10" fill="#fbf2dd" stroke="#b9821a" stroke-width="2"/>
+          <text x="388" y="188" font-size="14" font-weight="800" fill="#8a6112">SOAP</text>
+          <text x="388" y="210" font-size="11" fill="#8a6112">XML · WSDL · WS-*</text>
+          <text x="388" y="225" font-size="11" fill="#8a6112">enterprise / legacy</text>
+
+          <rect x="44" y="250" width="452" height="68" rx="10" fill="#fff" stroke="#c8cee0" stroke-width="1.5"/>
+          <text x="270" y="278" font-size="14" font-weight="800" fill="#1c2233">RPC (JSON-RPC, XML-RPC, tRPC)</text>
+          <text x="270" y="300" font-size="11" fill="#5d6678">művelet/függvény-hívás távolról — „hívd meg ezt a metódust"</text>
+
+          <!-- jobb oszlop: realtime -->
+          <rect x="540" y="20" width="320" height="320" rx="14" fill="#fcebeb" stroke="#f1c9c9"/>
+          <text x="700" y="46" font-size="15" font-weight="800" fill="#a82c2c">VALÓS IDEJŰ / STREAMING</text>
+
+          <rect x="564" y="70" width="272" height="58" rx="10" fill="#fff" stroke="#d23b3b" stroke-width="1.5"/>
+          <text x="700" y="94" font-size="13" font-weight="800" fill="#a82c2c">WebSocket</text>
+          <text x="700" y="113" font-size="11" fill="#a82c2c">kétirányú, tartós kapcsolat</text>
+
+          <rect x="564" y="142" width="272" height="58" rx="10" fill="#fff" stroke="#d23b3b" stroke-width="1.5"/>
+          <text x="700" y="166" font-size="13" font-weight="800" fill="#a82c2c">SSE (Server-Sent Events)</text>
+          <text x="700" y="185" font-size="11" fill="#a82c2c">szerver → kliens push, HTTP-n</text>
+
+          <rect x="564" y="214" width="272" height="58" rx="10" fill="#fff" stroke="#d23b3b" stroke-width="1.5"/>
+          <text x="700" y="238" font-size="13" font-weight="800" fill="#a82c2c">Webhook</text>
+          <text x="700" y="257" font-size="11" fill="#a82c2c">szerver → szerver „fordított API"</text>
+
+          <rect x="564" y="286" width="272" height="40" rx="10" fill="#fff" stroke="#d23b3b" stroke-width="1.5"/>
+          <text x="700" y="311" font-size="12" font-weight="700" fill="#a82c2c">(Long/Short Polling — kérés-válasz trükk)</text>
+        </g>
+      </svg>
+      <p class="cap">A REST a „kérés–válasz, erőforrás-orientált" sarokban él — ez a web legelterjedtebb API-stílusa. Az alternatívák más absztrakciót (GraphQL, RPC) vagy más interakciós modellt (valós idejű) kínálnak.</p>
+    </div>
+
+    <div class="note"><strong>Fontos megkülönböztetés:</strong> a <strong>REST/GraphQL/SOAP architekturális stílus vagy specifikáció</strong>, a <strong>HTTP/HTTP2 transport protokoll</strong>, a <strong>JSON/XML/Protobuf adatformátum</strong>. Egy interjún jó pont, ha külön kezeled ezeket: pl. „a REST jellemzően HTTP-n, JSON formátummal, de elvileg formátum- és (részben) transport-független".</div>
+  </section>
+
+  <!-- ═══════════════ 2. HTTP ALAPOK ═══════════════ -->
+  <section class="section" id="http">
+    <h2><span class="qnum">2.</span> HTTP alapok – amin a legtöbb API ül</h2>
+    <span class="tag">HTTP</span> <span class="tag">Alapok</span>
+
+    <p>A REST, SOAP, GraphQL, JSON-RPC mind jellemzően HTTP-n közlekedik. Egy HTTP kérés-válasz felépítése:</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 860 250" role="img" aria-label="HTTP kérés és válasz anatómiája">
+        <defs><marker id="m2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#3a5bd9"/></marker></defs>
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif">
+          <!-- request -->
+          <rect x="20" y="30" width="320" height="190" rx="12" fill="#fff" stroke="#3a5bd9" stroke-width="2"/>
+          <text x="36" y="54" font-size="13" font-weight="800" fill="#2f48ac">KÉRÉS (request)</text>
+          <text x="36" y="82" font-size="12" font-family="var(--mono)" fill="#1c2233"><tspan font-weight="800" fill="#1f9d57">POST</tspan> /api/users  HTTP/1.1</text>
+          <text x="36" y="104" font-size="11.5" font-family="var(--mono)" fill="#5d6678">Host: api.pelda.hu</text>
+          <text x="36" y="122" font-size="11.5" font-family="var(--mono)" fill="#5d6678">Authorization: Bearer eyJ…</text>
+          <text x="36" y="140" font-size="11.5" font-family="var(--mono)" fill="#5d6678">Content-Type: application/json</text>
+          <line x1="36" y1="152" x2="324" y2="152" stroke="#e4e8f0"/>
+          <text x="36" y="172" font-size="11.5" font-family="var(--mono)" fill="#1c2233">{ "name": "Anna",</text>
+          <text x="36" y="190" font-size="11.5" font-family="var(--mono)" fill="#1c2233">  "email": "anna@x.hu" }</text>
+          <text x="180" y="210" font-size="10.5" fill="#5d6678">metódus · útvonal · fejlécek · törzs</text>
+
+          <!-- server -->
+          <rect x="380" y="95" width="100" height="60" rx="10" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+          <text x="430" y="130" font-size="13" font-weight="800" fill="#2f48ac" text-anchor="middle">Szerver</text>
+          <line x1="340" y1="110" x2="378" y2="110" stroke="#3a5bd9" stroke-width="2" marker-end="url(#m2)"/>
+          <line x1="482" y1="140" x2="520" y2="140" stroke="#3a5bd9" stroke-width="2" marker-end="url(#m2)"/>
+
+          <!-- response -->
+          <rect x="520" y="30" width="320" height="190" rx="12" fill="#fff" stroke="#1f9d57" stroke-width="2"/>
+          <text x="536" y="54" font-size="13" font-weight="800" fill="#15703f">VÁLASZ (response)</text>
+          <text x="536" y="82" font-size="12" font-family="var(--mono)" fill="#1c2233">HTTP/1.1 <tspan font-weight="800" fill="#1f9d57">201 Created</tspan></text>
+          <text x="536" y="104" font-size="11.5" font-family="var(--mono)" fill="#5d6678">Content-Type: application/json</text>
+          <text x="536" y="122" font-size="11.5" font-family="var(--mono)" fill="#5d6678">Location: /api/users/42</text>
+          <line x1="536" y1="134" x2="824" y2="134" stroke="#e4e8f0"/>
+          <text x="536" y="154" font-size="11.5" font-family="var(--mono)" fill="#1c2233">{ "id": 42,</text>
+          <text x="536" y="172" font-size="11.5" font-family="var(--mono)" fill="#1c2233">  "name": "Anna" }</text>
+          <text x="680" y="206" font-size="10.5" fill="#5d6678" text-anchor="middle">státuszkód · fejlécek · törzs</text>
+        </g>
+      </svg>
+      <p class="cap">Minden HTTP-alapú API ezt a kérés–válasz szerkezetet használja: a stílusok abban különböznek, hogyan rendezik el az útvonalakat, metódusokat és a törzset.</p>
+    </div>
+
+    <h3>HTTP metódusok (igék)</h3>
+    <table>
+      <tr><th>Metódus</th><th>Mit csinál</th><th>Biztonságos?</th><th>Idempotens?</th></tr>
+      <tr><td><code>GET</code></td><td>Erőforrás lekérése (nincs mellékhatás)</td><td>✅ igen</td><td>✅ igen</td></tr>
+      <tr><td><code>POST</code></td><td>Új erőforrás létrehozása / művelet</td><td>❌ nem</td><td>❌ nem (kétszer → két létrehozás)</td></tr>
+      <tr><td><code>PUT</code></td><td>Teljes csere (a teljes erőforrást felülírja)</td><td>❌ nem</td><td>✅ igen</td></tr>
+      <tr><td><code>PATCH</code></td><td>Részleges módosítás</td><td>❌ nem</td><td>⚠️ általában nem</td></tr>
+      <tr><td><code>DELETE</code></td><td>Erőforrás törlése</td><td>❌ nem</td><td>✅ igen</td></tr>
+      <tr><td><code>HEAD</code> / <code>OPTIONS</code></td><td>Csak fejlécek / támogatott metódusok</td><td>✅ igen</td><td>✅ igen</td></tr>
+    </table>
+
+    <div class="note"><strong>Idempotencia (gyakori kérdés):</strong> egy művelet idempotens, ha <em>ugyanazt a kérést kétszer (vagy N-szer) elküldve ugyanaz az eredmény</em>, mint egyszer. A <code>PUT</code> és <code>DELETE</code> idempotens (kétszeri „töröld a 42-est" ugyanoda vezet), a <code>POST</code> nem (kétszeri „hozz létre" két rekordot csinál). Ezért fontos hálózati újrapróbálkozásnál.</div>
+
+    <h3>HTTP státuszkódok – 5 család</h3>
+    <div class="fig">
+      <svg viewBox="0 0 860 230" role="img" aria-label="HTTP státuszkód-családok 1xx-5xx">
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif">
+          <rect x="20"  y="30" width="160" height="170" rx="10" fill="#eef0f4" stroke="#c8cee0"/>
+          <text x="100" y="56" font-size="16" font-weight="800" fill="#3f4654" text-anchor="middle">1xx</text>
+          <text x="100" y="76" font-size="11.5" fill="#3f4654" text-anchor="middle">Információs</text>
+          <text x="100" y="104" font-size="11" fill="#5d6678" text-anchor="middle">100 Continue</text>
+          <text x="100" y="122" font-size="11" fill="#5d6678" text-anchor="middle">101 Switching</text>
+
+          <rect x="190" y="30" width="160" height="170" rx="10" fill="#e6f6ec" stroke="#bce6cb"/>
+          <text x="270" y="56" font-size="16" font-weight="800" fill="#15703f" text-anchor="middle">2xx</text>
+          <text x="270" y="76" font-size="11.5" fill="#15703f" text-anchor="middle">Siker</text>
+          <text x="270" y="104" font-size="11" fill="#15703f" text-anchor="middle">200 OK</text>
+          <text x="270" y="122" font-size="11" fill="#15703f" text-anchor="middle">201 Created</text>
+          <text x="270" y="140" font-size="11" fill="#15703f" text-anchor="middle">204 No Content</text>
+
+          <rect x="360" y="30" width="160" height="170" rx="10" fill="#eaeefc" stroke="#c9d4f7"/>
+          <text x="440" y="56" font-size="16" font-weight="800" fill="#2f48ac" text-anchor="middle">3xx</text>
+          <text x="440" y="76" font-size="11.5" fill="#2f48ac" text-anchor="middle">Átirányítás</text>
+          <text x="440" y="104" font-size="11" fill="#2f48ac" text-anchor="middle">301 Moved</text>
+          <text x="440" y="122" font-size="11" fill="#2f48ac" text-anchor="middle">304 Not Modified</text>
+
+          <rect x="530" y="30" width="160" height="170" rx="10" fill="#fbf2dd" stroke="#ecd9a8"/>
+          <text x="610" y="56" font-size="16" font-weight="800" fill="#8a6112" text-anchor="middle">4xx</text>
+          <text x="610" y="76" font-size="11.5" fill="#8a6112" text-anchor="middle">Kliens hiba</text>
+          <text x="610" y="104" font-size="11" fill="#8a6112" text-anchor="middle">400 / 401 / 403</text>
+          <text x="610" y="122" font-size="11" fill="#8a6112" text-anchor="middle">404 / 409 / 422</text>
+          <text x="610" y="140" font-size="11" fill="#8a6112" text-anchor="middle">429 Too Many</text>
+
+          <rect x="700" y="30" width="160" height="170" rx="10" fill="#fcebeb" stroke="#f1c9c9"/>
+          <text x="780" y="56" font-size="16" font-weight="800" fill="#a82c2c" text-anchor="middle">5xx</text>
+          <text x="780" y="76" font-size="11.5" fill="#a82c2c" text-anchor="middle">Szerver hiba</text>
+          <text x="780" y="104" font-size="11" fill="#a82c2c" text-anchor="middle">500 Internal</text>
+          <text x="780" y="122" font-size="11" fill="#a82c2c" text-anchor="middle">502 Bad Gateway</text>
+          <text x="780" y="140" font-size="11" fill="#a82c2c" text-anchor="middle">503 Unavailable</text>
+        </g>
+      </svg>
+      <p class="cap">A státuszkód a válasz „címkéje". Jó REST API a megfelelő kódot adja: 201 létrehozásnál, 404 ha nincs ilyen erőforrás, 401 ha nincs bejelentkezve, 403 ha nincs joga, 409 ütközésnél.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════ 3. REST ═══════════════ -->
+  <section class="section" id="rest">
+    <h2><span class="qnum">3.</span> REST részletesen</h2>
+    <span class="tag">REST</span> <span class="tag">Architekturális stílus</span>
+
+    <p><strong>REST = REpresentational State Transfer.</strong> Roy Fielding doktori disszertációjában definiálta (2000). Nem szabvány, hanem <strong>architekturális stílus</strong>: megszorítások (constraints) gyűjteménye. A lényeg: a rendszert <strong>erőforrások</strong> (resources) köré szervezzük, amelyeket URL-ek azonosítanak, és HTTP-igékkel manipulálunk.</p>
+
+    <h3>A REST 6 megszorítása (constraint)</h3>
+    <table>
+      <tr><th>Megszorítás</th><th>Jelentés</th></tr>
+      <tr><td><strong>Client–Server</strong></td><td>A kliens (UI) és a szerver (adat) szétválik, függetlenül fejleszthető.</td></tr>
+      <tr><td><strong>Stateless</strong></td><td>Minden kérés önmagában teljes — a szerver NEM tárol kliens-session-t a kérések között. (Skálázhatóság!)</td></tr>
+      <tr><td><strong>Cacheable</strong></td><td>A válaszok megjelölhetők cache-elhetőként (HTTP cache, ETag, CDN).</td></tr>
+      <tr><td><strong>Uniform Interface</strong></td><td>Egységes felület: erőforrások URL-en, HTTP-igék, reprezentációk (JSON), hipermédia. Ez a REST szíve.</td></tr>
+      <tr><td><strong>Layered System</strong></td><td>Közbülső rétegek (proxy, gateway, load balancer) beékelhetők átláthatóan.</td></tr>
+      <tr><td><strong>Code on Demand</strong> (opcionális)</td><td>A szerver futtatható kódot is küldhet (pl. JS). Az egyetlen opcionális megszorítás.</td></tr>
+    </table>
+
+    <div class="trap-box"><strong>Csapda:</strong> a legtöbb „REST API" valójában <strong>nem teljesen RESTful</strong> — ritka a hipermédia (HATEOAS). Iparági szóhasználatban a „REST API" gyakran csak „HTTP+JSON, erőforrás-URL-ek, HTTP-igék" (lásd Richardson Level 2 lent). Interjún jó pont, ha tudod ezt a különbséget.</div>
+
+    <h3>Richardson Maturity Model – „mennyire RESTful?"</h3>
+    <p>Leonard Richardson modellje (Martin Fowler népszerűsítette) 4 szinten méri, mennyire kihasznált a web. A „valódi" REST a 3. szint.</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 820 320" role="img" aria-label="Richardson Maturity Model lépcső: Level 0-3">
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif">
+          <!-- steps -->
+          <rect x="30"  y="250" width="190" height="50" rx="8" fill="#eef0f4" stroke="#c8cee0"/>
+          <text x="125" y="272" font-size="13" font-weight="800" fill="#3f4654" text-anchor="middle">Level 0</text>
+          <text x="125" y="290" font-size="11" fill="#5d6678" text-anchor="middle">egy URI, egy ige (POX/RPC)</text>
+
+          <rect x="220" y="190" width="190" height="50" rx="8" fill="#fbf2dd" stroke="#ecd9a8"/>
+          <text x="315" y="212" font-size="13" font-weight="800" fill="#8a6112" text-anchor="middle">Level 1</text>
+          <text x="315" y="230" font-size="11" fill="#8a6112" text-anchor="middle">Erőforrások (több URI)</text>
+
+          <rect x="410" y="130" width="190" height="50" rx="8" fill="#eaeefc" stroke="#c9d4f7"/>
+          <text x="505" y="152" font-size="13" font-weight="800" fill="#2f48ac" text-anchor="middle">Level 2</text>
+          <text x="505" y="170" font-size="11" fill="#2f48ac" text-anchor="middle">HTTP-igék + státuszkódok</text>
+
+          <rect x="600" y="70" width="190" height="50" rx="8" fill="#e6f6ec" stroke="#bce6cb"/>
+          <text x="695" y="92" font-size="13" font-weight="800" fill="#15703f" text-anchor="middle">Level 3</text>
+          <text x="695" y="110" font-size="11" fill="#15703f" text-anchor="middle">HATEOAS (hipermédia)</text>
+
+          <!-- rising arrow -->
+          <path d="M40,245 L770,75" stroke="#7c5cd6" stroke-width="2.5" stroke-dasharray="6 5" fill="none"/>
+          <text x="120" y="40" font-size="13" font-weight="800" fill="#5a3fb0">⬈ egyre „RESTesebb"</text>
+          <text x="640" y="150" font-size="11" fill="#5d6678">← a legtöbb valós API itt áll meg (Level 2)</text>
+        </g>
+      </svg>
+      <p class="cap">Level 0: minden egy endpointra megy (mint az RPC). Level 1: külön URL minden erőforrásnak. Level 2: a HTTP-igék és státuszkódok helyes használata (a gyakorlati „REST"). Level 3: a válasz hivatkozásokat (linkeket) ad a következő lehetséges műveletekhez — ez a HATEOAS.</p>
+    </div>
+
+    <h3>Erőforrás → URL tervezés (a gyakorlatban)</h3>
+    <p>A REST URL-ek <strong>főneveket</strong> használnak (erőforrások), nem igéket. Az igét a HTTP-metódus adja.</p>
+    <pre><code>GET    /users            → összes felhasználó (lista, lapozható)
+POST   /users            → új felhasználó létrehozása
+GET    /users/42         → a 42-es felhasználó
+PUT    /users/42         → a 42-es teljes cseréje
+PATCH  /users/42         → a 42-es részleges módosítása
+DELETE /users/42         → a 42-es törlése
+GET    /users/42/orders  → a 42-es felhasználó rendelései (beágyazott erőforrás)
+
+# ❌ ROSSZ (ige az URL-ben, RPC-stílus):
+POST /createUser     GET /getUser?id=42     POST /deleteUser
+
+# ✅ Lapozás, szűrés, rendezés query paraméterrel:
+GET /users?page=2&amp;limit=20&amp;role=admin&amp;sort=-createdAt</code></pre>
+
+    <h3>Példa REST kérés + válasz</h3>
+    <pre><code># Kérés
+GET /users/42 HTTP/1.1
+Accept: application/json
+
+# Válasz
+HTTP/1.1 200 OK
+Content-Type: application/json
+ETag: "a1b2c3"
+Cache-Control: max-age=60
+
+{
+  "id": 42,
+  "name": "Anna",
+  "email": "anna@pelda.hu"
+}</code></pre>
+
+    <div class="subsection">
+      <h4>HATEOAS (Level 3) – mit jelent?</h4>
+      <p>A válasz tartalmazza a <em>következő lehetséges műveletek</em> linkjeit, így a kliens nem „égeti be" az URL-eket — a szerver vezeti. Ritkán használt, de interjún ismerni kell.</p>
+<pre><code>{
+  "id": 42,
+  "name": "Anna",
+  "status": "active",
+  "_links": {
+    "self":       { "href": "/users/42" },
+    "orders":     { "href": "/users/42/orders" },
+    "deactivate": { "href": "/users/42/deactivate", "method": "POST" }
+  }
+}</code></pre>
+    </div>
+
+    <h3>REST – előnyök és hátrányok</h3>
+    <table>
+      <tr><th>Előnyök</th><th>Hátrányok</th></tr>
+      <tr><td>Egyszerű, mindenki ismeri, böngésző-natív</td><td>Over-fetching: több adat jön, mint kell</td></tr>
+      <tr><td>Kiváló HTTP-cache (GET, ETag, CDN)</td><td>Under-fetching: több kérés kell egy nézethez (N+1 a kliensen)</td></tr>
+      <tr><td>Stateless → jól skálázható</td><td>Nincs beépített típus/séma (OpenAPI külön)</td></tr>
+      <tr><td>Tooling: OpenAPI/Swagger, Postman</td><td>Verziózás macerás (/v1, /v2)</td></tr>
+    </table>
+  </section>
+
+  <!-- ═══════════════ 4. GRAPHQL ═══════════════ -->
+  <section class="section" id="graphql">
+    <h2><span class="qnum">4.</span> GraphQL</h2>
+    <span class="tag">GraphQL</span> <span class="tag">Query language</span>
+
+    <p>A <strong>GraphQL</strong> (Facebook, 2012, 2015-ben nyílt forrású) egy <strong>lekérdezőnyelv az API-khoz</strong>. Egyetlen endpoint (<code>POST /graphql</code>), és a kliens pontosan megmondja, milyen mezőket kér — se többet, se kevesebbet. A REST két fő fájdalmára válasz: over-fetching és under-fetching.</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 860 280" role="img" aria-label="REST több endpoint vs GraphQL egy endpoint">
+        <defs><marker id="m3" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#5d6678"/></marker></defs>
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif">
+          <!-- REST side -->
+          <rect x="20" y="20" width="400" height="240" rx="12" fill="#fff" stroke="#c8cee0"/>
+          <text x="220" y="46" font-size="14" font-weight="800" fill="#8a6112" text-anchor="middle">REST — 3 kérés egy profil-nézethez</text>
+          <rect x="50" y="70" width="90" height="44" rx="9" fill="#fbf2dd" stroke="#b9821a"/>
+          <text x="95" y="97" font-size="12" font-weight="800" fill="#8a6112" text-anchor="middle">Kliens</text>
+          <g stroke="#5d6678" stroke-width="1.8" marker-end="url(#m3)">
+            <line x1="142" y1="82"  x2="270" y2="82"/>
+            <line x1="142" y1="92"  x2="270" y2="135"/>
+            <line x1="142" y1="102" x2="270" y2="188"/>
+          </g>
+          <rect x="272" y="64" width="128" height="34" rx="7" fill="#eef2fb" stroke="#c9d4f7"/><text x="336" y="86" font-size="11" font-family="var(--mono)" fill="#2f48ac" text-anchor="middle">GET /users/42</text>
+          <rect x="272" y="118" width="128" height="34" rx="7" fill="#eef2fb" stroke="#c9d4f7"/><text x="336" y="140" font-size="11" font-family="var(--mono)" fill="#2f48ac" text-anchor="middle">/42/posts</text>
+          <rect x="272" y="172" width="128" height="34" rx="7" fill="#eef2fb" stroke="#c9d4f7"/><text x="336" y="194" font-size="11" font-family="var(--mono)" fill="#2f48ac" text-anchor="middle">/42/followers</text>
+          <text x="220" y="240" font-size="11" fill="#5d6678" text-anchor="middle">3 körutazás (round-trip) + over-fetching</text>
+
+          <!-- GraphQL side -->
+          <rect x="440" y="20" width="400" height="240" rx="12" fill="#fff" stroke="#d9ccf5"/>
+          <text x="640" y="46" font-size="14" font-weight="800" fill="#5a3fb0" text-anchor="middle">GraphQL — 1 kérés, pontos adat</text>
+          <rect x="470" y="115" width="90" height="44" rx="9" fill="#efeafc" stroke="#7c5cd6"/>
+          <text x="515" y="142" font-size="12" font-weight="800" fill="#5a3fb0" text-anchor="middle">Kliens</text>
+          <line x1="562" y1="137" x2="690" y2="137" stroke="#7c5cd6" stroke-width="2" marker-end="url(#m3)"/>
+          <rect x="692" y="113" width="128" height="48" rx="9" fill="#efeafc" stroke="#7c5cd6"/>
+          <text x="756" y="133" font-size="11" font-family="var(--mono)" fill="#5a3fb0" text-anchor="middle">POST /graphql</text>
+          <text x="756" y="150" font-size="10.5" fill="#5a3fb0" text-anchor="middle">egy query</text>
+          <text x="640" y="210" font-size="11" fill="#5d6678" text-anchor="middle">1 körutazás, csak a kért mezők</text>
+        </g>
+      </svg>
+      <p class="cap">REST: a profil-oldalhoz több endpointot kell hívni, és mindegyik a teljes objektumot adja. GraphQL: egyetlen query pontosan a kívánt mezőket kéri le, egy kérésben.</p>
+    </div>
+
+    <h3>Séma, query, mutation</h3>
+    <pre><code># --- Séma (SDL) – a szerver definiálja a típusokat ---
+type User {
+  id: ID!
+  name: String!
+  posts: [Post!]!
+}
+type Post { id: ID!  title: String! }
+
+type Query    { user(id: ID!): User }
+type Mutation { addPost(userId: ID!, title: String!): Post }</code></pre>
+
+    <pre><code># --- A kliens query-je: pontosan a kért mezők ---
+query {
+  user(id: 42) {
+    name
+    posts { title }      # csak a title kell, a body nem
+  }
+}
+
+# --- Válasz: a query alakját tükrözi ---
+{ "data": { "user": { "name": "Anna",
+  "posts": [ { "title": "Hello" }, { "title": "GraphQL" } ] } } }</code></pre>
+
+    <div class="trap-box"><strong>GraphQL buktatók:</strong>
+      <ul>
+        <li><strong>N+1 probléma:</strong> a resolverek naivan külön lekérdezést futtatnak minden elemre → <code>DataLoader</code> (batch + cache) a megoldás.</li>
+        <li><strong>HTTP-cache nehéz:</strong> minden <code>POST /graphql</code>, így a böngésző/CDN GET-cache nem működik (persisted queries / kliens-cache, pl. Apollo kell).</li>
+        <li><strong>Komplexitás-támadás:</strong> mélyen beágyazott query lefárasztja a szervert → query depth/complexity limit kell.</li>
+      </ul>
+    </div>
+
+    <div class="note"><strong>Subscriptions:</strong> a GraphQL valós idejű frissítést is tud (<code>subscription</code>), jellemzően WebSocket felett — így a „realtime" igény is lefedhető vele.</div>
+  </section>
+
+  <!-- ═══════════════ 5. gRPC ═══════════════ -->
+  <section class="section" id="grpc">
+    <h2><span class="qnum">5.</span> gRPC</h2>
+    <span class="tag">gRPC</span> <span class="tag">RPC</span> <span class="tag">HTTP/2</span>
+
+    <p>A <strong>gRPC</strong> (Google) egy nagy teljesítményű <strong>RPC-keretrendszer</strong>. <strong>HTTP/2</strong>-n fut, az adatformátum bináris <strong>Protocol Buffers</strong> (protobuf). <strong>Contract-first</strong>: egy <code>.proto</code> fájlban definiálod a szolgáltatást és az üzeneteket, majd kód generálódik belőle (kliens + szerver stubok) sok nyelvre.</p>
+
+    <pre><code>// user.proto  — a szerződés (contract)
+syntax = "proto3";
+
+message GetUserRequest { int32 id = 1; }
+message User { int32 id = 1; string name = 2; string email = 3; }
+
+service UserService {
+  rpc GetUser (GetUserRequest) returns (User);
+  rpc ListUsers (Empty) returns (stream User);   // server streaming
+}
+// → protoc generál: kliens stub + szerver interfész (Go, Java, TS, …)</code></pre>
+
+    <h3>A 4 kommunikációs mód</h3>
+    <div class="fig">
+      <svg viewBox="0 0 880 250" role="img" aria-label="gRPC négy módja: unary, server stream, client stream, bidirectional">
+        <defs><marker id="m4" markerWidth="8" markerHeight="8" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5 Z" fill="#3a5bd9"/></marker></defs>
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="11">
+          <!-- helper: 4 panels -->
+          <!-- 1 unary -->
+          <rect x="15" y="20" width="200" height="210" rx="10" fill="#fff" stroke="#c9d4f7"/>
+          <text x="115" y="42" font-size="12.5" font-weight="800" fill="#2f48ac" text-anchor="middle">1. Unary</text>
+          <text x="55" y="70" font-weight="700" fill="#1c2233">Kliens</text><text x="175" y="70" font-weight="700" fill="#1c2233" text-anchor="end">Szerver</text>
+          <line x1="60" y1="78" x2="60" y2="215" stroke="#e4e8f0"/><line x1="170" y1="78" x2="170" y2="215" stroke="#e4e8f0"/>
+          <line x1="62" y1="110" x2="168" y2="110" stroke="#3a5bd9" stroke-width="1.8" marker-end="url(#m4)"/>
+          <line x1="168" y1="150" x2="62" y2="150" stroke="#1f9d57" stroke-width="1.8" marker-end="url(#m4)"/>
+          <text x="115" y="200" fill="#5d6678" text-anchor="middle">1 kérés → 1 válasz</text>
+
+          <!-- 2 server stream -->
+          <rect x="230" y="20" width="200" height="210" rx="10" fill="#fff" stroke="#c9d4f7"/>
+          <text x="330" y="42" font-size="12.5" font-weight="800" fill="#2f48ac" text-anchor="middle">2. Server stream</text>
+          <line x1="275" y1="78" x2="275" y2="215" stroke="#e4e8f0"/><line x1="385" y1="78" x2="385" y2="215" stroke="#e4e8f0"/>
+          <line x1="277" y1="100" x2="383" y2="100" stroke="#3a5bd9" stroke-width="1.8" marker-end="url(#m4)"/>
+          <line x1="383" y1="135" x2="277" y2="135" stroke="#1f9d57" stroke-width="1.8" marker-end="url(#m4)"/>
+          <line x1="383" y1="155" x2="277" y2="155" stroke="#1f9d57" stroke-width="1.8" marker-end="url(#m4)"/>
+          <line x1="383" y1="175" x2="277" y2="175" stroke="#1f9d57" stroke-width="1.8" marker-end="url(#m4)"/>
+          <text x="330" y="205" fill="#5d6678" text-anchor="middle">1 kérés → sok válasz</text>
+
+          <!-- 3 client stream -->
+          <rect x="445" y="20" width="200" height="210" rx="10" fill="#fff" stroke="#c9d4f7"/>
+          <text x="545" y="42" font-size="12.5" font-weight="800" fill="#2f48ac" text-anchor="middle">3. Client stream</text>
+          <line x1="490" y1="78" x2="490" y2="215" stroke="#e4e8f0"/><line x1="600" y1="78" x2="600" y2="215" stroke="#e4e8f0"/>
+          <line x1="492" y1="100" x2="598" y2="100" stroke="#3a5bd9" stroke-width="1.8" marker-end="url(#m4)"/>
+          <line x1="492" y1="120" x2="598" y2="120" stroke="#3a5bd9" stroke-width="1.8" marker-end="url(#m4)"/>
+          <line x1="492" y1="140" x2="598" y2="140" stroke="#3a5bd9" stroke-width="1.8" marker-end="url(#m4)"/>
+          <line x1="598" y1="175" x2="492" y2="175" stroke="#1f9d57" stroke-width="1.8" marker-end="url(#m4)"/>
+          <text x="545" y="205" fill="#5d6678" text-anchor="middle">sok kérés → 1 válasz</text>
+
+          <!-- 4 bidi -->
+          <rect x="660" y="20" width="205" height="210" rx="10" fill="#fff" stroke="#c9d4f7"/>
+          <text x="762" y="42" font-size="12.5" font-weight="800" fill="#2f48ac" text-anchor="middle">4. Bidirectional</text>
+          <line x1="705" y1="78" x2="705" y2="215" stroke="#e4e8f0"/><line x1="820" y1="78" x2="820" y2="215" stroke="#e4e8f0"/>
+          <line x1="707" y1="100" x2="818" y2="100" stroke="#3a5bd9" stroke-width="1.8" marker-end="url(#m4)"/>
+          <line x1="818" y1="125" x2="707" y2="125" stroke="#1f9d57" stroke-width="1.8" marker-end="url(#m4)"/>
+          <line x1="707" y1="150" x2="818" y2="150" stroke="#3a5bd9" stroke-width="1.8" marker-end="url(#m4)"/>
+          <line x1="818" y1="175" x2="707" y2="175" stroke="#1f9d57" stroke-width="1.8" marker-end="url(#m4)"/>
+          <text x="762" y="205" fill="#5d6678" text-anchor="middle">sok ↔ sok (full-duplex)</text>
+        </g>
+      </svg>
+      <p class="cap">A gRPC a HTTP/2 multiplexálását kihasználva 4 streaming módot kínál — ezért ideális mikroszolgáltatások közti, nagy átviteli sebességű kommunikációra.</p>
+    </div>
+
+    <table>
+      <tr><th>Előnyök</th><th>Hátrányok</th></tr>
+      <tr><td>Nagyon gyors (bináris protobuf, HTTP/2)</td><td>Böngészőből nem közvetlen (grpc-web proxy kell)</td></tr>
+      <tr><td>Erős típusosság, kódgenerálás, contract-first</td><td>Nem ember-olvasható (bináris) → nehezebb debug</td></tr>
+      <tr><td>Beépített streaming (4 mód)</td><td>Kevésbé „böngésző-natív", mint a REST</td></tr>
+      <tr><td>Polyglot (sok nyelv)</td><td>Tanulási görbe, tooling-igény</td></tr>
+    </table>
+    <div class="note"><strong>Tipikus használat:</strong> <em>belső</em> mikroszolgáltatások közti kommunikáció (kelet–nyugati forgalom). Publikus, böngészős API-nak inkább REST/GraphQL.</div>
+  </section>
+
+  <!-- ═══════════════ 6. SOAP ═══════════════ -->
+  <section class="section" id="soap">
+    <h2><span class="qnum">6.</span> SOAP</h2>
+    <span class="tag">SOAP</span> <span class="tag">XML</span> <span class="tag">Enterprise</span>
+
+    <p>A <strong>SOAP</strong> (Simple Object Access Protocol) egy <strong>protokoll</strong> (nem stílus!), XML-alapú üzenetekkel. Szigorú szerződés a <strong>WSDL</strong> (Web Services Description Language). Transport-független (HTTP, de akár SMTP is). A <strong>WS-*</strong> szabványok (WS-Security, WS-AtomicTransaction) miatt erős a vállalati/banki/legacy világban.</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 560 250" role="img" aria-label="SOAP envelope szerkezete">
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif" text-anchor="middle">
+          <rect x="40" y="20" width="480" height="210" rx="12" fill="#fbf2dd" stroke="#b9821a" stroke-width="2"/>
+          <text x="280" y="44" font-size="14" font-weight="800" fill="#8a6112">SOAP Envelope</text>
+          <rect x="70" y="58" width="420" height="56" rx="9" fill="#fff" stroke="#ecd9a8"/>
+          <text x="280" y="82" font-size="13" font-weight="800" fill="#8a6112">Header (opcionális)</text>
+          <text x="280" y="100" font-size="11" fill="#8a6112">auth, WS-Security, tranzakció-infó</text>
+          <rect x="70" y="124" width="420" height="90" rx="9" fill="#fff" stroke="#ecd9a8"/>
+          <text x="280" y="148" font-size="13" font-weight="800" fill="#8a6112">Body (kötelező)</text>
+          <text x="280" y="166" font-size="11" fill="#8a6112">a tényleges kérés/válasz adat (XML)</text>
+          <rect x="100" y="178" width="360" height="28" rx="7" fill="#fcebeb" stroke="#f1c9c9"/>
+          <text x="280" y="197" font-size="11" fill="#a82c2c">Fault — szabványos hibaobjektum (ha hiba van)</text>
+        </g>
+      </svg>
+      <p class="cap">Minden SOAP-üzenet egy „borítékba" (Envelope) van csomagolva: opcionális Header + kötelező Body, hiba esetén szabványos Fault elem.</p>
+    </div>
+
+    <pre><code>&lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"&gt;
+  &lt;soap:Header/&gt;
+  &lt;soap:Body&gt;
+    &lt;getUser&gt;&lt;id&gt;42&lt;/id&gt;&lt;/getUser&gt;
+  &lt;/soap:Body&gt;
+&lt;/soap:Envelope&gt;</code></pre>
+
+    <div class="trap-box"><strong>Mikor találkozol vele?</strong> Régi/vállalati rendszerek, banki, biztosítói, állami integrációk, fizetési átjárók. Új zöldmezős projekthez ma már ritkán választják — nehézkes, bőbeszédű (XML), de a beépített biztonsági/tranzakciós szabványok miatt bizonyos helyeken máig él.</div>
+  </section>
+
+  <!-- ═══════════════ 7. RPC ═══════════════ -->
+  <section class="section" id="rpc">
+    <h2><span class="qnum">7.</span> RPC, JSON-RPC, XML-RPC, tRPC</h2>
+    <span class="tag">RPC</span> <span class="tag">tRPC</span>
+
+    <p>Az <strong>RPC</strong> (Remote Procedure Call) a legrégebbi ötlet: hívj meg egy <em>függvényt/metódust</em> a szerveren, mintha lokális lenne. Itt nem erőforrásokban, hanem <strong>műveletekben</strong> gondolkodsz.</p>
+
+    <h4>JSON-RPC</h4>
+    <pre><code># Kérés (POST /rpc)
+{ "jsonrpc": "2.0", "method": "getUser", "params": { "id": 42 }, "id": 1 }
+# Válasz
+{ "jsonrpc": "2.0", "result": { "id": 42, "name": "Anna" }, "id": 1 }</code></pre>
+
+    <h4>tRPC – TypeScript end-to-end típusbiztonság</h4>
+    <p>Modern, TS-only megoldás: a szerver eljárásait közvetlenül hívod a kliensből, <strong>kódgenerálás nélkül</strong>, teljes típus-átöröklődéssel (a backend típusai automatikusan elérhetők a frontenden). Ideális full-stack TS monorepóban (pl. Next.js).</p>
+    <pre><code>// szerver
+const appRouter = router({
+  getUser: publicProcedure.input(z.object({ id: z.number() }))
+    .query(({ input }) =&gt; db.user.find(input.id)),
+});
+export type AppRouter = typeof appRouter;   // ← csak a TÍPUS megy a kliensre
+
+// kliens — teljes autocomplete + típusellenőrzés, build-időben:
+const user = await trpc.getUser.query({ id: 42 });</code></pre>
+
+    <div class="note"><strong>REST vs RPC szemlélet:</strong> REST = „milyen <em>dolgokon</em> (erőforrásokon) dolgozom?" (főnevek + HTTP-igék). RPC = „milyen <em>műveletet</em> hívok meg?" (igék/metódusnevek). A gRPC és a SOAP is RPC-szemléletű.</div>
+  </section>
+
+  <!-- ═══════════════ 8. REALTIME ═══════════════ -->
+  <section class="section" id="realtime">
+    <h2><span class="qnum">8.</span> Valós idejű: Polling, SSE, WebSocket, Webhook</h2>
+    <span class="tag">Realtime</span> <span class="tag">Streaming</span>
+
+    <p>A sima kérés–válasz nem alkalmas arra, hogy a <em>szerver kezdeményezzen</em> (pl. chat-üzenet, élő ár). Négy megközelítés:</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 880 270" role="img" aria-label="Polling vs SSE vs WebSocket vs Webhook szekvenciák">
+        <defs><marker id="m5" markerWidth="8" markerHeight="8" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5 Z" fill="#5d6678"/></marker></defs>
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="11">
+          <!-- Polling -->
+          <rect x="15" y="18" width="200" height="234" rx="10" fill="#fff" stroke="#ecd9a8"/>
+          <text x="115" y="40" font-size="12.5" font-weight="800" fill="#8a6112" text-anchor="middle">Long Polling</text>
+          <text x="55" y="62" fill="#1c2233">C</text><text x="175" y="62" fill="#1c2233" text-anchor="end">S</text>
+          <line x1="60" y1="68" x2="60" y2="240" stroke="#e4e8f0"/><line x1="170" y1="68" x2="170" y2="240" stroke="#e4e8f0"/>
+          <line x1="62" y1="88"  x2="168" y2="88"  stroke="#5d6678" stroke-width="1.6" marker-end="url(#m5)"/>
+          <line x1="168" y1="120" x2="62" y2="120" stroke="#5d6678" stroke-width="1.6" marker-end="url(#m5)"/>
+          <line x1="62" y1="150" x2="168" y2="150" stroke="#5d6678" stroke-width="1.6" marker-end="url(#m5)"/>
+          <line x1="168" y1="182" x2="62" y2="182" stroke="#5d6678" stroke-width="1.6" marker-end="url(#m5)"/>
+          <text x="115" y="225" fill="#5d6678" text-anchor="middle">ismételt kérés, vár</text>
+
+          <!-- SSE -->
+          <rect x="230" y="18" width="200" height="234" rx="10" fill="#fff" stroke="#bce6cb"/>
+          <text x="330" y="40" font-size="12.5" font-weight="800" fill="#15703f" text-anchor="middle">SSE (szerver→kliens)</text>
+          <line x1="275" y1="68" x2="275" y2="240" stroke="#e4e8f0"/><line x1="385" y1="68" x2="385" y2="240" stroke="#e4e8f0"/>
+          <line x1="277" y1="88" x2="383" y2="88" stroke="#3a5bd9" stroke-width="1.6" marker-end="url(#m5)"/>
+          <line x1="383" y1="120" x2="277" y2="120" stroke="#1f9d57" stroke-width="1.6" marker-end="url(#m5)"/>
+          <line x1="383" y1="145" x2="277" y2="145" stroke="#1f9d57" stroke-width="1.6" marker-end="url(#m5)"/>
+          <line x1="383" y1="170" x2="277" y2="170" stroke="#1f9d57" stroke-width="1.6" marker-end="url(#m5)"/>
+          <text x="330" y="225" fill="#5d6678" text-anchor="middle">1 nyitott kapcsolat, push</text>
+
+          <!-- WebSocket -->
+          <rect x="445" y="18" width="200" height="234" rx="10" fill="#fff" stroke="#f1c9c9"/>
+          <text x="545" y="40" font-size="12.5" font-weight="800" fill="#a82c2c" text-anchor="middle">WebSocket (kétirányú)</text>
+          <line x1="490" y1="68" x2="490" y2="240" stroke="#e4e8f0"/><line x1="600" y1="68" x2="600" y2="240" stroke="#e4e8f0"/>
+          <line x1="492" y1="86" x2="598" y2="86" stroke="#5d6678" stroke-width="1.6" marker-end="url(#m5)"/>
+          <text x="545" y="102" font-size="9.5" fill="#5d6678" text-anchor="middle">handshake (upgrade)</text>
+          <line x1="492" y1="125" x2="598" y2="125" stroke="#3a5bd9" stroke-width="1.6" marker-end="url(#m5)"/>
+          <line x1="598" y1="150" x2="492" y2="150" stroke="#1f9d57" stroke-width="1.6" marker-end="url(#m5)"/>
+          <line x1="492" y1="175" x2="598" y2="175" stroke="#3a5bd9" stroke-width="1.6" marker-end="url(#m5)"/>
+          <text x="545" y="225" fill="#5d6678" text-anchor="middle">tartós, mindkét irány</text>
+
+          <!-- Webhook -->
+          <rect x="660" y="18" width="205" height="234" rx="10" fill="#fff" stroke="#c9d4f7"/>
+          <text x="762" y="40" font-size="12.5" font-weight="800" fill="#2f48ac" text-anchor="middle">Webhook (szerver→szerver)</text>
+          <text x="705" y="62" fill="#1c2233">App</text><text x="830" y="62" fill="#1c2233" text-anchor="end">Stripe</text>
+          <line x1="710" y1="68" x2="710" y2="240" stroke="#e4e8f0"/><line x1="820" y1="68" x2="820" y2="240" stroke="#e4e8f0"/>
+          <text x="762" y="120" font-size="10" fill="#5d6678" text-anchor="middle">(esemény történik)</text>
+          <line x1="818" y1="150" x2="712" y2="150" stroke="#7c5cd6" stroke-width="1.8" marker-end="url(#m5)"/>
+          <text x="762" y="168" font-size="9.5" fill="#5a3fb0" text-anchor="middle">POST /webhook</text>
+          <text x="762" y="225" fill="#5d6678" text-anchor="middle">push a te URL-edre</text>
+        </g>
+      </svg>
+      <p class="cap">Long polling: ismételt kérések. SSE: egy nyitott HTTP-kapcsolaton a szerver folyamatosan push-ol (egyirányú). WebSocket: tartós, kétirányú csatorna. Webhook: a külső szerver hív téged egy esemény hatására (fordított API, szerver–szerver).</p>
+    </div>
+
+    <table>
+      <tr><th></th><th>Irány</th><th>Kapcsolat</th><th>Tipikus használat</th></tr>
+      <tr><td><strong>Long polling</strong></td><td>kliens kér</td><td>ismételt HTTP</td><td>fallback, ha nincs jobb</td></tr>
+      <tr><td><strong>SSE</strong></td><td>szerver → kliens</td><td>1 tartós HTTP</td><td>értesítés, élő feed, dashboard</td></tr>
+      <tr><td><strong>WebSocket</strong></td><td>kétirányú</td><td>tartós (ws://)</td><td>chat, játék, együttműködés</td></tr>
+      <tr><td><strong>Webhook</strong></td><td>szerver → szerver</td><td>eseti HTTP POST</td><td>fizetés (Stripe), CI, integráció</td></tr>
+    </table>
+  </section>
+
+  <!-- ═══════════════ 9. ÖSSZEHASONLÍTÁS ═══════════════ -->
+  <section class="section" id="osszehasonlitas">
+    <h2><span class="qnum">9.</span> Nagy összehasonlító táblázat</h2>
+    <span class="tag">Összehasonlítás</span>
+
+    <div style="overflow-x:auto">
+    <table>
+      <tr><th>Szempont</th><th>REST</th><th>GraphQL</th><th>gRPC</th><th>SOAP</th></tr>
+      <tr><td><strong>Típus</strong></td><td>archit. stílus</td><td>query nyelv + runtime</td><td>RPC keretrendszer</td><td>protokoll</td></tr>
+      <tr><td><strong>Transport</strong></td><td>HTTP/1.1+</td><td>HTTP (POST)</td><td>HTTP/2</td><td>HTTP/SMTP…</td></tr>
+      <tr><td><strong>Formátum</strong></td><td>JSON (jellemzően)</td><td>JSON</td><td>Protobuf (bináris)</td><td>XML</td></tr>
+      <tr><td><strong>Séma/típus</strong></td><td>opcionális (OpenAPI)</td><td>kötelező (SDL)</td><td>kötelező (.proto)</td><td>kötelező (WSDL)</td></tr>
+      <tr><td><strong>Endpoint</strong></td><td>sok (erőforrásonként)</td><td>egy (/graphql)</td><td>szolgáltatás + metódus</td><td>egy (+SOAPAction)</td></tr>
+      <tr><td><strong>Over-fetching</strong></td><td>jellemző</td><td>megoldva</td><td>nincs (definiált)</td><td>jellemző</td></tr>
+      <tr><td><strong>HTTP-cache</strong></td><td>kiváló (GET)</td><td>nehéz</td><td>nincs</td><td>nincs</td></tr>
+      <tr><td><strong>Böngésző</strong></td><td>natív</td><td>natív</td><td>proxy kell (grpc-web)</td><td>nehézkes</td></tr>
+      <tr><td><strong>Streaming</strong></td><td>SSE-vel</td><td>subscription</td><td>beépített (4 mód)</td><td>nincs</td></tr>
+      <tr><td><strong>Tanulási görbe</strong></td><td>alacsony</td><td>közepes</td><td>magas</td><td>magas</td></tr>
+      <tr><td><strong>Ideális</strong></td><td>publikus web/CRUD API</td><td>sokféle kliens, komplex adat</td><td>belső microservice-ek</td><td>enterprise/legacy</td></tr>
+    </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════ 10. DÖNTÉS ═══════════════ -->
+  <section class="section" id="dontes">
+    <h2><span class="qnum">10.</span> Mikor melyiket? – döntési fa</h2>
+    <span class="tag">Döntés</span> <span class="tag">Gyakorlat</span>
+
+    <div class="fig">
+      <svg viewBox="0 0 860 380" role="img" aria-label="Döntési fa: melyik API stílust válaszd">
+        <defs><marker id="m6" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#5d6678"/></marker></defs>
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="12">
+          <rect x="320" y="20" width="220" height="42" rx="10" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+          <text x="430" y="46" font-weight="800" fill="#2f48ac" text-anchor="middle">Mire kell az API?</text>
+
+          <!-- branch 1: realtime -->
+          <line x1="380" y1="62" x2="150" y2="100" stroke="#5d6678" stroke-width="1.6" marker-end="url(#m6)"/>
+          <rect x="30" y="104" width="250" height="42" rx="9" fill="#fff" stroke="#f1c9c9"/>
+          <text x="155" y="130" fill="#a82c2c" text-anchor="middle">Valós idejű, szerver push?</text>
+          <line x1="155" y1="146" x2="155" y2="180" stroke="#5d6678" stroke-width="1.6" marker-end="url(#m6)"/>
+          <rect x="30" y="184" width="250" height="56" rx="9" fill="#fcebeb" stroke="#d23b3b"/>
+          <text x="155" y="206" font-weight="800" fill="#a82c2c" text-anchor="middle">WebSocket (kétirányú)</text>
+          <text x="155" y="226" font-size="11" fill="#a82c2c" text-anchor="middle">SSE (egyirányú push) · Webhook (S→S)</text>
+
+          <!-- branch 2: internal microservices -->
+          <line x1="430" y1="62" x2="430" y2="100" stroke="#5d6678" stroke-width="1.6" marker-end="url(#m6)"/>
+          <rect x="305" y="104" width="250" height="42" rx="9" fill="#fff" stroke="#c9d4f7"/>
+          <text x="430" y="130" fill="#2f48ac" text-anchor="middle">Belső microservice ↔ service?</text>
+          <line x1="430" y1="146" x2="430" y2="180" stroke="#5d6678" stroke-width="1.6" marker-end="url(#m6)"/>
+          <rect x="320" y="184" width="220" height="42" rx="9" fill="#eaeefc" stroke="#3a5bd9"/>
+          <text x="430" y="210" font-weight="800" fill="#2f48ac" text-anchor="middle">gRPC (gyors, típusos)</text>
+
+          <!-- branch 3: public/client-facing -->
+          <line x1="480" y1="62" x2="710" y2="100" stroke="#5d6678" stroke-width="1.6" marker-end="url(#m6)"/>
+          <rect x="585" y="104" width="250" height="42" rx="9" fill="#fff" stroke="#d9ccf5"/>
+          <text x="710" y="130" fill="#5a3fb0" text-anchor="middle">Publikus / kliens-API?</text>
+
+          <line x1="660" y1="146" x2="610" y2="250" stroke="#5d6678" stroke-width="1.6" marker-end="url(#m6)"/>
+          <rect x="470" y="254" width="280" height="56" rx="9" fill="#e6f6ec" stroke="#1f9d57"/>
+          <text x="610" y="276" font-weight="800" fill="#15703f" text-anchor="middle">REST</text>
+          <text x="610" y="296" font-size="11" fill="#15703f" text-anchor="middle">egyszerű CRUD, cache, széles körű tooling</text>
+
+          <line x1="760" y1="146" x2="800" y2="250" stroke="#5d6678" stroke-width="1.6" marker-end="url(#m6)"/>
+          <rect x="640" y="320" width="210" height="50" rx="9" fill="#efeafc" stroke="#7c5cd6"/>
+          <text x="745" y="342" font-weight="800" fill="#5a3fb0" text-anchor="middle">GraphQL</text>
+          <text x="745" y="360" font-size="10.5" fill="#5a3fb0" text-anchor="middle">sokféle kliens, összetett/aggregált adat</text>
+
+          <rect x="30" y="300" width="250" height="56" rx="9" fill="#fbf2dd" stroke="#b9821a"/>
+          <text x="155" y="322" font-weight="800" fill="#8a6112" text-anchor="middle">SOAP</text>
+          <text x="155" y="342" font-size="11" fill="#8a6112" text-anchor="middle">enterprise/banki, WS-Security, legacy</text>
+        </g>
+      </svg>
+      <p class="cap">Hüvelykujjszabály: publikus/egyszerű → REST; sokféle kliens, túl sok/kevés adat → GraphQL; belső, nagy teljesítményű → gRPC; valós idejű → WebSocket/SSE/Webhook; vállalati/legacy → SOAP.</p>
+    </div>
+
+    <div class="answer-box"><strong>A gyakorlatban gyakran keverék:</strong> publikus REST API + belső gRPC a service-ek közt + WebSocket a realtime funkcióhoz + Webhook a 3rd-party integrációkhoz (Stripe, GitHub). Egy rendszer több stílust is használ, a feladathoz illeszkedve.</div>
+  </section>
+
+  <!-- ═══════════════ 11. CQRS ═══════════════ -->
+  <section class="section" id="cqrs">
+    <h2><span class="qnum">11.</span> CQRS – kapcsolódó minta (más kategória!)</h2>
+    <span class="tag">Architektúra</span> <span class="tag">Kapcsolódó</span>
+
+    <div class="note"><strong>Miért nem volt a stílus-térképen?</strong> Mert a <strong>CQRS nem API-kommunikációs stílus</strong> (mint a REST/GraphQL/gRPC). Az API-stílusok azt írják le, <em>hogyan beszél a kliens és a szerver</em>; a CQRS egy <strong>backend architekturális minta</strong> arról, <em>hogyan szervezed a szerveren belül az írás- és olvasás-logikát</em>. Más szinten van — de szorosan kapcsolódik az API-tervezéshez, és interjún simán előjöhet az API-k mellett, ezért érdemes ismerni.</div>
+
+    <p><strong>CQRS = Command Query Responsibility Segregation.</strong> A lényeg: a <strong>parancsokat (Command — írás/módosítás)</strong> és a <strong>lekérdezéseket (Query — olvasás)</strong> külön útvonalon, gyakran külön modellel (akár külön adattárral) kezeled. A CQS-elv (Bertrand Meyer) skálázása architektúra-szintre: egy művelet vagy <em>módosít</em> (command, nincs visszaadott adat), vagy <em>lekérdez</em> (query, nincs mellékhatás) — de nem mindkettő.</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 780 300" role="img" aria-label="CQRS: a parancs (írás) és lekérdezés (olvasás) oldal szétválasztása">
+        <defs><marker id="m7" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#5d6678"/></marker></defs>
+        <g font-family="-apple-system,Segoe UI,Roboto,sans-serif" text-anchor="middle">
+          <text x="300" y="26" font-size="12" font-weight="800" fill="#8a6112">PARANCS oldal (írás)</text>
+          <text x="300" y="290" font-size="12" font-weight="800" fill="#15703f">LEKÉRDEZÉS oldal (olvasás)</text>
+
+          <rect x="18" y="118" width="96" height="60" rx="10" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2"/>
+          <text x="66" y="153" font-size="13" font-weight="800" fill="#2f48ac">Kliens</text>
+
+          <rect x="210" y="40" width="180" height="58" rx="10" fill="#fbf2dd" stroke="#b9821a" stroke-width="2"/>
+          <text x="300" y="65" font-size="12.5" font-weight="800" fill="#8a6112">Command kezelő</text>
+          <text x="300" y="84" font-size="11" fill="#8a6112">validál · üzleti logika · módosít</text>
+          <rect x="470" y="40" width="180" height="58" rx="10" fill="#fff" stroke="#b9821a"/>
+          <text x="560" y="65" font-size="12.5" font-weight="800" fill="#8a6112">Write model / DB</text>
+          <text x="560" y="84" font-size="11" fill="#8a6112">normalizált, tranzakciós</text>
+
+          <rect x="210" y="198" width="180" height="58" rx="10" fill="#e6f6ec" stroke="#1f9d57" stroke-width="2"/>
+          <text x="300" y="223" font-size="12.5" font-weight="800" fill="#15703f">Query kezelő</text>
+          <text x="300" y="242" font-size="11" fill="#15703f">csak olvas, nincs mellékhatás</text>
+          <rect x="470" y="198" width="200" height="58" rx="10" fill="#fff" stroke="#1f9d57"/>
+          <text x="570" y="223" font-size="12.5" font-weight="800" fill="#15703f">Read model / DB</text>
+          <text x="570" y="242" font-size="11" fill="#15703f">denormalizált, olvasásra gyors</text>
+
+          <g stroke="#5d6678" stroke-width="1.8" fill="none">
+            <line x1="116" y1="142" x2="208" y2="74" marker-end="url(#m7)"/>
+            <line x1="116" y1="156" x2="208" y2="226" marker-end="url(#m7)"/>
+            <line x1="392" y1="69" x2="468" y2="69" marker-end="url(#m7)"/>
+            <line x1="392" y1="227" x2="468" y2="227" marker-end="url(#m7)"/>
+          </g>
+          <text x="152" y="98" font-size="10.5" fill="#8a6112">POST/PUT/DELETE</text>
+          <text x="150" y="200" font-size="10.5" fill="#15703f">GET</text>
+          <line x1="560" y1="98" x2="560" y2="198" stroke="#7c5cd6" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#m7)"/>
+          <text x="668" y="142" font-size="10.5" fill="#5a3fb0">események /</text>
+          <text x="668" y="157" font-size="10.5" fill="#5a3fb0">projekció</text>
+          <text x="668" y="173" font-size="10" fill="#5d6678">(eventual</text>
+          <text x="668" y="186" font-size="10" fill="#5d6678">consistency)</text>
+        </g>
+      </svg>
+      <p class="cap">A parancs- (írás) és lekérdezés- (olvasás) oldal külön modell/adattár. A write store változásai „vetülnek" a read store-ba (gyakran eseményekkel) — ezért a read oldal kicsit késhet (eventual consistency).</p>
+    </div>
+
+    <h3>Miért csinálnánk ezt?</h3>
+    <ul>
+      <li><strong>Eltérő terhelés:</strong> tipikusan sokkal több az olvasás, mint az írás → a két oldalt <strong>külön skálázhatod</strong> (pl. sok read replika).</li>
+      <li><strong>Eltérő modell:</strong> az íráshoz normalizált, konzisztens modell jó; az olvasáshoz denormalizált, a nézethez szabott „read model" gyorsabb.</li>
+      <li><strong>Tisztább felelősség:</strong> a parancs-logika (validáció, üzleti szabályok) elválik a lekérdezéstől.</li>
+    </ul>
+
+    <h3>Hogyan kapcsolódik az API-khoz?</h3>
+    <pre><code># REST: a parancs és a lekérdezés szétválik (akár task-alapú végpontok)
+POST   /orders               # Command – létrehoz (írás)
+POST   /orders/42/cancel     # Command – task-alapú művelet (nem nyers CRUD!)
+GET    /orders/42            # Query  – olvasás (akár külön, optimalizált read modellből)
+
+# GraphQL: az API szinten BEÉPÍTETT command/query szétválasztás:
+query    { order(id: 42) { status } }        # olvasás (Query)
+mutation { cancelOrder(id: 42) { status } }  # parancs (Command)
+
+# HTTP-szinten a CQS gondolat már ott van: GET = biztonságos lekérdezés,
+# POST/PUT/DELETE = mellékhatásos parancs.</code></pre>
+
+    <div class="note"><strong>CQRS és Event Sourcing:</strong> gyakori társ, de NEM ugyanaz. Az <strong>Event Sourcing</strong> az állapotot <em>események sorozataként</em> tárolja (nem a pillanatnyi állapotot), és a read modellek ezekből az eseményekből „vetülnek". A CQRS működik Event Sourcing nélkül is (pl. csak külön read/write DB), és fordítva.</div>
+
+    <div class="trap-box"><strong>Mikor NE használd?</strong> A CQRS <strong>komplexitást</strong> ad (két modell, szinkronizáció, eventual consistency a read oldalon). Egyszerű CRUD-alkalmazásnál <strong>overkill</strong> — ott egy modell + REST bőven elég. Csak akkor éri meg, ha a read és write terhelése/modellje tényleg jelentősen eltér (pl. nagy forgalmú, esemény-vezérelt rendszer).</div>
+
+    <div class="answer-box"><strong>Egymondatos összefoglaló (interjúra):</strong> a CQRS nem API-stílus, hanem backend-minta: az írást (command) és az olvasást (query) külön modellel/úton kezeli — a GraphQL query/mutation és a REST-ben a GET vs POST/PUT/DELETE pont ezt a szétválasztást tükrözi az API szintjén.</div>
+  </section>
+
+  <!-- ═══════════════ 12. INTERJÚ ═══════════════ -->
+  <section class="section" id="interju">
+    <h2><span class="qnum">12.</span> Interjúkérdések és válaszvázak</h2>
+    <span class="tag">Interjú</span>
+
+    <div class="answer-box"><strong>K1: Mesélj a REST-ről.</strong>
+      <p>A REST egy architekturális stílus (Roy Fielding, 2000) HTTP-alapú API-khoz. Erőforrásokban gondolkodik, amiket URL azonosít, és HTTP-igékkel (GET/POST/PUT/PATCH/DELETE) manipulál. Kulcsfogalmak: <strong>stateless</strong> (a szerver nem tárol session-t), <strong>uniform interface</strong>, <strong>cacheable</strong> (GET + ETag). A státuszkódok jelzik az eredményt (200/201/404/401…). 6 megszorítása van; a HATEOAS (hipermédia) a „teljes" REST, de a gyakorlatban ritka.</p>
+    </div>
+
+    <div class="answer-box"><strong>K2: REST vs GraphQL?</strong>
+      <p>REST: sok endpoint, a szerver dönti el a válasz alakját → over/under-fetching, de kiváló HTTP-cache. GraphQL: egy endpoint, a kliens kéri pontosan a mezőket → nincs over-fetching, egy körutazás, de nehezebb cache (POST) és N+1/komplexitás veszély. REST egyszerű CRUD-ra, GraphQL sokféle kliensre és összetett/aggregált adatra jó.</p>
+    </div>
+
+    <div class="answer-box"><strong>K3: Mi az idempotencia, és melyik metódus idempotens?</strong>
+      <p>Idempotens: N-szer elküldve ugyanaz az eredmény, mint egyszer. <code>GET</code>, <code>PUT</code>, <code>DELETE</code>, <code>HEAD</code>, <code>OPTIONS</code> idempotens; <code>POST</code> és (általában) <code>PATCH</code> nem. Hálózati újrapróbálkozásnál (retry) kritikus — POST-nál idempotency key-t használunk.</p>
+    </div>
+
+    <div class="answer-box"><strong>K4: REST vs RPC (pl. gRPC) szemlélet?</strong>
+      <p>REST = erőforrás-orientált (főnevek + HTTP-igék: <code>GET /users/42</code>). RPC = művelet-orientált (metódushívás: <code>getUser(42)</code>). A gRPC RPC-stílusú, HTTP/2 + protobuf, nagyon gyors, belső service-ekhez ideális, de böngészőből proxy kell.</p>
+    </div>
+
+    <div class="answer-box"><strong>K5: Mikor választanál WebSocketet REST helyett?</strong>
+      <p>Ha valós idejű, kétirányú kommunikáció kell (chat, élő játék, kollaboráció). Ha csak a szerver push-ol egy irányba → SSE elég (egyszerűbb, auto-reconnect, HTTP). Ha 3rd-party rendszer értesít → Webhook. A REST továbbra is jó a sima CRUD-műveletekre ugyanabban az appban.</p>
+    </div>
+
+    <div class="trap-box"><strong>Interjú tipp:</strong> ne mondd, hogy „a GraphQL/gRPC mindig jobb a REST-nél". Mindig kontextus-függő: a REST egyszerűsége, cache-elhetősége és univerzális toolingja sok esetben verhetetlen. A jó válasz a trade-offokat mutatja be, és a feladathoz illeszti a választást.</div>
+  </section>
+
+  <footer>
+    <p><strong>📋 Kidolgozási &amp; karbantartási napló</strong></p>
+    <p>
+      <strong>Készítette:</strong> Claude Opus 4.8 (1M kontextus) · modell-azonosító <code>claude-opus-4-8[1m]</code><br>
+      <strong>Kidolgozás dátuma:</strong> 2026-06-29 · <strong>A modell tudásvágása:</strong> 2026. január (a tanítóadat vége — az azóta eltelt időszak változásait nem garantáltan ismeri, ezt frissítéskor ellenőrizni kell)<br>
+      <strong>Precíziós szint:</strong> új, tutorial-szintű dokumentum a közös világos témában, SVG-vizualizációkkal (9 ábra) az <code>interju-doc</code> skill szerint.
+    </p>
+    <p><strong>Lefedett témakör:</strong> API-paradigmák / web API-stílusok — REST (constraints, Richardson Maturity Model, HATEOAS, URL-tervezés), GraphQL, gRPC, SOAP, RPC/JSON-RPC/tRPC, valós idejű (Polling/SSE/WebSocket/Webhook), HTTP alapok, nagy összehasonlítás, döntési fa, valamint a kapcsolódó (de más kategóriájú) <strong>CQRS</strong> / Event Sourcing minta, és interjúkérdések.</p>
+    <p><strong>🔧 Ha 1 év múlva technikailag frissíteni kell:</strong></p>
+    <ul>
+      <li><strong>Dizájnrendszer:</strong> világos téma a <code>:root</code> CSS-változókban; <code>.wrap</code> &gt; <code>header.hero</code> + <code>nav.toc</code> + <code>.section</code>; ábrák inline <code>&lt;svg&gt;</code> a <code>.fig</code>-ben (egyedi <code>marker</code> id-k SVG-nként!). Az <code>interju-doc</code> skill a sablon.</li>
+      <li><strong>KÖTELEZŐ:</strong> kódblokkban escape-eld a <code>&lt;</code>/<code>&gt;</code>/<code>&amp;</code> karaktereket (sok XML/GraphQL/protobuf van).</li>
+      <li><strong>Verzió-/időérzékeny:</strong> HTTP/3 (QUIC) terjedése; GraphQL Federation; gRPC-Web / Connect; OpenAPI verziók; tRPC major verziók. Az alapfogalmak (REST constraints, idempotencia, HTTP-igék) időtállók.</li>
+    </ul>
+  </footer>
+
+</div>
+</body>
+</html>

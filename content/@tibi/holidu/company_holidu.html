@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Holidu – JavaScript &amp; React interjú kérdések</title>
+<style>
+  :root{
+    --bg:#f4f6fb;
+    --card:#ffffff;
+    --ink:#1c2233;
+    --muted:#5d6678;
+    --line:#e4e8f0;
+    --brand:#3a5bd9;
+    --brand-soft:#eaeefc;
+    --brand-ink:#2f48ac;
+    --ok:#1f9d57;
+    --ok-soft:#e6f6ec;
+    --ok-line:#bce6cb;
+    --ok-ink:#15703f;
+    --bad:#d23b3b;
+    --bad-soft:#fcebeb;
+    --bad-line:#f1c9c9;
+    --bad-ink:#a82c2c;
+    --warn:#b9821a;
+    --warn-soft:#fbf2dd;
+    --warn-line:#ecd9a8;
+    --warn-ink:#8a6112;
+    --code-bg:#1e2433;
+    --code-ink:#e8ecf6;
+    --mono:"SF Mono",ui-monospace,SFMono-Regular,Menlo,'Fira Code','Cascadia Code',Consolas,monospace;
+    --shadow:0 1px 2px rgba(20,30,60,.05),0 8px 24px rgba(20,30,60,.07);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;
+    padding:32px 16px 80px;
+  }
+  .wrap{max-width:880px;margin:0 auto}
+
+  /* Header */
+  header.hero{
+    background:linear-gradient(135deg,#3a5bd9,#5a78ec);
+    color:#fff;
+    border-radius:18px;
+    padding:34px 34px 30px;
+    box-shadow:var(--shadow);
+    margin-bottom:24px;
+  }
+  header.hero .kicker{
+    text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:700;
+    opacity:.85;margin:0 0 8px;
+  }
+  header.hero h1{margin:0 0 6px;font-size:28px;line-height:1.2;border:none;padding:0;color:#fff;}
+  header.hero p{margin:0;opacity:.94;font-size:15px;max-width:64ch}
+
+  /* Scoreboard */
+  .scoreboard{display:flex;flex-wrap:wrap;gap:12px;margin:22px 0 6px;}
+  .score{
+    flex:1 1 150px;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:16px 18px;box-shadow:var(--shadow);
+  }
+  .score .num{font-size:30px;font-weight:800;line-height:1}
+  .score .lbl{font-size:13px;color:var(--muted);margin-top:4px}
+  .score.ok .num{color:var(--ok)}
+  .score.bad .num{color:var(--bad)}
+  .score.warn .num{color:var(--warn)}
+  .score.total .num{color:var(--brand)}
+
+  .legend{font-size:13px;color:var(--muted);margin:14px 2px 28px;display:flex;gap:18px;flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .dot.ok{background:var(--ok)} .dot.bad{background:var(--bad)} .dot.warn{background:var(--warn)} .dot.you{background:var(--brand)}
+
+  /* Question card */
+  .section{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:24px 26px;margin-bottom:20px;box-shadow:var(--shadow);
+    border-left:6px solid var(--line);
+  }
+  .section.correct{border-left-color:var(--ok)}
+  .section.incorrect{border-left-color:var(--bad)}
+  .section.debatable{border-left-color:var(--warn)}
+
+  h2{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    font-size:18px;font-weight:800;margin:0 0 8px;color:var(--ink);
+  }
+  h2 .q-title-text{flex:1 1 60%}
+  h2 .qnum{color:var(--brand);font-weight:800;margin-right:5px}
+  h3{
+    font-size:12.5px;font-weight:800;color:var(--muted);text-transform:uppercase;
+    letter-spacing:.08em;margin:20px 0 8px;
+  }
+
+  /* Result badge */
+  .result-badge{
+    flex:0 0 auto;font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;
+    white-space:nowrap;margin:0;
+  }
+  .badge-correct{background:var(--ok-soft);color:var(--ok)}
+  .badge-wrong{background:var(--bad-soft);color:var(--bad)}
+  .badge-warn{background:var(--warn-soft);color:var(--warn)}
+
+  /* Topic tags */
+  .tagrow{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px}
+  .tag{display:inline-block;background:var(--brand-soft);color:var(--brand);
+    padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;}
+
+  p{margin:0 0 12px;font-size:15px}
+  ul,ol{margin:0 0 14px;padding-left:22px}
+  li{margin:4px 0;font-size:14.5px}
+
+  /* Code */
+  code{font-family:var(--mono);font-size:.92em}
+  :not(pre) > code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;}
+  .ic{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);font-size:.9em;}
+  pre{
+    background:var(--code-bg);color:var(--code-ink);border-radius:10px;
+    padding:14px 16px;overflow-x:auto;margin:0 0 16px;
+  }
+  pre code{background:none;color:inherit;padding:0;font-size:13.5px;line-height:1.55;}
+
+  /* ASCII diagram */
+  .diagram{
+    background:var(--code-bg);color:#8fb4ff;border-radius:10px;padding:16px;
+    margin:14px 0;font-family:var(--mono);font-size:12.5px;line-height:1.5;
+    overflow-x:auto;white-space:pre;
+  }
+
+  /* Callout boxes */
+  .answer-box,.wrong-box,.trap-box,.note{
+    border-radius:11px;padding:14px 16px;margin:14px 0;font-size:14px;border:1px solid;
+  }
+  .answer-box{background:var(--ok-soft);border-color:var(--ok-line)}
+  .answer-box strong{color:var(--ok-ink)}
+  .wrong-box{background:var(--bad-soft);border-color:var(--bad-line)}
+  .wrong-box strong{color:var(--bad-ink)}
+  .trap-box{background:var(--warn-soft);border-color:var(--warn-line)}
+  .trap-box strong{color:var(--warn-ink)}
+  .note{background:var(--brand-soft);border-color:#d3dbf7}
+  .note strong{color:var(--brand-ink)}
+  .answer-box p,.wrong-box p,.trap-box p,.note p{margin:8px 0 0;font-size:14px}
+  .answer-box ul,.trap-box ul,.note ul{margin:8px 0 0}
+  .answer-box pre,.wrong-box pre,.trap-box pre,.note pre{margin:10px 0 0}
+
+  /* Options */
+  .options{list-style:none;margin:0 0 16px;padding:0}
+  .options li{
+    display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:9px;
+    border:1px solid var(--line);margin-bottom:6px;font-size:14.5px;background:#fbfcfe;
+    font-family:var(--mono);
+  }
+  .options li .letter{
+    flex:0 0 auto;width:26px;height:26px;border-radius:7px;border:2px solid #c8cee0;
+    display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;
+    color:var(--muted);background:#fff;font-family:inherit;
+  }
+  .options li.correct{background:var(--ok-soft);border-color:var(--ok-line)}
+  .options li.correct .letter{background:var(--ok);border-color:var(--ok);color:#fff}
+  .options li.user-wrong{background:var(--bad-soft);border-color:var(--bad-line)}
+  .options li.user-wrong .letter{background:var(--bad);border-color:var(--bad);color:#fff}
+  .options li.trap{background:var(--warn-soft);border-color:var(--warn-line);border-style:dashed}
+  .options li.trap .letter{border-color:var(--warn);color:var(--warn)}
+  .options li.wrong{opacity:.7}
+  .options li .opt-tags{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  .opt-tag{font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+  .opt-tag.you{background:var(--brand-soft);color:var(--brand)}
+  .opt-tag.right{background:var(--ok-soft);color:var(--ok)}
+  .opt-tag.miss{background:var(--warn-soft);color:var(--warn)}
+  .opt-tag.trapt{background:var(--warn-soft);color:var(--warn)}
+
+  /* Tables */
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px;background:var(--card);}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+  th{background:var(--brand-soft);color:var(--brand-ink);font-weight:700}
+  table tr:nth-child(even){background:#f7f9fd}
+
+  /* Screenshot */
+  .screenshot{max-width:100%;border:1px solid var(--line);border-radius:10px;margin:0 0 16px;box-shadow:var(--shadow);}
+
+  footer{color:var(--muted);font-size:13px;text-align:center;margin-top:30px;line-height:1.7}
+  a{color:var(--brand)}
+
+  @media(max-width:560px){
+    body{padding:20px 10px 60px}
+    header.hero{padding:24px 20px}
+    .section{padding:18px 16px}
+    .options li{flex-wrap:wrap}
+    .options li .opt-tags{margin-left:38px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="kicker">Holidu · Frontend interjú</p>
+    <h1>JavaScript &amp; React interjú kérdések</h1>
+    <p>13 kérdés JS és React témakörben. Minden kérdésnél jelölve a beadott válasz, a helyes megoldás, és a témakör mélyebb technikai háttere (csapdák, follow-up kérdések, modern megoldások).</p>
+  </header>
+
+  <div class="scoreboard">
+    <div class="score ok"><div class="num">6</div><div class="lbl">Teljesen helyes</div></div>
+    <div class="score warn"><div class="num">1</div><div class="lbl">Részleges (Q1)</div></div>
+    <div class="score bad"><div class="num">6</div><div class="lbl">Helytelen</div></div>
+    <div class="score total"><div class="num">13</div><div class="lbl">Összes kérdés</div></div>
+  </div>
+
+  <div class="legend">
+    <span><span class="dot ok"></span> Helyes válasz</span>
+    <span><span class="dot bad"></span> Beadott rossz válasz</span>
+    <span><span class="dot warn"></span> Csapda opció</span>
+    <span><span class="dot you"></span> „A te válaszod” címke</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- Q1 -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section debatable" id="q1">
+    <h2><span class="q-title-text"><span class="qnum">1.</span> Érvénytelen JS data type</span> <span class="result-badge badge-warn">Részleges</span></h2>
+    <div class="tagrow"><span class="tag">JavaScript</span> <span class="tag">Data types</span></div>
+
+    <h3>Kérdés</h3>
+    <p>Which is not a valid data type in JavaScript?</p>
+
+    <ul class="options">
+      <li class="wrong"><span class="letter">A</span> Undefined</li>
+      <li class="wrong"><span class="letter">B</span> Boolean</li>
+      <li class="correct"><span class="letter">C</span> Float <span class="opt-tags"><span class="opt-tag you">A te válaszod</span><span class="opt-tag right">helyes</span></span></li>
+      <li class="wrong"><span class="letter">D</span> Number</li>
+      <li class="correct"><span class="letter">E</span> Struct <span class="opt-tags"><span class="opt-tag miss">szintén helyes – kimaradt</span></span></li>
+    </ul>
+
+    <div class="wrong-box">
+      <strong>Beadott válasz: csak Float</strong> — Hiányzik: <strong>Struct</strong> is érvénytelen! Mindkettőt be kellett volna jelölni.
+    </div>
+
+    <div class="answer-box">
+      <strong>Helyes válasz: Float ÉS Struct</strong>
+    </div>
+
+    <h3>Magyarázat</h3>
+    <p>A JavaScript <strong>8 adattípust</strong> ismer (7 primitív + 1 referencia):</p>
+
+<pre><code>// 7 primitív típus:
+typeof undefined  // "undefined"
+typeof true       // "boolean"
+typeof 42         // "number"      ← NINCS külön Float!
+typeof 42n        // "bigint"
+typeof "hello"    // "string"
+typeof Symbol()   // "symbol"
+typeof null       // "object"      ← ismert JS bug, de null primitív
+
+// 1 referencia típus:
+typeof {}         // "object"
+typeof []         // "object"      ← tömb is object
+typeof function(){} // "function"  ← function is object altípus</code></pre>
+
+    <div class="trap-box">
+      <strong>Miért nincs Float?</strong>
+      <p>A JavaScript <strong>nem különbözteti meg</strong> az egész számokat és a lebegőpontos számokat. Mindkettő <span class="ic">Number</span> típus (IEEE 754 double-precision 64-bit). Más nyelvekben (Java, C#) van <code>int</code>, <code>float</code>, <code>double</code> – JS-ben ez mind <code>Number</code>.</p>
+<pre><code>typeof 42     // "number"
+typeof 3.14   // "number"  ← nincs "float"!
+typeof 1e10   // "number"
+
+// Ha egész számra van szükséged: Number.isInteger()
+Number.isInteger(42)    // true
+Number.isInteger(3.14)  // false</code></pre>
+    </div>
+
+    <div class="note">
+      <strong>Struct sem létezik</strong> – a <code>struct</code> a C/C++/C#/Go nyelvek fogalma. JavaScriptben az objektum (<code>{}</code>) és a class a legközelebbi megfelelője.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- Q2 -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section correct" id="q2">
+    <h2><span class="q-title-text"><span class="qnum">2.</span> JS cross-platform kompatibilitás</span> <span class="result-badge badge-correct">Helyes ✓</span></h2>
+    <div class="tagrow"><span class="tag">JavaScript</span> <span class="tag">Platform</span></div>
+
+    <h3>Kérdés</h3>
+    <p>A JavaScript program developed on a Unix Machine...</p>
+
+    <ul class="options">
+      <li class="wrong"><span class="letter">A</span> Will throw errors and exceptions</li>
+      <li class="wrong"><span class="letter">B</span> Must be restricted to a Unix Machine</li>
+      <li class="wrong"><span class="letter">C</span> Will be displayed as a JavaScript text in the browser</li>
+      <li class="correct"><span class="letter">D</span> Will work on a Windows Machine <span class="opt-tags"><span class="opt-tag you">A te válaszod</span><span class="opt-tag right">helyes</span></span></li>
+    </ul>
+
+    <div class="answer-box">
+      <strong>Helyes válasz: D) Will work on a Windows Machine</strong>
+    </div>
+
+    <h3>Magyarázat</h3>
+    <p>A JavaScript <strong>platform-független</strong> nyelv. A böngésző (vagy Node.js) futtatja, nem az operációs rendszer közvetlenül. Egy Unix-on írt JS kód ugyanúgy fut Windows-on, macOS-en, Linux-on – mivel mindegyiken ugyanaz a JavaScript engine fut (V8, SpiderMonkey, stb.).</p>
+
+    <div class="note">
+      <strong>Szükséges tudás:</strong> interpretált vs. fordított nyelvek, JS-motorok (V8, SpiderMonkey), a „write once, run anywhere” elv, és a futtatókörnyezet (runtime) szerepe. A böngésző absztrahálja az OS-t — a JS sosem közvetlenül a rendszerrel beszél.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- Q3 -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section incorrect" id="q3">
+    <h2><span class="q-title-text"><span class="qnum">3.</span> Script attribútumok (async, defer)</span> <span class="result-badge badge-wrong">Helytelen ✗</span></h2>
+    <div class="tagrow"><span class="tag">HTML</span> <span class="tag">Script loading</span></div>
+
+    <h3>Kérdés</h3>
+    <p>Which attribute can affect the order of execution at page load? (script element)</p>
+
+    <ul class="options">
+      <li class="wrong"><span class="letter">A</span> parse</li>
+      <li class="correct"><span class="letter">B</span> async <span class="opt-tags"><span class="opt-tag right">helyes</span></span></li>
+      <li class="correct"><span class="letter">C</span> defer <span class="opt-tags"><span class="opt-tag right">helyes</span></span></li>
+      <li class="correct"><span class="letter">D</span> type <span class="opt-tags"><span class="opt-tag right">helyes</span></span></li>
+      <li class="user-wrong"><span class="letter">E</span> All of the above <span class="opt-tags"><span class="opt-tag you">A te válaszod</span></span></li>
+    </ul>
+
+    <div class="wrong-box">
+      <strong>Beadott válasz: All of the above</strong> — ROSSZ, mert <code>parse</code> NEM létező script attribútum!
+    </div>
+
+    <div class="answer-box">
+      <strong>Helyes válasz: async, defer, type (NEM parse!)</strong>
+    </div>
+
+    <h3>Magyarázat</h3>
+    <p>A <code>&lt;script&gt;</code> elem attribútumai közül a következők befolyásolják a betöltési/végrehajtási sorrendet:</p>
+
+<div class="diagram">NORMÁL (attribútum nélkül):
+HTML parsing:  ████████░░░░░░░░░░░████████
+Script:                 ↓fetch↓exec↓
+                 Parsing BLOKKOL, amíg a script letöltődik és lefut
+
+ASYNC:
+HTML parsing:  ████████████████░░░████████
+Script:              ↓fetch──↓exec↓
+                 Letöltés párhuzamos, végrehajtás AZONNAL (blocking)
+                 Sorrend NEM garantált!
+
+DEFER:
+HTML parsing:  ██████████████████████████
+Script:              ↓fetch──────↓    ↓exec↓
+                 Letöltés párhuzamos, végrehajtás DOM PARSE UTÁN
+                 Sorrend GARANTÁLT (dokumentum sorrend)
+
+TYPE="module":
+HTML parsing:  ██████████████████████████
+Script:              ↓fetch──────↓    ↓exec↓
+                 Alapból defer viselkedés + ES module scope</div>
+
+<pre><code>&lt;!-- Normál: blokkolja a HTML parsolást --&gt;
+&lt;script src="app.js"&gt;&lt;/script&gt;
+
+&lt;!-- Async: párhuzamos letöltés, azonnal futtat (nem garantált sorrend) --&gt;
+&lt;script src="analytics.js" async&gt;&lt;/script&gt;
+
+&lt;!-- Defer: párhuzamos letöltés, DOM parse UTÁN futtat (garantált sorrend) --&gt;
+&lt;script src="app.js" defer&gt;&lt;/script&gt;
+
+&lt;!-- Type=module: alapból defer + modul scope --&gt;
+&lt;script type="module" src="app.mjs"&gt;&lt;/script&gt;</code></pre>
+
+    <div class="trap-box">
+      <strong><code>parse</code> NEM létező script attribútum!</strong> Nem szerepel a HTML specifikációban. Érvényes script attribútumok: <code>src</code>, <code>type</code>, <code>async</code>, <code>defer</code>, <code>crossorigin</code>, <code>integrity</code>, <code>nomodule</code>, <code>referrerpolicy</code>, <code>fetchpriority</code>.
+    </div>
+
+    <div class="note">
+      <strong>Mikor melyiket?</strong>
+      <ul>
+        <li><code>defer</code> — Alkalmazás fő JS fájljai (sorrend fontos, DOM kell)</li>
+        <li><code>async</code> — Független scriptek: analytics, reklám, tracking (sorrend nem fontos)</li>
+        <li><code>type="module"</code> — Modern ES module alapú alkalmazás</li>
+      </ul>
+    </div>
+
+    <div class="trap-box">
+      <strong>Mélyebb nüanszok (gyakori follow-up kérdés):</strong>
+      <ul>
+        <li><strong>Inline scriptre NINCS hatás:</strong> az <code>async</code> és <code>defer</code> csak külső, <code>src</code>-vel rendelkező scriptnél érvényesül. Inline <code>&lt;script&gt;...&lt;/script&gt;</code>-nél a böngésző figyelmen kívül hagyja őket (kivétel: <code>type="module"</code> inline is deferált).</li>
+        <li><strong>Ha mindkettő rajta van</strong> (<code>&lt;script async defer&gt;</code>): modern böngészőben az <code>async</code> nyer; a <code>defer</code> csak fallback a régi böngészőknek, amelyek nem ismerik az async-et.</li>
+        <li><strong>Több <code>defer</code> script:</strong> dokumentum-sorrendben, egymás után futnak, mind a <code>DOMContentLoaded</code> esemény ELŐTT. Több <code>async</code> script: amelyik előbb letöltődik, az fut előbb → a sorrend kiszámíthatatlan (verseny).</li>
+        <li><strong>Az <code>async</code>/<code>defer</code> letöltése nem blokkolja a parsolást</strong> — a különbség a végrehajtás IDŐZÍTÉSÉBEN van (async: amint kész; defer: parse után, sorrendben).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- Q4 -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section incorrect" id="q4">
+    <h2><span class="q-title-text"><span class="qnum">4.</span> Null check JavaScriptben</span> <span class="result-badge badge-wrong">Helytelen ✗</span></h2>
+    <div class="tagrow"><span class="tag">JavaScript</span> <span class="tag">Null check</span> <span class="tag">Equality</span></div>
+
+    <h3>Kérdés</h3>
+    <p>You have to execute a code snippet only if <code>a</code> is not null. How can you do it?</p>
+
+    <ul class="options">
+      <li class="trap"><span class="letter">A</span> if (!a) <span class="opt-tags"><span class="opt-tag trapt">csapda</span></span></li>
+      <li class="trap"><span class="letter">B</span> if (a != null) <span class="opt-tags"><span class="opt-tag trapt">csapda</span></span></li>
+      <li class="correct"><span class="letter">C</span> if (a !== null) <span class="opt-tags"><span class="opt-tag right">helyes</span></span></li>
+      <li class="user-wrong"><span class="letter">D</span> All of the above <span class="opt-tags"><span class="opt-tag you">A te válaszod</span></span></li>
+    </ul>
+
+    <div class="wrong-box">
+      <strong>Beadott válasz: All of the above</strong> — ROSSZ, mert <code>if (!a)</code> NEM ugyanaz, mint null check!
+    </div>
+
+    <div class="answer-box">
+      <strong>Helyes válasz: C) <code>if (a !== null)</code></strong> — a legprecízebb "not null" ellenőrzés.
+    </div>
+
+    <h3>Magyarázat</h3>
+<pre><code>let a;
+
+// A kérdés: "futtasd a kódot, CSAK ha a NEM null"
+
+// C) ✅ if (a !== null) — STRICT (típus is számít) "nem null" ellenőrzés
+//    Kizárólag null-ra hamis, minden másra igaz → pontosan ezt kérték
+a = null;      // null !== null      → false → NEM fut ✅
+a = undefined; // undefined !== null → true  → FUT  ✅ (undefined ≠ null)
+a = 0;         // 0 !== null         → true  → FUT  ✅
+a = "";        // "" !== null        → true  → FUT  ✅
+a = false;     // false !== null     → true  → FUT  ✅
+
+// B) ⚠️ if (a != null) — LOOSE: egyszerre szűri a null-t ÉS az undefined-ot
+//    (mert loose egyenlőségnél null == undefined)
+a = null;      // null != null       → false → nem fut
+a = undefined; // undefined != null  → false → nem fut ← itt tér el C-től!
+a = 0;         // 0 != null          → true  → fut
+
+// A) ❌ if (!a) — ez NEM null-ellenőrzés, hanem FALSY-ellenőrzés
+//    Fordított logikájú: a kód akkor fut, ha a FALSY (tehát null-ra is!)
+a = null;      // !null  = true  → FUT  ❌ (pont fordítva, mint kéne)
+a = 0;         // !0     = true  → FUT  ❌ (0 nem null, mégis "elkapja")
+a = "";        // !""    = true  → FUT  ❌ ("" nem null, mégis "elkapja")
+a = 42;        // !42    = false → nem fut ❌ (42 nem null, mégis kihagyja)</code></pre>
+
+    <p>Vagyis a <code>!a</code> a <strong>falsy</strong> értékeket fogja meg (<code>null</code>, <code>undefined</code>, <code>0</code>, <code>""</code>, <code>false</code>, <code>NaN</code>), nem a null-t — épp az ellenkező halmaz, mint amit a kérdés kér. Még a megfordított <code>if (a)</code> sem lenne jó, mert az a <code>0</code>-t, <code>""</code>-t és <code>false</code>-ot is kizárná, holott azok nem null.</p>
+
+    <table>
+    <tr>
+      <th>Érték</th>
+      <th><code>if (!a)</code></th>
+      <th><code>if (a != null)</code></th>
+      <th><code>if (a !== null)</code></th>
+      <th>Elvárt (not null)</th>
+    </tr>
+    <tr><td><code>null</code></td><td>true (fut)</td><td>false (nem fut)</td><td>false (nem fut)</td><td>NEM fut</td></tr>
+    <tr><td><code>undefined</code></td><td>true (fut)</td><td>false (nem fut)</td><td>true (fut)</td><td>FUT (nem null)</td></tr>
+    <tr><td><code>0</code></td><td>true (fut)</td><td>true (fut)</td><td>true (fut)</td><td>FUT (nem null)</td></tr>
+    <tr><td><code>""</code></td><td>true (fut)</td><td>true (fut)</td><td>true (fut)</td><td>FUT (nem null)</td></tr>
+    <tr><td><code>false</code></td><td>true (fut)</td><td>true (fut)</td><td>true (fut)</td><td>FUT (nem null)</td></tr>
+    <tr><td><code>42</code></td><td>false (nem fut)</td><td>true (fut)</td><td>true (fut)</td><td>FUT (nem null)</td></tr>
+    </table>
+
+    <div class="note">
+      <strong><code>if (!a)</code> probléma:</strong> Az <code>!a</code> FORDÍTOTT logika — a kódot futtatja, ha <code>a</code> falsy (tehát null-ra is), és NEM futtatja, ha truthy. A kérdés pedig "execute if NOT null" — ez az ellentéte! Még ha megfordítanánk <code>if (a)</code>-ra, az sem jó: <code>0</code>, <code>""</code>, <code>false</code> is kiesne, holott ezek nem null.
+    </div>
+
+    <div class="note">
+      <strong>Modern alternatívák (ES2020+):</strong>
+      <ul>
+        <li><strong>Nullish coalescing</strong> <code>??</code> — csak null/undefined esetén ad alapértéket: <code>const val = a ?? "default";</code> (a <code>0</code> és <code>""</code> megmarad, ellentétben a <code>||</code>-lel!)</li>
+        <li><strong>Optional chaining</strong> <code>?.</code> — biztonságos hozzáférés: <code>a?.prop</code> nem dob hibát, ha <code>a</code> null/undefined (helyette <code>undefined</code>-ot ad)</li>
+        <li><strong>Nullish assignment</strong> <code>??=</code> — csak akkor értékel, ha a bal oldal null/undefined: <code>a ??= defaultObj;</code></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- Q5 -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section incorrect" id="q5">
+    <h2><span class="q-title-text"><span class="qnum">5.</span> RegExp pattern test</span> <span class="result-badge badge-wrong">Helytelen ✗</span></h2>
+    <div class="tagrow"><span class="tag">JavaScript</span> <span class="tag">RegExp</span></div>
+
+    <h3>Kérdés</h3>
+    <p>Given:</p>
+<pre><code>const text = "This is an example... 1, 2, 3"; // Sample text
+const pattern = /\d+/g; // Matches all instances of 1 or more digits</code></pre>
+    <p>How would you check if the pattern can be found in text?</p>
+
+    <ul class="options">
+      <li class="wrong"><span class="letter">A</span> text == pattern</li>
+      <li class="wrong"><span class="letter">B</span> text.equals(pattern)</li>
+      <li class="user-wrong"><span class="letter">C</span> text.test(pattern) <span class="opt-tags"><span class="opt-tag you">A te válaszod</span></span></li>
+      <li class="correct"><span class="letter">D</span> pattern.test(text) <span class="opt-tags"><span class="opt-tag right">helyes</span></span></li>
+      <li class="wrong"><span class="letter">E</span> None of the above</li>
+    </ul>
+
+    <div class="wrong-box">
+      <strong>Beadott válasz: text.test(pattern)</strong> — ROSSZ! A <code>.test()</code> a <strong>RegExp</strong> metódusa, nem a String-é!
+    </div>
+
+    <div class="answer-box">
+      <strong>Helyes válasz: D) <code>pattern.test(text)</code></strong>
+    </div>
+
+    <h3>Magyarázat</h3>
+<pre><code>const text = "This is an example... 1, 2, 3";
+const pattern = /\d+/g;
+
+// ✅ HELYES: RegExp.prototype.test(string)
+pattern.test(text);     // true (van szám a szövegben)
+
+// ❌ ROSSZ: String-nek NINCS .test() metódusa!
+text.test(pattern);     // ❌ TypeError: text.test is not a function
+
+// Alternatív String metódusok RegExp-hez:
+text.match(pattern);    // ["1", "2", "3"]  (összes találat)
+text.search(pattern);   // 24  (első találat indexe)
+text.replace(pattern, 'X'); // "This is an example... X, X, X"
+text.matchAll(pattern); // iterator az összes találathoz</code></pre>
+
+    <div class="note">
+      <strong>Ökölszabály:</strong>
+      <ul>
+        <li><code>pattern.test(text)</code> → boolean (van-e találat?)</li>
+        <li><code>text.match(pattern)</code> → tömb (mik a találatok?)</li>
+        <li><code>text.search(pattern)</code> → szám (hol az első találat?)</li>
+        <li><code>pattern.exec(text)</code> → részletes találat objektum</li>
+      </ul>
+    </div>
+
+    <div class="trap-box">
+      <strong>FONTOS csapda: a <code>/g</code> flag állapotossá teszi a <code>.test()</code>-et!</strong>
+      <p>A pattern itt <code>/\d+/g</code> (global flag). Emiatt a RegExp objektum <strong>megjegyzi a <code>lastIndex</code></strong>-et a hívások között, így UGYANARRA a szövegre ismételten hívva felváltva <code>true</code>/<code>false</code>-t adhat vissza — ez gyakori, alattomos bug:</p>
+<pre><code>const pattern = /\d+/g;
+const text = "a1b2";
+
+pattern.test(text); // true   (talál "1"-et, lastIndex → 2)
+pattern.test(text); // true   (talál "2"-t,  lastIndex → 4)
+pattern.test(text); // false  (nincs több, lastIndex visszaáll 0-ra)
+pattern.test(text); // true   (újra elölről kezdi!)
+
+// Ugyanez igaz a pattern.exec(text)-re is — szintén lépteti a lastIndex-et.</code></pre>
+      <p><strong>Megoldások:</strong></p>
+<pre><code>// 1) Ne tedd rá a /g flaget, ha CSAK létezést vizsgálsz:
+/\d+/.test("a1b2");        // mindig true, állapotmentes
+
+// 2) Vagy nullázd a lastIndex-et hívás előtt:
+pattern.lastIndex = 0;
+pattern.test(text);
+
+// 3) Vagy használj állapotmentes String-metódust:
+"a1b2".match(/\d+/g);      // ["1", "2"]  (g flaggel is állapotmentes)</code></pre>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- Q6 -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section incorrect" id="q6">
+    <h2><span class="q-title-text"><span class="qnum">6.</span> Prototype chain ellenőrzés</span> <span class="result-badge badge-wrong">Helytelen ✗</span></h2>
+    <div class="tagrow"><span class="tag">JavaScript</span> <span class="tag">Prototype</span></div>
+
+    <h3>Kérdés</h3>
+    <p>How can you determine whether one object is the prototype of (or is part of the prototype chain of) another object?</p>
+
+    <ul class="options">
+      <li class="correct"><span class="letter">A</span> isPrototypeOf() <span class="opt-tags"><span class="opt-tag right">helyes</span></span></li>
+      <li class="wrong"><span class="letter">B</span> equals() method</li>
+      <li class="wrong"><span class="letter">C</span> '===' operator</li>
+      <li class="user-wrong"><span class="letter">D</span> None of the above <span class="opt-tags"><span class="opt-tag you">A te válaszod</span></span></li>
+    </ul>
+
+    <div class="wrong-box">
+      <strong>Beadott válasz: None of the above</strong> — ROSSZ! Az <code>isPrototypeOf()</code> pontosan erre való!
+    </div>
+
+    <div class="answer-box">
+      <strong>Helyes válasz: A) isPrototypeOf()</strong>
+    </div>
+
+    <h3>Magyarázat</h3>
+<pre><code>// Object.prototype.isPrototypeOf() — ellenőrzi a prototype chain-t
+
+const animal = { eats: true };
+const rabbit = Object.create(animal); // rabbit prototípusa az animal
+
+animal.isPrototypeOf(rabbit);         // ✅ true
+Object.prototype.isPrototypeOf(rabbit); // ✅ true (chain végén)
+
+// Másik módszer: instanceof (class-okhoz)
+class Animal {}
+class Dog extends Animal {}
+const dog = new Dog();
+
+dog instanceof Dog;    // true
+dog instanceof Animal; // true (prototype chain-ben van)
+
+// equals() NEM létezik JS-ben (az Java):
+// obj1.equals(obj2) → ❌ TypeError
+
+// === referencia-egyenlőséget vizsgál, NEM prototype chain-t:
+// obj1 === obj2 → csak akkor true, ha UGYANAZ az objektum</code></pre>
+
+    <div class="note">
+      <strong>Prototype chain vizsgálat eszközei:</strong>
+      <ul>
+        <li><code>proto.isPrototypeOf(obj)</code> — proto benne van-e obj chain-jében?</li>
+        <li><code>obj instanceof Constructor</code> — Constructor.prototype benne van-e obj chain-jében?</li>
+        <li><code>Object.getPrototypeOf(obj)</code> — obj közvetlen prototípusát adja vissza</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- Q7 -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section correct" id="q7">
+    <h2><span class="q-title-text"><span class="qnum">7.</span> Object Serialization</span> <span class="result-badge badge-correct">Helyes ✓</span></h2>
+    <div class="tagrow"><span class="tag">JavaScript</span> <span class="tag">Serialization</span></div>
+
+    <h3>Kérdés</h3>
+    <p>What is the process of converting an object's state to a string from which it can later be restored called?</p>
+
+    <ul class="options">
+      <li class="wrong"><span class="letter">A</span> Object Encapsulation</li>
+      <li class="correct"><span class="letter">B</span> Object Serialization <span class="opt-tags"><span class="opt-tag you">A te válaszod</span><span class="opt-tag right">helyes</span></span></li>
+      <li class="wrong"><span class="letter">C</span> Object Abstraction</li>
+      <li class="wrong"><span class="letter">D</span> Object Encoding</li>
+    </ul>
+
+    <div class="answer-box">
+      <strong>Helyes válasz: B) Object Serialization</strong>
+    </div>
+
+    <h3>Magyarázat</h3>
+<pre><code>// Serialization: objektum → string (tárolható/küldhető formátum)
+const user = { name: "Anna", age: 25 };
+const json = JSON.stringify(user);   // '{"name":"Anna","age":25}'
+
+// Deserialization: string → objektum (visszaállítás)
+const restored = JSON.parse(json);   // { name: "Anna", age: 25 }
+
+// Többi fogalom:
+// Encapsulation = adatok és metódusok egy egységbe zárása (OOP)
+// Abstraction   = komplexitás elrejtése egyszerű interfésszel (OOP)
+// Encoding      = karakter/adat átalakítás (pl. Base64, UTF-8)</code></pre>
+
+    <div class="trap-box">
+      <strong><code>JSON.stringify</code> korlátai (gyakori interjú-follow-up):</strong>
+      <ul>
+        <li><code>function</code> és <code>undefined</code> érték <strong>kiesik</strong> objektumból (tömbben viszont <code>null</code> lesz a helyén)</li>
+        <li><code>Date</code> → ISO string lesz, és a <code>JSON.parse</code> NEM állítja vissza <code>Date</code>-té (string marad)</li>
+        <li><code>Map</code>, <code>Set</code>, <code>RegExp</code> → üres <code>{}</code> (nem szerializálódik az adatuk)</li>
+        <li><code>BigInt</code> → <strong>TypeError</strong> ("Do not know how to serialize a BigInt")</li>
+        <li>Körkörös referencia → <strong>TypeError</strong> ("Converting circular structure to JSON")</li>
+        <li><code>NaN</code>, <code>Infinity</code> → <code>null</code></li>
+      </ul>
+      <p>Egyedi szerializáláshoz: <code>toJSON()</code> metódus az objektumon, vagy a <code>JSON.stringify(obj, replacer)</code> 2. argumentuma (replacer függvény).</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- Q8 -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section incorrect" id="q8">
+    <h2><span class="q-title-text"><span class="qnum">8.</span> toLocaleString()</span> <span class="result-badge badge-wrong">Helytelen ✗</span></h2>
+    <div class="tagrow"><span class="tag">JavaScript</span> <span class="tag">Intl</span> <span class="tag">Localization</span></div>
+
+    <h3>Kérdés</h3>
+    <p><code>toLocaleString()</code> is used to:</p>
+
+    <ul class="options">
+      <li class="wrong"><span class="letter">A</span> return a localised object representation</li>
+      <li class="wrong"><span class="letter">B</span> return a parsed string</li>
+      <li class="correct"><span class="letter">C</span> return a localised string representation of the object <span class="opt-tags"><span class="opt-tag right">helyes</span></span></li>
+      <li class="user-wrong"><span class="letter">D</span> return a local time in string format <span class="opt-tags"><span class="opt-tag you">A te válaszod</span></span></li>
+      <li class="wrong"><span class="letter">E</span> None of the above</li>
+    </ul>
+
+    <div class="wrong-box">
+      <strong>Beadott válasz: "return a local time in string format"</strong> — Túl szűk! A toLocaleString() nem csak időhöz használható.
+    </div>
+
+    <div class="answer-box">
+      <strong>Helyes válasz: C) return a localised string representation of the object</strong>
+    </div>
+
+    <h3>Magyarázat</h3>
+    <p>A <code>toLocaleString()</code> metódus <strong>bármilyen objektum</strong> lokalizált string reprezentációját adja vissza — nem csak dátumokét!</p>
+
+<pre><code>// SZÁM lokalizálás:
+const num = 123456.789;
+num.toLocaleString('hu-HU');  // "123 456,789"  (magyar formátum)
+num.toLocaleString('de-DE');  // "123.456,789"  (német formátum)
+num.toLocaleString('en-US');  // "123,456.789"  (amerikai formátum)
+
+// DÁTUM lokalizálás:
+const date = new Date();
+date.toLocaleString('hu-HU'); // "2026. 02. 13. 10:30:00"
+date.toLocaleString('en-US'); // "2/13/2026, 10:30:00 AM"
+
+// TÖMB lokalizálás:
+const arr = [1234, 5678];
+arr.toLocaleString('hu-HU');  // "1 234,5 678"
+
+// PÉNZNEM:
+num.toLocaleString('hu-HU', { style: 'currency', currency: 'HUF' });
+// "123 457 Ft"
+
+num.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+// "$123,456.79"</code></pre>
+
+    <div class="note">
+      <strong>D miért rossz?</strong> "Return a local time in string format" — a <code>toLocaleString()</code> nem csak időre vonatkozik. Számokra, tömbre, dátumra, bármire használható. A helyes definíció: <strong>lokalizált string reprezentáció</strong> az objektumról.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- Q9 -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section correct" id="q9">
+    <h2><span class="q-title-text"><span class="qnum">9.</span> useEffect mount-on futtatás</span> <span class="result-badge badge-correct">Helyes ✓</span></h2>
+    <div class="tagrow"><span class="tag">React</span> <span class="tag">Hooks</span> <span class="tag">useEffect</span></div>
+
+    <h3>Kérdés</h3>
+    <p>How do you invoke <code>setDone</code> only when component mounts, using hooks?</p>
+<pre><code>function MyComponent(props) {
+  const [done, setDone] = useState(false);
+  return &lt;h1&gt;Done: {done}&lt;/h1&gt;;
+}</code></pre>
+
+    <ul class="options">
+      <li class="wrong"><span class="letter">A</span> useEffect(() =&gt; { setDone(true); });</li>
+      <li class="correct"><span class="letter">B</span> useEffect(() =&gt; { setDone(true); }, []); <span class="opt-tags"><span class="opt-tag you">A te válaszod</span><span class="opt-tag right">helyes</span></span></li>
+      <li class="wrong"><span class="letter">C</span> useEffect(() =&gt; { setDone(true); }, [setDone]);</li>
+      <li class="wrong"><span class="letter">D</span> useEffect(() =&gt; { setDone(true); }, [done, setDone]);</li>
+    </ul>
+
+    <div class="answer-box">
+      <strong>Helyes válasz: B) <code>useEffect(() => { setDone(true); }, []);</code></strong>
+    </div>
+
+    <h3>Magyarázat</h3>
+<pre><code>// Dependency array szabályok:
+
+useEffect(() => { ... });          // A) Minden rendereléskor fut ❌
+useEffect(() => { ... }, []);      // B) Csak MOUNT-kor fut (egyszer) ✅
+useEffect(() => { ... }, [setDone]); // C) Amikor setDone változik (stabil ref → egyszer)
+useEffect(() => { ... }, [done, setDone]); // D) done VAGY setDone változásakor
+
+// [] = üres dependency array = "nincs függőség" = csak mount-kor fut
+// Ez ekvivalens az osztálykomponens componentDidMount()-jával</code></pre>
+
+    <div class="note">
+      <strong>Megjegyzés:</strong> A <code>setDone</code> (useState setter) referenciája <strong>stabil</strong> (React garantálja), ezért C technikailag is csak egyszer futna. De a konvenció és a helyes válasz: <strong>üres dependency array <code>[]</code></strong> a mount-only effect-hez.
+    </div>
+
+    <div class="trap-box">
+      <strong>React 18+ StrictMode — a mount-effekt DEV-ben KÉTSZER fut!</strong>
+      <p>Fejlesztői módban <code>&lt;StrictMode&gt;</code> alatt a React szándékosan kétszer hívja meg a mount-effektet (mount → cleanup → újra mount), hogy kiszűrje a nem-idempotens / cleanup nélküli effekteket. Productionben csak egyszer fut.</p>
+<pre><code>useEffect(() => {
+  const sub = api.subscribe();      // mellékhatás
+  return () => sub.unsubscribe();   // ← KÖTELEZŐ cleanup, különben dupla subscription
+}, []);</code></pre>
+      <p>Tanulság: az üres <code>[]</code> „csak mount-kor" effektnek is mindig legyen <strong>cleanup</strong>ja, ha erőforrást foglal (subscription, timer, event listener), különben StrictMode-ban (és unmountkor) szivárgás vagy dupla regisztráció lesz.</p>
+    </div>
+
+    <div class="note">
+      <strong>Még egy apróság ehhez a kódhoz:</strong> a <code>&lt;h1&gt;Done: {done}&lt;/h1&gt;</code> egy <em>boolean</em>-t próbál renderelni — a React a <code>true</code>/<code>false</code> értéket NEM jeleníti meg (semmit sem ír ki). Ha látható szöveg kell: <code>{done ? "igen" : "nem"}</code> vagy <code>{String(done)}</code>.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- Q10 -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section correct" id="q10">
+    <h2><span class="q-title-text"><span class="qnum">10.</span> onClick handler viselkedés</span> <span class="result-badge badge-correct">Helyes ✓</span></h2>
+    <div class="tagrow"><span class="tag">React</span> <span class="tag">Event handling</span></div>
+
+    <h3>Kérdés</h3>
+    <p>What is the difference between the click behaviours of these two buttons (assuming that <code>this.handleClick</code> is bound correctly)?</p>
+<pre><code>A. &lt;button onClick={this.handleClick}&gt;Click Me&lt;/button&gt;
+B. &lt;button onClick={(event) =&gt; this.handleClick(event)}&gt;Click Me&lt;/button&gt;</code></pre>
+
+    <ul class="options">
+      <li class="wrong"><span class="letter">A</span> Button A will not have access to the event object on click of the button</li>
+      <li class="wrong"><span class="letter">B</span> Button B will not fire the handler this.handleClick successfully</li>
+      <li class="wrong"><span class="letter">C</span> Button A will not fire the handler this.handleClick successfully</li>
+      <li class="correct"><span class="letter">D</span> There is no difference <span class="opt-tags"><span class="opt-tag you">A te válaszod</span><span class="opt-tag right">helyes</span></span></li>
+    </ul>
+
+    <div class="answer-box">
+      <strong>Helyes válasz: D) There is no difference</strong> (a kattintás viselkedésében)
+    </div>
+
+    <h3>Magyarázat</h3>
+<pre><code>// Button A: közvetlen referencia
+&lt;button onClick={this.handleClick}&gt;
+// React automatikusan átadja a SyntheticEvent-et első argumentumként
+
+// Button B: arrow function wrapper
+&lt;button onClick={(event) =&gt; this.handleClick(event)}&gt;
+// Manuálisan adjuk át az event-et
+
+// Mindkét esetben:
+// - this.handleClick meghívódik
+// - Az event objektum elérhető
+// - A kattintás viselkedése AZONOS</code></pre>
+
+    <div class="note">
+      <strong>Van-e bármilyen különbség?</strong> Igen, de nem a <em>click viselkedésben</em>:
+      <ul>
+        <li><strong>Button B</strong> minden rendereléskor <strong>új függvényt hoz létre</strong> (arrow function). Ez ronthatja a teljesítményt, ha a gyerekkomponens <code>React.memo</code>-t használ (mindig "új" prop-nak látja).</li>
+        <li><strong>Button A</strong> mindig ugyanazt a referenciát adja át (ha a handler bind-olva van). Jobb teljesítmény.</li>
+        <li>De a tényleges kattintás viselkedés <strong>azonos</strong>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- Q11 -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section incorrect" id="q11">
+    <h2><span class="q-title-text"><span class="qnum">11.</span> React.PureComponent</span> <span class="result-badge badge-wrong">Helytelen ✗</span></h2>
+    <div class="tagrow"><span class="tag">React</span> <span class="tag">PureComponent</span> <span class="tag">Performance</span></div>
+
+    <h3>Kérdés</h3>
+    <p>When might you use <code>React.PureComponent</code>?</p>
+
+    <ul class="options">
+      <li class="user-wrong"><span class="letter">A</span> When you do not want your component to have state <span class="opt-tags"><span class="opt-tag you">A te válaszod</span></span></li>
+      <li class="wrong"><span class="letter">B</span> When you have sibling components that need to be compared</li>
+      <li class="correct"><span class="letter">C</span> When you want a default implementation of shouldComponentUpdate() <span class="opt-tags"><span class="opt-tag right">helyes</span></span></li>
+      <li class="wrong"><span class="letter">D</span> When you do not want your component to have props</li>
+    </ul>
+
+    <div class="wrong-box">
+      <strong>Beadott válasz: "do not want your component to have state"</strong> — ROSSZ! A PureComponent-nek LEHET state-je.
+    </div>
+
+    <div class="answer-box">
+      <strong>Helyes válasz: C) When you want a default implementation of shouldComponentUpdate()</strong>
+    </div>
+
+    <h3>Magyarázat</h3>
+<pre><code>// React.Component — NEM optimalizált (mindig renderel)
+class MyComponent extends React.Component {
+  // shouldComponentUpdate() → alapból MINDIG true
+  // → minden parent rendereléskor újrarenderel
+}
+
+// React.PureComponent — OPTIMALIZÁLT (shallow comparison)
+class MyComponent extends React.PureComponent {
+  // shouldComponentUpdate() → AUTOMATIKUS shallow compare
+  // → csak akkor renderel, ha props VAGY state VÁLTOZOTT
+  // (shallow === összehasonlítás minden prop/state mezőn)
+}
+
+// Példa: mikor NEM renderel újra a PureComponent?
+&lt;MyPure name="Anna" age={25} /&gt;
+// Ha a parent újrarenderel, de name="Anna" és age=25 nem változott
+// → PureComponent KIHAGYJA az újrarenderelést ✅
+
+// Modern ekvivalens (function component):
+const MyComponent = React.memo(function MyComponent(props) {
+  // Csak akkor renderel, ha a props megváltozott (shallow compare)
+  return &lt;div&gt;{props.name}&lt;/div&gt;;
+});</code></pre>
+
+    <div class="trap-box">
+      <strong>Gyakori tévhit:</strong> "PureComponent = stateless". HAMIS! A PureComponent-nek teljes értékű state-je lehet. A "pure" itt azt jelenti: <strong>shallow comparison alapú renderelés optimalizálás</strong>, nem "állapot nélküli". Ha state-mentes komponenst akarsz, használj egyszerű function component-et.
+    </div>
+
+    <div class="trap-box">
+      <strong>A shallow compare buktatója: a mutáció „láthatatlan"!</strong>
+      <p>A <code>PureComponent</code>/<code>React.memo</code> csak <strong>felületes (referencia szintű) összehasonlítást</strong> végez. Ha egy objektum/tömb propot vagy state-et <em>mutálsz</em> (a referencia ugyanaz marad), a komponens <strong>NEM renderel újra</strong>, pedig a tartalom megváltozott:</p>
+<pre><code>// ❌ Mutáció — a referencia ugyanaz, PureComponent nem veszi észre:
+this.state.items.push(newItem);
+this.setState({ items: this.state.items });  // ugyanaz a tömb-ref → NINCS re-render
+
+// ✅ Új referencia — a shallow compare észleli a változást:
+this.setState({ items: [...this.state.items, newItem] });</code></pre>
+      <p>Ezért a <code>PureComponent</code>/<code>memo</code> használata <strong>immutable adatkezelést feltételez</strong>. Mély (nested) objektumoknál a shallow compare szintén félrevezethet — ott vagy lapítsd az adatot, vagy adj egyedi összehasonlítót a <code>React.memo</code> 2. argumentumában (<code>areEqual</code>).</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- Q12 -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section correct" id="q12">
+    <h2><span class="q-title-text"><span class="qnum">12.</span> React keys egyedisége</span> <span class="result-badge badge-correct">Helyes ✓</span></h2>
+    <div class="tagrow"><span class="tag">React</span> <span class="tag">Keys</span> <span class="tag">Lists</span></div>
+
+    <h3>Kérdés</h3>
+    <p>Keys are given to a list of elements in React. These keys should be -</p>
+
+    <ul class="options">
+      <li class="wrong"><span class="letter">A</span> Unique in the DOM</li>
+      <li class="wrong"><span class="letter">B</span> Do not require to be unique</li>
+      <li class="correct"><span class="letter">C</span> Unique among the siblings only <span class="opt-tags"><span class="opt-tag you">A te válaszod</span><span class="opt-tag right">helyes</span></span></li>
+      <li class="wrong"><span class="letter">D</span> All of the above</li>
+    </ul>
+
+    <div class="answer-box">
+      <strong>Helyes válasz: C) Unique among the siblings only</strong>
+    </div>
+
+    <h3>Magyarázat</h3>
+<pre><code>// ✅ HELYES: Key-k csak a TESTVÉREK között kell egyediek legyenek
+function App() {
+  return (
+    &lt;div&gt;
+      {/* Lista 1 */}
+      &lt;ul&gt;
+        &lt;li key="1"&gt;Alma&lt;/li&gt;    {/* key="1" itt OK */}
+        &lt;li key="2"&gt;Körte&lt;/li&gt;
+      &lt;/ul&gt;
+
+      {/* Lista 2 — UGYANAZ a key más helyen: OK! */}
+      &lt;ul&gt;
+        &lt;li key="1"&gt;Piros&lt;/li&gt;   {/* key="1" itt is OK, más szülő */}
+        &lt;li key="2"&gt;Kék&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  );
+}
+
+// ❌ ROSSZ: azonos key testvérek között
+&lt;ul&gt;
+  &lt;li key="1"&gt;Alma&lt;/li&gt;
+  &lt;li key="1"&gt;Körte&lt;/li&gt;   {/* ❌ Duplikált key a testvérek között! */}
+&lt;/ul&gt;
+
+// ⚠️ Index-et kerüld key-ként (ha a lista sorrendje változhat):
+items.map((item, index) =&gt; &lt;li key={index}&gt;...&lt;/li&gt;);  // ⚠️ fragile
+items.map(item =&gt; &lt;li key={item.id}&gt;...&lt;/li&gt;);          // ✅ stabil</code></pre>
+
+    <div class="note">
+      <strong>Szükséges tudás:</strong> reconciliation (egyeztetési algoritmus), virtuális DOM, miért rossz ötlet a tömb-index kulcsként (sorrend-változásnál hibás újrahasznosítás, state-keveredés), és stabil, egyedi azonosítók használata.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- Q13 -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section correct" id="q13">
+    <h2><span class="q-title-text"><span class="qnum">13.</span> Controlled input element</span> <span class="result-badge badge-correct">Helyes ✓</span></h2>
+    <div class="tagrow"><span class="tag">React</span> <span class="tag">Forms</span> <span class="tag">Controlled component</span></div>
+
+    <h3>Kérdés</h3>
+    <p>What is a controlled input element?</p>
+
+    <ul class="options">
+      <li class="wrong"><span class="letter">A</span> An input element with the controlled flag</li>
+      <li class="correct"><span class="letter">B</span> An input element whose value is being controlled by some state <span class="opt-tags"><span class="opt-tag you">A te válaszod</span><span class="opt-tag right">helyes</span></span></li>
+      <li class="wrong"><span class="letter">C</span> An input element that can only accept a list of characters</li>
+      <li class="wrong"><span class="letter">D</span> An input element that is controlled by the value of another input element</li>
+    </ul>
+
+    <div class="answer-box">
+      <strong>Helyes válasz: B) An input element whose value is being controlled by some state</strong>
+    </div>
+
+    <h3>Magyarázat</h3>
+<pre><code>// ✅ CONTROLLED input — React state az "igazság forrása"
+function ControlledForm() {
+  const [name, setName] = useState("");
+
+  return (
+    &lt;input
+      value={name}                          // state-ből jön az érték
+      onChange={(e) =&gt; setName(e.target.value)} // state frissül inputra
+    /&gt;
+  );
+  // A React state KONTROLLÁLJA az input értékét
+  // Az input mindig a state-et tükrözi
+}
+
+// ❌ UNCONTROLLED input — a DOM az "igazság forrása"
+function UncontrolledForm() {
+  const inputRef = useRef(null);
+
+  const handleSubmit = () =&gt; {
+    console.log(inputRef.current.value); // DOM-ból olvassuk
+  };
+
+  return &lt;input ref={inputRef} /&gt;;
+  // A DOM kezeli az értéket, nem a React state
+}</code></pre>
+
+    <table>
+    <tr>
+      <th>Szempont</th>
+      <th>Controlled</th>
+      <th>Uncontrolled</th>
+    </tr>
+    <tr><td>Érték forrása</td><td>React state</td><td>DOM</td></tr>
+    <tr><td>Validáció</td><td>Valós idejű (onChange-ben)</td><td>Submit-kor</td></tr>
+    <tr><td>Programmatic control</td><td>Teljes (state = érték)</td><td>Korlátozott (ref)</td></tr>
+    <tr><td>Egyszerűség</td><td>Több kód</td><td>Kevesebb kód</td></tr>
+    <tr><td>Ajánlott?</td><td>Igen (legtöbb esetben)</td><td>Egyszerű formokhoz</td></tr>
+    </table>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- ÖSSZESÍTÉS -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section" id="summary">
+    <h2><span class="q-title-text">Összesítés</span></h2>
+    <div class="tagrow"><span class="tag">Eredmény</span></div>
+
+    <table>
+    <tr>
+      <th>#</th>
+      <th>Téma</th>
+      <th>Beadott</th>
+      <th>Helyes</th>
+      <th>Eredmény</th>
+    </tr>
+    <tr><td>1</td><td>Invalid JS data type</td><td>Float</td><td>Float + Struct</td><td style="color:#b9821a;font-weight:700">Részleges</td></tr>
+    <tr><td>2</td><td>JS cross-platform</td><td>Windows Machine</td><td>Windows Machine</td><td style="color:#1f9d57;font-weight:700">Helyes</td></tr>
+    <tr><td>3</td><td>Script attribútumok</td><td>All of the above</td><td>async, defer, type</td><td style="color:#d23b3b;font-weight:700">Rossz</td></tr>
+    <tr><td>4</td><td>Null check</td><td>All of the above</td><td>if (a !== null)</td><td style="color:#d23b3b;font-weight:700">Rossz</td></tr>
+    <tr><td>5</td><td>RegExp .test()</td><td>text.test(pattern)</td><td>pattern.test(text)</td><td style="color:#d23b3b;font-weight:700">Rossz</td></tr>
+    <tr><td>6</td><td>Prototype chain</td><td>None of the above</td><td>isPrototypeOf()</td><td style="color:#d23b3b;font-weight:700">Rossz</td></tr>
+    <tr><td>7</td><td>Serialization</td><td>Object Serialization</td><td>Object Serialization</td><td style="color:#1f9d57;font-weight:700">Helyes</td></tr>
+    <tr><td>8</td><td>toLocaleString()</td><td>local time format</td><td>localised string repr.</td><td style="color:#d23b3b;font-weight:700">Rossz</td></tr>
+    <tr><td>9</td><td>useEffect mount</td><td>[], üres dep array</td><td>[], üres dep array</td><td style="color:#1f9d57;font-weight:700">Helyes</td></tr>
+    <tr><td>10</td><td>onClick handler</td><td>No difference</td><td>No difference</td><td style="color:#1f9d57;font-weight:700">Helyes</td></tr>
+    <tr><td>11</td><td>PureComponent</td><td>no state</td><td>shouldComponentUpdate</td><td style="color:#d23b3b;font-weight:700">Rossz</td></tr>
+    <tr><td>12</td><td>React keys</td><td>Unique siblings</td><td>Unique siblings</td><td style="color:#1f9d57;font-weight:700">Helyes</td></tr>
+    <tr><td>13</td><td>Controlled input</td><td>value by state</td><td>value by state</td><td style="color:#1f9d57;font-weight:700">Helyes</td></tr>
+    </table>
+
+    <p><strong>Eredmény: 6/13 teljesen helyes + 1 részleges (Q1)</strong> — 6 helytelen.</p>
+
+    <div class="note">
+      <strong>Leggyakoribb hibatípusok:</strong>
+      <ul>
+        <li><strong>Felcserélt metódus hívó:</strong> Q5 (<code>text.test</code> vs <code>pattern.test</code>) — a <code>.test()</code> a RegExp metódusa!</li>
+        <li><strong>"All of the above" csapda:</strong> Q3, Q4 — ha egy opció nem stimmel, az "all" automatikusan rossz</li>
+        <li><strong>Szűk definíció:</strong> Q8 (<code>toLocaleString</code> nem csak időhöz)</li>
+        <li><strong>Fogalom félreértés:</strong> Q6 (<code>isPrototypeOf</code> létezik!), Q11 (PureComponent ≠ stateless)</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    Holidu frontend interjú – kiértékelés &amp; megoldókulcs · Készült: 2026-06-21<br>
+    A zöld a helyes választ jelöli, a piros a beadott hibás választást, a sárga szaggatott a csapda-opciókat. A részletes magyarázatok a témakör mélyebb technikai hátterét is tartalmazzák.
+  </footer>
+
+</div>
+</body>
+</html>

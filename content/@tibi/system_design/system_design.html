@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>System Design interjú kérdések</title>
+  <style>
+    :root{
+      --bg:#f4f6fb; --card:#ffffff; --ink:#1c2233; --muted:#5d6678; --line:#e4e8f0;
+      --brand:#3a5bd9; --brand-soft:#eaeefc; --brand-line:#c9d4f7; --brand-ink:#2f48ac;
+      --ok:#1f9d57; --ok-soft:#e6f6ec; --ok-line:#bce6cb; --ok-ink:#15703f;
+      --warn:#b9821a; --warn-soft:#fbf2dd; --warn-line:#ecd9a8; --warn-ink:#8a6112;
+      --violet:#7c5cd6; --violet-soft:#efeafc; --violet-line:#d9ccf5; --violet-ink:#5a3fb0;
+      --code-bg:#1e2433; --code-ink:#e8ecf6;
+      --mono:"SF Mono",ui-monospace,SFMono-Regular,Menlo,'Fira Code','Cascadia Code',Consolas,monospace;
+      --shadow:0 1px 2px rgba(20,30,60,.05),0 8px 24px rgba(20,30,60,.07);
+    }
+    *{box-sizing:border-box}
+    html{-webkit-text-size-adjust:100%}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.65;padding:32px 16px 80px;}
+    .wrap{max-width:900px;margin:0 auto}
+
+    /* Hero */
+    header.hero{background:linear-gradient(135deg,#3a5bd9,#5a78ec);color:#fff;border-radius:18px;padding:34px 34px 30px;box-shadow:var(--shadow);margin-bottom:24px;}
+    header.hero .kicker{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:700;opacity:.85;margin:0 0 8px;}
+    header.hero h1{margin:0 0 6px;font-size:28px;line-height:1.2;border:none;padding:0;color:#fff;}
+    header.hero p{margin:0;opacity:.94;font-size:15px;max-width:66ch;}
+
+    /* Table of contents */
+    .toc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:24px;box-shadow:var(--shadow);}
+    .toc-title{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;margin:0 0 14px;}
+    .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;}
+    .toc-grid a{display:flex;gap:8px;align-items:baseline;text-decoration:none;color:var(--ink);font-size:13.5px;padding:8px 11px;border-radius:8px;border:1px solid var(--line);background:#fbfcfe;transition:background .15s,border-color .15s;}
+    .toc-grid a:hover{background:var(--brand-soft);border-color:var(--brand-line);}
+    .toc-grid a .tnum{color:var(--brand);font-weight:800;flex:0 0 auto;min-width:1.4em;}
+
+    /* Section cards */
+    .section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 26px;margin-bottom:20px;box-shadow:var(--shadow);border-left:6px solid var(--brand);scroll-margin-top:16px;}
+
+    h1{color:var(--ink);}
+    h2{font-size:20px;font-weight:800;margin:0 0 10px;color:var(--ink);border:none;padding:0;}
+    h3{font-size:15px;font-weight:800;color:var(--brand-ink);margin:24px 0 8px;}
+    h4{font-size:14px;font-weight:800;color:var(--violet-ink);margin:0 0 6px;}
+
+    /* Topic tags */
+    .tag{display:inline-block;background:var(--brand-soft);color:var(--brand);padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;margin:0 6px 14px 0;}
+
+    p{margin:0 0 12px;font-size:15px;}
+    ul,ol{margin:0 0 14px;padding-left:22px;}
+    li{margin:5px 0;font-size:14.5px;}
+
+    /* Code */
+    code{font-family:var(--mono);font-size:.92em;}
+    :not(pre) > code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;}
+    .ic{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);font-size:.9em;}
+    pre{background:var(--code-bg);border:none;border-radius:10px;padding:14px 16px;overflow-x:auto;margin:14px 0;}
+    pre code{background:none;color:var(--code-ink);padding:0;font-size:12.5px;line-height:1.55;}
+
+    /* Boxes */
+    .subsection{background:#f7f9fd;border:1px solid var(--line);border-left:4px solid var(--violet);border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0;}
+    .subsection h4{margin-top:0;}
+    .answer-box{background:var(--ok-soft);border:1px solid var(--ok-line);border-radius:11px;padding:14px 16px;margin:16px 0;font-size:14px;}
+    .answer-box strong{color:var(--ok-ink);}
+    .note{background:var(--brand-soft);border:1px solid var(--brand-line);border-radius:11px;padding:14px 16px;margin:16px 0;font-size:14px;}
+    .note strong{color:var(--brand-ink);}
+    .requirement{background:#fbfcfe;border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:0 10px 10px 0;padding:14px 16px;margin:10px 0;font-size:14px;}
+
+    /* Tables */
+    .cap-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px;background:var(--card);}
+    .cap-table th,.cap-table td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;}
+    .cap-table th{background:var(--brand-soft);color:var(--brand-ink);font-weight:700;}
+    .cap-table tr:nth-child(even){background:#f7f9fd;}
+
+    /* Architecture diagram (HTML/CSS layered) */
+    .arch{display:flex;flex-direction:column;align-items:center;gap:0;background:#fbfcfe;border:1px solid var(--line);border-radius:14px;padding:24px 18px;margin:18px 0;overflow-x:auto;}
+    .arch .tier{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;width:100%;}
+    .arch .rail{width:2px;height:22px;background:#c2cbe0;margin:3px 0;border-radius:2px;flex:0 0 auto;}
+    .node{border-radius:11px;padding:11px 16px;border:1px solid var(--brand-line);background:var(--brand-soft);color:var(--brand-ink);font-weight:700;font-size:13.5px;text-align:center;min-width:122px;line-height:1.3;}
+    .node small{display:block;font-weight:500;font-size:11.5px;opacity:.82;margin-top:3px;}
+    .node.client{background:linear-gradient(135deg,#3a5bd9,#5a78ec);color:#fff;border-color:transparent;padding:13px 24px;}
+    .node.client small{color:#fff;opacity:.92;}
+    .node.edge{background:var(--brand-soft);border-color:var(--brand-line);color:var(--brand-ink);}
+    .node.svc{background:var(--violet-soft);border-color:var(--violet-line);color:var(--violet-ink);}
+    .node.cache{background:var(--warn-soft);border-color:var(--warn-line);color:var(--warn-ink);}
+    .node.data{background:var(--ok-soft);border-color:var(--ok-line);color:var(--ok-ink);}
+
+    /* CAP triangle figure */
+    .cap-fig{display:flex;flex-direction:column;align-items:center;gap:12px;background:#fbfcfe;border:1px solid var(--line);border-radius:14px;padding:24px 18px;margin:18px 0;}
+    .cap-fig svg{width:100%;max-width:440px;height:auto;}
+    .cap-fig .cap-caption{color:var(--muted);font-size:13.5px;text-align:center;margin:0;max-width:52ch;}
+    .cap-fig .cap-caption b{color:var(--brand-ink);}
+
+    /* Fallback for any legacy ASCII diagram (left-aligned, never centered) */
+    .diagram{background:var(--code-bg);color:#8fb4ff;border-radius:10px;padding:16px;margin:16px 0;font-family:var(--mono);font-size:12.5px;line-height:1.45;white-space:pre;overflow-x:auto;text-align:left;}
+
+    footer{color:var(--muted);font-size:12.5px;margin-top:36px;line-height:1.7;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);}
+    footer strong{color:var(--ink);}
+    footer code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);}
+    a{color:var(--brand);}
+
+    @media(max-width:560px){
+      body{padding:20px 10px 60px}
+      header.hero{padding:24px 20px}
+      .section{padding:18px 16px}
+      .toc-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="kicker">Rendszertervezés · Interjú felkészülés</p>
+    <h1>System Design interjú kérdések</h1>
+    <p>Mélyreható válaszok nagy skálájú rendszertervezéshez: CAP-tétel + konkrét esettanulmányok (Spotify, URL Shortener). Minden témánál követelmények → kapacitástervezés → architektúra → komponensek → adatfolyam → CAP-analízis.</p>
+  </header>
+
+  <nav class="toc">
+    <p class="toc-title">Témakörök</p>
+    <div class="toc-grid">
+      <a href="#cap-theorem"><span class="tnum">1</span> CAP-háromszög (CAP theorem)</a>
+      <a href="#spotify-design"><span class="tnum">2</span> Spotify – zeneszállítás</a>
+      <a href="#url-shortener-design"><span class="tnum">3</span> URL Shortener (bit.ly)</a>
+      <a href="#future-topics"><span class="tnum">+</span> Jövőbeli topikok</a>
+    </div>
+  </nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- CAP THEOREM SECTION -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="cap-theorem">
+<h2>1. CAP háromszög (CAP Theorem)</h2>
+<span class="tag">Rendszertervezés</span> <span class="tag">Nagyszabású szisztémák</span> <span class="tag">Elosztott rendszerek</span>
+
+<h3>Mit jelent a CAP?</h3>
+<p>A CAP theorem (Brewer-tétel) azt állítja, hogy egy elosztott rendszerben <strong>egyszerre csak két tulajdonság</strong> teljesülhet:</p>
+
+<div class="cap-fig">
+  <svg viewBox="0 0 440 380" role="img" aria-label="CAP háromszög: Consistency, Availability, Partition Tolerance — egyszerre csak kettő.">
+    <!-- háromszög -->
+    <polygon points="220,62 62,318 378,318" fill="#eaeefc" stroke="#3a5bd9" stroke-width="2.5" stroke-linejoin="round"/>
+    <!-- csúcs-pontok -->
+    <circle cx="220" cy="62" r="7" fill="#3a5bd9"/>
+    <circle cx="62" cy="318" r="7" fill="#1f9d57"/>
+    <circle cx="378" cy="318" r="7" fill="#b9821a"/>
+    <!-- csúcs-feliratok -->
+    <g font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-weight="800" font-size="16">
+      <text x="220" y="40" text-anchor="middle" fill="#2f48ac">Consistency</text>
+      <text x="62" y="345" text-anchor="middle" fill="#15703f">Availability</text>
+      <text x="378" y="345" text-anchor="middle" fill="#8a6112">Partition Tol.</text>
+    </g>
+    <!-- él-feliratok (párok) -->
+    <g font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-weight="800" font-size="14">
+      <rect x="96" y="176" width="44" height="26" rx="13" fill="#ffffff" stroke="#3a5bd9" stroke-width="1.5"/>
+      <text x="118" y="194" text-anchor="middle" fill="#2f48ac">CA</text>
+      <rect x="300" y="176" width="44" height="26" rx="13" fill="#ffffff" stroke="#3a5bd9" stroke-width="1.5"/>
+      <text x="322" y="194" text-anchor="middle" fill="#2f48ac">CP</text>
+      <rect x="198" y="305" width="44" height="26" rx="13" fill="#ffffff" stroke="#3a5bd9" stroke-width="1.5"/>
+      <text x="220" y="323" text-anchor="middle" fill="#2f48ac">AP</text>
+    </g>
+    <!-- közép -->
+    <text x="220" y="232" text-anchor="middle" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-weight="700" font-size="13" fill="#5d6678">Válassz</text>
+    <text x="220" y="250" text-anchor="middle" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-weight="700" font-size="13" fill="#5d6678">egy élt</text>
+  </svg>
+  <p class="cap-caption">Elosztott rendszerben egyszerre csak <b>két</b> tulajdonság garantálható — minden él egy választás: <b>CP</b>, <b>AP</b> vagy <b>CA</b>.</p>
+</div>
+
+<h3>A három oszlop részletesen</h3>
+
+<div class="subsection">
+<h4>1. Consistency (Konzisztencia)</h4>
+<p>A rendszer összes csomópontja <strong>ugyanazt az adatot látja ugyanabban az időben</strong>. Ha módosítasz egy adatot, az összes olvasó azonnal az új értéket kapja.</p>
+<ul>
+  <li><strong>Erős konzisztencia (Strong Consistency)</strong>: Szinkron frissítés az összes replika között</li>
+  <li><strong>Gyenge konzisztencia (Eventual Consistency)</strong>: Idővel konzisztens lesz</li>
+  <li><strong>Monoton konzisztencia (Monotonic Consistency)</strong>: Egyenlő vagy újabb verzió garantált</li>
+</ul>
+<pre><code>User A: PUT /user/1 { name: "John" }
+              ↓ (Consistency: azonnal frissül minden szervernél)
+User B: GET /user/1 → { name: "John" }  ✅ azonnal látja az új értéket</code></pre>
+</div>
+
+<div class="subsection">
+<h4>2. Availability (Elérhetőség)</h4>
+<p>A rendszer <strong>minden kérésre választ ad</strong>, és nem dől össze. Még ha egy csomópont leáll is, az összes többi működik.</p>
+<ul>
+  <li>Nem lehet "kérés időtúllépés" vagy "szerver elérhetetlen" válasz</li>
+  <li>Az 99.99% uptime (4 nines)</li>
+  <li>Ha egy szerver leáll, a maradék rendszer továbbra is válaszol</li>
+</ul>
+<pre><code>Server 1 (EU): leáll
+    ↓
+User (EU): GET /data → Server 2 (EU) → 200 OK  ✅ válasz érkezik</code></pre>
+</div>
+
+<div class="subsection">
+<h4>3. Partition Tolerance (Partíció Tolerancia)</h4>
+<p>A rendszer <strong>akkor is működik, ha a csomópontok között a hálózat szétszakad</strong> (partition). Az egyik csoport nem tudja elérni a másikat.</p>
+<ul>
+  <li>Hálózati késés vagy szétszakadás nem állítja meg a rendszert</li>
+  <li>Elosztott rendszereknél MINDIG szükséges (nem választható)</li>
+</ul>
+<pre><code>Network Partition:
+[DC1: Server A] ═══ OFFLINE ═══ [DC2: Server B]
+
+A továbbra is szolgálja az EU felhasználókat
+B továbbra is szolgálja az US felhasználókat
+    ↓ A kettő között nincs szinkronizáció, de mindkettő működik</code></pre>
+</div>
+
+<h3>CAP választások: CP, AP, CA</h3>
+
+<table class="cap-table">
+  <tr>
+    <th>Típus</th>
+    <th>Tulajdonságok</th>
+    <th>Mit áldozunk fel</th>
+    <th>Példák</th>
+  </tr>
+  <tr>
+    <td><strong>CP</strong></td>
+    <td>Consistency + Partition Tolerance</td>
+    <td>❌ Availability (szerver válhat elérhetetlenné)</td>
+    <td>MongoDB, PostgreSQL, HBase, Kafka</td>
+  </tr>
+  <tr>
+    <td><strong>AP</strong></td>
+    <td>Availability + Partition Tolerance</td>
+    <td>❌ Consistency (adatok lehetnek inkonzisztensek)</td>
+    <td>Cassandra, DynamoDB, Riak, CouchDB</td>
+  </tr>
+  <tr>
+    <td><strong>CA</strong></td>
+    <td>Consistency + Availability</td>
+    <td>❌ Partition Tolerance (hálózati szétszakadást nem tűri)</td>
+    <td>Tradicionális RDBMS (nem elosztott), MySQL, Oracle</td>
+  </tr>
+</table>
+
+<h3>Döntési fa: Melyiket válassza?</h3>
+
+<pre><code>1. MINDIG van Partition Tolerance szükség → CA ki van zárva
+   (Hacsak nem monolitikus, egyszeres szerverről beszélünk)
+
+2. Konzisztencia vs Elérhetőség választás:
+
+   CP választás (Konzisztencia > Elérhetőség):
+   ✅ Pénzügyi rendszerek (bank transzferek: konzisztencia kritikus)
+   ✅ E-commerce rendelések (dupla vásárlás tilos)
+   ✅ Zárolt erőforrások (csak egy felhasználó módosíthat egyszerre)
+   ❌ De: egy hálózati partition alatt a rendszer válhat "read-only"-vá
+
+   AP választás (Elérhetőség > Konzisztencia):
+   ✅ Közösségi média (like-ok, Follow-ok: inkonzisztencia ok)
+   ✅ Caching (régi adat is jó, mint üres válasz)
+   ✅ Real-time analytics (szállítás követés: közelítő adat ok)
+   ❌ De: időnként az adatok inkonzisztensek lesznek</code></pre>
+
+<h3>Praktikus megközelítés: PACELC</h3>
+
+<p>A CAP theorem egy kiterjesztése a <strong>PACELC</strong> (Partition, Availability, Consistency, Else, Latency, Consistency):</p>
+
+<pre><code>IF Partition happens
+  THEN choose Availability OR Consistency
+ELSE (no partition)
+  THEN choose Latency OR Consistency
+
+Azaz: még nincs partition-ben (hálózat működik), lehet egy másik trade-off:
+- Gyors válasz (alacsony latency) vagy
+- Szinkron konzisztencia?</code></pre>
+
+<div class="note">
+<strong>Modern megközelítés:</strong> A legtöbb nagy rendszer <strong>nem "tiszta" CAP választást</strong> követ, hanem:
+<ul>
+  <li><strong>Write-path</strong>: AP (felhasználó írásai azonnal mentésre kerülnek, később szinkronizálnak)</li>
+  <li><strong>Read-path</strong>: Eventually Consistent (régi adatot olvashat, idővel frissül)</li>
+  <li><strong>Critical operations</strong>: CP (pénzmozgás, zárolt erőforrás)</li>
+</ul>
+Ez a <strong>hibrid megközelítés</strong> a gyakorlatban a legáltalánosabb.
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SPOTIFY SYSTEM DESIGN SECTION -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="spotify-design">
+<h2>2. Spotify System Design – Zeneszállítási Platform</h2>
+<span class="tag">Rendszertervezés</span> <span class="tag">Média streaming</span> <span class="tag">Nagyszabású</span>
+
+<h3>Követelmények (Requirements)</h3>
+
+<div class="requirement">
+<strong>Funkcionális követelmények:</strong>
+<ul>
+  <li>Zenék streamelése online és offline módban</li>
+  <li>Zeneszerzők, albumok, lejátszási listák keresése és böngészése</li>
+  <li>Lejátszási listák létrehozása és megosztása</li>
+  <li>Ajánlási rendszer (hasonló zenék, személyre szabott javaslatok)</li>
+  <li>Lejátszási előzmények és statisztikák nyomon követése</li>
+  <li>Offline letöltés és szinkronizáció</li>
+</ul>
+</div>
+
+<div class="requirement">
+<strong>Nem funkcionális követelmények:</strong>
+<ul>
+  <li><strong>Skálázás:</strong> 500M+ felhasználó, 100M+ dal</li>
+  <li><strong>Latency:</strong> <200ms zeneszerzés indítása, <500ms keresés válasz</li>
+  <li><strong>Elérhetőség:</strong> 99.9% uptime</li>
+  <li><strong>Jitterless playback:</strong> Folyamatos lejátszás, nincs szaggatottság</li>
+  <li><strong>P2P támogatás:</strong> Sávszélesség takarékosság peer-to-peer kereskedéssel</li>
+</ul>
+</div>
+
+<h3>Kapacitás tervezés (Capacity Planning)</h3>
+
+<pre><code>Feltételezések:
+- 500M havi aktív felhasználó (MAU)
+- Ebből 100M napi aktív (DAU)
+- Átlag 30 óra lejátszás/hó/felhasználó
+- Átlag bitrate: 128 kbps (adaptive: 32-320 kbps)
+
+Számítások:
+- Napi lejátszási idő: 100M DAU × 1 óra = 100M óra
+- Napi szükséges sávszélesség: 100M × 3600s × 128kbps = 46.4 Petabit/nap
+- Server: ~46.4 Pbps / 100 Gbps per server = ~464 szerver (streaming csak)
+- Storage: 100M dal × 10 MB átlag = 1 PB + replikáció = 10 PB</code></pre>
+
+<h3>Architektúra - Magas szintű diagram</h3>
+
+<div class="arch">
+  <div class="tier">
+    <div class="node client">Client Apps<small>Web · iOS · Android · Desktop</small></div>
+  </div>
+  <div class="rail"></div>
+  <div class="tier">
+    <div class="node edge">CDN<small>Akamai · edge cache</small></div>
+    <div class="node edge">API Gateway<small>Load balancer</small></div>
+  </div>
+  <div class="rail"></div>
+  <div class="tier">
+    <div class="node cache">Cache<small>Redis</small></div>
+    <div class="node svc">Search<small>Elasticsearch</small></div>
+    <div class="node svc">Auth<small>OAuth</small></div>
+    <div class="node svc">Stream Servers<small>DASH / HLS</small></div>
+  </div>
+  <div class="rail"></div>
+  <div class="tier">
+    <div class="node data">Metadata DB<small>PostgreSQL</small></div>
+    <div class="node data">Object Storage<small>S3 / GCS</small></div>
+  </div>
+</div>
+
+<h3>Komponensek részletesen</h3>
+
+<div class="subsection">
+<h4>1. CDN (Content Delivery Network) - Akamai</h4>
+<p>A zenék nagy része a szélső szerverekről kerül le (edge servers), nem a központi data centerekből.</p>
+<ul>
+  <li><strong>Edge caching:</strong> Népszerű dalok az összes CDN szélén (US, EU, APAC)</li>
+  <li><strong>Adaptive bitrate:</strong> Az eszköz és sávszélesség alapján automatikus minőség választás</li>
+  <li><strong>Tartalom azonosítás:</strong> Perceptual hashing (ugyanaz a dal = ugyanaz a hash, akkor is máshogy kódolva)</li>
+</ul>
+</div>
+
+<div class="subsection">
+<h4>2. Search & Discovery - Elasticsearch</h4>
+<p>Gyors keresés: "Drake", "Hip-hop 90s", "Napközentes zenék"</p>
+<ul>
+  <li><strong>Elasticsearch cluster:</strong> 100M+ dal indexelve, full-text search</li>
+  <li><strong>Faceting:</strong> Szűrés műfaj, évszám, előadó szerint</li>
+  <li><strong>Suggestions:</strong> Auto-complete: "Drak..." → ["Drake", "Drake & Josh Theme"]</li>
+  <li><strong>Replication factor:</strong> 3 (AP stratégia, eventual consistency)</li>
+</ul>
+</div>
+
+<div class="subsection">
+<h4>3. Metadata Database - PostgreSQL</h4>
+<p>Strukturált adatok: felhasználó profil, lejátszási listák, követési információ</p>
+<ul>
+  <li><strong>Felhasználó:</strong> ID, név, email, premium status, offline playlists</li>
+  <li><strong>Dal:</strong> ID, cím, előadó, album, bitrate variáció, CDN URL</li>
+  <li><strong>Lejátszási lista:</strong> Tulajdonos, dalok lista, módosítási timestamp, nyilvános/privát</li>
+  <li><strong>Lejátszási előzmények:</strong> User-id, dal-id, timestamp, lejátszási idő (progress)</li>
+  <li><strong>Replication:</strong> Master-Slave (CP stratégia)</li>
+</ul>
+</div>
+
+<div class="subsection">
+<h4>4. Streaming Servers – Adaptive Bitrate Streaming</h4>
+<p>Valós idejű zeneszállítás HTTP vagy DASH/HLS protokollon</p>
+<ul>
+  <li><strong>HTTP Progressive Download:</strong> Az egész fájl letöltésig lejátszik az elejét</li>
+  <li><strong>DASH (Dynamic Adaptive Streaming over HTTP):</strong> Sávszélesség alapján automatikus bitrate váltás</li>
+  <li><strong>Buffer management:</strong> 10-30 másodperces buffer az intézkedéshez (jitterless playback)</li>
+  <li><strong>Session affinity:</strong> Ugyanaz az előadáshoz tartozó felhasználó ugyanazzal a szerverrel kommunikál (upload/pause állapot megtartása)</li>
+</ul>
+</div>
+
+<div class="subsection">
+<h4>5. Storage – S3 / Google Cloud Storage</h4>
+<p>A tényleges hangfájlok tárhelye</p>
+<ul>
+  <li><strong>Multi-region replication:</strong> Minden dal 3+ régióban replikálva (AP stratégia)</li>
+  <li><strong>Naming:</strong> s3://spotify-audio/song-{id}/{bitrate}-{codec}.m4a</li>
+  <li><strong>Lifecycle policy:</strong> Népszerűtlen dalok archiválása, de továbbra is elérhető</li>
+</ul>
+</div>
+
+<div class="subsection">
+<h4>6. Cache - Redis</h4>
+<p>Gyors hozzáférés gyakran használt adatokhoz</p>
+<ul>
+  <li><strong>Session cache:</strong> Aktuális lejátszási állapot (szüneteltethető, felmegy, előzmények)</li>
+  <li><strong>Lejátszási lista cache:</strong> Top 1000 nyilvános lejátszási lista</li>
+  <li><strong>User preferences:</strong> Kedvelt zene, követés lista</li>
+  <li><strong>TTL:</strong> 1 óra tipikus, de ajánlások 24 óra</li>
+</ul>
+</div>
+
+<div class="subsection">
+<h4>7. Recommendation Engine</h4>
+<p>Személyre szabott zeneajánlások (ML-alapú)</p>
+<ul>
+  <li><strong>Collaborative Filtering:</strong> "Aki tetszett neked Drake, annak tetszett Kanye West"</li>
+  <li><strong>Content-Based Filtering:</strong> "Ez a dal hip-hop, 2010s, urban → hasonló dalokat ajánlunk"</li>
+  <li><strong>Context-aware:</strong> Délelőtt: energikus zene, éjszaka: relaxáló zene</li>
+  <li><strong>Batch computing:</strong> Napi ML modell frissítés (Apache Spark)</li>
+</ul>
+</div>
+
+<h3>Adatfolyam: Hogyan játszik le egy dal?</h3>
+
+<pre><code>1. Felhasználó megnyomja a "Play" gombra
+   ↓
+2. iOS app → Spotify API: POST /player/play {track_id: "123"}
+   ↓
+3. API Gateway: Auth check (OAuth token)
+   ↓
+4. Play Service: User permission check, track availability
+   ↓
+5. Metadata DB: Lekérdezi, hogy hol van a track (CDN URL)
+   ↓
+6. Cache (Redis): Ellenőrzi, hogy ez a felhasználó már letöltötte-e offline
+   ↓
+7. CDN (Akamai): HTTP streaming kezd, adaptive bitrate választás
+   ↓
+8. Audio Buffer: 10 másodperces buffer fel van töltve
+   ↓
+9. Playback begins: iOS audio player indít
+   ↓
+10. Analytics Event: ga("send", {event: "track_play", track_id, user_id, timestamp})</code></pre>
+
+<h3>Offline szinkronizáció</h3>
+
+<pre><code>Offline mód (pl. repülőn):
+1. Felhasználó előre letöltött 100 dalt: "Downloaded" státusszal a cache-ben
+   ↓
+2. Local SQLite DB: Lejátszási lista + dal metadata
+   ↓
+3. Offline lejátszás: sem szerver, sem internet szükséges
+   ↓
+4. WiFi visszakerülve: Upload lejátszási előzmények
+   - Van-e szinkronizálandó lejátszási előzmény?
+   - Sync: {user_id, tracks_played: [{id, timestamp, progress}]}
+   ↓
+5. Server: Frissítés analitikában, ajánlások frissítése</code></pre>
+
+<h3>CAP Analízis – Spotify</h3>
+
+<div class="answer-box">
+<strong>Spotify CAP stratégia: AP (Availability + Partition Tolerance)</strong>
+
+<table class="cap-table">
+  <tr>
+    <th>Komponens</th>
+    <th>Stratégia</th>
+    <th>Indoklás</th>
+  </tr>
+  <tr>
+    <td>Streaming (CDN)</td>
+    <td>AP</td>
+    <td>Mindig működik (offline fallback), eventual consistency ok</td>
+  </tr>
+  <tr>
+    <td>Lejátszási előzmények</td>
+    <td>AP</td>
+    <td>Eventually consistent (néha késhet a sync)</td>
+  </tr>
+  <tr>
+    <td>Search (Elasticsearch)</td>
+    <td>AP</td>
+    <td>Eventual consistency (új dal 1-2 órás delay ok)</td>
+  </tr>
+  <tr>
+    <td>Premium status</td>
+    <td>CP</td>
+    <td>Konzisztens kell: ha prémium, akkor prémium</td>
+  </tr>
+</table>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- URL SHORTENER SYSTEM DESIGN SECTION -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="url-shortener-design">
+<h2>3. URL Shortener System Design – bit.ly-szerű szolgáltatás</h2>
+<span class="tag">Rendszertervezés</span> <span class="tag">Mapping Service</span> <span class="tag">Skálázható</span>
+
+<h3>Követelmények (Requirements)</h3>
+
+<div class="requirement">
+<strong>Funkcionális követelmények:</strong>
+<ul>
+  <li>Hosszú URL → rövid URL konverzió (pl. https://example.com/very/long/path → tinyurl.com/abc123)</li>
+  <li>Rövid URL → hosszú URL átirányítás (HTTP 301 vagy 302)</li>
+  <li>Opcionális: Custom shortcode (felhasználó dönthet: tinyurl.com/mylink)</li>
+  <li>Link lejárati idő (TTL) - pl. 1 hó, 1 év, soha nem jár le</li>
+  <li>Statisztikák nyomon követése (kattások, forrás, időbélyeg)</li>
+  <li>Felhasználó számára link kezelés (megtekintés, törlés, szerkesztés)</li>
+</ul>
+</div>
+
+<div class="requirement">
+<strong>Nem funkcionális követelmények:</strong>
+<ul>
+  <li><strong>Skálázás:</strong> 10B+ rövidítés/nap, 100K+ redirect/másodperc csúcsidőben</li>
+  <li><strong>Latency:</strong> <100ms redirect válasz</li>
+  <li><strong>Elérhetőség:</strong> 99.99% uptime (redirect kritikus!)</li>
+  <li><strong>Tárhelyi hatékonyság:</strong> 1T+ URL pár eltárolása</li>
+  <li><strong>Nem szükséges: Szerkesztés</strong> (rövidítés után nem lehet módosítani)</li>
+</ul>
+</div>
+
+<h3>Kapacitás tervezés (Capacity Planning)</h3>
+
+<pre><code>Feltételezések:
+- 10B új rövidítés/nap
+- Read-Write ratio: 100:1 (100x több redirect, mint új rövidítés)
+- 10B reads/nap = 116K reads/másodperc
+- 100M writes/nap = 1.2K writes/másodperc
+
+Tárhelyre:
+- Évenkénti 3.6T rövidítés (10B × 365)
+- Egy rövidítés ~500 bájt (URL, metaadat, statisztika)
+- 1 év = 1.8 PB adat
+- 5 év = 9 PB adat
+
+Shortcode hossz:
+- Base 62: [0-9a-zA-Z] = 62 karakter
+- 6 karakter: 62^6 = 56.8 milliárd lehetőség ✅ (10B alá jól elfér)
+- 7 karakter: 62^7 = 3.5 trillió lehetőség (overkill)</code></pre>
+
+<h3>Architektúra - Magas szintű diagram</h3>
+
+<div class="arch">
+  <div class="tier">
+    <div class="node client">Client / Web UI</div>
+  </div>
+  <div class="rail"></div>
+  <div class="tier">
+    <div class="node edge">CDN / Edge Cache<small>CloudFlare</small></div>
+  </div>
+  <div class="rail"></div>
+  <div class="tier">
+    <div class="node svc">API Gateway<small>Write path</small></div>
+    <div class="node svc">Redirect Service<small>Read path</small></div>
+  </div>
+  <div class="rail"></div>
+  <div class="tier">
+    <div class="node cache">Redis Cache<small>Hot URLs</small></div>
+  </div>
+  <div class="rail"></div>
+  <div class="tier">
+    <div class="node data">Primary DB<small>PostgreSQL · writes</small></div>
+    <div class="node data">Read Replicas<small>×N · reads</small></div>
+  </div>
+</div>
+
+<h3>Komponensek részletesen</h3>
+
+<div class="subsection">
+<h4>1. URL Shortening Logic – Algoritmus</h4>
+<p>Egy hosszú URL rövidítésének többféle módja:</p>
+
+<strong>Opció A: Hash-alapú (MD5 + Base62 konverzió)</strong>
+<pre><code>1. Hosszú URL: https://example.com/very/long/path?id=12345
+2. MD5 hash: 2d3fbe4b5a2a5b7e8c9f0a1b2c3d4e5f (128 bit)
+3. Truncate: első 6 karakter az MD5-ből: 2d3fbe
+4. Base62 konverzió: abc123
+5. Rövid URL: tinyurl.com/abc123
+
+Probléma: Ütközések (hash collision)
+- Bár ritka, lehetséges, hogy két URL-ből ugyanaz a rövidítés jön ki</code></pre>
+
+<strong>Opció B: Database Counter (Guaranteed Unique)</strong>
+<pre><code>1. Hosszú URL: https://example.com/very/long/path?id=12345
+2. Atomi lekérdezés: counter += 1 → 1000000001
+3. Base62 konverzió: 1000000001 → "gjdgxs"
+4. Rövid URL: tinyurl.com/gjdgxs
+
+Előnyök: Garantáltan egyedi, szekvenciális
+Hátrányok: Szekvenciális = könnyebb találgatni a URL-eket</code></pre>
+
+<strong>Opció C: Distributed ID Generator (Snowflake-szerű)</strong>
+<pre><code>1. Snowflake ID generálása:
+   - Timestamp (41 bit) | Data Center ID (5 bit) | Worker ID (5 bit) | Sequence (12 bit)
+   - Teljes: 64 bit
+2. Base62 konverzió: 64 bit → 11 karakter
+3. Rövid URL: tinyurl.com/{11-char-base62}
+
+Előnyök: Nincs DB lekérdezés, nem szekvenciális, skálázható</code></pre>
+
+<strong>Ajánlott: Opció B vagy C (garantált egyediség)</strong>
+</div>
+
+<div class="subsection">
+<h4>2. Adatbázis séma</h4>
+<pre><code>Tábla: url_mapping
+┌─────────────────┬──────────────┬──────────────────┐
+│ Oszlop          │ Típus        │ Megjegyzés       │
+├─────────────────┼──────────────┼──────────────────┤
+│ shortcode       │ VARCHAR(10)  │ PRIMARY KEY      │
+│ original_url    │ TEXT         │ Indexelt         │
+│ user_id         │ BIGINT       │ Indexelt         │
+│ created_at      │ TIMESTAMP    │ Index            │
+│ expiry_at       │ TIMESTAMP    │ Index (TTL)      │
+│ click_count     │ BIGINT       │ Statisztika      │
+│ last_click_at   │ TIMESTAMP    │ Utolsó kattintás │
+└─────────────────┴──────────────┴──────────────────┘
+
+Tábla: analytics (particionálva dátum szerint)
+┌─────────────────┬──────────────┬──────────────────┐
+│ Oszlop          │ Típus        │ Megjegyzés       │
+├─────────────────┼──────────────┼──────────────────┤
+│ shortcode       │ VARCHAR(10)  │ FOREIGN KEY      │
+│ user_agent      │ VARCHAR(255) │ Browser/device   │
+│ referrer        │ VARCHAR(255) │ Hová kattintottak│
+│ ip_address      │ VARCHAR(45)  │ Geo-location     │
+│ clicked_at      │ TIMESTAMP    │ Index            │
+│ country         │ CHAR(2)      │ Geo IP lookup    │
+└─────────────────┴──────────────┴──────────────────┘
+
+Tábla: users
+┌─────────────────┬──────────────┬──────────────────┐
+│ Oszlop          │ Típus        │ Megjegyzés       │
+├─────────────────┼──────────────┼──────────────────┤
+│ user_id         │ BIGINT       │ PRIMARY KEY      │
+│ email           │ VARCHAR(255) │ Indexelt         │
+│ created_at      │ TIMESTAMP    │ Regisztráció     │
+└─────────────────┴──────────────┴──────────────────┘</code></pre>
+</div>
+
+<div class="subsection">
+<h4>3. Write Path – Rövidítés létrehozása</h4>
+<pre><code>1. Kliens: POST /api/shorten
+   {
+     "original_url": "https://example.com/very/long/path?id=12345",
+     "custom_shortcode": "mylink",  // opcionális
+     "expiry_days": 30
+   }
+
+2. API Gateway: Load balancing, request validation
+   
+3. Write Service:
+   a) Cache check: Van-e már ez az URL eltárolva?
+      GET cache:url_hash("https://example.com/...") → cache hit?
+   
+   b) Ha cache miss:
+      - Shortcode generálás (Snowflake vagy DB counter)
+      - Custom shortcode validáció (még szabad-e?)
+   
+   c) DB INSERT:
+      INSERT INTO url_mapping 
+      (shortcode, original_url, user_id, created_at, expiry_at)
+      VALUES ('abc123', 'https://example.com/...', 123, NOW(), NOW()+30days)
+   
+   d) Cache-be írás:
+      SET cache:"abc123" "https://example.com/..." EX 86400
+
+4. Válasz: 
+   {
+     "shortcode": "abc123",
+     "short_url": "https://tinyurl.com/abc123",
+     "original_url": "https://example.com/...",
+     "created_at": "2026-02-04T10:00:00Z"
+   }</code></pre>
+</div>
+
+<div class="subsection">
+<h4>4. Read Path – Átirányítás</h4>
+<pre><code>1. Kliens: GET /abc123 (böngészőből)
+
+2. Edge Cache (CloudFlare):
+   Ellenőrzés: Van-e már gyorsítótárban?
+   Cache hit? Azonnal HTTP 301 válasz
+   Cache miss? → Origin szerverhez
+
+3. Redirect Service (Read):
+   a) Redis cache check:
+      GET "abc123" → cache hit?
+      Cache hit: 1-2 ms ✅
+   
+   b) Ha cache miss:
+      SELECT original_url FROM url_mapping WHERE shortcode='abc123'
+      5-10 ms ✅
+
+   c) Ellenőrzés: Van-e lejárva?
+      IF expiry_at < NOW() THEN return 404 Gone
+   
+   d) TTL frissítés a cacheban:
+      SET "abc123" original_url EX 3600  (1 óra cache)
+
+   e) Analytics event (async):
+      PUBLISH kafka-topic:url_clicks {shortcode, ip, user_agent, timestamp}
+
+4. Válasz:
+   HTTP 301 Moved Permanently
+   Location: https://example.com/very/long/path?id=12345
+   Cache-Control: public, max-age=86400
+
+Teljes latency: Redis hit = 2ms, DB hit = 10ms ✅ (célszám: <100ms)</code></pre>
+</div>
+
+<div class="subsection">
+<h4>5. Cache stratégia</h4>
+<p><strong>Problem:</strong> 1T+ URL = nem fér be egy Redis instance memóriájába (tipikus: 100 GB)</p>
+
+<pre><code>Megoldás: Selective caching (hot URLs csak)
+
+1. Write-aside cache:
+   - Új rövidítés: automatikus cache-be (friss = hot)
+   - TTL: 1 óra (vagy attól függően, mikor utolsó kattintás)
+
+2. Read-through cache:
+   - Olvasás a cache-ből
+   - Ha miss: DB-ből, majd cache-be
+
+3. LRU eviction:
+   - Redis memory policy: allkeys-lru (legrégebben használt törlése)
+   - Max memory: 100 GB per Redis instance
+   - Túl sok URL? Horizontális skálázás (Redis Cluster)
+
+4. Analytics bypass (nem cache-elendő):
+   - Analytics adatok száraznak Kafkára (offline feldolgozás)
+   - Ez nem készteti fel a Redis-t</code></pre>
+</div>
+
+<div class="subsection">
+<h4>6. Adatbázis replikáció és sharding</h4>
+<pre><code>Replikáció (Read-Write Split):
+┌─────────────────────────┐
+│ Primary DB (Write-only) │
+│ 1.2K writes/sec         │
+│ 116K reads/sec          │
+└────────┬────────────────┘
+         │ Replication stream (binlog)
+    ┌────┴────────────────────────┐
+    │                             │
+┌───▼────────┐          ┌────────▼────┐
+│Replica 1   │          │Replica 2    │
+│ 116K/sec   │          │ 116K/sec    │
+└────────────┘          └─────────────┘
+
+Sharding (gigantikus adatmennyiség):
+Shortcode alapján sharding: hash(shortcode) % 10 = shard_id
+- Shard 0: shortcode-ok "aaa"-"ccc"
+- Shard 1: shortcode-ok "ccd"-"eee"
+- ...
+- 10 shard × 10 PB = 100 PB tárhelyre bővíthető
+
+Sharding routing:
+Client → API Gateway:
+  shard_id = hash(shortcode) % num_shards
+  route to: DB Cluster [shard_id]</code></pre>
+</div>
+
+<div class="subsection">
+<h4>7. Analytics pipeline</h4>
+<pre><code>Real-time analytics (kattások nyomon követése):
+
+1. Click event capture:
+   {
+     shortcode: "abc123",
+     user_agent: "Mozilla/5.0...",
+     referrer: "twitter.com",
+     ip_address: "192.168.1.1",
+     timestamp: "2026-02-04T10:15:30Z"
+   }
+
+2. Event publishing: 
+   PUBLISH kafka-topic:url_clicks {click_event}
+   (async, nem blokkolja a redirect)
+
+3. Stream processing (Apache Kafka + Spark Streaming):
+   - Aggregáció: Click count per hour/shortcode
+   - Geo-location: IP → ország konverzió
+   - Device classification: User agent → OS/Browser
+
+4. Batch analytics (Hadoop MapReduce / Spark):
+   - Napi report: Top 10 rövidítés, demografia, forgalom trend
+   - Heti analitika: User behavior patterns
+
+5. Dashboard:
+   GET /api/analytics/{shortcode}
+   {
+     "total_clicks": 1234567,
+     "clicks_today": 89234,
+     "clicks_last_7_days": 567890,
+     "top_referrers": ["twitter.com", "facebook.com", ...],
+     "top_countries": [{"country": "US", "clicks": 500000}, ...],
+     "device_breakdown": {"mobile": 60%, "desktop": 40%}
+   }</code></pre>
+</div>
+
+<h3>CAP Analízis – URL Shortener</h3>
+
+<div class="answer-box">
+<strong>URL Shortener CAP stratégia: AP (Availability + Partition Tolerance)</strong>
+
+<table class="cap-table">
+  <tr>
+    <th>Komponens</th>
+    <th>Stratégia</th>
+    <th>Indoklás</th>
+  </tr>
+  <tr>
+    <td>Redirect (Read)</td>
+    <td>AP</td>
+    <td>Mindig válaszolni kell, cache fallback, eventual consistency ok</td>
+  </tr>
+  <tr>
+    <td>Shortening (Write)</td>
+    <td>AP</td>
+    <td>Asszinkron DB replikáció, nem szinkron konzisztencia</td>
+  </tr>
+  <tr>
+    <td>Analytics</td>
+    <td>AP</td>
+    <td>Offline feldolgozás, nem real-time szükséges</td>
+  </tr>
+  <tr>
+    <td>Tárhelyre: Dupla shortcode</td>
+    <td>CP</td>
+    <td>Szükséges konzisztencia (nem azonos shortcode 2x)</td>
+  </tr>
+</table>
+
+<strong>Miért AP?</strong> Egy URL redirect szolgáltatásnál az elérhetőség kritikus. Ha a DB leáll, a cache-ből szolgálunk (eventual consistency: néhány perc késés az új rövidítésben ok).
+</div>
+
+<h3>Skálázás - 100K+ redirect/sec?</h3>
+
+<pre><code>1. Horizontális skálázás:
+   - 10 Redirect Service instance, Load Balancer mögött
+   - Minden instance 10K req/sec kapacitása
+   - 100K req/sec = 10 instance ✅
+
+2. Redis Cluster:
+   - Particionálva shortcode alapján
+   - Read replicas: Pool 100 redis instance
+   - Latency: <5ms garantált
+
+3. Database Read Replicas:
+   - 10 PostgreSQL Replica
+   - Read load balanced
+   - Cache hit rate: 90% (csak 10% DB hit)
+
+4. CDN (CloudFlare):
+   - Edge caching: népszerű shortcode-ok az összes szélén
+   - Globális: US, EU, APAC, India
+   - Latency: <50ms bárholról</code></pre>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- FUTURE TOPICS SECTION -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="future-topics">
+<h2>Jövőbeli topikok</h2>
+<span class="tag">Kiterjesztés</span>
+
+<p>Ez a fájl bővíthető a következő nagy rendszer tervezési témákkal:</p>
+
+<ul>
+  <li><strong>Chat System Design</strong> – Facebook Messenger, WhatsApp (Message queuing, WebSockets, Consistency)</li>
+  <li><strong>Ride Sharing System</strong> – Uber/Lyft (Geohashing, Real-time tracking, Matching algorithm)</li>
+  <li><strong>E-commerce Platform</strong> – Amazon-szerű (Product catalog, Shopping cart, Payment processing)</li>
+  <li><strong>Video Streaming Platform</strong> – Netflix/YouTube (Transcoding, Bitrate adaptation, Recommendation)</li>
+  <li><strong>Social Media Feed</strong> – Twitter/Instagram (Timeline generation, Caching, Graph traversal)</li>
+  <li><strong>Distributed Cache</strong> – Redis Cluster, Memcached (Hashing, Replication, Eviction)</li>
+  <li><strong>Database Design</strong> – Sharding, Replication, Consistency models</li>
+  <li><strong>Message Queue Systems</strong> – Kafka, RabbitMQ (Partitioning, Consumer groups, Exactly-once semantics)</li>
+  <li><strong>Load Balancing</strong> – DNS, Layer 4, Layer 7 (Health checks, Sticky sessions)</li>
+  <li><strong>Monitoring & Alerting</strong> – Prometheus, ELK, Tracing (Latency SLO, Error budgets)</li>
+</ul>
+
+<div class="note">
+Minden Topic-hoz: Követelmények → Kapacitás tervezés → Magas szintű architektúra → Komponensek → Adatfolyam → CAP analízis.
+</div>
+
+</div>
+
+  <footer>
+    <p><strong>📋 Kidolgozási &amp; karbantartási napló</strong></p>
+    <p>
+      <strong>Készítette:</strong> Claude Opus 4.8 (1M kontextus) · modell-azonosító <code>claude-opus-4-8[1m]</code><br>
+      <strong>Kidolgozás dátuma:</strong> 2026-06-21 · <strong>A modell tudásvágása:</strong> 2026. január (a tanítóadat vége — az azóta eltelt időszak változásait nem garantáltan ismeri, ezt frissítéskor ellenőrizni kell)<br>
+      <strong>Precíziós szint:</strong> dizájn-modernizálás + a vizualizációk újraépítése (SVG / HTML-CSS); a tartalom koncepcionálisan ellenőrizve, a számszerű kapacitásbecslések szemléltető jellegűek.
+    </p>
+    <p><strong>Elvégzett változtatások:</strong></p>
+    <ul>
+      <li>Dizájn modernizálása (sötét → világos kártyás téma), hero + tartalomjegyzék.</li>
+      <li><strong>A 3 fő vizualizáció újraépítve</strong> — a korábbi ASCII-art szétesett a <code>text-align:center</code> + <code>white-space:pre</code> kombináció miatt (ez soronként külön középre rendezte az illesztett rajzot). Most: a CAP-háromszög <strong>SVG</strong>, a Spotify és az URL-shortener architektúra <strong>HTML/CSS rétegdiagram</strong> (reszponzív, színkódolt csomópontok).</li>
+      <li>Megjelenítési hiba javítva: a <code>**Miért AP?**</code> markdown-félkövér nyersen jelent meg HTML-ben → <code>&lt;strong&gt;</code>. Néhány elgépelés is javítva (szerverről, működik, Hátrányok, eltárolva).</li>
+      <li>A monospace kódblokkok (adatfolyamok, DB-sémák, sharding) megmaradtak — bal-igazítva, sötét kódkártyán helyesen jelennek meg.</li>
+    </ul>
+    <p><strong>🔧 Ha 1 év múlva technikailag frissíteni kell — minden, amire szükség van:</strong></p>
+    <ul>
+      <li><strong>Dizájnrendszer:</strong> világos téma, színek a <code>:root</code> CSS-változókban. Layout: <code>.wrap</code> &gt; <code>header.hero</code> + <code>nav.toc</code> + <code>.section</code> kártyák; magyarázó dobozok: <code>.subsection</code>, <code>.answer-box</code>, <code>.note</code>, <code>.requirement</code>; táblázat: <code>.cap-table</code>.</li>
+      <li><strong>Diagram-komponensek:</strong> rétegdiagramhoz <code>.arch</code> &gt; <code>.tier</code> (csomópont-sor) + <code>.rail</code> (függőleges összekötő); csomópont: <code>.node</code> + szerep-variánsok (<code>.client</code> / <code>.edge</code> / <code>.svc</code> / <code>.cache</code> / <code>.data</code>), alcím <code>&lt;small&gt;</code>-ben. A CAP-ábra inline <code>&lt;svg viewBox&gt;</code> (méretfüggetlen, szerkeszthető koordinátákkal).</li>
+      <li><strong>KÖTELEZŐ szabályok:</strong> (1) kódblokkban escape-eld a <code>&lt;</code>/<code>&gt;</code>/<code>&amp;</code> karaktereket; (2) HTML-ben ne maradjon markdown (<code>**</code>) — használj <code>&lt;strong&gt;</code>-ot; (3) SOHA ne tegyél <code>text-align:center</code>-t <code>white-space:pre</code> ASCII-artra (ez törte szét az eredeti ábrákat).</li>
+      <li><strong>Új topik hozzáadása:</strong> új <code>.section</code> a footer ELÉ + link a <code>.toc-grid</code>-be. Topik-sablon: Követelmények → Kapacitástervezés → Architektúra-diagram → Komponensek → Adatfolyam → CAP-analízis (lásd „Jövőbeli topikok").</li>
+      <li><strong>Verzió-/időérzékeny tartalom, amit újra kell ellenőrizni:</strong>
+        <ul>
+          <li><strong>CAP DB-besorolások</strong> (CP/AP/CA táblázat): vitatott és konfigurációfüggő — pl. a MongoDB hangolható, a Kafka „CP"-besorolása leegyszerűsítés. Igazítsd a mindenkori dokumentációhoz.</li>
+          <li><strong>Konkrét technológiák</strong> (Akamai/CloudFlare, S3/GCS, Elasticsearch, Kafka, Spark, Snowflake-ID): az ökoszisztéma változik — nézd meg az aktuális best practice-t.</li>
+          <li><strong>Kapacitásszámok</strong> (felhasználó-, bitrate-, tárhelybecslés): szemléltető nagyságrendek, nem mért adatok.</li>
+          <li><strong>CAP / PACELC</strong> és a hibrid (write = AP / kritikus művelet = CP) megközelítés elméletileg stabil; a példák frissíthetők.</li>
+        </ul>
+      </li>
+      <li><strong>Bővítési ötletek</strong> a „Jövőbeli topikok" szekcióban (Chat, Ride-sharing, E-commerce, Video streaming, Feed, stb.).</li>
+    </ul>
+  </footer>
+
+</div>
+</body>
+</html>

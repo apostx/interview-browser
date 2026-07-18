@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EIB – Frontend interjú (CodinGame assessment)</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --ink:#1c2233; --muted:#5d6678; --line:#e4e8f0;
+    --brand:#3a5bd9; --brand-soft:#eaeefc; --brand-line:#c9d4f7; --brand-ink:#2f48ac;
+    --ok:#1f9d57; --ok-soft:#e6f6ec; --ok-line:#bce6cb; --ok-ink:#15703f;
+    --bad:#d23b3b; --bad-soft:#fcebeb; --bad-line:#f1c9c9; --bad-ink:#a82c2c;
+    --warn:#b9821a; --warn-soft:#fbf2dd; --warn-line:#ecd9a8; --warn-ink:#8a6112;
+    --violet:#7c5cd6; --violet-soft:#efeafc; --violet-line:#d9ccf5; --violet-ink:#5a3fb0;
+    --code-bg:#1e2433; --code-ink:#e8ecf6;
+    --mono:"SF Mono",ui-monospace,SFMono-Regular,Menlo,'Fira Code','Cascadia Code',Consolas,monospace;
+    --shadow:0 1px 2px rgba(20,30,60,.05),0 8px 24px rgba(20,30,60,.07);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6;padding:32px 16px 80px;}
+  .wrap{max-width:920px;margin:0 auto}
+
+  header.hero{background:linear-gradient(135deg,#3a5bd9,#5a78ec);color:#fff;border-radius:18px;padding:34px 34px 30px;box-shadow:var(--shadow);margin-bottom:24px;}
+  header.hero .kicker{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:700;opacity:.85;margin:0 0 8px;}
+  header.hero h1{margin:0 0 6px;font-size:28px;line-height:1.2;border:none;padding:0;color:#fff;}
+  header.hero p{margin:0;opacity:.94;font-size:15px;max-width:70ch;}
+
+  /* Scoreboard */
+  .scoreboard{display:flex;flex-wrap:wrap;gap:12px;margin:22px 0 6px;}
+  .score{flex:1 1 150px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);}
+  .score .num{font-size:24px;font-weight:800;line-height:1}
+  .score .lbl{font-size:12.5px;color:var(--muted);margin-top:4px}
+  .score .bar{height:6px;border-radius:3px;background:var(--line);margin-top:8px;overflow:hidden}
+  .score .bar i{display:block;height:100%;border-radius:3px}
+  .score.total .num{color:var(--brand)} .score.total .bar i{background:var(--brand)}
+  .score.hi .num{color:var(--ok)} .score.hi .bar i{background:var(--ok)}
+  .score.mid .num{color:var(--warn)} .score.mid .bar i{background:var(--warn)}
+
+  .toc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin:24px 0;box-shadow:var(--shadow);}
+  .toc-title{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;margin:0 0 14px;}
+  .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:8px;}
+  .toc-grid a{display:flex;gap:8px;align-items:baseline;text-decoration:none;color:var(--ink);font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid var(--line);background:#fbfcfe;transition:background .15s,border-color .15s;}
+  .toc-grid a:hover{background:var(--brand-soft);border-color:var(--brand-line);}
+  .toc-grid a .tnum{color:var(--brand);font-weight:800;flex:0 0 auto;min-width:1.4em;}
+
+  .section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:18px;box-shadow:var(--shadow);border-left:6px solid var(--brand);scroll-margin-top:16px;}
+  .section.cat-js{border-left-color:#e0a90f}
+  .section.cat-ts{border-left-color:#3a5bd9}
+  .section.cat-react{border-left-color:#16b1c9}
+  .section.cat-git{border-left-color:#7c5cd6}
+
+  h1{color:var(--ink);}
+  h2{font-size:18px;font-weight:800;margin:0 0 8px;color:var(--ink);border:none;padding:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  h2 .qnum{color:var(--brand);font-weight:800}
+  h3{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin:18px 0 8px;}
+
+  .tag{display:inline-block;background:var(--brand-soft);color:var(--brand);padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:600;margin:0 6px 12px 0;}
+  .tag.t-js{background:#fbf1d2;color:#8a6112}
+  .tag.t-ts{background:var(--brand-soft);color:var(--brand-ink)}
+  .tag.t-react{background:#d8f3f8;color:#0f7c8c}
+  .tag.t-git{background:var(--violet-soft);color:var(--violet-ink)}
+  .tag.t-code{background:var(--ok-soft);color:var(--ok-ink)}
+
+  p{margin:0 0 12px;font-size:14.5px;}
+  ul,ol{margin:0 0 12px;padding-left:22px;}
+  li{margin:4px 0;font-size:14px;}
+
+  code{font-family:var(--mono);font-size:.92em;}
+  :not(pre) > code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;}
+  .ic{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);font-size:.9em;}
+  pre{background:var(--code-bg);border:none;border-radius:10px;padding:14px 16px;overflow-x:auto;margin:12px 0;}
+  pre code{background:none;color:var(--code-ink);padding:0;font-size:12.5px;line-height:1.55;}
+
+  .options{list-style:none;margin:0 0 14px;padding:0;}
+  .options li{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:9px;border:1px solid var(--line);margin-bottom:6px;font-size:14px;background:#fbfcfe;}
+  .options li .letter{flex:0 0 auto;width:24px;height:24px;border-radius:7px;border:2px solid #c8cee0;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--muted);background:#fff;}
+  .options li.correct{background:var(--ok-soft);border-color:var(--ok-line);}
+  .options li.correct .letter{background:var(--ok);border-color:var(--ok);color:#fff;}
+  .options li.wrong{opacity:.72;}
+  .options li .ok-flag{margin-left:auto;font-size:11px;font-weight:700;color:var(--ok);background:#fff;border:1px solid var(--ok-line);border-radius:999px;padding:2px 9px;flex:0 0 auto}
+
+  .answer-box,.note,.trap-box{border-radius:11px;padding:13px 15px;margin:14px 0;font-size:14px;border:1px solid;}
+  .answer-box{background:var(--ok-soft);border-color:var(--ok-line);}
+  .answer-box strong{color:var(--ok-ink);}
+  .note{background:var(--brand-soft);border-color:var(--brand-line);}
+  .note strong{color:var(--brand-ink);}
+  .trap-box{background:var(--warn-soft);border-color:var(--warn-line);}
+  .trap-box strong{color:var(--warn-ink);}
+  .answer-box pre,.note pre,.trap-box pre{margin:8px 0 0;}
+  .src{font-size:12px;color:var(--muted);margin:0 0 10px;font-style:italic}
+
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;background:var(--card);}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;}
+  th{background:var(--brand-soft);color:var(--brand-ink);font-weight:700;}
+  table tr:nth-child(even){background:#f7f9fd;}
+
+  footer{color:var(--muted);font-size:12.5px;margin-top:36px;line-height:1.7;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);}
+  footer strong{color:var(--ink);}
+  footer code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);}
+  a{color:var(--brand);}
+
+  @media(max-width:560px){
+    body{padding:20px 10px 60px}
+    header.hero{padding:24px 20px}
+    .section{padding:18px 16px}
+    .toc-grid{grid-template-columns:1fr}
+    .options li{flex-wrap:wrap}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="kicker">EIB · Frontend interjú · CodinGame assessment</p>
+    <h1>EIB – online technikai teszt kidolgozása</h1>
+    <p>27 React + JavaScript / TypeScript / Git kérdés és kódfeladat egy CodinGame assessmentből, 30 telefonos képernyőfotó alapján rekonstruálva. Néhány kérdés és a hozzá tartozó válaszlap külön képen volt — ezeket elemzéssel párosítottam. Minden tételnél: kérdés, helyes válasz és magyarázat.</p>
+  </header>
+
+  <div class="scoreboard">
+    <div class="score total"><div class="num">1573 / 2300</div><div class="lbl">Összpontszám (68%)</div><div class="bar"><i style="width:68%"></i></div></div>
+    <div class="score hi"><div class="num">100%</div><div class="lbl">Git · 160/160</div><div class="bar"><i style="width:100%"></i></div></div>
+    <div class="score hi"><div class="num">83%</div><div class="lbl">React · 483/580</div><div class="bar"><i style="width:83%"></i></div></div>
+    <div class="score hi"><div class="num">80%</div><div class="lbl">TypeScript · 160/200</div><div class="bar"><i style="width:80%"></i></div></div>
+    <div class="score mid"><div class="num">57%</div><div class="lbl">JavaScript · 770/1360</div><div class="bar"><i style="width:57%"></i></div></div>
+  </div>
+  <p class="src" style="text-align:center">A hivatalos eredmény-emailből. A JavaScript bontása: Problem solving 437/612, Reliability 144/355, Language 189/333, Design 0/60 — a <strong>Reliability</strong> (edge case-ek, hibatűrés) volt a gyenge pont.</p>
+
+  <nav class="toc">
+    <p class="toc-title">Kérdések (21)</p>
+    <div class="toc-grid">
+      <a href="#q1"><span class="tnum">1</span> JS · Object.entries()</a>
+      <a href="#q2"><span class="tnum">2</span> JS · delete operátor</a>
+      <a href="#q3"><span class="tnum">3</span> JS · this &amp; arrow function</a>
+      <a href="#q4"><span class="tnum">4</span> JS · encode (run-length)</a>
+      <a href="#q5"><span class="tnum">5</span> JS · calculateTotalPrice</a>
+      <a href="#q6"><span class="tnum">6</span> JS · searchValue</a>
+      <a href="#q7"><span class="tnum">7</span> JS · solution (szavak)</a>
+      <a href="#q8"><span class="tnum">8</span> JS · helloProperties</a>
+      <a href="#q9"><span class="tnum">9</span> JS · nextWeek</a>
+      <a href="#q10"><span class="tnum">10</span> TS · Tuple</a>
+      <a href="#q11"><span class="tnum">11</span> TS · lodash deklaráció</a>
+      <a href="#q12"><span class="tnum">12</span> TS · generic class</a>
+      <a href="#q13"><span class="tnum">13</span> TS · függvény string return</a>
+      <a href="#q14"><span class="tnum">14</span> TS · extends / inheritance</a>
+      <a href="#q15"><span class="tnum">15</span> React · Context</a>
+      <a href="#q16"><span class="tnum">16</span> React · useMemo</a>
+      <a href="#q17"><span class="tnum">17</span> React · ListUsers</a>
+      <a href="#q18"><span class="tnum">18</span> React · prop passing</a>
+      <a href="#q19"><span class="tnum">19</span> Git · reset egy commitra</a>
+      <a href="#q20"><span class="tnum">20</span> Git · commit --amend</a>
+      <a href="#q21"><span class="tnum">21</span> Git · staging + hard reset</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════ JAVASCRIPT ═══════════════════ -->
+
+  <!-- Q1 -->
+  <section class="section cat-js" id="q1">
+    <h2><span class="qnum">1.</span> Object.entries()</h2>
+    <span class="tag t-js">JavaScript</span> <span class="tag">Objektumok</span>
+    <h3>Kérdés</h3>
+    <p>Which one of the following options is true about <code>Object.entries()</code>?</p>
+    <ul class="options">
+      <li class="correct"><span class="letter">A</span> <code>Object.entries()</code> returns an array of <code>[key, value]</code> pairs <span class="ok-flag">helyes</span></li>
+      <li class="wrong"><span class="letter">B</span> returns an array of property values from the object</li>
+      <li class="wrong"><span class="letter">C</span> returns the number of properties in an object</li>
+      <li class="wrong"><span class="letter">D</span> returns an array of property keys from the object</li>
+    </ul>
+    <div class="answer-box"><strong>Helyes válasz: A</strong> — egy <code>[kulcs, érték]</code> párokból álló tömböt ad vissza.</div>
+    <h3>Magyarázat</h3>
+<pre><code>const o = { a: 1, b: 2 };
+Object.entries(o);  // [["a", 1], ["b", 2]]
+Object.keys(o);     // ["a", "b"]        ← D opció
+Object.values(o);   // [1, 2]            ← B opció
+Object.keys(o).length; // 2              ← C opció (property-k száma)
+
+// Tipikus használat – iteráció kulcs+érték párban:
+for (const [key, value] of Object.entries(o)) { /* ... */ }</code></pre>
+  </section>
+
+  <!-- Q2 -->
+  <section class="section cat-js" id="q2">
+    <h2><span class="qnum">2.</span> A <code>delete</code> operátor viselkedése</h2>
+    <span class="tag t-js">JavaScript</span> <span class="tag">Scope</span> <span class="tag t-code">kód-elemzés</span>
+    <h3>Kérdés</h3>
+    <p>Mit ír ki minden <code>console.log</code>, és miért?</p>
+<pre><code>firstName = 'John';      // deklaráció NÉLKÜL → implicit globális
+const age = 21;
+
+console.log(delete age);
+console.log(delete firstName);
+console.log(typeof firstName);
+console.log(typeof age);</code></pre>
+    <div class="answer-box"><strong>Kimenet:</strong> <code>false</code> · <code>true</code> · <code>"undefined"</code> · <code>"number"</code></div>
+    <h3>Magyarázat</h3>
+    <ul>
+      <li><code>delete age</code> → <strong>false</strong>: az <code>age</code> egy <code>const</code> (lexikális kötés), nem konfigurálható objektum-property. A <code>delete</code> csak objektum-property-kre hat — változót nem töröl (sloppy módban <code>false</code>-t ad).</li>
+      <li><code>delete firstName</code> → <strong>true</strong>: a <code>firstName</code> deklaráció nélkül kapott értéket → <em>implicit globális</em>, ami a globális objektum konfigurálható property-je → törölhető.</li>
+      <li><code>typeof firstName</code> → <strong>"undefined"</strong>: az előző sor törölte, már nem létezik.</li>
+      <li><code>typeof age</code> → <strong>"number"</strong>: az <code>age</code> megmaradt.</li>
+    </ul>
+    <div class="trap-box"><strong>Csapda:</strong> <code>'use strict'</code> módban más a kép — az implicit globális (<code>firstName = 'John'</code>) eleve <code>ReferenceError</code>-t dobna, és a <code>delete</code> egy egyszerű változónévre <code>SyntaxError</code>. Ez a snippet tehát sloppy (nem-strict) módot feltételez.</div>
+  </section>
+
+  <!-- Q3 -->
+  <section class="section cat-js" id="q3">
+    <h2><span class="qnum">3.</span> <code>this</code> a globális objektumra — milyen függvény?</h2>
+    <span class="tag t-js">JavaScript</span> <span class="tag">this binding</span>
+    <p class="src">🔗 A válaszlehetőségek nem voltak a fotókon — a helyes válasz koncepció alapján.</p>
+    <h3>Kérdés</h3>
+<pre><code>const objOne = {
+  firstName: "Martin",
+  surName: "Piyal",
+  getFullName(): string {
+    return this.firstName + this.surName;
+  },
+};</code></pre>
+    <p>Ha azt akarod, hogy a <code>this</code> a <strong>globális objektumra</strong> mutasson, ne az <code>objOne</code>-ra, milyen típusú függvénnyé alakítsd a <code>getFullName</code>-et?</p>
+    <div class="answer-box"><strong>Helyes válasz: arrow function (nyílfüggvény).</strong></div>
+    <h3>Magyarázat</h3>
+    <p>A metódus-rövidítés (<code>getFullName() {…}</code>) esetén <code>objOne.getFullName()</code> híváskor a <code>this</code> az <code>objOne</code>. Az <strong>arrow function nem köt saját <code>this</code>-t</strong> — a definíció helyének <em>lexikális</em> <code>this</code>-ét örökli. Mivel az objektum a globális/script szkópban van definiálva, az arrow <code>this</code>-e a globális objektum (sloppy módban), nem az <code>objOne</code>.</p>
+<pre><code>const objOne = {
+  firstName: "Martin",
+  getFullName: () =&gt; {
+    return this.firstName; // this = globális objektum, NEM objOne!
+  },
+};</code></pre>
+    <div class="note"><strong>Tanulság:</strong> sose írj metódust arrow function-ként, ha a <code>this</code>-re szükséged van az objektumon belül — pont ez a leggyakoribb arrow-this hiba.</div>
+  </section>
+
+  <!-- Q4 -->
+  <section class="section cat-js" id="q4">
+    <h2><span class="qnum">4.</span> <code>encode(plainText)</code> — futáshossz-kódolás</h2>
+    <span class="tag t-js">JavaScript</span> <span class="tag t-code">coding</span>
+    <h3>Feladat</h3>
+    <p>Kódold a szöveget az azonos betűk egymás utáni futásainak megszámolásával. Pl. <code>"aaaabcccaaa"</code> → 4×<code>a</code>, 1×<code>b</code>, 3×<code>c</code>, 3×<code>a</code> → <code>"4a1b3c3a"</code>. (Bemenet: csak a–z kisbetűk, sosem null, max. 15000 karakter.)</p>
+    <h3>Megoldás</h3>
+<pre><code>function encode(plainText) {
+  let result = '';
+  let count = 1;
+  for (let i = 1; i &lt;= plainText.length; i++) {
+    // ha a következő ugyanaz, növeljük a számlálót...
+    if (i &lt; plainText.length &amp;&amp; plainText[i] === plainText[i - 1]) {
+      count++;
+    } else {
+      // ...különben lezárjuk az aktuális futást
+      result += count + plainText[i - 1];
+      count = 1;
+    }
+  }
+  return result;
+}
+
+encode('aaaabcccaaa'); // "4a1b3c3a"
+encode('aabaa');       // "2a1b2a"</code></pre>
+    <div class="note"><strong>Lényeg:</strong> egyetlen végigjárás (O(n)). A ciklus <code>length</code>-ig megy (inkluzív), így az utolsó futás is lezáródik. Edge case: üres string → <code>""</code>.</div>
+  </section>
+
+  <!-- Q5 -->
+  <section class="section cat-js" id="q5">
+    <h2><span class="qnum">5.</span> <code>calculateTotalPrice(prices, discount)</code></h2>
+    <span class="tag t-js">JavaScript</span> <span class="tag t-code">coding</span>
+    <h3>Feladat</h3>
+    <p>„Summer Sales": a <strong>legdrágább</strong> termékre <code>discount%</code> kedvezmény jár (csak egyre). Add vissza a teljes vételárat egész számként (<strong>lefelé kerekítve</strong>). Korlátok: <code>0 ≤ discount ≤ 100</code>, <code>0 &lt; ár &lt; 100000</code>, <code>0 &lt; termékszám &lt; 100</code>.</p>
+    <h3>Megoldás</h3>
+<pre><code>function calculateTotalPrice(prices, discount) {
+  const total = prices.reduce((sum, p) =&gt; sum + p, 0);
+  const mostExpensive = Math.max(...prices);
+  const saved = mostExpensive * (discount / 100);
+  return Math.floor(total - saved);
+}
+
+calculateTotalPrice([10, 20, 30], 50); // 30 - 15 = 45 → 45
+calculateTotalPrice([100], 10);        // 100 - 10 = 90</code></pre>
+    <div class="trap-box"><strong>Buktatók:</strong> (1) a kedvezmény csak EGY (a legdrágább) termékre vonatkozik, nem az egészre; (2) <code>Math.floor</code> kell, nem <code>Math.round</code>; (3) ha holtverseny van a legdrágábból, akkor is csak egyszer vonjuk le.</div>
+  </section>
+
+  <!-- Q6 -->
+  <section class="section cat-js" id="q6">
+    <h2><span class="qnum">6.</span> <code>searchValue(numbers, value)</code></h2>
+    <span class="tag t-js">JavaScript</span> <span class="tag t-code">coding</span>
+    <h3>Feladat</h3>
+    <p>Adj vissza egy 4 elemű tömböt (mind 0 vagy 1): [1] van-e <code>value</code> <strong>páros</strong> indexen, [2] <strong>páratlan</strong> indexen, [3] az <strong>első félben</strong>, [4] a <strong>második félben</strong>. <code>value</code> többször is előfordulhat (mindet figyelembe kell venni). A <code>numbers</code> hossza mindig páros; mindig definiált, de lehet üres.</p>
+    <h3>Megoldás</h3>
+<pre><code>function searchValue(numbers, value) {
+  const n = numbers.length;
+  const half = n / 2;
+  let even = 0, odd = 0, first = 0, second = 0;
+
+  for (let i = 0; i &lt; n; i++) {
+    if (numbers[i] === value) {
+      if (i % 2 === 0) even = 1; else odd = 1;
+      if (i &lt; half) first = 1; else second = 1;
+    }
+  }
+  return [even, odd, first, second];
+}</code></pre>
+    <div class="note"><strong>Lényeg:</strong> egyetlen végigjárás, minden találatnál mind a négy flag-et frissítjük. Üres tömb → <code>[0,0,0,0]</code> (a páros hossz miatt nincs félosztási kétértelműség).</div>
+  </section>
+
+  <!-- Q7 -->
+  <section class="section cat-js" id="q7">
+    <h2><span class="qnum">7.</span> <code>solution('Hello you !')</code> — szavak külön sorba</h2>
+    <span class="tag t-js">JavaScript</span> <span class="tag t-code">coding</span>
+    <h3>Feladat</h3>
+    <p>A <code>print(solution('Hello you !'))</code> a következőt írja ki (szavanként új sor, <code>\n</code>): <code>Hello</code> / <code>you</code> / <code>!</code>. A bemenet mindig nem-null string.</p>
+    <h3>Megoldás</h3>
+<pre><code>function solution(str) {
+  return str.split(' ').join('\n');
+}
+
+// robusztusabb (több szóköz / tabulátor kezelése):
+function solution(str) {
+  return str.split(/\s+/).filter(Boolean).join('\n');
+}</code></pre>
+    <div class="note"><strong>Tipp:</strong> a <code>split(' ')</code> egyszerű, de több egymás utáni szóköznél üres elemeket ad — a <code>split(/\s+/)</code> + <code>filter(Boolean)</code> ezt kivédi. Interjún érdemes rákérdezni: garantáltan egy szóköz választja el a szavakat?</div>
+  </section>
+
+  <!-- Q8 -->
+  <section class="section cat-js" id="q8">
+    <h2><span class="qnum">8.</span> <code>helloProperties(obj)</code></h2>
+    <span class="tag t-js">JavaScript</span> <span class="tag t-code">coding</span>
+    <h3>Feladat</h3>
+    <p>Add vissza az <code>obj</code> összes property-nevét, <strong>"Hello-"</strong> előtaggal. Pl. <code>{john:12, brian:true, doe:false, lucy:'hi'}</code> → <code>['Hello-john','Hello-brian','Hello-doe','Hello-lucy']</code>. A sorrend tetszőleges; <code>obj</code> mindig definiált objektum.</p>
+    <h3>Megoldás</h3>
+<pre><code>function helloProperties(obj) {
+  return Object.keys(obj).map(key =&gt; `Hello-${key}`);
+}</code></pre>
+    <div class="note"><strong>Lényeg:</strong> <code>Object.keys()</code> a saját, felsorolható kulcsokat adja, majd <code>map</code>-pel előtagozzuk. (Ha az örökölt kulcsok is kellenének, az más kérdés — itt csak a sajátok.)</div>
+  </section>
+
+  <!-- Q9 -->
+  <section class="section cat-js" id="q9">
+    <h2><span class="qnum">9.</span> <code>nextWeek(date)</code></h2>
+    <span class="tag t-js">JavaScript</span> <span class="tag">Date</span> <span class="tag t-code">coding</span>
+    <h3>Feladat</h3>
+    <p>Add vissza a <code>date</code> után 7 nappal lévő dátumot. A <code>date</code> mindig definiált <code>Date</code> objektum.</p>
+    <h3>Megoldás</h3>
+<pre><code>function nextWeek(date) {
+  const result = new Date(date);          // másolat – ne mutáljuk a bemenetet!
+  result.setDate(result.getDate() + 7);   // a setDate kezeli a hónap/év átfordulást
+  return result;
+}</code></pre>
+    <div class="trap-box"><strong>Buktató:</strong> ne <code>date.setDate(...)</code>-tal mutáld a kapott objektumot (mellékhatás!). Készíts másolatot <code>new Date(date)</code>-tal. A <code>setDate(getDate()+7)</code> automatikusan átfordul a hónap végén (pl. 28 + 7 → következő hónap).</div>
+  </section>
+
+  <!-- ═══════════════════ TYPESCRIPT ═══════════════════ -->
+
+  <!-- Q10 -->
+  <section class="section cat-ts" id="q10">
+    <h2><span class="qnum">10.</span> Melyik egy tuple TypeScriptben?</h2>
+    <span class="tag t-ts">TypeScript</span> <span class="tag">Tuple</span>
+    <p class="src">🔗 Két képből párosítva: a kérdés („Which one is a tuple?") és a válaszlap külön fotón volt.</p>
+    <h3>Kérdés</h3>
+    <p>Which one of the following is a <strong>tuple</strong> in TypeScript?</p>
+    <ul class="options">
+      <li class="correct"><span class="letter">A</span> <code>type Drink = [string, boolean, number]</code> <span class="ok-flag">helyes</span></li>
+      <li class="wrong"><span class="letter">B</span> <code>export interface Drink { color: string; isSweet: boolean; isSugar: boolean }</code></li>
+      <li class="wrong"><span class="letter">C</span> <code>type Drink = { x: number; y: number; z: number }</code></li>
+      <li class="wrong"><span class="letter">D</span> <code>type Drink = string[]</code></li>
+    </ul>
+    <div class="answer-box"><strong>Helyes válasz: A</strong> — a tuple <strong>fix hosszú</strong>, pozíciónként <strong>fix típusú</strong> tömb.</div>
+    <h3>Magyarázat</h3>
+<pre><code>type Drink = [string, boolean, number]; // tuple: pontosan 3 elem, adott típusokkal
+const d: Drink = ["cola", true, 3];     // ✅
+// const e: Drink = [true, "cola", 3];  // ❌ rossz sorrend/típus
+
+// B) interface / C) object type → objektum, nem tuple
+// D) string[] → akárhány elemű, EGYféle típusú tömb (nem tuple)</code></pre>
+  </section>
+
+  <!-- Q11 -->
+  <section class="section cat-ts" id="q11">
+    <h2><span class="qnum">11.</span> <code>import _ from 'lodash'</code> — „implicitly has any type"</h2>
+    <span class="tag t-ts">TypeScript</span> <span class="tag">Type declarations</span>
+    <p class="src">🔗 Két képből párosítva: a hibát mutató kérdés és a válaszlap külön fotón volt.</p>
+    <h3>Kérdés</h3>
+    <p>Egy <code>lodash</code> importnál a fordító hibát ad: <em>„library implicitly has an 'any' type"</em>. Miért?</p>
+<pre><code>npm install lodash       // (a fotón "-i" elgépeléssel volt)
+import _ from 'lodash';  // ⚠️ implicitly has an 'any' type</code></pre>
+    <ul class="options">
+      <li class="wrong"><span class="letter">A</span> TypeScript doesn't support third-party libraries</li>
+      <li class="correct"><span class="letter">B</span> The compiler can't find a declaration (<code>.d.ts</code>) for the module <code>lodash</code> <span class="ok-flag">helyes</span></li>
+      <li class="wrong"><span class="letter">C</span> <code>lodash</code> is not compatible with TypeScript</li>
+      <li class="wrong"><span class="letter">D</span> The syntax <code>import x from y</code> is not valid</li>
+    </ul>
+    <div class="answer-box"><strong>Helyes válasz: B</strong> — hiányoznak a típusdefiníciók a modulhoz.</div>
+    <h3>Magyarázat</h3>
+    <p>A <code>lodash</code> sima JavaScript csomag, nem szállít típusokat. TypeScript a <code>noImplicitAny</code> mellett nem talál <code>.d.ts</code> deklarációt → a modul típusa <code>any</code> lenne, ezért panaszkodik. Megoldás:</p>
+<pre><code>npm install --save-dev @types/lodash   // közösségi típusdefiníciók (DefinitelyTyped)</code></pre>
+  </section>
+
+  <!-- Q12 -->
+  <section class="section cat-ts" id="q12">
+    <h2><span class="qnum">12.</span> A <code>Sample&lt;T&gt;</code> osztály</h2>
+    <span class="tag t-ts">TypeScript</span> <span class="tag">Generics</span>
+    <p class="src">🔗 Két képből párosítva: a <code>Sample&lt;T&gt;</code> kód és az opciók külön fotón.</p>
+    <h3>Kérdés</h3>
+<pre><code>export class Sample&lt;T&gt; {
+  public something: T;
+  constructor(info: T) {
+    this.something = info;
+  }
+}</code></pre>
+    <p>Which option is correct concerning the <code>Sample</code> class?</p>
+    <ul class="options">
+      <li class="wrong"><span class="letter">A</span> If we don't write <code>super()</code> inside the constructor, TypeScript will return an error</li>
+      <li class="wrong"><span class="letter">B</span> <code>Sample</code> is an abstract class</li>
+      <li class="wrong"><span class="letter">C</span> <code>Sample</code> implements the <code>T</code> interface</li>
+      <li class="correct"><span class="letter">D</span> <code>Sample</code> is a generic class <span class="ok-flag">helyes</span></li>
+    </ul>
+    <div class="answer-box"><strong>Helyes válasz: D</strong> — a <code>&lt;T&gt;</code> típusparaméter miatt ez egy generic osztály.</div>
+    <h3>Magyarázat</h3>
+    <ul>
+      <li><strong>A</strong> hamis: nincs ősosztály (<code>extends</code>), így nem kell <code>super()</code>.</li>
+      <li><strong>B</strong> hamis: nincs az <code>abstract</code> kulcsszó.</li>
+      <li><strong>C</strong> hamis: a <code>T</code> egy <em>típusparaméter</em>, nem egy implementált interfész.</li>
+      <li><strong>D</strong> igaz: <code>Sample&lt;T&gt;</code> → példányosításkor adjuk meg a típust: <code>new Sample&lt;number&gt;(42)</code>.</li>
+    </ul>
+  </section>
+
+  <!-- Q13 -->
+  <section class="section cat-ts" id="q13">
+    <h2><span class="qnum">13.</span> Melyik függvény ad helyesen <code>string</code>-et vissza?</h2>
+    <span class="tag t-ts">TypeScript</span> <span class="tag">Függvénytípusok</span>
+    <p class="src">🔗 A fotón csak a válaszlap volt — a kérdést a válaszokból rekonstruáltam.</p>
+    <h3>Kérdés (rekonstruált)</h3>
+    <p>Melyik definíció helyes egy olyan függvényhez, ami két számot kap és <code>string</code>-et ad vissza?</p>
+    <ul class="options">
+      <li class="wrong"><span class="letter">A</span> <code>const sampleFunction = (x: number, y: number): string =&gt; { return x + y; };</code></li>
+      <li class="wrong"><span class="letter">B</span> <code>const sampleFunction = (a: number): void =&gt; a;</code></li>
+      <li class="correct"><span class="letter">C</span> <code>const sampleFunction = (a: number, b: number): string =&gt; { return (a + b).toString(); };</code> <span class="ok-flag">helyes</span></li>
+      <li class="wrong"><span class="letter">D</span> <code>function sampleFunction(a: number, b: number): string { return a + b; }</code></li>
+    </ul>
+    <div class="answer-box"><strong>Helyes válasz: C</strong> — a <code>(a + b).toString()</code> tényleg <code>string</code>-et ad, egyezik a deklarált <code>: string</code> visszatérési típussal.</div>
+    <h3>Magyarázat</h3>
+    <ul>
+      <li><strong>A</strong> és <strong>D</strong>: <code>: string</code>-et deklarál, de <code>x + y</code> / <code>a + b</code> <em>number</em> → TS típushiba.</li>
+      <li><strong>B</strong>: <code>: void</code>-ot ígér, de visszaad egy értéket (<code>a</code>) → ellentmondás.</li>
+      <li><strong>C</strong>: a <code>.toString()</code> számból stringet csinál → típushelyes. ✅</li>
+    </ul>
+  </section>
+
+  <!-- Q14 -->
+  <section class="section cat-ts" id="q14">
+    <h2><span class="qnum">14.</span> <code>NumArr extends Investigate</code> — mely állítások igazak?</h2>
+    <span class="tag t-ts">TypeScript</span> <span class="tag">Öröklődés</span> <span class="tag">Több helyes</span>
+    <p class="src">🔗 Két képből párosítva: a kód és a checkbox-válaszlap külön fotón. (Több helyes válasz.)</p>
+    <h3>Kérdés</h3>
+<pre><code>export class NumArr extends Investigate {
+  public arr: number[];
+  constructor() {
+    super();
+    this.arr = [1, 2, 3];
+  }
+  public arrLength(): number {
+    return this.arr.length;
+  }
+}</code></pre>
+    <p>Based on the above code, which statements are true? <em>(Select all correct.)</em></p>
+    <ul class="options">
+      <li class="correct"><span class="letter">A</span> <code>NumArr</code> inherits the class <code>Investigate</code> <span class="ok-flag">helyes</span></li>
+      <li class="correct"><span class="letter">B</span> <code>Investigate</code> can be an abstract class <span class="ok-flag">helyes</span></li>
+      <li class="wrong"><span class="letter">C</span> TypeScript will throw an error</li>
+      <li class="wrong"><span class="letter">D</span> <code>Investigate</code> can be an interface</li>
+    </ul>
+    <div class="answer-box"><strong>Helyes válaszok: A és B.</strong></div>
+    <h3>Magyarázat</h3>
+    <ul>
+      <li><strong>A</strong> igaz: az <code>extends</code> öröklődés — a <code>NumArr</code> örökli az <code>Investigate</code>-et.</li>
+      <li><strong>B</strong> igaz: absztrakt osztályt is lehet <code>extends</code>-elni, és a <code>super()</code> hívás működik vele.</li>
+      <li><strong>C</strong> hamis: a kód önmagában helyes (feltéve, hogy az <code>Investigate</code> definiálva/importálva van).</li>
+      <li><strong>D</strong> hamis: interfészt <code>implements</code>-szel valósítunk meg, NEM <code>extends</code>-szel; ráadásul a <code>super()</code> hívás csak osztálynál létezik → az <code>Investigate</code> itt biztosan <strong>osztály</strong>, nem interfész.</li>
+    </ul>
+  </section>
+
+  <!-- ═══════════════════ REACT ═══════════════════ -->
+
+  <!-- Q15 -->
+  <section class="section cat-react" id="q15">
+    <h2><span class="qnum">15.</span> Adat átadása a komponensfán át, prop-fűzés nélkül</h2>
+    <span class="tag t-react">React</span> <span class="tag">Context</span>
+    <p class="src">🔗 A fotón csak a kérdés volt — a válasz koncepció alapján.</p>
+    <h3>Kérdés</h3>
+    <p>What would you use to pass data through the component tree without having to pass props manually to each level?</p>
+    <div class="answer-box"><strong>Helyes válasz: React Context</strong> (<code>React.createContext</code> + <code>useContext</code>).</div>
+    <h3>Magyarázat</h3>
+    <p>A Context megszünteti a <strong>„prop drilling"</strong>-et (props kézi átfűzése minden szinten). Egy <code>Provider</code> teszi elérhetővé az értéket, és bármely mélyebb komponens <code>useContext</code>-tel olvassa.</p>
+<pre><code>const ThemeContext = React.createContext('light');
+
+function App() {
+  return (
+    &lt;ThemeContext.Provider value="dark"&gt;
+      &lt;Toolbar /&gt;   {/* nem kell theme propot fűzni végig */}
+    &lt;/ThemeContext.Provider&gt;
+  );
+}
+
+function DeepButton() {
+  const theme = React.useContext(ThemeContext); // közvetlenül olvas
+  return &lt;button className={theme}&gt;OK&lt;/button&gt;;
+}</code></pre>
+  </section>
+
+  <!-- Q16 -->
+  <section class="section cat-react" id="q16">
+    <h2><span class="qnum">16.</span> <code>useMemo</code> — mikor fut le garantáltan az <code>A</code>?</h2>
+    <span class="tag t-react">React</span> <span class="tag">Hooks</span>
+    <p class="src">🔗 Két képből párosítva: a kód+kérdés és a válaszlap külön fotón.</p>
+    <h3>Kérdés</h3>
+<pre><code>const value = useMemo(() =&gt; {
+  // A
+}, [valueOne, valueTwo]);</code></pre>
+    <p>When will instruction <code>A</code> be <strong>guaranteed</strong> to be executed?</p>
+    <ul class="options">
+      <li class="wrong"><span class="letter">A</span> When both <code>valueOne</code> and <code>valueTwo</code> change</li>
+      <li class="correct"><span class="letter">B</span> On the first render <span class="ok-flag">helyes</span></li>
+      <li class="wrong"><span class="letter">C</span> When <code>valueOne</code> changes</li>
+      <li class="wrong"><span class="letter">D</span> Whenever the component updates</li>
+    </ul>
+    <div class="answer-box"><strong>Helyes válasz: B — On the first render.</strong></div>
+    <h3>Magyarázat</h3>
+    <p>A <code>useMemo</code> factory-ja lefut: (1) az <strong>első rendereléskor</strong> (mindig), és (2) minden olyan későbbi rendereléskor, amikor <strong>BÁRMELYIK</strong> függőség (<code>valueOne</code> VAGY <code>valueTwo</code>) megváltozott.</p>
+    <ul>
+      <li><strong>A</strong> hamis/félrevezető: nem csak akkor fut, amikor <em>mindkettő</em> változik — elég az egyik is.</li>
+      <li><strong>C</strong> hiányos: <code>valueTwo</code> változására is lefut.</li>
+      <li><strong>D</strong> hamis: NEM minden frissítéskor, csak ha a függőség változott (épp ez a <code>useMemo</code> lényege).</li>
+      <li><strong>B</strong> az egyetlen feltétel nélkül <strong>garantált</strong> eset: a mount/első render. ✅</li>
+    </ul>
+  </section>
+
+  <!-- Q17 -->
+  <section class="section cat-react" id="q17">
+    <h2><span class="qnum">17.</span> <code>ListUsers</code> komponens (Q24/27)</h2>
+    <span class="tag t-react">React</span> <span class="tag t-code">coding</span> <span class="tag">Keys</span>
+    <p class="src">🔗 Két fotó ugyanerről (skeleton + tesztek, illetve egy átmeneti megoldás).</p>
+    <h3>Feladat</h3>
+    <p>Készíts egy <code>ListUsers</code> komponenst, ami a <code>users</code> prop-ot <strong>vezetéknév szerint ábécé-sorrendben</strong> (kis/nagybetű-érzéketlenül) jeleníti meg. Minden <code>&lt;li&gt;</code> <code>key</code>-je a vezetéknév. Mutasd a darabszámot („Users: N"). Üres/hiányzó lista esetén „Users: 0" és <strong>ne</strong> legyen <code>&lt;ul&gt;</code>/<code>&lt;li&gt;</code>. A <code>data-testid</code>-ket ne változtasd.</p>
+    <h3>Megoldás</h3>
+<pre><code>import React from 'react';
+
+function ListUsers({ users = [] }) {
+  const hasUsers = users.length &gt; 0;
+  // másolat sortolás előtt – a .sort MUTÁL, ne a propot változtassuk!
+  const ordered = [...users].sort((a, b) =&gt;
+    a.lastName.toLowerCase() &lt; b.lastName.toLowerCase() ? -1 : 1
+  );
+
+  return (
+    &lt;div&gt;
+      &lt;div data-testid="user-count"&gt;Users: {users.length}&lt;/div&gt;
+      {hasUsers &amp;&amp; (
+        &lt;ul data-testid="user-list"&gt;
+          {ordered.map(({ firstName, lastName }) =&gt; (
+            &lt;li key={lastName}&gt;{firstName} {lastName}&lt;/li&gt;
+          ))}
+        &lt;/ul&gt;
+      )}
+    &lt;/div&gt;
+  );
+}
+
+export default ListUsers;</code></pre>
+    <div class="trap-box"><strong>Buktatók:</strong> (1) a <code>[...users]</code> másolat fontos — a <code>.sort()</code> helyben mutálja a tömböt, a props-ot nem szabad módosítani; (2) a <code>key={lastName}</code> az <code>&lt;li&gt;</code>-n legyen (a feladat szerint a vezetéknevek egyediek); (3) üres listánál a <code>{hasUsers &amp;&amp; …}</code> miatt egyáltalán nem renderelődik <code>&lt;ul&gt;</code>.</div>
+  </section>
+
+  <!-- Q18 -->
+  <section class="section cat-react" id="q18">
+    <h2><span class="qnum">18.</span> <code>user</code> átadása: Page → UserInfoWithTitle → UserInfo</h2>
+    <span class="tag t-react">React</span> <span class="tag t-code">coding</span> <span class="tag">Props</span>
+    <h3>Feladat</h3>
+    <p>Adott három komponens: <code>Page</code> (megkapja a <code>user</code> objektumot), <code>UserInfoWithTitle</code> és <code>UserInfo</code> (ennek kell a <code>user</code>). Juttasd el a <code>user</code>-t a <code>Page</code>-től a <code>UserInfo</code>-ig — a három komponenst <strong>nem szabad összevonni</strong>.</p>
+    <h3>Megoldás</h3>
+<pre><code>function Page({ user }) {
+  return (
+    &lt;div data-testid="page"&gt;
+      &lt;UserInfoWithTitle title="User" user={user} /&gt;  {/* ← továbbadjuk */}
+    &lt;/div&gt;
+  );
+}
+
+function UserInfoWithTitle({ title, user }) {
+  return (
+    &lt;div data-testid="uiwt"&gt;
+      &lt;h2&gt;{title}&lt;/h2&gt;
+      &lt;UserInfo user={user} /&gt;   {/* ← és tovább */}
+    &lt;/div&gt;
+  );
+}
+
+// UserInfo változatlan – {user.firstName}{user.lastName}-t jelenít meg</code></pre>
+    <div class="note"><strong>Miért prop-fűzés és nem Context?</strong> Mert a feladat explicit megköti a három komponenst, és ez csak egyetlen köztes szint — itt a sima prop-átadás a tiszta megoldás. Context akkor indokolt, ha sok szinten át, sok komponensnek kellene (lásd Q15).</div>
+  </section>
+
+  <!-- ═══════════════════ GIT ═══════════════════ -->
+
+  <!-- Q19 -->
+  <section class="section cat-git" id="q19">
+    <h2><span class="qnum">19.</span> Visszaállás a <code>C</code> commitra (history A–F)</h2>
+    <span class="tag t-git">Git</span> <span class="tag">reset</span>
+    <p class="src">🔗 Két képből párosítva: a commit-history ábra és a parancs-opciók külön fotón.</p>
+    <h3>Kérdés</h3>
+    <p>Commit-lánc: <code>A — B — C — D — E — F</code>, a <code>HEAD</code> az <code>F</code>-en. A branch-et a <code>C</code>-re akarod állítani, és a lokális fájlok is egyezzenek a <code>C</code>-vel. Melyik parancs?</p>
+    <ul class="options">
+      <li class="wrong"><span class="letter">A</span> <code>git reset --hard HEAD~~</code></li>
+      <li class="wrong"><span class="letter">B</span> <code>git reset --hard HEAD~2</code></li>
+      <li class="wrong"><span class="letter">C</span> <code>git reset --hard HEAD~4</code></li>
+      <li class="correct"><span class="letter">D</span> <code>git reset --hard HEAD~3</code> <span class="ok-flag">helyes</span></li>
+    </ul>
+    <div class="answer-box"><strong>Helyes válasz: D — <code>git reset --hard HEAD~3</code></strong></div>
+    <h3>Magyarázat</h3>
+<pre><code>F = HEAD     (HEAD~0)
+E = HEAD~1
+D = HEAD~2
+C = HEAD~3   ← ide akarunk jutni  → 3 lépés vissza</code></pre>
+    <ul>
+      <li><code>HEAD~~</code> = <code>HEAD~2</code> = <code>D</code> (rossz). A <code>~~</code> két lépés, nem azonos a <code>~3</code>-mal.</li>
+      <li><code>HEAD~2</code> = <code>D</code>, <code>HEAD~4</code> = <code>B</code> — egyik sem <code>C</code>.</li>
+      <li>A <code>--hard</code> a working directory-t is a <code>C</code>-hez igazítja (a sima/mixed reset csak a HEAD-et+indexet).</li>
+    </ul>
+  </section>
+
+  <!-- Q20 -->
+  <section class="section cat-git" id="q20">
+    <h2><span class="qnum">20.</span> <code>git commit --amend</code> — mi igaz?</h2>
+    <span class="tag t-git">Git</span> <span class="tag">amend</span> <span class="tag">Több helyes</span>
+    <p class="src">🔗 Két képből párosítva: a kérdés és a checkbox-válaszlap külön fotón. (Több helyes válasz.)</p>
+    <h3>Kérdés</h3>
+    <p>What is true regarding the <code>--amend</code> flag of <code>git commit</code>? <em>(Multiple correct.)</em></p>
+    <ul class="options">
+      <li class="wrong"><span class="letter">A</span> It can modify only the commit message</li>
+      <li class="correct"><span class="letter">B</span> It can modify the commit message as well as add new files to the same commit <span class="ok-flag">helyes</span></li>
+      <li class="wrong"><span class="letter">C</span> It can modify multiple previous commits</li>
+      <li class="correct"><span class="letter">D</span> It can modify only the last commit <span class="ok-flag">helyes</span></li>
+    </ul>
+    <div class="answer-box"><strong>Helyes válaszok: B és D.</strong></div>
+    <h3>Magyarázat</h3>
+    <p>Az <code>--amend</code> az <strong>utolsó</strong> commitot írja felül egy újjal: módosíthatja az üzenetet ÉS/VAGY a tartalmat (a staged változásokat hozzáfűzi). Csak a legutolsó commitra hat (több korábbihoz <code>rebase -i</code> kell).</p>
+<pre><code>git commit --amend -m "új üzenet"     # csak az üzenet
+git add elfelejtett.js
+git commit --amend --no-edit          # új fájl az utolsó commitba, üzenet marad</code></pre>
+    <div class="trap-box"><strong>Vigyázat:</strong> az <code>--amend</code> új commit-hasht hoz létre → ha már pusholtad, csak <code>--force</code>(-with-lease)-szel tudod felülírni a távolit (history-átírás).</div>
+  </section>
+
+  <!-- Q21 -->
+  <section class="section cat-git" id="q21">
+    <h2><span class="qnum">21.</span> Staging ürítése + working dir a legutóbbi commitra</h2>
+    <span class="tag t-git">Git</span> <span class="tag">reset</span>
+    <p class="src">🔗 A fotón csak a kérdés (git status) volt — a válasz koncepció alapján.</p>
+    <h3>Kérdés</h3>
+<pre><code>$ git status
+On branch main
+Changes to be committed:
+        modified:   index.html
+Changes not staged for commit:
+        modified:   myScripts.js</code></pre>
+    <p>Melyik parancs távolít el <strong>minden fájlt a staging area-ból</strong> ÉS állítja a working directory-t a <strong>legutóbbi commit</strong> állapotára?</p>
+    <div class="answer-box"><strong>Helyes válasz: <code>git reset --hard HEAD</code></strong> (a <code>HEAD</code> elhagyható: <code>git reset --hard</code>).</div>
+    <h3>Magyarázat</h3>
+    <ul>
+      <li><code>git reset --hard HEAD</code> → az <strong>indexet</strong> (staging) ÉS a <strong>working directory</strong>-t is a <code>HEAD</code>-hez állítja: az <code>index.html</code> kikerül a stagingből, a <code>myScripts.js</code> módosításai is eldobódnak.</li>
+      <li>Összevetés: <code>git reset HEAD</code> (mixed) csak unstage-el, a fájlmódosításokat <em>megtartja</em>; <code>git reset --soft</code> az indexet sem nyúlja.</li>
+    </ul>
+    <div class="trap-box"><strong>Destruktív!</strong> A <code>--hard</code> visszavonhatatlanul eldobja a nem-commitolt változtatásokat. Csak akkor, ha tényleg el akarod dobni az összes lokális módosítást.</div>
+  </section>
+
+  <footer>
+    <p><strong>📋 Kidolgozási &amp; karbantartási napló</strong></p>
+    <p>
+      <strong>Készítette:</strong> Claude Opus 4.8 (1M kontextus) · modell-azonosító <code>claude-opus-4-8[1m]</code><br>
+      <strong>Kidolgozás dátuma:</strong> 2026-06-21 · <strong>A modell tudásvágása:</strong> 2026. január (a tanítóadat vége — az azóta eltelt időszak változásait nem garantáltan ismeri, ezt frissítéskor ellenőrizni kell)<br>
+      <strong>Precíziós szint:</strong> 30 telefonos képernyőfotó vizuális feldolgozása (a nagy képeket alfolyamatok olvasták be külön kontextusban), majd a szétdarabolt kérdések és válaszlapok <strong>összepárosítása</strong>; minden megoldás kézzel ellenőrizve / kódra visszavezetve.
+    </p>
+    <p><strong>Forrás &amp; párosítási elemzés:</strong></p>
+    <ul>
+      <li>Az interjú egy CodinGame assessment (<code>ide.codingame.eu</code>, 27 kérdés), 2025-10-14. A hivatalos eredmény (eredmény-email): <strong>1573/2300 (68%)</strong> — Git 100%, React 83%, TypeScript 80%, JavaScript 57% (a JS-en belül a Reliability/edge-case rész volt a gyenge: 144/355).</li>
+      <li>Több kérdés és a hozzá tartozó válaszlap <strong>külön fotón</strong> volt; ezeket tartalmi elemzéssel párosítottam (jelölve „🔗"-szimbólummal az adott kérdésnél): tuple↔Drink-opciók, lodash↔declaration-opciók, git reset↔HEAD~ opciók, --amend↔checkbox-opciók, Sample&lt;T&gt;↔generic-opciók, NumArr↔extends-opciók, useMemo↔first-render-opciók.</li>
+      <li>3 kérdésnél a válaszlap nem volt a fotókon (Q3 this, Q15 Context, Q21 reset) — ezeknél a helyes választ a kérdésből, szabvány szerint adtam meg, ezt jeleztem.</li>
+      <li>Néhány fotó elgépelést tartalmazott a feladatban (pl. <code>npm install -i lodash</code>) — a kidolgozásban a helyeset írtam.</li>
+    </ul>
+    <p><strong>🔧 Ha 1 év múlva technikailag frissíteni kell — minden, amire szükség van:</strong></p>
+    <ul>
+      <li><strong>Dizájnrendszer:</strong> világos téma, színek a <code>:root</code> CSS-változókban. Layout: <code>.wrap</code> &gt; <code>header.hero</code> + <code>.scoreboard</code> + <code>nav.toc</code> + <code>.section</code> kártyák. A kártya bal szegélye kategóriaszínű: <code>.cat-js</code> / <code>.cat-ts</code> / <code>.cat-react</code> / <code>.cat-git</code>; a tag-ek: <code>.tag.t-js/t-ts/t-react/t-git/t-code</code>.</li>
+      <li><strong>Kérdés-sablon:</strong> <code>&lt;section class="section cat-X" id="qN"&gt;</code> → <code>&lt;h2&gt;</code> (<code>.qnum</code> + cím) → tag-ek → <code>&lt;h3&gt;Kérdés/Feladat&lt;/h3&gt;</code> → <code>ul.options</code> (<code>li.correct</code> + <code>.ok-flag</code>) → <code>.answer-box</code> → <code>&lt;h3&gt;Magyarázat&lt;/h3&gt;</code> → <code>.note</code>/<code>.trap-box</code>. A „🔗" forrás-megjegyzés a <code>.src</code> osztály.</li>
+      <li><strong>KÖTELEZŐ:</strong> kódblokkban escape-eld a <code>&lt;</code>/<code>&gt;</code>/<code>&amp;</code> karaktereket (JSX/generics miatt sok van); HTML-ben ne maradjon markdown.</li>
+      <li><strong>Verzió-/időérzékeny tartalom:</strong> a React-kérdések (Context, useMemo, komponensminták) az aktuális React-verzió szerintiek; a Git/JS/TS-fundamentumok stabilak. Az eredeti screenshotok a <code>scratchpad/eib_small</code>-ban (kicsinyített másolatok) lehetnek átmenetiek — az eredetik a projekt <code>eib/</code> mappájában.</li>
+      <li><strong>Hiányzó adat:</strong> ha előkerül a 3 hiányzó válaszlap (Q3/Q15/Q21) vagy a többi kérdés a 27-ből, beilleszthető ugyanezzel a sablonnal + TOC-link + darabszám frissítés.</li>
+    </ul>
+  </footer>
+
+</div>
+</body>
+</html>

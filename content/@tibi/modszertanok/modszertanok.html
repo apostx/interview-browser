@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Szoftverfejlesztési módszertanok – Interjú</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --ink:#1c2233; --muted:#5d6678; --line:#e4e8f0;
+    --brand:#3a5bd9; --brand-soft:#eaeefc; --brand-line:#c9d4f7; --brand-ink:#2f48ac;
+    --ok:#1f9d57; --ok-soft:#e6f6ec; --ok-line:#bce6cb; --ok-ink:#15703f;
+    --warn:#b9821a; --warn-soft:#fbf2dd; --warn-line:#ecd9a8; --warn-ink:#8a6112;
+    --violet:#7c5cd6; --violet-soft:#efeafc; --violet-line:#d9ccf5; --violet-ink:#5a3fb0;
+    --code-bg:#1e2433; --code-ink:#e8ecf6;
+    --mono:"SF Mono",ui-monospace,SFMono-Regular,Menlo,'Fira Code','Cascadia Code',Consolas,monospace;
+    --shadow:0 1px 2px rgba(20,30,60,.05),0 8px 24px rgba(20,30,60,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.65;padding:32px 16px 80px;}
+  .wrap{max-width:920px;margin:0 auto}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header.hero{background:linear-gradient(135deg,#3a5bd9,#5a78ec);color:#fff;border-radius:18px;padding:34px 34px 30px;box-shadow:var(--shadow);margin-bottom:24px;}
+  header.hero .kicker{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:700;opacity:.85;margin:0 0 8px;}
+  header.hero h1{margin:0 0 6px;font-size:28px;line-height:1.2;border:none;padding:0;color:#fff;}
+  header.hero p{margin:0;opacity:.94;font-size:15px;max-width:70ch;}
+  header.hero a{color:#fff;text-decoration:underline;}
+  .toc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:24px;box-shadow:var(--shadow);}
+  .toc-title{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;margin:0 0 14px;}
+  .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;}
+  .toc-grid a{display:flex;gap:8px;align-items:baseline;text-decoration:none;color:var(--ink);font-size:13px;font-weight:600;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:#fbfcfe;transition:background .15s,border-color .15s;}
+  .toc-grid a:hover{background:var(--brand-soft);border-color:var(--brand-line);color:var(--brand-ink);text-decoration:none;}
+  .toc-grid a .tnum{color:var(--brand);font-weight:800;flex:0 0 auto;min-width:1.4em;}
+  .section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 26px;margin-bottom:20px;box-shadow:var(--shadow);border-left:6px solid var(--brand);scroll-margin-top:16px;}
+  h1{color:var(--ink);}
+  h2{font-size:20px;font-weight:800;margin:0 0 10px;color:var(--ink);border:none;padding:0;}
+  h3{font-size:15px;font-weight:800;color:var(--brand-ink);margin:22px 0 8px;}
+  h4{font-size:14px;font-weight:800;color:var(--violet-ink);margin:16px 0 6px;}
+  .tag{display:inline-block;background:var(--brand-soft);color:var(--brand);padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;margin:0 6px 12px 0;}
+  p{margin:0 0 12px;font-size:15px;}
+  ul,ol{margin:0 0 14px;padding-left:22px;}
+  li{margin:5px 0;font-size:14.5px;}
+  b,strong{color:var(--ink);}
+  code{font-family:var(--mono);font-size:.92em;}
+  :not(pre)>code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;}
+  .ic{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);font-size:.9em;}
+  pre{background:var(--code-bg);border:none;border-radius:10px;padding:14px 16px;overflow-x:auto;margin:12px 0;}
+  pre code{background:none;color:var(--code-ink);padding:0;font-size:12.5px;line-height:1.55;}
+  .subsection{background:#fbfcfe;border:1px solid var(--line);border-left:4px solid var(--violet);border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0;}
+  .subsection h4{margin-top:0;}
+  .answer-box,.note,.trap-box{border-radius:11px;padding:14px 16px;margin:14px 0;font-size:14px;border:1px solid;}
+  .answer-box{background:var(--ok-soft);border-color:var(--ok-line);}
+  .answer-box strong,.answer-box b{color:var(--ok-ink);}
+  .note{background:var(--brand-soft);border-color:var(--brand-line);}
+  .note strong,.note b{color:var(--brand-ink);}
+  .trap-box{background:var(--warn-soft);border-color:var(--warn-line);}
+  .trap-box strong,.trap-box b{color:var(--warn-ink);}
+  .answer-box pre,.note pre,.trap-box pre,.subsection pre{margin:8px 0 0;}
+  .answer-box ul,.note ul,.trap-box ul,.subsection ul{margin:6px 0 0;}
+  .diagram{background:var(--code-bg);border:none;border-left:4px solid var(--violet);border-radius:10px;padding:16px 18px;margin:14px 0;font-family:var(--mono);font-size:12px;line-height:1.5;color:#a9c2e8;white-space:pre;overflow-x:auto;}
+  .fig{display:flex;flex-direction:column;align-items:center;gap:12px;background:#fbfcfe;border:1px solid var(--line);border-radius:14px;padding:22px 18px;margin:16px 0;}
+  .fig svg{width:100%;height:auto;}
+  .fig .cap{color:var(--muted);font-size:13px;text-align:center;margin:0;max-width:60ch;}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px;background:var(--card);}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;}
+  th{background:var(--brand-soft);color:var(--brand-ink);font-weight:700;}
+  table tr:nth-child(even){background:#f7f9fd;}
+  footer{color:var(--muted);font-size:12.5px;margin-top:36px;line-height:1.7;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);}
+  footer strong{color:var(--ink);}
+  footer code{background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:5px;font-family:var(--mono);}
+  @media(max-width:560px){body{padding:20px 10px 60px}header.hero{padding:24px 20px}.section{padding:18px 16px}.toc-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="kicker">Szoftverfejlesztési módszertanok · Tutorial</p>
+    <h1>Szoftverfejlesztési módszertanok</h1>
+    <p>Waterfall, V-Model, Iteratív, Spirális, Agile (Scrum, Kanban, XP), Lean, DevOps, SAFe — összehasonlítás, előnyök/hátrányok, mikor melyiket. Részletes Agile kifejtés: <a href="agile.html">agile.html</a></p>
+  </header>
+
+  <nav class="toc">
+    <p class="toc-title">Tartalom</p>
+    <div class="toc-grid">
+      <a href="#overview"><span class="tnum">1</span> Áttekintés</a>
+      <a href="#waterfall"><span class="tnum">2</span> Waterfall</a>
+      <a href="#v-model"><span class="tnum">3</span> V-Model</a>
+      <a href="#iterative"><span class="tnum">4</span> Iteratív/Inkrementális</a>
+      <a href="#spiral"><span class="tnum">5</span> Spirális</a>
+      <a href="#agile-overview"><span class="tnum">6</span> Agile (áttekintés)</a>
+      <a href="#lean"><span class="tnum">7</span> Lean</a>
+      <a href="#devops"><span class="tnum">8</span> DevOps</a>
+      <a href="#safe"><span class="tnum">9</span> SAFe</a>
+      <a href="#comparison"><span class="tnum">10</span> Összehasonlítás</a>
+      <a href="#decision"><span class="tnum">11</span> Melyiket mikor?</a>
+      <a href="#interview"><span class="tnum">12</span> Interjúkérdések</a>
+    </div>
+  </nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- ÁTTEKINTÉS -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="overview">
+<h2>1. Áttekintés – Miért fontosak a módszertanok?</h2>
+<span class="tag">Alapok</span> <span class="tag">Módszertanok</span>
+
+<p>A szoftverfejlesztési módszertan egy <strong>keretrendszer</strong>, amely meghatározza:</p>
+<ul>
+  <li><strong>Hogyan</strong> tervezünk, fejlesztünk, tesztelünk és szállítunk szoftvert</li>
+  <li><strong>Ki</strong> felelős az egyes feladatokért</li>
+  <li><strong>Mikor</strong> történnek az egyes fázisok</li>
+  <li><strong>Milyen</strong> artefaktumok (dokumentumok, kód, tesztek) keletkeznek</li>
+</ul>
+
+<h3>Két fő megközelítés:</h3>
+
+<div class="fig">
+  <svg viewBox="0 0 620 290" role="img" aria-label="Terv-vezérelt vs Adaptív módszertanok" font-family="-apple-system,'Segoe UI',Roboto,sans-serif">
+    <text x="310" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="#1c2233">Szoftverfejlesztési módszertanok</text>
+    <!-- Plan-driven -->
+    <rect x="10" y="40" width="290" height="234" rx="12" fill="#eaeefc" stroke="#c9d4f7"/>
+    <text x="155" y="66" text-anchor="middle" font-size="13" font-weight="700" fill="#2f48ac">TERV-VEZÉRELT (Plan-driven)</text>
+    <text x="34" y="96" font-size="12" fill="#1c2233">• Waterfall</text>
+    <text x="34" y="116" font-size="12" fill="#1c2233">• V-Model</text>
+    <text x="34" y="136" font-size="12" fill="#1c2233">• Spirális modell</text>
+    <text x="34" y="156" font-size="12" fill="#1c2233">• RUP (Rational Unified)</text>
+    <text x="34" y="188" font-size="11.5" font-weight="700" fill="#2f48ac">Jellemző:</text>
+    <text x="34" y="208" font-size="11" fill="#5d6678">– Előzetes tervezés</text>
+    <text x="34" y="226" font-size="11" fill="#5d6678">– Fázisok szigorú rendje</text>
+    <text x="34" y="244" font-size="11" fill="#5d6678">– Változtatás költséges</text>
+    <text x="34" y="262" font-size="11" fill="#5d6678">– Dokumentáció-központú</text>
+    <!-- Adaptive -->
+    <rect x="320" y="40" width="290" height="234" rx="12" fill="#e6f6ec" stroke="#bce6cb"/>
+    <text x="465" y="66" text-anchor="middle" font-size="13" font-weight="700" fill="#15703f">ADAPTÍV (Adaptive)</text>
+    <text x="344" y="96" font-size="12" fill="#1c2233">• Agile (Scrum, Kanban, XP)</text>
+    <text x="344" y="116" font-size="12" fill="#1c2233">• Lean</text>
+    <text x="344" y="136" font-size="12" fill="#1c2233">• DevOps</text>
+    <text x="344" y="156" font-size="12" fill="#1c2233">• SAFe (Scaled Agile)</text>
+    <text x="344" y="188" font-size="11.5" font-weight="700" fill="#15703f">Jellemző:</text>
+    <text x="344" y="208" font-size="11" fill="#5d6678">– Iteratív, inkrementális</text>
+    <text x="344" y="226" font-size="11" fill="#5d6678">– Gyors visszajelzés</text>
+    <text x="344" y="244" font-size="11" fill="#5d6678">– Változás természetes</text>
+    <text x="344" y="262" font-size="11" fill="#5d6678">– Működő szoftver-központú</text>
+  </svg>
+  <p class="cap">A módszertanok két nagy családja: a terv-vezérelt (előre rögzített terv, merev fázisok) és az adaptív (rövid ciklusok, folyamatos visszajelzés) megközelítés.</p>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- WATERFALL -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="waterfall">
+<h2>2. Waterfall (Vízesés) modell</h2>
+<span class="tag">Tradicionális</span> <span class="tag">Lineáris</span>
+
+<p>Az egyik legrégebbi és legegyszerűbb módszer (Winston Royce, 1970). A fejlesztés <strong>lineárisan, fázisról fázisra</strong> halad előre – minden fázis befejeződik, mielőtt a következő elkezdődne.</p>
+
+<div class="fig">
+  <svg viewBox="0 0 460 410" role="img" aria-label="Waterfall fázisok lefelé kaszkádolva" font-family="-apple-system,'Segoe UI',Roboto,sans-serif">
+    <defs>
+      <marker id="wf-arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#3a5bd9"/>
+      </marker>
+    </defs>
+    <!-- 6 lépcsőzött doboz -->
+    <g>
+      <rect x="20" y="14" width="200" height="52" rx="10" fill="#eaeefc" stroke="#c9d4f7"/>
+      <text x="120" y="38" text-anchor="middle" font-size="13" font-weight="700" fill="#2f48ac">1. Követelmény</text>
+      <text x="120" y="55" text-anchor="middle" font-size="11" fill="#5d6678">Requirements</text>
+    </g>
+    <g>
+      <rect x="68" y="82" width="200" height="52" rx="10" fill="#eaeefc" stroke="#c9d4f7"/>
+      <text x="168" y="106" text-anchor="middle" font-size="13" font-weight="700" fill="#2f48ac">2. Tervezés</text>
+      <text x="168" y="123" text-anchor="middle" font-size="11" fill="#5d6678">Design</text>
+    </g>
+    <g>
+      <rect x="116" y="150" width="200" height="52" rx="10" fill="#eaeefc" stroke="#c9d4f7"/>
+      <text x="216" y="174" text-anchor="middle" font-size="13" font-weight="700" fill="#2f48ac">3. Implementáció</text>
+      <text x="216" y="191" text-anchor="middle" font-size="11" fill="#5d6678">Coding</text>
+    </g>
+    <g>
+      <rect x="164" y="218" width="200" height="52" rx="10" fill="#e6f6ec" stroke="#bce6cb"/>
+      <text x="264" y="242" text-anchor="middle" font-size="13" font-weight="700" fill="#15703f">4. Tesztelés</text>
+      <text x="264" y="259" text-anchor="middle" font-size="11" fill="#5d6678">Testing</text>
+    </g>
+    <g>
+      <rect x="212" y="286" width="200" height="52" rx="10" fill="#fbf2dd" stroke="#ecd9a8"/>
+      <text x="312" y="310" text-anchor="middle" font-size="13" font-weight="700" fill="#8a6112">5. Telepítés</text>
+      <text x="312" y="327" text-anchor="middle" font-size="11" fill="#5d6678">Deployment</text>
+    </g>
+    <g>
+      <rect x="240" y="354" width="200" height="52" rx="10" fill="#efeafc" stroke="#d9ccf5"/>
+      <text x="340" y="378" text-anchor="middle" font-size="13" font-weight="700" fill="#5a3fb0">6. Karbantartás</text>
+      <text x="340" y="395" text-anchor="middle" font-size="11" fill="#5d6678">Maintenance</text>
+    </g>
+    <!-- nyilak lépcsőzetesen -->
+    <path d="M120,66 L120,74 L168,74 L168,80" fill="none" stroke="#3a5bd9" stroke-width="2" marker-end="url(#wf-arrow)"/>
+    <path d="M168,134 L168,142 L216,142 L216,148" fill="none" stroke="#3a5bd9" stroke-width="2" marker-end="url(#wf-arrow)"/>
+    <path d="M216,202 L216,210 L264,210 L264,216" fill="none" stroke="#3a5bd9" stroke-width="2" marker-end="url(#wf-arrow)"/>
+    <path d="M264,270 L264,278 L312,278 L312,284" fill="none" stroke="#3a5bd9" stroke-width="2" marker-end="url(#wf-arrow)"/>
+    <path d="M312,338 L312,346 L340,346 L340,352" fill="none" stroke="#3a5bd9" stroke-width="2" marker-end="url(#wf-arrow)"/>
+  </svg>
+  <p class="cap">A Waterfall „vízesésként" halad: minden fázis teljesen lezárul, mielőtt a következő elindul — visszaút nincs.</p>
+</div>
+
+<h3>Fázisok részletesen:</h3>
+
+<div class="subsection">
+<h4>1. Követelmény-elemzés (Requirements Analysis)</h4>
+<ul>
+  <li>Az összes követelmény összegyűjtése és dokumentálása <strong>az elején</strong></li>
+  <li>SRS (Software Requirements Specification) dokumentum létrehozása</li>
+  <li>Ügyféllel történő validáció: "Ezt akarja?"</li>
+  <li>Nincs visszaút – ha itt hibázunk, az egész projekt romba dőlhet</li>
+</ul>
+</div>
+
+<div class="subsection">
+<h4>2. Rendszertervezés (System Design)</h4>
+<ul>
+  <li>Architektúra tervek, adatbázis sémák, interfész definíciók</li>
+  <li>HLD (High-Level Design) + LLD (Low-Level Design) dokumentumok</li>
+  <li>Technológia stack kiválasztása</li>
+</ul>
+</div>
+
+<div class="subsection">
+<h4>3. Implementáció (Coding)</h4>
+<ul>
+  <li>A tervek alapján kód írása</li>
+  <li>Unit tesztek írása a fejlesztők által</li>
+  <li>Kód review (ha van)</li>
+</ul>
+</div>
+
+<div class="subsection">
+<h4>4. Tesztelés (Testing)</h4>
+<ul>
+  <li>Integrációs tesztelés, rendszertesztelés, UAT (User Acceptance Testing)</li>
+  <li>Hibák rögzítése és javítása</li>
+  <li>A tesztelés CSAK a kódolás befejezése UTÁN kezdődik</li>
+</ul>
+</div>
+
+<div class="subsection">
+<h4>5–6. Telepítés és karbantartás</h4>
+<ul>
+  <li>Éles környezetbe telepítés</li>
+  <li>Hibajavítások, patches, kisebb módosítások</li>
+</ul>
+</div>
+
+<table>
+<tr>
+  <th>Előnyök</th>
+  <th>Hátrányok</th>
+</tr>
+<tr>
+  <td>Egyszerű, könnyen érthető struktúra</td>
+  <td>Nincs visszalépés – ha hibát találunk, drága javítani</td>
+</tr>
+<tr>
+  <td>Jól dokumentált (minden fázisnak van outputja)</td>
+  <td>Az ügyfél csak a végén látja a terméket</td>
+</tr>
+<tr>
+  <td>Könnyű tervezni erőforrásokat és ütemtervet</td>
+  <td>Követelmény-változás = projekt újratervezés</td>
+</tr>
+<tr>
+  <td>Jó, ha a követelmények stabilak és jól ismertek</td>
+  <td>Tesztelés csak a végén – hibák későn derülnek ki</td>
+</tr>
+<tr>
+  <td>Szabályozott iparágakban (orvosi, repülés) kötelező</td>
+  <td>Hosszú szállítási idő (hónapok, évek)</td>
+</tr>
+</table>
+
+<div class="answer-box">
+<strong>Mikor válasszuk?</strong>
+<ul>
+  <li>A követelmények teljesen ismertek és nem változnak</li>
+  <li>Szabályozott iparágak (orvosi szoftver, repülésirányítás, katonai)</li>
+  <li>Kis projekt, rövid időtartam, egyértelmű scope</li>
+  <li>Az ügyfél nem tud/akar részt venni a fejlesztés során</li>
+</ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- V-MODEL -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="v-model">
+<h2>3. V-Model (Verifikációs és Validációs modell)</h2>
+<span class="tag">Tradicionális</span> <span class="tag">Tesztelés-központú</span>
+
+<p>A Waterfall kiterjesztése, ahol <strong>minden fejlesztési fázisnak megfelel egy tesztelési fázis</strong>. A "V" alak azt mutatja, hogy a bal oldali fejlesztési lépések a jobb oldali tesztelési lépésekhez kapcsolódnak.</p>
+
+<div class="fig">
+  <svg viewBox="0 0 660 430" role="img" aria-label="V-Model: bal oldali fejlesztési fázisok, jobb oldali tesztelési fázisok" font-family="-apple-system,'Segoe UI',Roboto,sans-serif">
+    <defs>
+      <marker id="vm-arrow" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#7c5cd6"/>
+      </marker>
+    </defs>
+    <!-- V vonalak (lejtő bal, emelkedő jobb) -->
+    <path d="M150,52 L320,360" fill="none" stroke="#7c5cd6" stroke-width="2" marker-end="url(#vm-arrow)"/>
+    <path d="M340,360 L510,52" fill="none" stroke="#7c5cd6" stroke-width="2" marker-end="url(#vm-arrow)"/>
+    <!-- szaggatott összekötők azonos szinteken -->
+    <line x1="262" y1="40" x2="398" y2="40" stroke="#9aa3b5" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <line x1="262" y1="118" x2="398" y2="118" stroke="#9aa3b5" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <line x1="280" y1="196" x2="380" y2="196" stroke="#9aa3b5" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <line x1="295" y1="274" x2="365" y2="274" stroke="#9aa3b5" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <!-- BAL: fejlesztési fázisok -->
+    <g>
+      <rect x="120" y="20" width="148" height="42" rx="9" fill="#eaeefc" stroke="#c9d4f7"/>
+      <text x="194" y="38" text-anchor="middle" font-size="11.5" font-weight="700" fill="#2f48ac">Követelmény-</text>
+      <text x="194" y="53" text-anchor="middle" font-size="11.5" font-weight="700" fill="#2f48ac">elemzés</text>
+    </g>
+    <g>
+      <rect x="150" y="98" width="130" height="40" rx="9" fill="#eaeefc" stroke="#c9d4f7"/>
+      <text x="215" y="123" text-anchor="middle" font-size="11.5" font-weight="700" fill="#2f48ac">Rendszertervezés</text>
+    </g>
+    <g>
+      <rect x="178" y="176" width="124" height="40" rx="9" fill="#eaeefc" stroke="#c9d4f7"/>
+      <text x="240" y="195" text-anchor="middle" font-size="11" font-weight="700" fill="#2f48ac">Architektúra</text>
+      <text x="240" y="208" text-anchor="middle" font-size="11" font-weight="700" fill="#2f48ac">tervezés</text>
+    </g>
+    <g>
+      <rect x="206" y="254" width="116" height="40" rx="9" fill="#eaeefc" stroke="#c9d4f7"/>
+      <text x="264" y="273" text-anchor="middle" font-size="11" font-weight="700" fill="#2f48ac">Részletes</text>
+      <text x="264" y="286" text-anchor="middle" font-size="11" font-weight="700" fill="#2f48ac">tervezés</text>
+    </g>
+    <!-- ALJ: implementáció -->
+    <g>
+      <rect x="262" y="348" width="136" height="44" rx="9" fill="#fbf2dd" stroke="#ecd9a8"/>
+      <text x="330" y="375" text-anchor="middle" font-size="12" font-weight="700" fill="#8a6112">Implementáció</text>
+    </g>
+    <!-- JOBB: tesztelési fázisok -->
+    <g>
+      <rect x="392" y="20" width="156" height="42" rx="9" fill="#e6f6ec" stroke="#bce6cb"/>
+      <text x="470" y="38" text-anchor="middle" font-size="11.5" font-weight="700" fill="#15703f">Átvételi teszt</text>
+      <text x="470" y="53" text-anchor="middle" font-size="11" fill="#15703f">(UAT)</text>
+    </g>
+    <g>
+      <rect x="380" y="98" width="130" height="40" rx="9" fill="#e6f6ec" stroke="#bce6cb"/>
+      <text x="445" y="123" text-anchor="middle" font-size="11.5" font-weight="700" fill="#15703f">Rendszerteszt</text>
+    </g>
+    <g>
+      <rect x="358" y="176" width="130" height="40" rx="9" fill="#e6f6ec" stroke="#bce6cb"/>
+      <text x="423" y="195" text-anchor="middle" font-size="11" font-weight="700" fill="#15703f">Integrációs</text>
+      <text x="423" y="208" text-anchor="middle" font-size="11" font-weight="700" fill="#15703f">teszt</text>
+    </g>
+    <g>
+      <rect x="338" y="254" width="116" height="40" rx="9" fill="#e6f6ec" stroke="#bce6cb"/>
+      <text x="396" y="279" text-anchor="middle" font-size="11.5" font-weight="700" fill="#15703f">Unit teszt</text>
+    </g>
+  </svg>
+  <p class="cap">A V-Model: a bal száron a fejlesztési fázisok ereszkednek lefelé, a jobb száron a hozzájuk tartozó tesztelési szintek emelkednek. A szaggatott vonalak a párosítást mutatják (pl. követelmény ↔ UAT) — a tesztterv már a fejlesztéssel párhuzamosan készül.</p>
+</div>
+
+<h3>Tesztelési szintek párosítása:</h3>
+
+<table>
+<tr>
+  <th>Fejlesztési fázis (bal)</th>
+  <th>Tesztelési fázis (jobb)</th>
+  <th>Mit ellenőrzünk?</th>
+</tr>
+<tr>
+  <td>Követelmény-elemzés</td>
+  <td>Átvételi teszt (UAT)</td>
+  <td>Az ügyfél igényei teljesülnek-e?</td>
+</tr>
+<tr>
+  <td>Rendszertervezés</td>
+  <td>Rendszerteszt</td>
+  <td>A teljes rendszer az elvártak szerint működik-e?</td>
+</tr>
+<tr>
+  <td>Architektúra tervezés</td>
+  <td>Integrációs teszt</td>
+  <td>A modulok együttműködnek-e?</td>
+</tr>
+<tr>
+  <td>Részletes tervezés</td>
+  <td>Unit teszt</td>
+  <td>Az egyes komponensek helyesen működnek-e?</td>
+</tr>
+</table>
+
+<table>
+<tr>
+  <th>Előnyök</th>
+  <th>Hátrányok</th>
+</tr>
+<tr>
+  <td>Korai teszttervezés (test plan a fejlesztéssel párhuzamosan)</td>
+  <td>Ugyanolyan merev, mint a Waterfall</td>
+</tr>
+<tr>
+  <td>Hibák korábban felfedezhetők</td>
+  <td>Nincs iteráció vagy prototípus</td>
+</tr>
+<tr>
+  <td>Jól definiált tesztelési keretrendszer</td>
+  <td>Változás ugyanúgy költséges</td>
+</tr>
+<tr>
+  <td>Jó minőségbiztosítás</td>
+  <td>Hosszú szállítási idő</td>
+</tr>
+</table>
+
+<div class="answer-box">
+<strong>Mikor válasszuk?</strong>
+<ul>
+  <li>Magas megbízhatóságú rendszerek (orvosi eszközök, autóipar)</li>
+  <li>Ha a tesztelés dokumentálása kötelező (ISO, FDA szabványok)</li>
+  <li>Rövid, jól definiált projektek, ahol a minőség kritikus</li>
+</ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- ITERATÍV ÉS INKREMENTÁLIS -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="iterative">
+<h2>4. Iteratív és Inkrementális modell</h2>
+<span class="tag">Köztes</span> <span class="tag">Ciklusos</span>
+
+<p>A Waterfall problémájára reagálva jött létre. Az ötlet: <strong>ne az egész rendszert egyszerre fejlesszük</strong>, hanem kisebb részletekben (increment-ekben), amelyeket egymás után szállítunk, és minden iteráció javítja az előzőt.</p>
+
+<div class="fig">
+  <svg viewBox="0 0 660 260" role="img" aria-label="Három iteráció, mindegyik teljes Req-Design-Code-Test-Deploy ciklus" font-family="-apple-system,'Segoe UI',Roboto,sans-serif">
+    <defs>
+      <marker id="it-arrow" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#3a5bd9"/>
+      </marker>
+    </defs>
+    <!-- 3 iteráció doboz -->
+    <g>
+      <text x="110" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#2f48ac">Iteráció 1</text>
+      <rect x="30" y="34" width="160" height="92" rx="11" fill="#eaeefc" stroke="#c9d4f7"/>
+      <text x="110" y="62" text-anchor="middle" font-size="12" fill="#1c2233">Req → Design</text>
+      <text x="110" y="82" text-anchor="middle" font-size="12" fill="#1c2233">Code → Test</text>
+      <text x="110" y="102" text-anchor="middle" font-size="12" fill="#1c2233">→ Deploy</text>
+    </g>
+    <g>
+      <text x="330" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#2f48ac">Iteráció 2</text>
+      <rect x="250" y="34" width="160" height="92" rx="11" fill="#eaeefc" stroke="#c9d4f7"/>
+      <text x="330" y="62" text-anchor="middle" font-size="12" fill="#1c2233">Req → Design</text>
+      <text x="330" y="82" text-anchor="middle" font-size="12" fill="#1c2233">Code → Test</text>
+      <text x="330" y="102" text-anchor="middle" font-size="12" fill="#1c2233">→ Deploy</text>
+    </g>
+    <g>
+      <text x="550" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#2f48ac">Iteráció 3</text>
+      <rect x="470" y="34" width="160" height="92" rx="11" fill="#eaeefc" stroke="#c9d4f7"/>
+      <text x="550" y="62" text-anchor="middle" font-size="12" fill="#1c2233">Req → Design</text>
+      <text x="550" y="82" text-anchor="middle" font-size="12" fill="#1c2233">Code → Test</text>
+      <text x="550" y="102" text-anchor="middle" font-size="12" fill="#1c2233">→ Deploy</text>
+    </g>
+    <!-- iterációk közti haladás -->
+    <path d="M190,80 L248,80" fill="none" stroke="#3a5bd9" stroke-width="2" marker-end="url(#it-arrow)"/>
+    <path d="M410,80 L468,80" fill="none" stroke="#3a5bd9" stroke-width="2" marker-end="url(#it-arrow)"/>
+    <!-- lefelé verziókhoz -->
+    <path d="M110,126 L110,158" fill="none" stroke="#1f9d57" stroke-width="2" marker-end="url(#it-arrow)"/>
+    <path d="M330,126 L330,158" fill="none" stroke="#1f9d57" stroke-width="2" marker-end="url(#it-arrow)"/>
+    <path d="M550,126 L550,158" fill="none" stroke="#1f9d57" stroke-width="2" marker-end="url(#it-arrow)"/>
+    <!-- verzió dobozok -->
+    <rect x="34" y="164" width="152" height="34" rx="9" fill="#e6f6ec" stroke="#bce6cb"/>
+    <text x="110" y="186" text-anchor="middle" font-size="12" font-weight="700" fill="#15703f">v1.0 (alap)</text>
+    <rect x="254" y="164" width="152" height="34" rx="9" fill="#e6f6ec" stroke="#bce6cb"/>
+    <text x="330" y="186" text-anchor="middle" font-size="12" font-weight="700" fill="#15703f">v2.0 (bővített)</text>
+    <rect x="474" y="164" width="152" height="34" rx="9" fill="#e6f6ec" stroke="#bce6cb"/>
+    <text x="550" y="186" text-anchor="middle" font-size="12" font-weight="700" fill="#15703f">v3.0 (teljes)</text>
+    <!-- magyarázat -->
+    <text x="30" y="228" font-size="11.5" fill="#5d6678"><tspan font-weight="700" fill="#8a6112">Inkrementális:</tspan> minden iteráció új funkcionalitást ad hozzá.</text>
+    <text x="30" y="248" font-size="11.5" fill="#5d6678"><tspan font-weight="700" fill="#5a3fb0">Iteratív:</tspan> minden iteráció finomítja a meglévő funkcionalitást.</text>
+  </svg>
+  <p class="cap">A rendszert nem egyszerre, hanem rövid, teljes ciklusokban (increment-ekben) építjük; minden iteráció működő verziót szállít, és az ügyfél visszajelzése beépül a következőbe.</p>
+</div>
+
+<h3>Iteratív vs Inkrementális – mi a különbség?</h3>
+
+<table>
+<tr>
+  <th>Szempont</th>
+  <th>Iteratív</th>
+  <th>Inkrementális</th>
+</tr>
+<tr>
+  <td>Fókusz</td>
+  <td>Finomítás – ugyanazt a részt többször átdolgozzuk</td>
+  <td>Bővítés – új részeket adunk hozzá</td>
+</tr>
+<tr>
+  <td>Analógia</td>
+  <td>Festmény: először vázlat, majd szín, majd részletek</td>
+  <td>Ház építése: először alap, majd falak, majd tető</td>
+</tr>
+<tr>
+  <td>Kockázat</td>
+  <td>Alacsonyabb (korai prototípus)</td>
+  <td>Közepes (részek integrációja nehéz lehet)</td>
+</tr>
+</table>
+
+<table>
+<tr>
+  <th>Előnyök</th>
+  <th>Hátrányok</th>
+</tr>
+<tr>
+  <td>Korai visszajelzés az ügyféltől</td>
+  <td>Nehezebb tervezni a teljes ütemtervet</td>
+</tr>
+<tr>
+  <td>Kockázat korán azonosítható</td>
+  <td>Scope creep veszélye (folyton bővül a projekt)</td>
+</tr>
+<tr>
+  <td>Rugalmasabb, mint a Waterfall</td>
+  <td>Több iteráció = több idő és erőforrás</td>
+</tr>
+<tr>
+  <td>Működő szoftver hamarabb</td>
+  <td>Architektúra refaktorálás szükséges lehet</td>
+</tr>
+</table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SPIRÁLIS -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="spiral">
+<h2>5. Spirális modell (Boehm, 1986)</h2>
+<span class="tag">Kockázat-vezérelt</span> <span class="tag">Iteratív</span>
+
+<p>Barry Boehm találmánya. A <strong>kockázatelemzés</strong> áll a középpontban. Minden spirálkör (iteráció) négy fázisból áll, és a projekt addig halad spirálisan, amíg el nem készül.</p>
+
+<div class="fig">
+  <svg viewBox="0 0 560 380" role="img" aria-label="Spirális modell négy kvadránsa" font-family="-apple-system,'Segoe UI',Roboto,sans-serif">
+    <defs>
+      <marker id="sp-arrow" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#7c5cd6"/>
+      </marker>
+    </defs>
+    <!-- 1. Célok (bal felül) -->
+    <rect x="30" y="20" width="240" height="140" rx="11" fill="#eaeefc" stroke="#c9d4f7"/>
+    <text x="46" y="44" font-size="12.5" font-weight="700" fill="#2f48ac">1. CÉLOK MEGHATÁROZÁSA</text>
+    <text x="46" y="74" font-size="11.5" fill="#1c2233">• Követelmények</text>
+    <text x="46" y="96" font-size="11.5" fill="#1c2233">• Alternatívák</text>
+    <text x="46" y="118" font-size="11.5" fill="#1c2233">• Korlátok</text>
+    <!-- 2. Kockázat-elemzés (jobb felül) -->
+    <rect x="290" y="20" width="240" height="140" rx="11" fill="#fbf2dd" stroke="#ecd9a8"/>
+    <text x="306" y="44" font-size="12.5" font-weight="700" fill="#8a6112">2. KOCKÁZAT-ELEMZÉS</text>
+    <text x="306" y="74" font-size="11.5" fill="#1c2233">• Kockázatok azonosítása</text>
+    <text x="306" y="96" font-size="11.5" fill="#1c2233">• Prototípus készítés</text>
+    <text x="306" y="118" font-size="11.5" fill="#1c2233">• Mitigáció</text>
+    <!-- 4. Következő iteráció (bal alul) -->
+    <rect x="30" y="170" width="240" height="140" rx="11" fill="#efeafc" stroke="#d9ccf5"/>
+    <text x="46" y="194" font-size="12.5" font-weight="700" fill="#5a3fb0">4. KÖVETKEZŐ ITERÁCIÓ</text>
+    <text x="46" y="224" font-size="11.5" fill="#1c2233">• Review</text>
+    <text x="46" y="246" font-size="11.5" fill="#1c2233">• Jóváhagyás</text>
+    <text x="46" y="268" font-size="11.5" fill="#1c2233">• Következő kör tervezése</text>
+    <!-- 3. Fejlesztés és tesztelés (jobb alul) -->
+    <rect x="290" y="170" width="240" height="140" rx="11" fill="#e6f6ec" stroke="#bce6cb"/>
+    <text x="306" y="194" font-size="12.5" font-weight="700" fill="#15703f">3. FEJLESZTÉS &amp; TESZT</text>
+    <text x="306" y="224" font-size="11.5" fill="#1c2233">• Design + Kódolás</text>
+    <text x="306" y="246" font-size="11.5" fill="#1c2233">• Tesztelés</text>
+    <text x="306" y="268" font-size="11.5" fill="#1c2233">• Integráció</text>
+    <!-- spirál haladás nyilai (1→2→3→4) -->
+    <path d="M272,90 L288,90" fill="none" stroke="#7c5cd6" stroke-width="2" marker-end="url(#sp-arrow)"/>
+    <path d="M410,162 L410,168" fill="none" stroke="#7c5cd6" stroke-width="2" marker-end="url(#sp-arrow)"/>
+    <path d="M288,240 L272,240" fill="none" stroke="#7c5cd6" stroke-width="2" marker-end="url(#sp-arrow)"/>
+    <text x="280" y="344" text-anchor="middle" font-size="12" font-weight="700" fill="#5a3fb0">Spirál 1 → Spirál 2 → Spirál 3 → … → Kész termék</text>
+    <text x="280" y="364" text-anchor="middle" font-size="11" fill="#5d6678">(minden kör nagyobb és részletesebb)</text>
+  </svg>
+  <p class="cap">Minden spirálkör négy kvadránson halad át, középpontban a kockázatelemzéssel. A projekt addig „spirálozik" kifelé, amíg a termék el nem készül.</p>
+</div>
+
+<table>
+<tr>
+  <th>Előnyök</th>
+  <th>Hátrányok</th>
+</tr>
+<tr>
+  <td>Kockázat-kezelés a módszertan része</td>
+  <td>Drága és időigényes (sok elemzés)</td>
+</tr>
+<tr>
+  <td>Rugalmas, iteratív jelleg</td>
+  <td>Bonyolult menedzsment</td>
+</tr>
+<tr>
+  <td>Korai prototípus lehetőség</td>
+  <td>Kockázat-elemzési szakértelem szükséges</td>
+</tr>
+<tr>
+  <td>Nagy, komplex projektek számára ideális</td>
+  <td>Kis projekteknél overkill</td>
+</tr>
+</table>
+
+<div class="answer-box">
+<strong>Mikor válasszuk?</strong>
+<ul>
+  <li>Nagy, komplex, magas kockázatú projektek</li>
+  <li>Az üzleti követelmények még nem teljesen tiszták</li>
+  <li>Új technológia bevezetése (ismeretlen kockázatok)</li>
+  <li>Katonai, űrkutatási, kritikus infrastruktúra projektek</li>
+</ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- AGILE ÁTTEKINTÉS -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="agile-overview">
+<h2>6. Agile (Áttekintés)</h2>
+<span class="tag">Agile</span> <span class="tag">Modern</span> <span class="tag">Iteratív</span>
+
+<div class="note">
+<strong>Részletes Agile kifejtés: <a href="agile.html">agile.html</a></strong> – Scrum, Kanban, XP, ceremóniák, szerepkörök, artefaktumok, metrikák, skálázás, anti-patternek.
+</div>
+
+<p>Az Agile nem egyetlen módszer, hanem <strong>értékrend és elvek gyűjteménye</strong> (Agile Manifesto, 2001). Több konkrét keretrendszer valósítja meg: Scrum, Kanban, XP, stb.</p>
+
+<h3>Agile Manifesto – 4 alapérték:</h3>
+
+<div class="subsection">
+<ol>
+  <li><strong>Egyének és interakciók</strong> fontosabbak, mint folyamatok és eszközök</li>
+  <li><strong>Működő szoftver</strong> fontosabb, mint átfogó dokumentáció</li>
+  <li><strong>Ügyféllel való együttműködés</strong> fontosabb, mint szerződéses tárgyalás</li>
+  <li><strong>Változásra reagálás</strong> fontosabb, mint terv követése</li>
+</ol>
+<p><em>Azaz: a jobb oldali elemek is fontosak, de a bal oldaliak fontosabbak.</em></p>
+</div>
+
+<h3>Agile keretrendszerek összefoglalása:</h3>
+
+<p>Az Agile elveket több konkrét keretrendszer valósítja meg, mindegyik más hangsúllyal. Az alábbi táblázat segít gyorsan eldönteni, melyik illik a csapatodhoz az iteráció-stílus és a csapatméret alapján.</p>
+
+<table>
+<tr>
+  <th>Keretrendszer</th>
+  <th>Fókusz</th>
+  <th>Iteráció</th>
+  <th>Ideális csapatméret</th>
+</tr>
+<tr>
+  <td><strong>Scrum</strong></td>
+  <td>Szerepkörök, ceremóniák, sprintek</td>
+  <td>1–4 hetes sprint</td>
+  <td>5–9 fő</td>
+</tr>
+<tr>
+  <td><strong>Kanban</strong></td>
+  <td>Folyamatos áramlás, WIP limitek</td>
+  <td>Nincs fix iteráció</td>
+  <td>Bármilyen méret</td>
+</tr>
+<tr>
+  <td><strong>XP (Extreme Programming)</strong></td>
+  <td>Technikai kiválóság, pair programming, TDD</td>
+  <td>1–2 hetes iteráció</td>
+  <td>2–12 fő</td>
+</tr>
+<tr>
+  <td><strong>Scrumban</strong></td>
+  <td>Scrum + Kanban hibrid</td>
+  <td>Opcionális sprint</td>
+  <td>5–12 fő</td>
+</tr>
+</table>
+
+<h3>Agile alapelvek (12 elv – röviden):</h3>
+
+<table>
+<tr><th>#</th><th>Elv</th></tr>
+<tr><td>1</td><td>A legfontosabb az ügyfél elégedettség – korai és folyamatos szoftverszállítás</td></tr>
+<tr><td>2</td><td>Változó követelmények elfogadása – akár fejlesztés közben is</td></tr>
+<tr><td>3</td><td>Működő szoftver szállítása gyakran (hetente, havonta)</td></tr>
+<tr><td>4</td><td>Üzleti és technikai emberek együtt dolgoznak nap mint nap</td></tr>
+<tr><td>5</td><td>Motivált egyének köré szervezzük a projektet</td></tr>
+<tr><td>6</td><td>Személyes kommunikáció a leghatékonyabb</td></tr>
+<tr><td>7</td><td>Működő szoftver az elsődleges haladási mérőszám</td></tr>
+<tr><td>8</td><td>Fenntartható fejlesztési tempó</td></tr>
+<tr><td>9</td><td>Folyamatos figyelem a technikai kiválóságra</td></tr>
+<tr><td>10</td><td>Egyszerűség – a nem elvégzett munka maximalizálása</td></tr>
+<tr><td>11</td><td>Önszervező csapatok hozzák a legjobb eredményt</td></tr>
+<tr><td>12</td><td>Rendszeres reflexió és alkalmazkodás (retrospektív)</td></tr>
+</table>
+
+<table>
+<tr>
+  <th>Előnyök</th>
+  <th>Hátrányok</th>
+</tr>
+<tr>
+  <td>Gyors alkalmazkodás változó követelményekhez</td>
+  <td>Kevesebb dokumentáció – tudásátadás nehezebb</td>
+</tr>
+<tr>
+  <td>Korai és folyamatos szállítás</td>
+  <td>Scope creep veszélye (ha a PO nem kontrollál)</td>
+</tr>
+<tr>
+  <td>Ügyfél bevonása a folyamatba</td>
+  <td>Tapasztalt csapatot igényel</td>
+</tr>
+<tr>
+  <td>Magas csapat-morál (önszervező)</td>
+  <td>Nagy szervezetekre nehéz skálázni (SAFe kell)</td>
+</tr>
+<tr>
+  <td>Hibák korai felismerése (rövid feedback loop)</td>
+  <td>Tervezhetőség nehezebb (nincs fix terv)</td>
+</tr>
+</table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- LEAN -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="lean">
+<h2>7. Lean szoftverfejlesztés</h2>
+<span class="tag">Lean</span> <span class="tag">Hatékonyság</span>
+
+<p>A Toyota Production System (TPS) alapján adaptálva szoftverfejlesztésre (Mary & Tom Poppendieck, 2003). Fő cél: <strong>pazarlás (waste) minimalizálása</strong> és <strong>érték maximalizálása</strong>.</p>
+
+<h3>7 Lean elv:</h3>
+
+<p>A Lean hét elve egyetlen gondolat köré épül: minden, ami nem ad értéket az ügyfélnek, pazarlás — azt csökkenteni kell. Az alábbi táblázat minden elvhez konkrét szoftverfejlesztési példát is mutat.</p>
+
+<table>
+<tr><th>#</th><th>Elv</th><th>Szoftverfejlesztési példa</th></tr>
+<tr>
+  <td>1</td>
+  <td><strong>Pazarlás megszüntetése</strong> (Eliminate Waste)</td>
+  <td>Nem használt feature-ök, felesleges dokumentáció, várakozás, kézzel végzett deploy</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><strong>Minőség beépítése</strong> (Build Quality In)</td>
+  <td>TDD, code review, CI/CD, automatizált tesztek</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><strong>Tudás létrehozása</strong> (Create Knowledge)</td>
+  <td>Pair programming, knowledge sharing, retrospektívek</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><strong>Késői döntéshozatal</strong> (Defer Commitment)</td>
+  <td>Ne tervezz előre – dönts, amikor a legtöbb infód van</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><strong>Gyors szállítás</strong> (Deliver Fast)</td>
+  <td>Kis batch-ek, gyakori release, CI/CD pipeline</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><strong>Emberek tisztelete</strong> (Respect People)</td>
+  <td>Csapat felhatalmazása, önszerveződés, bizalom</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><strong>Egész optimalizálása</strong> (Optimize the Whole)</td>
+  <td>Ne lokális optimumot keress – a teljes flow-t nézd (pl. ne csak a kódolást gyorsítsd, hanem a deploy-t is)</td>
+</tr>
+</table>
+
+<h3>Lean 7 Waste szoftverfejlesztésben:</h3>
+
+<div class="subsection">
+<table>
+<tr><th>Pazarlás típus</th><th>Példa</th></tr>
+<tr><td>Felesleges funkciók</td><td>Feature amit senki nem használ (statisztikák: a funkciók 64%-a ritkán/soha nincs használva)</td></tr>
+<tr><td>Részben kész munka</td><td>WIP (Work In Progress) – elkezdett, de be nem fejezett feladatok</td></tr>
+<tr><td>Várakozás</td><td>Code review-ra várakozás, deploy jóváhagyásra várakozás, környezet rendelkezésre állás</td></tr>
+<tr><td>Extra folyamatok</td><td>Felesleges jóváhagyási szintek, túlzott dokumentáció</td></tr>
+<tr><td>Feladatváltás</td><td>Fejlesztő 3 projekten dolgozik egyszerre – context switching</td></tr>
+<tr><td>Hibák</td><td>Bugok – minél később találjuk, annál drágább javítani</td></tr>
+<tr><td>Kézi munka</td><td>Manuális tesztelés, manuális deploy, manuális konfiguráció</td></tr>
+</table>
+</div>
+
+<table>
+<tr>
+  <th>Előnyök</th>
+  <th>Hátrányok</th>
+</tr>
+<tr>
+  <td>Hatékonyság-központú gondolkodás</td>
+  <td>Nehéz mérni a "pazarlást" szoftverben</td>
+</tr>
+<tr>
+  <td>Jól kombinálható Agile-lal</td>
+  <td>Kulturális változás szükséges</td>
+</tr>
+<tr>
+  <td>Gyors szállítás, kevesebb felesleg</td>
+  <td>Túlzott "waste" eliminálás → aluldokumentálás</td>
+</tr>
+</table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- DEVOPS -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="devops">
+<h2>8. DevOps</h2>
+<span class="tag">DevOps</span> <span class="tag">CI/CD</span> <span class="tag">Kultúra</span>
+
+<p>A DevOps <strong>nem módszertan</strong>, hanem <strong>kultúra és gyakorlatok</strong> összessége, amely a fejlesztés (Dev) és az üzemeltetés (Ops) közötti fal lebontását célozza. Célja: <strong>gyorsabb, megbízhatóbb szállítás</strong>.</p>
+
+<div class="fig">
+  <svg viewBox="0 0 620 320" role="img" aria-label="DevOps végtelen hurok Dev és Ops fázisokkal" font-family="-apple-system,'Segoe UI',Roboto,sans-serif">
+    <defs>
+      <marker id="do-arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#3a5bd9"/>
+      </marker>
+    </defs>
+    <text x="310" y="26" text-anchor="middle" font-size="14" font-weight="700" fill="#1c2233">DevOps végtelen hurok (∞)</text>
+    <!-- végtelen jel két hurokkal -->
+    <path d="M310,160
+             C310,90 200,70 150,70
+             C70,70 50,150 50,160
+             C50,170 70,250 150,250
+             C200,250 310,230 310,160
+             C310,90 420,70 470,70
+             C550,70 570,150 570,160
+             C570,170 550,250 470,250
+             C420,250 310,230 310,160 Z"
+          fill="none" stroke="#c9d4f7" stroke-width="22" stroke-linejoin="round"/>
+    <!-- DEV címke (bal hurok) -->
+    <text x="150" y="60" text-anchor="middle" font-size="13" font-weight="800" fill="#2f48ac">DEV</text>
+    <!-- OPS címke (jobb hurok) -->
+    <text x="470" y="60" text-anchor="middle" font-size="13" font-weight="800" fill="#15703f">OPS</text>
+    <!-- DEV fázis-csomópontok a bal hurkon -->
+    <g font-size="11" font-weight="700">
+      <circle cx="150" cy="70" r="6" fill="#3a5bd9"/><text x="150" y="92" text-anchor="middle" fill="#2f48ac">Plan</text>
+      <circle cx="60" cy="120" r="6" fill="#3a5bd9"/><text x="60" y="112" text-anchor="middle" fill="#2f48ac">Code</text>
+      <circle cx="60" cy="200" r="6" fill="#3a5bd9"/><text x="60" y="222" text-anchor="middle" fill="#2f48ac">Build</text>
+      <circle cx="150" cy="250" r="6" fill="#3a5bd9"/><text x="150" y="272" text-anchor="middle" fill="#2f48ac">Test</text>
+    </g>
+    <!-- OPS fázis-csomópontok a jobb hurkon -->
+    <g font-size="11" font-weight="700">
+      <circle cx="470" cy="70" r="6" fill="#1f9d57"/><text x="470" y="92" text-anchor="middle" fill="#15703f">Release</text>
+      <circle cx="560" cy="120" r="6" fill="#1f9d57"/><text x="560" y="112" text-anchor="middle" fill="#15703f">Deploy</text>
+      <circle cx="560" cy="200" r="6" fill="#1f9d57"/><text x="560" y="222" text-anchor="middle" fill="#15703f">Operate</text>
+      <circle cx="470" cy="250" r="6" fill="#1f9d57"/><text x="470" y="272" text-anchor="middle" fill="#15703f">Monitor</text>
+    </g>
+    <!-- középső kereszteződés / feedback -->
+    <circle cx="310" cy="160" r="6" fill="#7c5cd6"/>
+    <!-- feedback loop felirat alul -->
+    <text x="310" y="306" text-anchor="middle" font-size="11.5" fill="#5d6678">Folyamatos feedback loop: Monitor → vissza a Plan-hez</text>
+    <!-- irány-nyíl a hurok tetején -->
+    <path d="M250,72 L240,72" fill="none" stroke="#3a5bd9" stroke-width="2" marker-end="url(#do-arrow)"/>
+    <path d="M380,72 L390,72" fill="none" stroke="#1f9d57" stroke-width="2" marker-end="url(#do-arrow)"/>
+  </svg>
+  <p class="cap">A DevOps nem lineáris: a Dev fázisok (Plan→Code→Build→Test) és az Ops fázisok (Release→Deploy→Operate→Monitor) végtelen hurokban kapcsolódnak, a monitoring visszacsatol a tervezésbe.</p>
+</div>
+
+<h3>DevOps kulcsfogalmak:</h3>
+
+<div class="subsection">
+<h4>CI/CD (Continuous Integration / Continuous Delivery / Continuous Deployment)</h4>
+<table>
+<tr><th>Fogalom</th><th>Jelentés</th><th>Eszközök</th></tr>
+<tr>
+  <td><strong>CI</strong> (Continuous Integration)</td>
+  <td>Fejlesztők naponta többször merge-ölnek a main branch-be, automatikus build + teszt</td>
+  <td>Jenkins, GitHub Actions, GitLab CI, CircleCI</td>
+</tr>
+<tr>
+  <td><strong>CD</strong> (Continuous Delivery)</td>
+  <td>A kód mindig kész a kiadásra, de manuális jóváhagyás szükséges a deploy-hoz</td>
+  <td>ArgoCD, Spinnaker, AWS CodePipeline</td>
+</tr>
+<tr>
+  <td><strong>CD</strong> (Continuous Deployment)</td>
+  <td>Minden sikeres teszt után automatikus deploy élesbe – nincs manuális lépés</td>
+  <td>Ugyanaz + feature flags (LaunchDarkly)</td>
+</tr>
+</table>
+</div>
+
+<div class="subsection">
+<h4>IaC (Infrastructure as Code)</h4>
+<p>Infrastruktúra leírása kódban: reprodukálható, verzionálható, tesztelhető.</p>
+<ul>
+  <li><strong>Terraform</strong> – cloud-agnosztikus infra definíció</li>
+  <li><strong>Ansible</strong> – konfigurációkezelés</li>
+  <li><strong>Docker</strong> – konténerizáció</li>
+  <li><strong>Kubernetes</strong> – konténer-orkesztráció</li>
+</ul>
+</div>
+
+<div class="subsection">
+<h4>Monitoring & Observability</h4>
+<ul>
+  <li><strong>Logging:</strong> ELK Stack (Elasticsearch, Logstash, Kibana), Datadog</li>
+  <li><strong>Metrics:</strong> Prometheus + Grafana</li>
+  <li><strong>Tracing:</strong> Jaeger, Zipkin (distributed tracing)</li>
+  <li><strong>Alerting:</strong> PagerDuty, Opsgenie</li>
+</ul>
+</div>
+
+<h3>DORA Metrikák (DevOps teljesítmény mérése):</h3>
+
+<table>
+<tr><th>Metrika</th><th>Elite</th><th>Alacsony</th></tr>
+<tr>
+  <td><strong>Deployment Frequency</strong></td>
+  <td>Naponta többször</td>
+  <td>Havonta egyszer</td>
+</tr>
+<tr>
+  <td><strong>Lead Time for Changes</strong></td>
+  <td>&lt; 1 nap</td>
+  <td>&gt; 6 hónap</td>
+</tr>
+<tr>
+  <td><strong>Change Failure Rate</strong></td>
+  <td>0–15%</td>
+  <td>46–60%</td>
+</tr>
+<tr>
+  <td><strong>Time to Restore</strong></td>
+  <td>&lt; 1 óra</td>
+  <td>&gt; 6 hónap</td>
+</tr>
+</table>
+
+<table>
+<tr>
+  <th>Előnyök</th>
+  <th>Hátrányok</th>
+</tr>
+<tr>
+  <td>Gyorsabb szállítás (naponta többször)</td>
+  <td>Kulturális változás szükséges (Dev + Ops együtt)</td>
+</tr>
+<tr>
+  <td>Magasabb megbízhatóság (automatizálás)</td>
+  <td>Tooling komplexitás (sok eszköz, konfiguráció)</td>
+</tr>
+<tr>
+  <td>Gyorsabb hibaelhárítás (monitoring)</td>
+  <td>Kezdeti befektetés magas (CI/CD pipeline, IaC)</td>
+</tr>
+<tr>
+  <td>Reprodukálható környezetek (IaC)</td>
+  <td>Biztonsági kihívások (DevSecOps szükséges)</td>
+</tr>
+</table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SAFE -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="safe">
+<h2>9. SAFe (Scaled Agile Framework)</h2>
+<span class="tag">Skálázott Agile</span> <span class="tag">Nagyvállalati</span>
+
+<p>A SAFe a <strong>nagy szervezetek</strong> számára készült keretrendszer, amely az Agile elveket skálázza <strong>több csapatra, programokra és portfóliókra</strong>. Tipikusan 50-125+ fős fejlesztői szervezeteknél használják.</p>
+
+<h3>SAFe szintjei:</h3>
+
+<div class="fig">
+  <svg viewBox="0 0 600 360" role="img" aria-label="SAFe négy szintje: Portfólió, Large Solution, Program/ART, Csapat" font-family="-apple-system,'Segoe UI',Roboto,sans-serif">
+    <!-- Portfólió (legfelső, legkeskenyebb) -->
+    <rect x="150" y="14" width="300" height="76" rx="11" fill="#efeafc" stroke="#d9ccf5"/>
+    <text x="300" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="#5a3fb0">PORTFÓLIÓ SZINT</text>
+    <text x="300" y="58" text-anchor="middle" font-size="11" fill="#5d6678">Strategic Themes, Lean Portfolio Management</text>
+    <text x="300" y="74" text-anchor="middle" font-size="11" fill="#5d6678">Kanban-rendszer a nagy kezdeményezésekhez</text>
+    <!-- Large Solution -->
+    <rect x="105" y="98" width="390" height="76" rx="11" fill="#fbf2dd" stroke="#ecd9a8"/>
+    <text x="300" y="122" text-anchor="middle" font-size="13" font-weight="800" fill="#8a6112">LARGE SOLUTION SZINT</text>
+    <text x="300" y="142" text-anchor="middle" font-size="11" fill="#5d6678">Több ART együttműködése (Solution Train)</text>
+    <text x="300" y="158" text-anchor="middle" font-size="11" fill="#5d6678">Solution Architect, Solution Management</text>
+    <!-- Program / ART -->
+    <rect x="60" y="182" width="480" height="86" rx="11" fill="#eaeefc" stroke="#c9d4f7"/>
+    <text x="300" y="206" text-anchor="middle" font-size="13" font-weight="800" fill="#2f48ac">PROGRAM SZINT (ART)</text>
+    <text x="300" y="226" text-anchor="middle" font-size="11" fill="#5d6678">Agile Release Train (ART) – 50–125 fő</text>
+    <text x="300" y="242" text-anchor="middle" font-size="11" fill="#5d6678">PI Planning (Program Increment), System Demo</text>
+    <text x="300" y="258" text-anchor="middle" font-size="11" fill="#5d6678">RTE (Release Train Engineer)</text>
+    <!-- Csapat (legalsó, legszélesebb) -->
+    <rect x="20" y="276" width="560" height="74" rx="11" fill="#e6f6ec" stroke="#bce6cb"/>
+    <text x="300" y="300" text-anchor="middle" font-size="13" font-weight="800" fill="#15703f">CSAPAT SZINT</text>
+    <text x="300" y="320" text-anchor="middle" font-size="11" fill="#5d6678">Scrum / Kanban csapatok (5–11 fő)</text>
+    <text x="300" y="336" text-anchor="middle" font-size="11" fill="#5d6678">Sprint Planning, Daily, Retro</text>
+  </svg>
+  <p class="cap">A SAFe az Agile-t négy egymásra épülő szinten skálázza: a legalsó (legszélesebb) a végrehajtó csapatok, fölötte a programszintű koordináció (ART), majd a Large Solution és a stratégiát adó Portfólió szint.</p>
+</div>
+
+<h3>SAFe kulcsfogalmak:</h3>
+
+<div class="subsection">
+<h4>PI Planning (Program Increment Planning)</h4>
+<ul>
+  <li>2 napos, face-to-face tervezési esemény</li>
+  <li>Minden csapat részt vesz (50-125 fő egy teremben)</li>
+  <li>Cél: következő 8-12 hét munkájának összehangolása</li>
+  <li>Eredmény: PI Objectives, csapat tervek, függőségek térképe</li>
+</ul>
+</div>
+
+<div class="subsection">
+<h4>ART (Agile Release Train)</h4>
+<ul>
+  <li>5-12 Agile csapat, akik együtt szállítanak értéket</li>
+  <li>Fix ütemterv: Program Increment (8-12 hét, általában 5 sprint)</li>
+  <li>System Demo minden sprint végén</li>
+  <li>Inspect & Adapt a PI végén</li>
+</ul>
+</div>
+
+<table>
+<tr>
+  <th>Előnyök</th>
+  <th>Hátrányok</th>
+</tr>
+<tr>
+  <td>Agile skálázása nagy szervezeteknél</td>
+  <td>Bürokratikus érzés (sok ceremónia, szerepkör)</td>
+</tr>
+<tr>
+  <td>Összehangolás több csapat között</td>
+  <td>Drága (tréning, certifikáció, tanácsadók)</td>
+</tr>
+<tr>
+  <td>Portfólió szintű stratégiai tervezés</td>
+  <td>Túl "top-down" – ellentmondhat az Agile szellemnek</td>
+</tr>
+<tr>
+  <td>Mérhetőség (metrikák, OKR-ek)</td>
+  <td>Nehéz bevezetni, kulturális ellenállás</td>
+</tr>
+</table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- NAGY ÖSSZEHASONLÍTÓ TÁBLÁZAT -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="comparison">
+<h2>10. Nagy összehasonlító táblázat</h2>
+<span class="tag">Összehasonlítás</span> <span class="tag">Döntés</span>
+
+<p>Az alábbi táblázat egymás mellé teszi a fő módszertanokat a legfontosabb szempontok szerint. Olvasd soronként (egy-egy jellemzőre), hogy lásd, melyik megközelítés hogyan viszonyul a többihez — ez a leggyorsabb módja, hogy interjún meg tudd indokolni a választást.</p>
+
+<table>
+<tr>
+  <th>Szempont</th>
+  <th>Waterfall</th>
+  <th>V-Model</th>
+  <th>Spirális</th>
+  <th>Agile/Scrum</th>
+  <th>Kanban</th>
+  <th>Lean</th>
+  <th>DevOps</th>
+</tr>
+<tr>
+  <td><strong>Megközelítés</strong></td>
+  <td>Lineáris</td>
+  <td>Lineáris + Teszt</td>
+  <td>Spirál, kockázat</td>
+  <td>Iteratív, sprint</td>
+  <td>Folyamatos flow</td>
+  <td>Waste eliminálás</td>
+  <td>Kultúra + CI/CD</td>
+</tr>
+<tr>
+  <td><strong>Követelmények</strong></td>
+  <td>Fix, az elején</td>
+  <td>Fix, az elején</td>
+  <td>Iteratívan bővül</td>
+  <td>Változik, backlog</td>
+  <td>Folyamatosan jön</td>
+  <td>Just-in-time</td>
+  <td>Folyamatos</td>
+</tr>
+<tr>
+  <td><strong>Szállítás</strong></td>
+  <td>Egyszer, a végén</td>
+  <td>Egyszer, a végén</td>
+  <td>Iterációnként</td>
+  <td>Sprint végén</td>
+  <td>Folyamatosan</td>
+  <td>Kis batch-ek</td>
+  <td>Naponta többször</td>
+</tr>
+<tr>
+  <td><strong>Változás kezelés</strong></td>
+  <td>Nagyon költséges</td>
+  <td>Nagyon költséges</td>
+  <td>Közepes</td>
+  <td>Természetes</td>
+  <td>Természetes</td>
+  <td>Természetes</td>
+  <td>Természetes</td>
+</tr>
+<tr>
+  <td><strong>Tesztelés</strong></td>
+  <td>Végén</td>
+  <td>Párhuzamos</td>
+  <td>Iterációnként</td>
+  <td>Folyamatos</td>
+  <td>Folyamatos</td>
+  <td>Beépített</td>
+  <td>Automatizált</td>
+</tr>
+<tr>
+  <td><strong>Ügyfél részvétel</strong></td>
+  <td>Elején és végén</td>
+  <td>Elején és végén</td>
+  <td>Iterációnként</td>
+  <td>Folyamatos</td>
+  <td>Folyamatos</td>
+  <td>Folyamatos</td>
+  <td>Folyamatos</td>
+</tr>
+<tr>
+  <td><strong>Dokumentáció</strong></td>
+  <td>Nagyon sok</td>
+  <td>Nagyon sok</td>
+  <td>Közepes</td>
+  <td>Minimális</td>
+  <td>Minimális</td>
+  <td>Just enough</td>
+  <td>As code (IaC)</td>
+</tr>
+<tr>
+  <td><strong>Kockázat</strong></td>
+  <td>Magas (késői feedback)</td>
+  <td>Közepes</td>
+  <td>Alacsony (elemzés)</td>
+  <td>Alacsony</td>
+  <td>Alacsony</td>
+  <td>Alacsony</td>
+  <td>Alacsony</td>
+</tr>
+<tr>
+  <td><strong>Csapatméret</strong></td>
+  <td>Bármilyen</td>
+  <td>Közepes-nagy</td>
+  <td>Nagy</td>
+  <td>5-9 (Scrum)</td>
+  <td>Bármilyen</td>
+  <td>Bármilyen</td>
+  <td>Cross-functional</td>
+</tr>
+<tr>
+  <td><strong>Ideális projekt</strong></td>
+  <td>Fix scope, szabályozott</td>
+  <td>Magas minőség, szabályozott</td>
+  <td>Nagy, ismeretlen kockázat</td>
+  <td>Változó követelmények</td>
+  <td>Support, ops</td>
+  <td>Hatékonyság</td>
+  <td>Gyors szállítás</td>
+</tr>
+</table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- MELYIKET MIKOR? -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="decision">
+<h2>11. Melyiket mikor válasszuk? – Döntési fa</h2>
+<span class="tag">Döntés</span> <span class="tag">Gyakorlat</span>
+
+<div class="diagram">
+START: Milyen a projekt?
+│
+├── A követelmények stabilak, nem változnak?
+│   ├── IGEN + Szabályozott iparág (orvosi, repülés)?
+│   │   └── ✅ V-Model vagy Waterfall
+│   ├── IGEN + Egyszerű projekt?
+│   │   └── ✅ Waterfall
+│   └── NEM → Tovább ↓
+│
+├── Nagy kockázat, ismeretlen technológia?
+│   └── ✅ Spirális modell
+│
+├── Kis-közepes csapat (5-12 fő)?
+│   ├── Szükséges fix iteráció és strukturált ceremóniák?
+│   │   └── ✅ Scrum
+│   ├── Folyamatos szállítás kell, nincs fix sprint?
+│   │   └── ✅ Kanban
+│   └── Technikai kiválóság (TDD, Pair Programming)?
+│       └── ✅ XP (Extreme Programming)
+│
+├── Nagy szervezet (50+ fejlesztő)?
+│   └── ✅ SAFe vagy LeSS
+│
+├── Gyors szállítás + üzemeltetés automatizálása?
+│   └── ✅ DevOps (kiegészítésként Agile mellé)
+│
+└── Pazarlás csökkentése, folyamat-optimalizálás?
+    └── ✅ Lean (kiegészítésként bármely módszer mellé)</div>
+
+<h3>Valós kombinációk (a gyakorlatban):</h3>
+
+<div class="answer-box">
+<strong>A legtöbb modern szervezet kombinációt használ:</strong>
+<ul>
+  <li><strong>Scrum + XP:</strong> Scrum keretrendszer + TDD, Pair Programming, CI (leggyakoribb)</li>
+  <li><strong>Scrum + Kanban (Scrumban):</strong> Sprint struktúra + WIP limitek, vizualizáció</li>
+  <li><strong>Agile + DevOps:</strong> Scrum sprintek + CI/CD pipeline, automatizált deploy</li>
+  <li><strong>Agile + Lean:</strong> Sprint + waste eliminálás, value stream mapping</li>
+  <li><strong>SAFe + DevOps:</strong> Nagyvállalati Agile + folyamatos szállítás</li>
+</ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- INTERJÚKÉRDÉSEK -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="section" id="interview">
+<h2>12. Interjúkérdések – Módszertanok</h2>
+<span class="tag">Interjú</span>
+
+<div class="answer-box">
+<strong>K1: Mi a különbség a Waterfall és az Agile között?</strong>
+<p><strong>Waterfall:</strong> Lineáris, fázisonként halad, a követelmények az elején rögzítettek, tesztelés a végén, az ügyfél csak a végén látja a terméket. <strong>Agile:</strong> Iteratív, rövid sprintek, folyamatosan változó követelmények, folyamatos tesztelés, az ügyfél folyamatosan részt vesz. Waterfall = terv-vezérelt, Agile = adaptív.</p>
+</div>
+
+<div class="answer-box">
+<strong>K2: Mikor válasszunk Waterfall-t Agile helyett?</strong>
+<p>Waterfall akkor jó, ha: (1) a követelmények stabilak és nem változnak, (2) szabályozott iparágban dolgozunk (orvosi szoftver, repülés), (3) a projekt scope egyértelmű és kicsi, (4) az ügyfél nem tud/akar részt venni a fejlesztés során, (5) komoly dokumentáció szükséges (pl. FDA, ISO audit).</p>
+</div>
+
+<div class="answer-box">
+<strong>K3: Mi a Scrum és a Kanban közötti fő különbség?</strong>
+<p><strong>Scrum:</strong> Fix időkeretű iterációk (sprint), definiált szerepkörök (PO, SM, Dev), tervezett kapacitás (velocity). <strong>Kanban:</strong> Folyamatos áramlás, nincs fix iteráció, WIP limitek kontrollálják a munkát, nincs kötelező szerepkör. Scrum = szabályosabb, Kanban = rugalmasabb.</p>
+</div>
+
+<div class="answer-box">
+<strong>K4: Mi a DevOps és hogyan kapcsolódik az Agile-hoz?</strong>
+<p>A DevOps a fejlesztés (Dev) és üzemeltetés (Ops) közötti fal lebontása. Nem módszertan, hanem kultúra és gyakorlatok (CI/CD, IaC, monitoring). Az Agile a "mit és mikor fejlesszünk" kérdésre válaszol, a DevOps a "hogyan szállítsuk és üzemeltessük" kérdésre. A kettő kiegészíti egymást.</p>
+</div>
+
+<div class="answer-box">
+<strong>K5: Mi a Lean szoftverfejlesztés lényege?</strong>
+<p>A Toyota Production System-ből származik. 7 alapelv: pazarlás megszüntetése, minőség beépítése, tudás létrehozása, késői döntés, gyors szállítás, emberek tisztelete, egész optimalizálása. A fő cél: a maximális érték szállítása a minimális pazarlással. Jól kiegészíti az Agile-t.</p>
+</div>
+
+<div class="answer-box">
+<strong>K6: Mi a SAFe? Mikor kell használni?</strong>
+<p>Scaled Agile Framework – nagy szervezetek (50-125+ fő) számára az Agile skálázása. Szintek: csapat, program (ART), large solution, portfólió. PI Planning (2 napos tervezés) a kulcs esemény. Akkor kell, ha több Scrum csapat dolgozik ugyanazon a terméken és koordinálásra van szükség. Hátránya: bürokratikus lehet.</p>
+</div>
+
+<div class="answer-box">
+<strong>K7: Mi a V-Model és mikor használjuk?</strong>
+<p>A Waterfall kiterjesztése, ahol minden fejlesztési fázisnak megfelelő tesztelési fázis van (pl. követelmény → UAT, tervezés → rendszerteszt). Mikor: magas megbízhatóságú rendszerek (orvosi, autóipari), ha a tesztelés dokumentálása kötelező (ISO, FDA), rövid, jól definiált projektek.</p>
+</div>
+
+<div class="trap-box">
+<strong>Interjú tipp:</strong> Ne mondd, hogy "Agile mindig jobb, mint a Waterfall" – ez red flag! Mindig az adott projekt kontextusától függ. Egy atomerőmű vezérlőrendszernél Waterfall/V-Model kellhet, míg egy startup webes alkalmazásnál Agile ideális.
+</div>
+</div>
+
+  <footer>
+    <p><strong>📋 Kidolgozási &amp; karbantartási napló</strong></p>
+    <p>
+      <strong>Készítette:</strong> Claude Opus 4.8 (1M kontextus) · modell-azonosító <code>claude-opus-4-8[1m]</code><br>
+      <strong>Kidolgozás dátuma:</strong> 2026-06-21 · <strong>A modell tudásvágása:</strong> 2026. január (a tanítóadat vége — az azóta eltelt időszak változásait nem garantáltan ismeri)<br>
+      <strong>Precíziós szint:</strong> dizájn a közös világos témára konvertálva + tutorial-részletességű kidolgozás, SVG-vizualizációkkal.
+    </p>
+    <p><strong>Elvégzett változtatások:</strong> sötét → világos kártyás téma; hero + tartalomjegyzék; a kulcs ASCII-ábrák (Waterfall, V-Model, Iteratív, Spirális, DevOps ∞ hurok, SAFe szintek) SVG-re cserélve; rövid bevezető magyarázatok; a döntési fa megmaradt sötét panel-ként.</p>
+    <p><strong>🔧 Ha 1 év múlva frissíteni kell:</strong> a dizájn a <code>:root</code> CSS-változókban (<code>.wrap</code> &gt; <code>header.hero</code> + <code>nav.toc</code> + <code>.section</code>; ábrák: inline <code>&lt;svg&gt;</code> a <code>.fig</code>-ben, ASCII a <code>.diagram</code> panelen). Kódblokkban escape-eld a &lt; &gt; &amp; karaktereket. A módszertan-tartalom időtálló; az eszköz-példák (DevOps tooling, DORA, SAFe verzió) frissítendők.</p>
+  </footer>
+
+</div>
+</body>
+</html>
