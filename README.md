@@ -1,73 +1,74 @@
 # Interview Browser
 
-Mobil-optimalizált keret-webapp, amiben AI-generált, egymástól teljesen független egyoldalas HTML (vagy PDF) interjú-felkészítő anyagok között lehet tallózni és a verzióik között váltani.
+Mobile-first shell webapp for browsing AI-generated, fully independent single-page HTML (or PDF) interview-prep materials and switching between their versions.
 
-Új anyag hozzáadásához **nem kell se konfigot, se kódot módosítani**: csak bemásolod a mappát a `content/` alá és pusholsz — a build magától felderíti.
+Adding new material requires **no config or code changes**: just copy a folder under `content/` and push — the build discovers everything on its own.
 
-## Mappa-konvenció
+## Folder convention
 
 ```
 content/
-  @frontend/              <- group (@ prefix, tetszőlegesen ágyazható)
-    react-hooks/          <- anyag (jelöletlen mappa)
-      index.html          <- default verzió ("aktuális")
-      2026-07-10/         <- verzió (az anyag almappája, a neve kötetlen)
-        barmi-nevu.html
-  system-design/          <- group nélküli anyag a gyökérben
+  @frontend/              <- group (@ prefix, nestable to any depth)
+    react-hooks/          <- material (unmarked folder)
+      index.html          <- default version ("aktuális")
+      2026-07-10/         <- version (subfolder of the material, any name)
+        any-name.html
+  system-design/          <- ungrouped material at the root
     2026-06-01/
       prep.html
-    2026-07-01/           <- default = név szerint csökkenő sorrendben az első
+    2026-07-01/           <- default = first in descending name order
       prep.html
 ```
 
-Szabályok:
+Rules:
 
-- **Group:** `@`-prefixű mappa (megjelenített név a prefix nélkül). Tartalmazhat groupokat és anyagokat, tetszőleges mélységben.
-- **Anyag:** bármilyen jelöletlen mappa egy groupban vagy a gyökérben. Az almappái a **verziók** (a nevük kötetlen — dátum, v1, bármi).
-- **Tartalomfájl** egy mappán belül: `index.html` > ábécé szerinti első `*.html` > első `*.pdf`. Minden más fájl (kép, css, js) változatlanul másolódik, így a relatív hivatkozások működnek.
-- **Default verzió:** ha az anyag mappájában közvetlenül van tartalomfájl, az a default („aktuális” néven jelenik meg); különben a név szerint csökkenően rendezett első verzió (dátum-nevű mappáknál ez a legújabb).
-- Tartalomfájl nélküli almappa nem verzió, hanem asset-mappa — a build kihagyja a listából, de a fájljai kimásolódnak.
+- **Group:** a folder with an `@` prefix (displayed without the prefix). May contain groups and materials, nested to any depth.
+- **Material:** any unmarked folder inside a group or at the root. Its subfolders are **versions** (named freely — dates, v1, anything).
+- **Content file** within a folder: `index.html` > alphabetically first `*.html` > first `*.pdf`. All other files (images, css, js) are copied verbatim, so relative references keep working.
+- **Default version:** if the material folder directly contains a content file, that is the default (shown as "aktuális"); otherwise the first version in descending name order (for date-named folders that is the newest).
+- A subfolder without a content file is not a version but an asset folder — the build omits it from the list but still copies its files.
 
-## Használat
+## Usage
 
-Élő oldal: **https://interviewbrowser.sallai.cc/**
+Live site: **https://interviewbrowser.sallai.cc/**
 
 ```sh
-# lokális fejlesztés: build + szerver (nincs függőség, csak Node kell)
+# local development: build + server (zero dependencies, only Node required)
 npm run dev                    # http://localhost:8080
 
-# csak build
+# build only
 npm run build                  # -> dist/
 
-# content release: build-ellenőrzés + conventional commit + szemver bump + tag + push
-npm run release                        # automatikus üzenet + automatikus bump
-npm run release -- --major             # bump felülbírálása (--major/--minor/--patch)
-npm run release -- "feat(content): saját üzenet"
+# content release: build check + conventional commit + semver bump + tag + push
+npm run release                        # auto message + auto bump
+npm run release -- --major             # bump override (--major/--minor/--patch)
+npm run release -- "feat(content): custom message"
 ```
 
-A `release` csak a `content/` alatti változásokat commitolja (az app/script módosításokat nem), és a push után a GitHub Actions automatikusan deployol.
+`release` commits only the changes under `content/` (not app/script modifications), and GitHub Actions deploys automatically after the push.
 
-## Verziózás és commit konvenció
+## Versioning and commit convention
 
-A repo [conventional commits](https://www.conventionalcommits.org/) szerint commitol (`feat:`, `fix:`, `docs:`, `chore:`, `refactor:` …; content-hez a `(content)` scope), a projekt pedig [szemver](https://semver.org/) verziót követ (`package.json` + `vX.Y.Z` git tag).
+The repo follows [conventional commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `chore:`, `refactor:` …; the `(content)` scope for content) and the project follows [semver](https://semver.org/) (`package.json` + `vX.Y.Z` git tags).
 
-A `npm run release` default logikája:
+Default logic of `npm run release`:
 
-| Változás a content/ alatt | Commit | Bump |
+| Change under content/ | Commit | Bump |
 |---|---|---|
-| van új fájl (új anyag vagy verzió) | `feat(content): <anyag/verzió lista>` | minor |
-| csak módosítás/törlés | `fix(content): <anyag/verzió lista>` | patch |
+| any new file (new material or version) | `feat(content): <material/version list>` | minor |
+| modification/deletion only | `fix(content): <material/version list>` | patch |
 
-A content commit után külön `chore(release): vX.Y.Z` commit bumpolja a `package.json`-t, tageli a verziót, és `push --follow-tags`-szel tol ki mindent. App-oldali release-hez ugyanez kézzel: conventional commit + `npm version minor` (vagy `major`/`patch`).
+After the content commit, a separate `chore(release): vX.Y.Z` commit bumps `package.json`, tags the version (annotated), and pushes everything with `push --follow-tags`. For app-side releases do the same manually: conventional commit + `npm version minor` (or `major`/`patch`).
 
-## Deploy
+## Deployment
 
-Minden `main`-re történő push után a GitHub Actions workflow (`.github/workflows/deploy.yml`) lebuildeli és publikálja az oldalt GitHub Pages-re.
+Every push to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy.yml`), which builds and publishes the site to GitHub Pages.
 
-A workflow első futása megpróbálja magától bekapcsolni a Pages-t (`configure-pages` + `enablement: true`). Ha ez jogosultság miatt nem sikerülne: a repo *Settings → Pages → Build and deployment → Source* alatt válaszd a **GitHub Actions**-t, majd futtasd újra a workflow-t.
+The first run of the workflow tries to enable Pages on its own (`configure-pages` + `enablement: true`). If that fails due to permissions: under the repo *Settings → Pages → Build and deployment → Source* select **GitHub Actions**, then re-run the workflow.
 
-## Felépítés
+## Architecture
 
-- `app/` — a keret app: vanilla HTML/CSS/JS, hash-alapú routing (`#/@frontend/react-hooks?v=2026-07-10`), az anyagokat iframe-be ágyazza. A PDF-eket a vendorolt [PDF.js](https://mozilla.github.io/pdf.js/) viewer rendereli (`app/vendor/pdfjs/`), mert Androidon az iframe-be ágyazott / új füles PDF letöltésként viselkedne.
-- `scripts/build.js` — zero-dependency scanner: bejárja a `content/`-et, `dist/`-be másolja az appot + tartalmat, és legenerálja a `dist/manifest.json`-t.
-- `scripts/serve.js` — zero-dependency lokális statikus szerver.
+- `app/` — the shell app: vanilla HTML/CSS/JS, hash-based routing (`#/@frontend/react-hooks?v=2026-07-10`), materials render in an iframe. PDFs are rendered by the vendored [PDF.js](https://mozilla.github.io/pdf.js/) viewer (`app/vendor/pdfjs/`), because on Android an iframed / new-tab PDF would behave as a download.
+- `scripts/build.js` — zero-dependency scanner: walks `content/`, copies the app + content into `dist/`, and generates `dist/manifest.json`.
+- `scripts/serve.js` — zero-dependency local static server.
+- `scripts/release.js` — the content release flow described above.
