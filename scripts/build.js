@@ -72,7 +72,7 @@ function scanMaterial(dir, relPath) {
     const file = pickContentFile(path.join(dir, sub));
     if (!file) {
       // No content file: treated as an asset folder of the material, not a version.
-      console.log(`  [info] nem verzió (nincs benne html/pdf): ${relPath}/${sub}`);
+      console.log(`  [info] not a version (no html/pdf inside): ${relPath}/${sub}`);
       continue;
     }
     versions.push({
@@ -103,7 +103,7 @@ function scanLevel(dir, relPath) {
     const groupRel = joinRel(relPath, name);
     const children = scanLevel(path.join(dir, name), groupRel);
     if (children.length === 0) {
-      console.warn(`  [warn] üres group kihagyva: ${groupRel}`);
+      console.warn(`  [warn] skipping empty group: ${groupRel}`);
       continue;
     }
     items.push({ type: 'group', name: name.slice(GROUP_PREFIX.length), path: groupRel, children });
@@ -113,7 +113,7 @@ function scanLevel(dir, relPath) {
     const materialRel = joinRel(relPath, name);
     const material = scanMaterial(path.join(dir, name), materialRel);
     if (!material) {
-      console.warn(`  [warn] tartalom nélküli anyag kihagyva: ${materialRel}`);
+      console.warn(`  [warn] skipping material without content: ${materialRel}`);
       continue;
     }
     items.push(material);
@@ -131,11 +131,11 @@ function countMaterials(items) {
 
 function build() {
   if (!fs.existsSync(CONTENT_DIR)) {
-    console.error(`Nincs content/ mappa: ${CONTENT_DIR}`);
+    console.error(`Missing content/ folder: ${CONTENT_DIR}`);
     process.exit(1);
   }
 
-  console.log('content/ feltérképezése...');
+  console.log('Scanning content/ ...');
   const items = scanLevel(CONTENT_DIR, '');
 
   fs.rmSync(DIST_DIR, { recursive: true, force: true });
@@ -143,11 +143,12 @@ function build() {
   fs.cpSync(APP_DIR, DIST_DIR, { recursive: true });
   fs.cpSync(CONTENT_DIR, path.join(DIST_DIR, 'content'), { recursive: true });
 
-  const manifest = { generatedAt: new Date().toISOString(), items };
+  const { version } = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+  const manifest = { version, generatedAt: new Date().toISOString(), items };
   fs.writeFileSync(path.join(DIST_DIR, 'manifest.json'), JSON.stringify(manifest, null, 2));
   fs.writeFileSync(path.join(DIST_DIR, '.nojekyll'), '');
 
-  console.log(`Kész: ${countMaterials(items)} anyag -> dist/`);
+  console.log(`Done: ${countMaterials(items)} materials -> dist/`);
 }
 
 if (require.main === module) build();

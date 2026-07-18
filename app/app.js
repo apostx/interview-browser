@@ -174,7 +174,9 @@
   el.search.addEventListener('input', render);
   window.addEventListener('hashchange', render);
 
-  fetch('manifest.json')
+  // no-cache: always revalidate, so a fresh release shows up immediately
+  // instead of after GitHub Pages' 10-minute max-age expires.
+  fetch('manifest.json', { cache: 'no-cache' })
     .then((r) => {
       if (!r.ok) throw new Error(`manifest.json: HTTP ${r.status}`);
       return r.json();
@@ -182,6 +184,10 @@
     .then((manifest) => {
       root.children = manifest.items;
       indexTree(manifest.items, root, []);
+      if (manifest.version) {
+        document.getElementById('version').textContent =
+          `v${manifest.version} · ${new Date(manifest.generatedAt).toLocaleString('hu-HU')}`;
+      }
       render();
     })
     .catch((err) => {
