@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1116">
+<title>Redspher — Technikai interjú felkészítő</title>
+<style>
+  :root{
+    --bg:#0e1116;
+    --bg-raise:#161b22;
+    --bg-card:#171d26;
+    --line:#232c38;
+    --line-soft:#1b222c;
+    --ink:#e7edf3;
+    --ink-dim:#9aa7b4;
+    --ink-faint:#66727f;
+    --amber:#f5a524;
+    --amber-deep:#3a2c0e;
+    --amber-line:#5a4514;
+    --sig:#38bdf8;          /* signal blue — "departures board" cyan */
+    --sig-deep:#0c2a38;
+    --code-ink:#ffd7a8;
+    --key:#f5a524;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono','Fira Code',Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:17px;
+    line-height:1.58;
+    -webkit-text-size-adjust:100%;
+    text-rendering:optimizeLegibility;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:64px;
+  }
+
+  /* ---- progress bar ---- */
+  #progress{
+    position:fixed;top:0;left:0;height:3px;width:0%;
+    background:linear-gradient(90deg,var(--sig),var(--amber));
+    z-index:50;transition:width .1s linear;
+  }
+
+  .wrap{max-width:720px;margin:0 auto;padding:0 16px;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));}
+
+  /* ---- header ---- */
+  header{
+    padding:calc(26px + env(safe-area-inset-top)) 0 20px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:8px;
+  }
+  .kicker{
+    font-family:var(--mono);
+    font-size:11px;letter-spacing:2.5px;text-transform:uppercase;
+    color:var(--sig);font-weight:600;margin:0 0 10px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .kicker::before{
+    content:"";width:7px;height:7px;border-radius:50%;
+    background:var(--sig);box-shadow:0 0 0 4px var(--sig-deep);
+    animation:pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  h1{
+    font-size:30px;line-height:1.12;margin:0 0 12px;
+    font-weight:800;letter-spacing:-.5px;
+  }
+  .stackline{
+    font-family:var(--mono);font-size:12.5px;line-height:1.9;
+    color:var(--ink-dim);display:flex;flex-wrap:wrap;gap:6px;
+  }
+  .stackline span{
+    background:var(--bg-raise);border:1px solid var(--line-soft);
+    padding:2px 8px;border-radius:5px;white-space:nowrap;
+  }
+
+  .lead{
+    background:var(--bg-raise);
+    border:1px solid var(--line-soft);
+    border-left:3px solid var(--sig);
+    border-radius:10px;
+    padding:14px 16px;
+    font-size:14.5px;line-height:1.55;color:var(--ink-dim);
+    margin:16px 0 6px;
+  }
+  .lead b{color:var(--ink);}
+  .lead .dot-key{color:var(--amber);font-weight:700;}
+
+  .legend{
+    display:flex;gap:14px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);
+    margin:10px 2px 4px;
+  }
+  .legend i{font-style:normal;display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:22px;height:11px;border-radius:3px;display:inline-block;}
+  .sw-key{background:var(--amber);}
+  .sw-trap{background:var(--amber-deep);border:1px solid var(--amber-line);}
+
+  /* ---- section (collapsible) ---- */
+  details.sec{
+    border-top:1px solid var(--line);
+    margin-top:6px;
+  }
+  details.sec[open]{padding-bottom:10px;}
+  summary.sec-head{
+    list-style:none;cursor:pointer;
+    display:flex;align-items:center;gap:12px;
+    padding:20px 2px 18px;
+    position:sticky;top:0;z-index:20;
+    background:var(--bg);
+  }
+  summary.sec-head::-webkit-details-marker{display:none;}
+  .sec-num{
+    font-family:var(--mono);font-size:12px;font-weight:700;
+    color:var(--sig);letter-spacing:1px;
+    min-width:26px;
+  }
+  .sec-title{
+    font-size:19px;font-weight:800;letter-spacing:-.3px;flex:1;
+  }
+  .sec-tag{
+    font-family:var(--mono);font-size:9.5px;font-weight:700;
+    letter-spacing:.8px;text-transform:uppercase;
+    padding:3px 7px;border-radius:5px;white-space:nowrap;
+  }
+  .tag-core{color:#7fd8ff;background:var(--sig-deep);border:1px solid #164257;}
+  .tag-diff{color:var(--amber);background:var(--amber-deep);border:1px solid var(--amber-line);}
+  .chev{
+    color:var(--ink-faint);font-size:13px;transition:transform .2s;
+    font-family:var(--mono);
+  }
+  details[open] .chev{transform:rotate(90deg);color:var(--sig);}
+
+  .sec-note{
+    font-size:13px;color:var(--ink-faint);font-style:italic;
+    margin:0 2px 16px;line-height:1.5;
+  }
+
+  /* ---- Q&A card ---- */
+  .qa{
+    background:var(--bg-card);
+    border:1px solid var(--line-soft);
+    border-left:3px solid #2a3542;
+    border-radius:11px;
+    padding:15px 16px;
+    margin:0 0 12px;
+  }
+  .qa.key{
+    border-left-color:var(--amber);
+    background:linear-gradient(180deg,rgba(245,165,36,.05),transparent 60%),var(--bg-card);
+  }
+  .q{
+    font-weight:700;font-size:16.5px;line-height:1.4;
+    margin:0 0 10px;color:var(--ink);
+    display:flex;gap:9px;align-items:baseline;
+  }
+  .q .badge{
+    flex:none;font-family:var(--mono);font-size:11px;font-weight:800;
+    color:#0e1116;background:var(--amber);
+    padding:1px 6px;border-radius:5px;line-height:1.5;
+    transform:translateY(-1px);
+  }
+  .qa:not(.key) .q .badge{background:#3a4a5a;color:#cfe0f0;}
+  .a{color:var(--ink-dim);font-size:15px;line-height:1.62;}
+  .a p{margin:0 0 9px;}
+  .a p:last-child{margin-bottom:0;}
+  .a ul{margin:6px 0 9px;padding-left:2px;list-style:none;}
+  .a li{margin:0 0 7px;padding-left:18px;position:relative;}
+  .a li::before{
+    content:"▸";position:absolute;left:0;top:0;
+    color:var(--sig);font-size:12px;
+  }
+  .a strong{color:var(--ink);font-weight:700;}
+  .a em{color:var(--ink);font-style:italic;}
+
+  code{
+    font-family:var(--mono);font-size:13.5px;
+    background:#0b0f14;border:1px solid var(--line-soft);
+    padding:1px 6px;border-radius:5px;color:var(--code-ink);
+    word-break:break-word;
+  }
+  pre{
+    background:#0a0d12;border:1px solid var(--line);
+    border-radius:9px;padding:14px 15px;margin:11px 0;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;
+    font-size:13.5px;line-height:1.55;
+  }
+  pre code{background:none;border:none;padding:0;color:#dbe7f2;font-size:13.5px;white-space:pre;}
+  pre::-webkit-scrollbar{height:6px;}
+  pre::-webkit-scrollbar-thumb{background:#2a3542;border-radius:3px;}
+
+  .gotcha{
+    display:block;margin-top:11px;
+    font-size:13.5px;line-height:1.5;
+    color:#f2c877;
+    background:var(--amber-deep);
+    border:1px solid var(--amber-line);
+    border-radius:8px;padding:10px 12px;
+  }
+  .gotcha b{color:var(--amber);}
+
+  /* ---- back-to-top ---- */
+  #totop{
+    position:fixed;right:16px;
+    bottom:calc(16px + env(safe-area-inset-bottom));
+    width:46px;height:46px;border-radius:14px;
+    background:var(--bg-raise);border:1px solid var(--line);
+    color:var(--sig);font-size:19px;
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;transition:opacity .25s;
+    z-index:40;text-decoration:none;
+    box-shadow:0 6px 24px rgba(0,0,0,.4);
+  }
+  #totop.show{opacity:1;pointer-events:auto;}
+
+  footer{
+    text-align:center;font-family:var(--mono);font-size:11px;
+    color:var(--ink-faint);padding:32px 0 8px;
+    border-top:1px solid var(--line);margin-top:20px;
+  }
+
+  /* expand/collapse-all control */
+  .controls{
+    display:flex;gap:10px;margin:18px 2px 4px;
+  }
+  .controls button{
+    font-family:var(--mono);font-size:12px;
+    color:var(--ink-dim);background:var(--bg-raise);
+    border:1px solid var(--line);border-radius:7px;
+    padding:7px 12px;cursor:pointer;
+  }
+  .controls button:active{background:var(--bg-card);}
+
+  @media (max-width:400px){
+    body{font-size:16px;}
+    h1{font-size:26px;}
+    .q{font-size:15.5px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;}
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div class="wrap">
+  <header>
+    <p class="kicker">Technikai interjú felkészítő</p>
+    <h1>Redspher —<br>Full Stack Developer</h1>
+    <div class="stackline">
+      <span>TypeScript</span><span>React</span><span>Node.js</span><span>AWS</span><span>REST</span><span>CI/CD</span><span>AI · LLM · MCP</span>
+    </div>
+  </header>
+
+  <div class="lead">
+    Válasz-központú tudástár a technikai körre. Minden tétel egy reálisan feltehető kérdés, plusz egy tömör, megvédhető válasz. <b>Kiemelt kártyák</b> = a stack alapján legvalószínűbb kérdések. <span class="dot-key">Sárga doboz</span> = a tipikus rákérdezés vagy csapda, amit az interjúztató utána feszeget.
+  </div>
+
+  <div class="legend">
+    <i><span class="swatch sw-key"></span>legvalószínűbb</i>
+    <i><span class="swatch sw-trap"></span>csapda / rákérdezés</i>
+  </div>
+
+  <div class="controls">
+    <button id="expandAll">Összes kinyitása</button>
+    <button id="collapseAll">Összes bezárása</button>
+  </div>
+
+  <!-- ============ 1 · TYPESCRIPT ============ -->
+  <details class="sec" open>
+    <summary class="sec-head">
+      <span class="sec-num">01</span>
+      <span class="sec-title">TypeScript</span>
+      <span class="sec-tag tag-core">Kulcs</span>
+      <span class="chev">▶</span>
+    </summary>
+    <p class="sec-note">Az „erős TypeScript-tudás" kétszer is szerepel a hirdetésben — mélységre számíts, ne szintaktikai apróságokra.</p>
+
+    <div class="qa key">
+      <p class="q"><span class="badge">K</span><span><code>interface</code> vs <code>type</code> — melyiket mikor választod?</span></p>
+      <div class="a">
+        <p>Mindkettő objektum-alakot ír le. Az <strong>interface</strong> nyitott — támogatja a deklaráció-összeolvasztást (declaration merging) és az <code>extends</code>-et, ezért ez az alapértelmezés publikus/objektum-szerződésekhez és bármihez, amit egy fogyasztó kiegészíthet. A <strong>type</strong> zárt alias, de sokkal kifejezőbb: unió, metszet, tuple, mapped és conditional típusok, primitívek.</p>
+        <p>Ökölszabály: <code>interface</code> a bővíthető objektum-szerződésekhez; <code>type</code>, ha unióra vagy típusszintű számításra van szükség.</p>
+        <span class="gotcha"><b>Rákérdezés:</b> „Létezhet két azonos nevű interface?" Igen — összeolvadnak. Két azonos nevű <code>type</code> fordítási hiba. Pont ez az összeolvasztás az oka, hogy a könyvtárak interface-eket tesznek közzé.</span>
+      </div>
+    </div>
+
+    <div class="qa key">
+      <p class="q"><span class="badge">K</span><span>Magyarázd el a generikusokat egy valós megkötéssel. Mit ad a <code>&lt;T extends ...&gt;</code>?</span></p>
+      <div class="a">
+        <p>A generikusok megőrzik a függvény polimorfizmusát, miközben megtartják a hívó pontos típusát ahelyett, hogy <code>any</code>-vé omlana össze. Egy megkötés leszűkíti, mi lehet a <code>T</code>, így biztonságosan hozzáférsz a tagjaihoz.</p>
+        <pre><code>function prop&lt;T, K extends keyof T&gt;(
+  obj: T, key: K
+): T[K] {
+  return obj[key];
+}</code></pre>
+        <p>A <code>K extends keyof T</code> garantálja, hogy a kulcs létezik, és a visszatérési típus a pontos érték-típus lesz — egy elgépelt kulcs fordítási hiba.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span><code>unknown</code> vs <code>any</code> vs <code>never</code>?</span></p>
+      <div class="a">
+        <ul>
+          <li><strong>any</strong> — teljesen kikapcsolja az ellenőrzést; ragadós és értelmetlenné teszi a típusozást. Kerülendő.</li>
+          <li><strong>unknown</strong> — top típus: bármit elfogad, de használat előtt kényszerít a szűkítésre. Ez a biztonságos <code>any</code>-helyettesítő a határokon (API-válaszok, <code>JSON.parse</code>).</li>
+          <li><strong>never</strong> — bottom típus: nincs értéke. Egy mindig dobó függvény visszatérési típusa, és az exhaustiveness-ellenőrzés eszköze <code>switch</code>-ben.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Hogyan garantálod, hogy egy unió feletti <code>switch</code> teljes (exhaustive)?</span></p>
+      <div class="a">
+        <p>Rendeld a default ágat <code>never</code>-höz. Ha valaki hozzáad egy unió-tagot, de elfelejt egy case-t, az értékadás nem fordul le.</p>
+        <pre><code>default: {
+  const _exhaustive: never = value;
+  throw new Error(`Kezeletlen: ${_exhaustive}`);
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Mik a utility típusok, és melyiket használod ténylegesen?</span></p>
+      <div class="a">
+        <p>Beépített mapped típusok, amelyek meglévő típusokat alakítanak át: <code>Partial&lt;T&gt;</code> (minden opcionális — patch payloadok), <code>Pick</code>/<code>Omit</code> (DTO-k származtatása egy modellből), <code>Required</code>, <code>Readonly</code>, <code>Record&lt;K,V&gt;</code>, valamint <code>ReturnType</code>/<code>Parameters</code> függvényekből való inferálásra. Az értéke: egyetlen igazságforrás — variánsokat származtatsz duplikálás helyett.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Type guard-ok és diszkriminált uniók?</span></p>
+      <div class="a">
+        <p>A <strong>diszkriminált unió</strong> minden variánsnak közös literál mezőt ad (<code>kind: 'a' | 'b'</code>); ennek ellenőrzése leszűkíti az egész objektumot. A <strong>felhasználói type guard</strong> egy <code>x is Foo</code> típust visszaadó függvény, amely megtanít egy futásidejű ellenőrzést a fordítónak. Együtt a futásidejű validációt fordításidejű biztonsággá alakítják.</p>
+      </div>
+    </div>
+  </details>
+
+  <!-- ============ 2 · REACT ============ -->
+  <details class="sec" open>
+    <summary class="sec-head">
+      <span class="sec-num">02</span>
+      <span class="sec-title">React</span>
+      <span class="sec-tag tag-core">Kulcs</span>
+      <span class="chev">▶</span>
+    </summary>
+    <p class="sec-note">Hook-belsőségekre, re-render okok magyarázatára és „miért lassú / hibás ez" jellegű szituációkra számíts.</p>
+
+    <div class="qa key">
+      <p class="q"><span class="badge">K</span><span><code>useMemo</code> vs <code>useCallback</code> vs <code>React.memo</code> — melyik mit old meg, mikor felesleges?</span></p>
+      <div class="a">
+        <ul>
+          <li><strong>useMemo</strong> — egy <em>kiszámított értéket</em> memoizál rendereken át.</li>
+          <li><strong>useCallback</strong> — egy <em>függvény-identitást</em> memoizál; <code>useCallback(fn, d)</code> ≡ <code>useMemo(() =&gt; fn, d)</code>.</li>
+          <li><strong>React.memo</strong> — egy <em>komponenst</em> memoizál, kihagyva az újrarenderelést, ha a propok sekélyen (shallow) egyenlők.</li>
+        </ul>
+        <p>Csak együtt van értelmük: egy memoizált gyerek (<code>React.memo</code>) így is újrarenderelődik, ha minden rendernél friss függvényt/objektumot adsz át neki — ezért kell a <code>useCallback</code>/<code>useMemo</code> a prop-identitás stabilizálására.</p>
+        <span class="gotcha"><b>Csapda:</b> Ne szórd mindenhová. A memoizációnak saját költsége van, és olcsó értékeknél nettó veszteség. Akkor nyúlj hozzá, ha drága a számítás, vagy propokat kell stabilizálnod memoizált gyerekekbe — ne alapból.</span>
+      </div>
+    </div>
+
+    <div class="qa key">
+      <p class="q"><span class="badge">K</span><span>Mi vált ki valójában egy re-rendert? Miért renderelődik újra, amikor „semmi sem változott"?</span></p>
+      <div class="a">
+        <p>Egy komponens akkor renderelődik újra, ha: a <strong>state</strong>-je változik, a <strong>szülője</strong> újrarenderelődik, vagy egy <strong>fogyasztott context</strong> értéke változik. A „semmi sem változott" tipikus oka, hogy a szülő újrarenderelődik, és minden alkalommal <strong>új objektum/tömb/függvény referenciát</strong> ad át — referencia szerint nem egyenlő, még ha szerkezetileg azonos is.</p>
+        <p>Re-render ≠ DOM-frissítés. A React egyezteti (reconcile) a virtuális fát, és csak ott nyúl a DOM-hoz, ahol eltérés van; egy re-render nulla DOM-írást is eredményezhet.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>A Hookok szabályai — mik ezek, és <em>miért</em> léteznek?</span></p>
+      <div class="a">
+        <p>Hookot csak <strong>legfelső szinten</strong> hívj (soha ne feltételben, ciklusban vagy beágyazott függvényben), és csak <strong>React-függvényből</strong>. A React a hook-állapotot <em>hívási sorrend</em> szerint tartja számon, nem név szerint — egy feltételes hook eltolja a sorrendet renderek között, és rossz állapot jön vissza.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>A <code>useEffect</code> függőségi tömbje — mi történik <code>[]</code>, <code>[dep]</code> és kihagyott esetben?</span></p>
+      <div class="a">
+        <ul>
+          <li><strong>Kihagyott</strong> — <em>minden</em> render után lefut.</li>
+          <li><strong>[]</strong> — egyszer, mount után fut (cleanup unmountkor).</li>
+          <li><strong>[dep]</strong> — mountkor és valahányszor a <code>dep</code> <code>Object.is</code> szerint változik.</li>
+        </ul>
+        <p>A cleanup függvény a következő effekt előtt és unmountkor fut — így mondasz le feliratkozásokról, timerekről vagy folyamatban lévő fetchekről.</p>
+        <span class="gotcha"><b>Csapda:</b> Ha hazudsz a függőségekről a linter elnémításához, elavult closure-ök keletkeznek — az effekt régi state-et/propot fog be. A valódi okot javítsd (functional update, <code>useRef</code>, vagy az érték behúzása), ne a tömböt vágd meg.</span>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Kontrollált vs kontrollálatlan komponensek?</span></p>
+      <div class="a">
+        <p><strong>Kontrollált</strong>: a React state az egyetlen igazságforrás — <code>value</code> + <code>onChange</code>. Kiszámítható, könnyen validálható/transzformálható. <strong>Kontrollálatlan</strong>: a DOM tartja az értéket, <code>ref</code>-fel olvasod. Kevesebb kód, jó egyszerű vagy file inputokhoz. Alapból kontrolláltat használj mindenhez, amit gépelés közben validálsz vagy amire reagálsz.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Kulcsok (key) listákban — miért ne a tömbindex?</span></p>
+      <div class="a">
+        <p>A kulcsok segítik a Reactet elemeket instanciákhoz párosítani rendereken át. Az <strong>index</strong> kulcs átrendezésnél/beszúrásnál/törlésnél elromlik: a React rossz instanciát használ újra, így az input-state és a fókusz rossz sorhoz tapad. Használj stabil, egyedi id-t az adatból.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Hogyan debuggolnál egy lassú listát / akadozó rendert?</span></p>
+      <div class="a">
+        <ul>
+          <li><strong>Profiler</strong> (React DevTools), hogy lásd, mely komponensek renderelnek és milyen gyakran.</li>
+          <li><strong>Virtualizálás</strong> hosszú listáknál, hogy csak a látható sorok mountolódjanak.</li>
+          <li>Propok stabilizálása / komponensek szétbontása, hogy a re-render lokális maradjon.</li>
+          <li>A ténylegesen drága számítások memoizálása.</li>
+        </ul>
+        <p>Méréssel kezdj — sose optimalizálj vakon.</p>
+      </div>
+    </div>
+  </details>
+
+  <!-- ============ 3 · NODE ============ -->
+  <details class="sec" open>
+    <summary class="sec-head">
+      <span class="sec-num">03</span>
+      <span class="sec-title">Node.js &amp; Backend</span>
+      <span class="sec-tag tag-core">Kulcs</span>
+      <span class="chev">▶</span>
+    </summary>
+    <p class="sec-note">A React app mögötti „backend szolgáltatásokat" fogsz építeni — az event loop és az async biztos téma.</p>
+
+    <div class="qa key">
+      <p class="q"><span class="badge">K</span><span>A Node egyszálú — hogyan kezel több ezer egyidejű kérést?</span></p>
+      <div class="a">
+        <p>Egy szál futtatja a JavaScriptedet, de az I/O <strong>nem blokkoló</strong>. Az <strong>event loop</strong> átadja az I/O-t (hálózat, lemez) az OS-nek vagy a libuv szálkészletének (thread pool), és továbbmegy; amikor az OS jelzi a befejezést, a callback sorba kerül és lefut. Így az egy szál sosem blokkol <em>várakozás</em> közben — csak akkor foglalt, amikor JS-t futtat. Ezért kiváló a Node az I/O-korlátos terheléshez, és ezért küzd a CPU-korlátossal (azt worker threadbe vagy külön szolgáltatásba told ki).</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Callback → Promise → async/await. Mit csinál valójában az <code>async/await</code>?</span></p>
+      <div class="a">
+        <p>Ez szintaktikai cukor a Promise-ok felett. Az <code>await</code> szünetelteti az async függvényt, amíg a Promise le nem zárul, <em>anélkül, hogy blokkolná az event loopot</em> — közben más munka fut. Lineáris kóddá lapítja a „callback poklot", és <code>try/catch</code>-et használhatsz async hibákhoz.</p>
+        <span class="gotcha"><b>Rákérdezés:</b> Szekvenciális vs párhuzamos await. Ciklusban await-elni sorbaállítja a független hívásokat; indítsd el őket együtt és <code>await Promise.all([...])</code>, ha nem függenek egymástól.</span>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Hogyan kezeled a hibákat async Express/Node kódban?</span></p>
+      <div class="a">
+        <p><code>try/catch</code> az await-elt hívások körül; továbbítás centralizált error middleware-hez <code>next(err)</code>-rel (vagy egy wrapperrel, ami elkapja a rejectionöket). Kulcsfontosságú: egy kezeletlen Promise rejection vagy egy csupasz callbackben dobott hiba leviheti a folyamatot — minden async ágnak kell catch, és egy legfelső szintű <code>unhandledRejection</code> handler a védőháló.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Mi a middleware, és hogyan működik a lánc?</span></p>
+      <div class="a">
+        <p><code>(req, res, next)</code> szignatúrájú függvények, amelyek regisztrációs sorrendben futnak. Mindegyik vagy válaszol, vagy <code>next()</code>-tel továbbadja a vezérlést. Így rétegzed a keresztmetsző szempontokat — auth, logolás, body parsing, validáció, hibakezelés — anélkül, hogy a route-logikát szennyeznéd. A sorrend számít: auth a védett handler előtt, error middleware legutoljára.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span><code>process.nextTick</code> vs <code>setImmediate</code> vs <code>setTimeout(fn, 0)</code>?</span></p>
+      <div class="a">
+        <p>A <code>process.nextTick</code> még azelőtt fut, hogy az event loop továbbmenne (legmagasabb prioritás — kiéhezteti a loopot, ha visszaélsz vele). A <code>setImmediate</code> a check fázisban fut, I/O után. A <code>setTimeout(fn,0)</code> a timers fázisban fut, minimális késleltetéssel. A sorrend ismerete jelzi, hogy érted a loop fázisait.</p>
+      </div>
+    </div>
+  </details>
+
+  <!-- ============ 4 · REST ============ -->
+  <details class="sec">
+    <summary class="sec-head">
+      <span class="sec-num">04</span>
+      <span class="sec-title">REST API tervezés</span>
+      <span class="chev">▶</span>
+    </summary>
+    <p class="sec-note">Kifejezetten a stackben van — tervezési ítélőképességre számíts, nem bemagolt státuszkódokra.</p>
+
+    <div class="qa key">
+      <p class="q"><span class="badge">K</span><span>Mitől RESTful egy API? Tervezz egyet egy <code>orders</code> erőforrásra.</span></p>
+      <div class="a">
+        <p>Erőforrás-orientált URL-ek (főnevek), HTTP igék a műveletekhez, állapotmentes kérések, helyes státuszkódok.</p>
+        <ul>
+          <li><code>GET /orders</code> — lista · <code>GET /orders/:id</code> — egy elem</li>
+          <li><code>POST /orders</code> — létrehozás (→ <code>201</code> + <code>Location</code>)</li>
+          <li><code>PUT /orders/:id</code> — teljes csere · <code>PATCH</code> — részleges</li>
+          <li><code>DELETE /orders/:id</code> — törlés</li>
+        </ul>
+        <p>Ige sosem megy az útvonalba (<code>/getOrders</code> hibás); a beágyazás kapcsolatokat mutat: <code>GET /orders/:id/items</code>.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span><code>PUT</code> vs <code>PATCH</code>, és mi az idempotencia?</span></p>
+      <div class="a">
+        <p>A <strong>PUT</strong> lecseréli a teljes erőforrást; a <strong>PATCH</strong> részleges frissítést alkalmaz. <strong>Idempotens</strong> = ugyanaz a kérés megismételve ugyanabba a szerverállapotba vezet. A <code>GET</code>, <code>PUT</code>, <code>DELETE</code> idempotens; a <code>POST</code> nem (két POST két sort hoz létre). Ez a biztonságos kliens-újrapróbálkozáshoz számít gyenge hálózaton.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Státuszkódok — amiket helyesen kell tudnod elhelyezni.</span></p>
+      <div class="a">
+        <ul>
+          <li><strong>200</strong> OK · <strong>201</strong> Created · <strong>204</strong> No Content</li>
+          <li><strong>400</strong> Bad Request · <strong>401</strong> nincs hitelesítve · <strong>403</strong> hitelesítve, de tiltott · <strong>404</strong> Not Found · <strong>409</strong> Conflict · <strong>422</strong> validáció sikertelen</li>
+          <li><strong>500</strong> szerverhiba · <strong>503</strong> nem elérhető</li>
+        </ul>
+        <span class="gotcha"><b>Klasszikus csapda:</b> 401 vs 403 — a 401 = „nem tudom, ki vagy", a 403 = „tudom, és így sem szabad".</span>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Hogyan verziózol és lapozol egy API-t?</span></p>
+      <div class="a">
+        <p><strong>Verziózás:</strong> URL-prefix (<code>/v1/</code>) a leggyakoribb és cache-barát; a header-alapú tisztább, de kevésbé látható. <strong>Lapozás:</strong> az offset/limit egyszerű, de beszúrásoknál elcsúszik; a <strong>kurzor-alapú</strong> (keyset) stabil és jól skálázódik — nagy vagy élő adathalmazoknál ez az ajánlott.</p>
+      </div>
+    </div>
+  </details>
+
+  <!-- ============ 5 · AWS ============ -->
+  <details class="sec">
+    <summary class="sec-head">
+      <span class="sec-num">05</span>
+      <span class="sec-title">AWS felhő</span>
+      <span class="chev">▶</span>
+    </summary>
+    <p class="sec-note">„AWS felhőkörnyezetben dolgozol" — szolgáltatás-választási érvelésre számíts. A Solutions Architect / Developer Associate certjeid ide tartoznak.</p>
+
+    <div class="qa key">
+      <p class="q"><span class="badge">K</span><span>Vezess végig az app AWS-en való hostolásán. Mely szolgáltatások, és miért?</span></p>
+      <div class="a">
+        <ul>
+          <li><strong>Frontend (React):</strong> statikus build <strong>S3</strong>-ban <strong>CloudFront</strong> mögött (CDN, TLS, cache).</li>
+          <li><strong>Backend:</strong> <strong>Lambda + API Gateway</strong> eseményvezérelt/csúcsos terheléshez, vagy <strong>ECS/Fargate</strong> hosszan futó konténerekhez.</li>
+          <li><strong>Adat:</strong> <strong>RDS</strong> (relációs) vagy <strong>DynamoDB</strong> (kulcs-érték, serverless skálázás).</li>
+          <li><strong>Auth:</strong> <strong>Cognito</strong>. <strong>Titkok:</strong> Secrets Manager / SSM. <strong>Async:</strong> SQS/SNS/EventBridge.</li>
+        </ul>
+        <p>Kompromisszumként add elő — serverless (nincs üzemeltetés, cold start) vs konténerek (kontroll, stabilabb latencia).</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Lambda vs EC2 vs Fargate — hogyan választasz?</span></p>
+      <div class="a">
+        <p><strong>Lambda</strong>: eseményvezérelt, 15 percnél rövidebb feladatok, scale-to-zero, hívásonkénti fizetés — figyelj a cold startra és az időkorlátokra. <strong>Fargate</strong>: konténerek szerverkezelés nélkül — stabil szolgáltatások, nincs cold start. <strong>EC2</strong>: teljes kontroll / speciális igények, de tiéd a patchelés és skálázás. Döntési tengely: kérésminta (csúcsos→Lambda, stabil→Fargate) és mennyi infra-kontroll kell.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Mi az a cold start, és hogyan csökkented?</span></p>
+      <div class="a">
+        <p>Az első hívás latenciája, amikor a Lambda új végrehajtási környezetet indít (runtime init + a kódod). Enyhítés: <strong>provisioned concurrency</strong>, kisebb bundle/kevesebb függőség, könnyebb runtime-ok. Azért releváns, mert ez egy serverless React+Node stack legfőbb csapdája.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>S3 + CloudFront egy React SPA-hoz — mi az az egy config, amit sokan elfelejtenek?</span></p>
+      <div class="a">
+        <p>SPA kliensoldali routing: egy mély link, mint a <code>/orders/42</code>, nem talál S3 objektumot → 403/404. Javítás: az error válaszokat irányítsd vissza az <code>index.html</code>-re (200), hogy a React Router átvegye. Plusz: a hashelt asseteket cache-eld hosszan, de az <code>index.html</code>-t tartsd rövid cache-en, hogy a deployok átjussanak.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>IAM egy mondatban — role vs user vs policy?</span></p>
+      <div class="a">
+        <p>A <strong>policy</strong> JSON jogosultsági dokumentum. A <strong>user</strong> hosszú életű identitás (személy). A <strong>role</strong> felvehető identitás ideiglenes hitelesítő adatokkal — ezt kellene a szolgáltatásoknak és Lambdáknak használniuk. Alapelv: <strong>least privilege</strong>, és role-ok a beégetett kulcsok helyett.</p>
+      </div>
+    </div>
+  </details>
+
+  <!-- ============ 6 · GIT/CI ============ -->
+  <details class="sec">
+    <summary class="sec-head">
+      <span class="sec-num">06</span>
+      <span class="sec-title">Git &amp; CI/CD</span>
+      <span class="chev">▶</span>
+    </summary>
+    <p class="sec-note">Szerepel a stackben — gyakorlati workflow-kérdésekre számíts, nem parancs-trivián.</p>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span><code>merge</code> vs <code>rebase</code> — mikor és miért?</span></p>
+      <div class="a">
+        <p>A <strong>merge</strong> megőrzi a valós history-t egy merge committal — biztonságos megosztott branchekhez. A <strong>rebase</strong> újrajátssza a commitokat egy új bázisra a lineáris history-ért — remek egy lokális feature branch rendezésére PR előtt. <strong>Aranyszabály:</strong> soha ne rebase-elj olyan branchet, amit mások már lehúztak — átírja a megosztott history-t.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Mi történik valójában egy CI/CD pipeline-ban?</span></p>
+      <div class="a">
+        <p><strong>CI:</strong> minden push-nál — install, lint, type-check, teszt, build; fail fast, hogy hibás kód sose merge-elődjön. <strong>CD:</strong> main-re merge-nél — az artifact deployolása staging/prod-ra, gyakran automatikus rollbackkel. A lényeg: ismételhető, emberi hibától mentes út a committól a produkcióig.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Hogyan tartod a titkokat és env configot Git-en kívül?</span></p>
+      <div class="a">
+        <p><code>.env</code> a <code>.gitignore</code>-ban; a valós értékeket a CI/CD titok-tárból vagy AWS Secrets Manager / SSM-ből injektálod build- vagy futásidőben. Sose commitolj hitelesítő adatot — és ha egy kiszivárog, forgasd (rotate), ne csak a commitot töröld (a history megmarad).</p>
+      </div>
+    </div>
+  </details>
+
+  <!-- ============ 7 · AI/LLM/MCP ============ -->
+  <details class="sec" open>
+    <summary class="sec-head">
+      <span class="sec-num">07</span>
+      <span class="sec-title">AI · LLM · MCP · Agentek</span>
+      <span class="sec-tag tag-diff">Megkülönböztető</span>
+      <span class="chev">▶</span>
+    </summary>
+    <p class="sec-note">Erősen hangsúlyos: „AI-vezérelt megoldások, agent-alapú architektúrák (MCP, AI agentek, orkesztráció)." Itt tudsz kitűnni. A szókincset tudd folyékonyan.</p>
+
+    <div class="qa key">
+      <p class="q"><span class="badge">K</span><span>Mi az MCP (Model Context Protocol), és miért számít?</span></p>
+      <div class="a">
+        <p>Egy <strong>nyílt szabvány az LLM-ek külső eszközökhöz, adatokhoz és rendszerekhez való csatlakoztatására</strong> egységes interfészen keresztül — gondolj rá úgy, mint „közös protokoll, hogy bármelyik modell bármelyik eszközzel beszélhessen", integrációnkénti egyedi glue-kód helyett. Egy <strong>MCP szerver</strong> eszközöket/erőforrásokat tesz közzé; egy <strong>MCP kliens</strong> (a modell host-alkalmazása) felfedezi és meghívja őket. Szabványosítja azt, amit eddig mindenki kézzel drótozott össze function-callingként.</p>
+        <span class="gotcha"><b>Miért érdekli őket:</b> a hirdetés kifejezetten megnevezi az MCP-t. Már egy világos fogalmi válasz plusz „olvastam a specifikációt / kötöttem be szervert" is előrébb tesz azoknál, akik csak hallották a betűszót.</span>
+      </div>
+    </div>
+
+    <div class="qa key">
+      <p class="q"><span class="badge">K</span><span>Mi egy „AI agent" a sima LLM-híváshoz képest? Mit jelent az orkesztráció?</span></p>
+      <div class="a">
+        <p>Egy sima <strong>LLM-hívás</strong> egy prompt be, egy completion ki. Egy <strong>agent</strong> a modellt egy hurokba csomagolja, amely képes <strong>eszközöket használni, eredményeket megfigyelni és eldönteni a következő lépést</strong> egy cél felé — tervezés → cselekvés → megfigyelés → ismétlés. Az <strong>orkesztráció</strong> ezeknek a lépéseknek (és gyakran több agentnek/eszköznek/szolgáltatásnak) a megbízható koordinálása: útválasztás, sorrendezés, állapot, újrapróbálkozás, guardrail-ek.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Mi az a RAG, és mikor használod?</span></p>
+      <div class="a">
+        <p><strong>Retrieval-Augmented Generation</strong>: releváns dokumentumok lekérése (általában embeddingek + vektor-tár segítségével) és beinjektálása a promptba, hogy a modell a <em>te</em> adataidból válaszoljon, ne csak a tanításából. Domain-tudáshoz, friss tényekhez és a hallucináció csökkentéséhez használd — a legtöbb üzleti esetben olcsóbb és gyorsabb, mint a finomhangolás.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Function/tool calling — hogyan működik fejlesztői szemszögből?</span></p>
+      <div class="a">
+        <p>Leírod az elérhető függvényeket (név, paraméterek, JSON séma) a modellnek; az egy strukturált hívással válaszol — melyik függvény, milyen argumentumokkal. <strong>A te kódod futtatja le</strong>, és visszaadja az eredményt, hogy a modell folytassa. A modell dönti el, <em>mit</em> hívjon; sosem futtat semmit maga. Az MCP lényegében ennek a mintának a szabványosított transzportja.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Tokenek, context window, temperature — a gyakorlati gombok?</span></p>
+      <div class="a">
+        <ul>
+          <li><strong>Token</strong> — szórészlet-egység; a számlázás és a limitek tokenenként mennek.</li>
+          <li><strong>Context window</strong> — a max tokenek száma (prompt + kimenet), amit a modell egyszerre lát; túlcsordulás → csonkolás vagy retrieval.</li>
+          <li><strong>Temperature</strong> — véletlenszerűség. Alacsony = determinisztikus (kinyerés, osztályozás); magasabb = kreatív.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Hogyan tartod megbízhatónak és biztonságosnak az LLM-funkciókat produkcióban?</span></p>
+      <div class="a">
+        <p>Validáld/parse-old a modell kimenetét séma ellen (sose bízz a szabad szövegben), szűkíts tool callinggal, tegyél be guardrail-eket és timeoutokat, kezeld a nemdeterminisztikus hibamódokat, tarts human-in-the-loopot magas tétű műveleteknél, és logolj/értékelj. Ha az LLM-hívásokat <em>nem megbízható I/O-ként kezeled, amit validálnod kell</em>, pont azt a pragmatikus szemléletet mutatod, amit a hirdetés kér.</p>
+      </div>
+    </div>
+  </details>
+
+  <!-- ============ 8 · CROSS-CUTTING ============ -->
+  <details class="sec">
+    <summary class="sec-head">
+      <span class="sec-num">08</span>
+      <span class="sec-title">Üzleti → technikai</span>
+      <span class="chev">▶</span>
+    </summary>
+    <p class="sec-note">A hirdetés hangsúlyozza az üzleti igények skálázható megoldássá fordítását — egy „hogyan állnál neki X-nek" tervezési beszélgetésre számíts.</p>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>„Fordíts egy homályos üzleti igényt technikai megoldássá" — hogyan állsz neki?</span></p>
+      <div class="a">
+        <p>Előbb tisztázd a valódi kimenetet és a megkötéseket (kinek, milyen skála, latencia, must-have vs nice-to-have); mondd vissza. Aztán válaszd a <strong>legegyszerűbb megoldást, ami a mai igényt kielégíti és nem zárja el a holnapit</strong> — a kompromisszumokat mondd ki nyíltan ahelyett, hogy túlbonyolítanád. Mutasd meg, hogy üzleti értékre és karbantarthatóságra optimalizálsz, nem újdonságra.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Hogyan teszel egy megoldást „skálázhatóvá" túltervezés nélkül?</span></p>
+      <div class="a">
+        <p>Állapotmentesség (horizontális skálázás), lassú munka kitolása async sorokba, forró olvasások cache-elése, a valós lekérdezési minták indexelése, lapozás. De <em>mért</em> igényre skálázz — a korai elosztott bonyolultság önmagában is kudarc. „10×-re tervezz, ne 1000×-re, és mérj, mielőtt shardolsz."</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>A PHP legacy „plusz" — mit mondasz, ha rákérdeznek?</span></p>
+      <div class="a">
+        <p>Légy őszinte a szintedről, majd keretezd konstruktívan: kényelmesen olvasol és karbantartol/integrálsz legacy kódot, és egy legacy PHP rendszerhez úgy állnál, hogy megérted a határait és tisztán integrálsz (pl. egy API-illesztésen keresztül) kockázatos újraírás helyett. Ők karbantartás/integráció-ként jelölték, nem zöldmezős fejlesztésként — ehhez a keretezéshez igazodj.</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="badge">K</span><span>Hová teszed a megosztott típusokat egy TS frontend és Node backend között?</span></p>
+      <div class="a">
+        <p>Egy megosztott csomagba/modulba (monorepo workspace), amely exportálja a típusokat, amiket mindkét oldal importál — egyetlen igazságforrás az API-szerződésekhez, így egy backend-alakváltozás frontend fordítási hibaként jelenik meg. Bónusz: a típusok sémából való származtatása (pl. Zod), hogy a futásidejű validáció és a statikus típusok szinkronban maradjanak.</p>
+      </div>
+    </div>
+  </details>
+
+  <footer>
+    Redspher · Full Stack Developer — Technikai interjú felkészítő
+  </footer>
+</div>
+
+<a href="#" id="totop" aria-label="Vissza a tetejére">↑</a>
+
+<script>
+  // progress bar
+  const bar = document.getElementById('progress');
+  const totop = document.getElementById('totop');
+  function onScroll(){
+    const h = document.documentElement;
+    const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
+    bar.style.width = (scrolled*100) + '%';
+    totop.classList.toggle('show', h.scrollTop > 600);
+  }
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  // expand / collapse all
+  const secs = Array.from(document.querySelectorAll('details.sec'));
+  document.getElementById('expandAll').onclick = () => secs.forEach(s => s.open = true);
+  document.getElementById('collapseAll').onclick = () => secs.forEach(s => s.open = false);
+
+  // when opening a section, scroll its header into a comfortable spot
+  secs.forEach(s => {
+    s.querySelector('summary').addEventListener('click', () => {
+      if(!s.open){
+        setTimeout(() => s.scrollIntoView({behavior:'smooth', block:'start'}), 60);
+      }
+    });
+  });
+</script>
+</body>
+</html>
