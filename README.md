@@ -28,6 +28,26 @@ Rules:
 - **Default version:** if the material folder directly contains a content file, that is the default (shown as "current"); otherwise the first version in descending name order (for date-named folders that is the newest).
 - A subfolder without a content file is not a version but an asset folder — the build omits it from the list but still copies its files.
 
+### Faceted versions (optional)
+
+When a material has many versions that vary along several independent axes (e.g. language × generator model × model version × doc version), a flat dropdown becomes unwieldy. A material can instead expose **one dropdown per axis**.
+
+Enable it with a `_facets.json` file holding the axis labels, in folder-name order:
+
+```
+content/
+  _facets.json                 <- global default: ["Language","Model","Model version","Doc version"]
+  redspher/
+    en_gpt_5.5_v1/  report.pdf  <- values: en · gpt · 5.5 · v1
+    hu_claude_5_v2/ report.pdf  <- values: hu · claude · 5 · v2
+    ...
+```
+
+- Version folder name = the axis values joined by `_`, in the order the labels declare. **Values must not contain `_`** — write decimals with a dot (`5.5`, not `5_5`).
+- **Config resolution:** `content/_facets.json` is the global default; a `_facets.json` inside a material folder **fully overrides** it for that material.
+- **Opt-in / fallback:** faceting applies only if a config is in effect *and* every version folder name splits into exactly as many segments as there are labels. Otherwise (no config, or a name that doesn't match) the material falls back to the plain flat version list — so simple date-named or single-file materials are unaffected.
+- **Sparse matrices are fine:** not every combination has to exist. In each dropdown, options that don't combine with the current selection are marked `(n/a)`. Picking one isn't blocked — the app resolves to the closest existing version (keeping the axis you just changed, then matching as many other axes as possible, earlier axes first) and shows a *closest match* hint.
+
 ## Usage
 
 Live site: **https://interviewbrowser.sallai.cc/**

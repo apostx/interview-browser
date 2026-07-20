@@ -164,15 +164,47 @@ body {
 
 #viewer[hidden] { display: none; }
 
-#version-select {
-  flex-shrink: 0;
-  max-width: 45%;
+#version-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px 12px;
+  padding: 8px 14px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+#version-bar[hidden] { display: none; }
+
+.facet {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.facet label {
+  font-size: 11px;
+  color: var(--muted);
+  padding-left: 2px;
+}
+
+.version-select,
+.facet select {
   padding: 6px 8px;
   font-size: 14px;
   color: var(--fg);
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 10px;
+  max-width: 46vw;
+}
+
+.facet-note {
+  align-self: center;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--muted);
 }
 
 #frame {

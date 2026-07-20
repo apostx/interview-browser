@@ -11,7 +11,7 @@
     viewer: document.getElementById('viewer'),
     viewerTitle: document.getElementById('viewer-title'),
     backBtn: document.getElementById('back-btn'),
-    versionSelect: document.getElementById('version-select'),
+    versionBar: document.getElementById('version-bar'),
     frame: document.getElementById('frame'),
   };
 
@@ -72,6 +72,10 @@
     return s.replace(/[&<>"']/g, (c) => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
     }[c]));
+  }
+
+  function naturalCompare(a, b) {
+    return String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' });
   }
 
   function materialSub(mat) {
@@ -135,22 +139,98 @@
       : encodeURI(version.file);
   }
 
-  function renderViewer(mat, versionName) {
+  // Resolve a target facet vector to an existing version: exact match if any,
+  // otherwise the closest version that keeps the just-changed dimension and
+  // agrees with the previous selection on as many other dimensions as possible
+  // (earlier-declared dimensions weigh more).
+  function resolveFaceted(mat, target, changedIndex) {
+    const exact = mat.versions.find((v) => v.values.every((x, k) => x === target[k]));
+    if (exact) return { version: exact, fallback: false };
+
+    const fixed = mat.versions.filter((v) => v.values[changedIndex] === target[changedIndex]);
+    const pool = fixed.length ? fixed : mat.versions;
+    let best = pool[0];
+    let bestScore = -1;
+    for (const v of pool) {
+      let score = 0;
+      for (let k = 0; k < target.length; k++) {
+        if (k !== changedIndex && v.values[k] === target[k]) score += target.length - k;
+      }
+      if (score > bestScore) {
+        bestScore = score;
+        best = v;
+      }
+    }
+    return { version: best, fallback: true };
+  }
+
+  function selectVersion(mat, versionName, fallback) {
+    history.replaceState(null, '', hashFor(mat.path, versionName));
+    renderViewer(mat, versionName, fallback);
+  }
+
+  function renderVersionBar(mat, version, fallback) {
+    if (!mat.facets) {
+      // Flat: a single version dropdown (hidden when there is only one version).
+      if (mat.versions.length < 2) {
+        el.versionBar.hidden = true;
+        el.versionBar.innerHTML = '';
+        return;
+      }
+      el.versionBar.hidden = false;
+      el.versionBar.innerHTML =
+        `<select class="version-select" aria-label="Version">` +
+        mat.versions
+          .map((v) => `<option value="${escapeHtml(v.name)}"${v === version ? ' selected' : ''}>${escapeHtml(v.name)}</option>`)
+          .join('') +
+        `</select>`;
+      el.versionBar.querySelector('select').onchange = (e) => selectVersion(mat, e.target.value);
+      return;
+    }
+
+    // Faceted: one labeled dropdown per dimension.
+    el.versionBar.hidden = false;
+    const values = version.values;
+    let html = '';
+    for (let i = 0; i < mat.facets.length; i++) {
+      const options = [...new Set(mat.versions.map((v) => v.values[i]))].sort(naturalCompare);
+      const optionsHtml = options
+        .map((val) => {
+          // Available if some version matches the current selection on every
+          // other dimension, with this dimension set to `val`.
+          const available = mat.versions.some(
+            (v) => v.values[i] === val && v.values.every((x, k) => k === i || x === values[k])
+          );
+          const label = available ? val : `${val} (n/a)`;
+          return `<option value="${escapeHtml(val)}"${val === values[i] ? ' selected' : ''}>${escapeHtml(label)}</option>`;
+        })
+        .join('');
+      html +=
+        `<div class="facet"><label>${escapeHtml(mat.facets[i])}</label>` +
+        `<select data-dim="${i}" aria-label="${escapeHtml(mat.facets[i])}">${optionsHtml}</select></div>`;
+    }
+    if (fallback) html += `<div class="facet-note">closest match</div>`;
+    el.versionBar.innerHTML = html;
+
+    el.versionBar.querySelectorAll('select').forEach((sel) => {
+      sel.onchange = () => {
+        const dim = Number(sel.dataset.dim);
+        const target = version.values.slice();
+        target[dim] = sel.value;
+        const resolved = resolveFaceted(mat, target, dim);
+        selectVersion(mat, resolved.version.name, resolved.fallback);
+      };
+    });
+  }
+
+  function renderViewer(mat, versionName, fallback) {
     el.listView.hidden = true;
     el.viewer.hidden = false;
     document.title = `${mat.name} – Interview Browser`;
     el.viewerTitle.textContent = mat.name;
 
     const version = mat.versions.find((v) => v.name === versionName) || mat.versions[0];
-
-    el.versionSelect.innerHTML = mat.versions
-      .map((v) => `<option value="${escapeHtml(v.name)}"${v === version ? ' selected' : ''}>${escapeHtml(v.name)}</option>`)
-      .join('');
-    el.versionSelect.hidden = mat.versions.length < 2;
-    el.versionSelect.onchange = () => {
-      history.replaceState(null, '', hashFor(mat.path, el.versionSelect.value));
-      render();
-    };
+    renderVersionBar(mat, version, !!fallback);
 
     const src = frameSrcFor(version);
     if (el.frame.getAttribute('src') !== src) el.frame.src = src;
