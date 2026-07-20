@@ -36,14 +36,14 @@ Enable it with a `_facets.json` file holding the axis labels, in folder-name ord
 
 ```
 content/
-  _facets.json                 <- global default: ["Language","Model","Model version","Doc version"]
+  _facets.json                 <- global default: ["Language","Model","Doc version"]
   redspher/
-    en_gpt_5.5_v1/  report.pdf  <- values: en · gpt · 5.5 · v1
-    hu_claude_5_v2/ report.pdf  <- values: hu · claude · 5 · v2
+    en_gpt-5.5_v1/  report.pdf  <- values: en · gpt-5.5 · v1
+    hu_claude-5_v2/ report.pdf  <- values: hu · claude-5 · v2
     ...
 ```
 
-- Version folder name = the axis values joined by `_`, in the order the labels declare. **Values must not contain `_`** — write decimals with a dot (`5.5`, not `5_5`).
+- Version folder name = the axis values joined by `_`, in the order the labels declare. **Values must not contain `_`** (it's the axis separator); `-` and `.` are fine inside a value, so `gpt-5.5` is one value.
 - **Config resolution:** `content/_facets.json` is the global default; a `_facets.json` inside a material folder **fully overrides** it for that material.
 - **Opt-in / fallback:** faceting applies only if a config is in effect *and* every version folder name splits into exactly as many segments as there are labels. Otherwise (no config, or a name that doesn't match) the material falls back to the plain flat version list — so simple date-named or single-file materials are unaffected.
 - **Sparse matrices are fine:** not every combination has to exist. In each dropdown, options that don't combine with the current selection are marked `(n/a)`. Picking one isn't blocked — the app resolves to the closest existing version (keeping the axis you just changed, then matching as many other axes as possible, earlier axes first) and shows a *closest match* hint.
@@ -88,7 +88,7 @@ The first run of the workflow tries to enable Pages on its own (`configure-pages
 
 ## Architecture
 
-- `app/` — the shell app: vanilla HTML/CSS/JS, hash-based routing (`#/@frontend/react-hooks?v=2026-07-10`), materials render in an iframe. PDFs are rendered chromeless by `app/pdf.html` — a minimal viewer built on the vendored [PDF.js](https://mozilla.github.io/pdf.js/) core (`app/vendor/pdfjs/`) that draws pages as plain full-width canvases (no toolbar/sidebar/own zoom), so a PDF feels like part of the site. A native iframed / new-tab PDF would behave as a download on Android.
+- `app/` — the shell app: vanilla HTML/CSS/JS, hash-based routing (`#/@frontend/react-hooks?v=2026-07-10`), materials render in an iframe. PDFs are rendered chromeless by `app/pdf.html` — a minimal viewer built on the vendored [PDF.js](https://mozilla.github.io/pdf.js/) core (`app/vendor/pdfjs/`) that draws pages as plain full-width canvases (no toolbar/sidebar/own zoom), so a PDF feels like part of the site. Each page also carries an invisible, aligned PDF.js text layer (`pdf-textlayer.css` is lifted from the vendored viewer) so text can be selected and copied natively — nothing else about the reader UI is exposed. A native iframed / new-tab PDF would behave as a download on Android.
 - `scripts/build.js` — zero-dependency scanner: walks `content/`, copies the app + content into `dist/`, and generates `dist/manifest.json`.
 - `scripts/serve.js` — zero-dependency local static server.
 - `scripts/release.js` — the content release flow described above.

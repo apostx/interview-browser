@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PDF</title>
+<link rel="stylesheet" href="pdf-textlayer.css">
 <style>
   html, body { margin: 0; background: #f5f6f8; }
   @media (prefers-color-scheme: dark) {
@@ -11,11 +12,17 @@
   }
   #pages { max-width: 900px; margin: 0 auto; padding-top: 6px; }
   .page {
+    position: relative;
+    width: 100%;
+    margin-bottom: 6px;
+    background: #fff;
+    --scale-round-x: 1px;
+    --scale-round-y: 1px;
+  }
+  .page canvas {
     display: block;
     width: 100%;
-    height: auto;
-    background: #fff;
-    margin-bottom: 6px;
+    height: 100%;
   }
   .error {
     font-family: system-ui, sans-serif;
@@ -29,74 +36,127 @@
 <div id="pages"></div>
 <script type="module">
 /*
- * Chromeless PDF rendering: pages as plain full-width canvases, so the PDF
- * feels like part of the site — no PDF.js viewer UI, no own zoom (pinch
- * zooms the page like on any webpage). Pages render lazily on scroll.
+ * Chromeless PDF: pages render as full-width canvases (no PDF.js viewer UI,
+ * no own zoom), lazily on scroll. Each page also gets an invisible, aligned
+ * text layer (PDF.js TextLayer) so text can be selected and copied natively;
+ * everything else about the reader stays off.
  */
-import * as pdfjsLib from './vendor/pdfjs/build/pdf.mjs';
+import { getDocument, GlobalWorkerOptions, TextLayer, setLayerDimensions } from './vendor/pdfjs/build/pdf.mjs';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = './vendor/pdfjs/build/pdf.worker.mjs';
+GlobalWorkerOptions.workerSrc = './vendor/pdfjs/build/pdf.worker.mjs';
 
 const container = document.getElementById('pages');
 const file = new URLSearchParams(location.search).get('file');
 
-// Sharpness reserve: render above CSS resolution so browser pinch-zoom stays
-// reasonably crisp. Capped to keep memory sane on long documents.
+// Sharpness reserve: render the canvas above CSS resolution so browser pinch
+// zoom stays crisp. Capped to keep memory sane on long documents.
 const RENDER_SCALE = Math.min((window.devicePixelRatio || 1) * 1.5, 3);
+
+let doc = null;
+let layoutWidth = 0;
+const records = new Map(); // pageNum -> { wrap, canvas, textDiv, done, token }
 
 function fail(message) {
   container.innerHTML = `<p class="error">${message}</p>`;
 }
 
-if (!file) {
-  fail('Missing file parameter.');
-} else {
+async function renderPage(pageNum) {
+  const rec = records.get(pageNum);
+  const token = ++rec.token; // guard against overlapping re-renders (e.g. on resize)
+  const page = await doc.getPage(pageNum);
+  if (token !== rec.token) return;
+
+  const base = page.getViewport({ scale: 1 });
+  const cssScale = layoutWidth / base.width; // CSS px per PDF point
+  rec.wrap.style.setProperty('--scale-factor', cssScale);
+  rec.wrap.style.setProperty('--total-scale-factor', cssScale);
+  rec.wrap.style.aspectRatio = `${base.width} / ${base.height}`;
+
+  const canvasViewport = page.getViewport({ scale: cssScale * RENDER_SCALE });
+  rec.canvas.width = canvasViewport.width;
+  rec.canvas.height = canvasViewport.height;
+  await page.render({ canvasContext: rec.canvas.getContext('2d'), viewport: canvasViewport }).promise;
+  if (token !== rec.token) return;
+
+  // Invisible selectable text overlay, aligned to the canvas at CSS scale.
+  rec.textDiv.replaceChildren();
+  const textViewport = page.getViewport({ scale: cssScale });
+  const layer = new TextLayer({
+    textContentSource: page.streamTextContent(),
+    container: rec.textDiv,
+    viewport: textViewport,
+  });
+  setLayerDimensions(rec.textDiv, textViewport);
+  await layer.render();
+  if (token !== rec.token) return;
+  rec.done = true;
+}
+
+const observer = new IntersectionObserver(
+  (entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      observer.unobserve(entry.target);
+      renderPage(Number(entry.target.dataset.page)).catch(console.error);
+    }
+  },
+  { rootMargin: '150% 0%' }
+);
+
+// Re-render already-rendered pages when the available width changes (e.g. phone
+// rotation), so the text layer stays aligned to the canvas.
+function relayout() {
+  const width = container.clientWidth;
+  if (width === layoutWidth || width === 0) return;
+  layoutWidth = width;
+  for (const [pageNum, rec] of records) {
+    if (rec.done) renderPage(pageNum).catch(console.error);
+  }
+}
+
+let resizeTimer = 0;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(relayout, 200);
+});
+
+async function main() {
+  if (!file) {
+    fail('Missing file parameter.');
+    return;
+  }
   try {
-    const doc = await pdfjsLib.getDocument({
+    doc = await getDocument({
       url: file,
       cMapUrl: './vendor/pdfjs/web/cmaps/',
       cMapPacked: true,
       standardFontDataUrl: './vendor/pdfjs/web/standard_fonts/',
     }).promise;
 
+    layoutWidth = container.clientWidth;
     const firstPage = await doc.getPage(1);
-    const firstViewport = firstPage.getViewport({ scale: 1 });
-    const defaultRatio = firstViewport.width / firstViewport.height;
-
-    async function renderPage(canvas) {
-      const page = await doc.getPage(Number(canvas.dataset.page));
-      const base = page.getViewport({ scale: 1 });
-      const scale = (container.clientWidth / base.width) * RENDER_SCALE;
-      const viewport = page.getViewport({ scale });
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      canvas.style.aspectRatio = `${base.width} / ${base.height}`;
-      await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          observer.unobserve(entry.target);
-          renderPage(entry.target).catch(console.error);
-        }
-      },
-      { rootMargin: '150% 0%' }
-    );
+    const firstBase = firstPage.getViewport({ scale: 1 });
+    const placeholderRatio = `${firstBase.width} / ${firstBase.height}`;
 
     for (let i = 1; i <= doc.numPages; i++) {
+      const wrap = document.createElement('div');
+      wrap.className = 'page';
+      wrap.dataset.page = i;
+      wrap.style.aspectRatio = placeholderRatio; // give the page height before it renders
       const canvas = document.createElement('canvas');
-      canvas.className = 'page';
-      canvas.dataset.page = i;
-      canvas.style.aspectRatio = String(defaultRatio);
-      container.appendChild(canvas);
-      observer.observe(canvas);
+      const textDiv = document.createElement('div');
+      textDiv.className = 'textLayer';
+      wrap.append(canvas, textDiv);
+      container.append(wrap);
+      records.set(i, { wrap, canvas, textDiv, done: false, token: 0 });
+      observer.observe(wrap);
     }
   } catch (err) {
     fail(`Failed to load the PDF: ${String(err && err.message ? err.message : err)}`);
   }
 }
+
+main();
 </script>
 </body>
 </html>
