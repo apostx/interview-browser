@@ -37,15 +37,25 @@ const DIRECT_VERSION_NAME = 'current';
 const FACETS_FILE = '_facets.json';
 const FACET_SEP = '_';
 
+// Each entry is either a label string, or an object { label, keepPosition }.
+// Normalized to { label, keepPosition } objects; keepPosition means the viewer
+// should preserve scroll position when only this dimension changes.
 function readFacetsConfig(dir) {
   const file = path.join(dir, FACETS_FILE);
   if (!fs.existsSync(file)) return null;
   try {
     const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
-    if (Array.isArray(parsed) && parsed.length > 0 && parsed.every((l) => typeof l === 'string')) {
-      return parsed;
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      const facets = parsed.map((entry) => {
+        if (typeof entry === 'string') return { label: entry, keepPosition: false };
+        if (entry && typeof entry.label === 'string') {
+          return { label: entry.label, keepPosition: entry.keepPosition === true };
+        }
+        return null;
+      });
+      if (facets.every(Boolean)) return facets;
     }
-    console.warn(`  [warn] ignoring ${FACETS_FILE} (expected a non-empty array of labels): ${file}`);
+    console.warn(`  [warn] ignoring ${FACETS_FILE} (expected a non-empty array of labels or {label,keepPosition}): ${file}`);
   } catch (err) {
     console.warn(`  [warn] ignoring invalid ${FACETS_FILE}: ${file} (${err.message})`);
   }

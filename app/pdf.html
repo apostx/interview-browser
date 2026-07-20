@@ -46,7 +46,11 @@ import { getDocument, GlobalWorkerOptions, TextLayer, setLayerDimensions } from 
 GlobalWorkerOptions.workerSrc = './vendor/pdfjs/build/pdf.worker.mjs';
 
 const container = document.getElementById('pages');
-const file = new URLSearchParams(location.search).get('file');
+const params = new URLSearchParams(location.search);
+const file = params.get('file');
+// Optional initial scroll offset (px), used to keep the reading position when
+// switching to a same-layout version (see keepPosition in the facets config).
+const initialTop = Math.max(0, Number(params.get('top')) || 0);
 
 // Sharpness reserve: render the canvas above CSS resolution so browser pinch
 // zoom stays crisp. Capped to keep memory sane on long documents.
@@ -221,6 +225,10 @@ async function main() {
       records.set(i, { pageNum: i, wrap, canvas, textDiv, rendered: false, visible: false, token: 0, task: null });
       observer.observe(wrap);
     }
+
+    // Page wrappers already have their height (aspect-ratio placeholders), so
+    // restoring the scroll offset lands on the same page as the previous version.
+    if (initialTop) requestAnimationFrame(() => window.scrollTo(0, initialTop));
   } catch (err) {
     fail(`Failed to load the PDF: ${errText(err)}`);
   }

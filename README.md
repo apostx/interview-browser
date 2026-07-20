@@ -32,11 +32,13 @@ Rules:
 
 When a material has many versions that vary along several independent axes (e.g. language × generator model × model version × doc version), a flat dropdown becomes unwieldy. A material can instead expose **one dropdown per axis**.
 
-Enable it with a `_facets.json` file holding the axis labels, in folder-name order:
+Enable it with a `_facets.json` file holding the axis labels, in folder-name order. Each entry is either a label string, or an object `{ "label": "…", "keepPosition": true }`:
 
 ```
 content/
-  _facets.json                 <- global default: ["Language","Model","Doc version"]
+  _facets.json                 <- global default:
+                                    [ { "label": "Language", "keepPosition": true },
+                                      "Model", "Doc version" ]
   redspher/
     en_gpt-5.5_v1/  report.pdf  <- values: en · gpt-5.5 · v1
     hu_claude-5_v2/ report.pdf  <- values: hu · claude-5 · v2
@@ -47,6 +49,9 @@ content/
 - **Config resolution:** `content/_facets.json` is the global default; a `_facets.json` inside a material folder **fully overrides** it for that material.
 - **Opt-in / fallback:** faceting applies only if a config is in effect *and* every version folder name splits into exactly as many segments as there are labels. Otherwise (no config, or a name that doesn't match) the material falls back to the plain flat version list — so simple date-named or single-file materials are unaffected.
 - **Sparse matrices are fine:** not every combination has to exist. In each dropdown, options that don't combine with the current selection are marked `(n/a)`. Picking one isn't blocked — the app resolves to the closest existing version (keeping the axis you just changed, then matching as many other axes as possible, earlier axes first) and shows a *closest match* hint.
+- **`keepPosition`:** for a PDF version, switching a `keepPosition` axis preserves the current scroll position instead of jumping back to page 1 — useful when the variants share the same layout (e.g. the same document in two languages). Position is only kept when *every* axis that changed is `keepPosition`; otherwise the view resets to the top.
+
+The version bar itself is collapsible: it shows a one-line summary of the current selection and expands to the dropdowns on tap (the collapsed/expanded choice is remembered).
 
 ## Usage
 

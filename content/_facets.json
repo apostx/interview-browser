@@ -1,1 +1,5 @@
-["Language", "Model", "Doc version"]
+[
+  { "label": "Language", "keepPosition": true },
+  "Model",
+  "Doc version"
+]
