@@ -52,17 +52,37 @@ const file = new URLSearchParams(location.search).get('file');
 // zoom stays crisp. Capped to keep memory sane on long documents.
 const RENDER_SCALE = Math.min((window.devicePixelRatio || 1) * 1.5, 3);
 
+const DOC_PARAMS = {
+  url: file,
+  cMapUrl: './vendor/pdfjs/web/cmaps/',
+  cMapPacked: true,
+  standardFontDataUrl: './vendor/pdfjs/web/standard_fonts/',
+};
+
 let doc = null;
 let layoutWidth = 0;
-const records = new Map(); // pageNum -> { wrap, canvas, textDiv, done, token }
+let recovering = false;
+const records = new Map(); // pageNum -> { pageNum, wrap, canvas, textDiv, rendered, visible, token, task }
 
 function fail(message) {
   container.innerHTML = `<p class="error">${message}</p>`;
 }
 
+function errText(err) {
+  return String(err && err.message ? err.message : err);
+}
+
 async function renderPage(pageNum) {
   const rec = records.get(pageNum);
-  const token = ++rec.token; // guard against overlapping re-renders (e.g. on resize)
+  if (!rec) return;
+
+  // Cancel any in-flight render for this page so re-renders can't paint stale.
+  if (rec.task) {
+    try { rec.task.cancel(); } catch {}
+    rec.task = null;
+  }
+  const token = ++rec.token;
+
   const page = await doc.getPage(pageNum);
   if (token !== rec.token) return;
 
@@ -75,8 +95,16 @@ async function renderPage(pageNum) {
   const canvasViewport = page.getViewport({ scale: cssScale * RENDER_SCALE });
   rec.canvas.width = canvasViewport.width;
   rec.canvas.height = canvasViewport.height;
-  await page.render({ canvasContext: rec.canvas.getContext('2d'), viewport: canvasViewport }).promise;
+  const task = page.render({ canvasContext: rec.canvas.getContext('2d'), viewport: canvasViewport });
+  rec.task = task;
+  try {
+    await task.promise;
+  } catch (err) {
+    if (err && err.name === 'RenderingCancelledException') return;
+    throw err;
+  }
   if (token !== rec.token) return;
+  rec.task = null;
 
   // Invisible selectable text overlay, aligned to the canvas at CSS scale.
   rec.textDiv.replaceChildren();
@@ -89,19 +117,59 @@ async function renderPage(pageNum) {
   setLayerDimensions(rec.textDiv, textViewport);
   await layer.render();
   if (token !== rec.token) return;
-  rec.done = true;
+  rec.rendered = true;
 }
 
 const observer = new IntersectionObserver(
   (entries) => {
     for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
-      observer.unobserve(entry.target);
-      renderPage(Number(entry.target.dataset.page)).catch(console.error);
+      const rec = records.get(Number(entry.target.dataset.page));
+      if (!rec) continue;
+      rec.visible = entry.isIntersecting;
+      if (entry.isIntersecting && !rec.rendered) {
+        renderPage(rec.pageNum).catch(console.error);
+      }
     }
   },
   { rootMargin: '150% 0%' }
 );
+
+// Returning to the foreground: mobile browsers evict canvas backing stores of a
+// backgrounded page, so already-painted pages come back blank. Repaint what is
+// on screen now and mark the rest for lazy repaint when scrolled back into view.
+async function refresh() {
+  if (recovering || records.size === 0) return;
+  for (const rec of records.values()) rec.rendered = false;
+  const visible = [...records.values()].filter((rec) => rec.visible);
+  try {
+    for (const rec of visible) await renderPage(rec.pageNum);
+  } catch (err) {
+    if (err && err.name === 'RenderingCancelledException') return;
+    await reinit(); // the worker/document was torn down while backgrounded
+  }
+}
+
+// Rebuild the document (a fresh worker) in place, keeping the page elements and
+// scroll position, then repaint the visible pages.
+async function reinit() {
+  if (recovering) return;
+  recovering = true;
+  try {
+    try { await doc?.destroy(); } catch {}
+    doc = await getDocument(DOC_PARAMS).promise;
+    for (const rec of records.values()) {
+      rec.rendered = false;
+      rec.task = null;
+    }
+    recovering = false;
+    for (const rec of records.values()) {
+      if (rec.visible) await renderPage(rec.pageNum);
+    }
+  } catch (err) {
+    recovering = false;
+    fail(`Failed to reload the PDF: ${errText(err)}`);
+  }
+}
 
 // Re-render already-rendered pages when the available width changes (e.g. phone
 // rotation), so the text layer stays aligned to the canvas.
@@ -109,8 +177,8 @@ function relayout() {
   const width = container.clientWidth;
   if (width === layoutWidth || width === 0) return;
   layoutWidth = width;
-  for (const [pageNum, rec] of records) {
-    if (rec.done) renderPage(pageNum).catch(console.error);
+  for (const rec of records.values()) {
+    if (rec.rendered || rec.visible) renderPage(rec.pageNum).catch(console.error);
   }
 }
 
@@ -120,18 +188,20 @@ window.addEventListener('resize', () => {
   resizeTimer = setTimeout(relayout, 200);
 });
 
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') refresh();
+});
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) refresh();
+});
+
 async function main() {
   if (!file) {
     fail('Missing file parameter.');
     return;
   }
   try {
-    doc = await getDocument({
-      url: file,
-      cMapUrl: './vendor/pdfjs/web/cmaps/',
-      cMapPacked: true,
-      standardFontDataUrl: './vendor/pdfjs/web/standard_fonts/',
-    }).promise;
+    doc = await getDocument(DOC_PARAMS).promise;
 
     layoutWidth = container.clientWidth;
     const firstPage = await doc.getPage(1);
@@ -148,11 +218,11 @@ async function main() {
       textDiv.className = 'textLayer';
       wrap.append(canvas, textDiv);
       container.append(wrap);
-      records.set(i, { wrap, canvas, textDiv, done: false, token: 0 });
+      records.set(i, { pageNum: i, wrap, canvas, textDiv, rendered: false, visible: false, token: 0, task: null });
       observer.observe(wrap);
     }
   } catch (err) {
-    fail(`Failed to load the PDF: ${String(err && err.message ? err.message : err)}`);
+    fail(`Failed to load the PDF: ${errText(err)}`);
   }
 }
 
