@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React &amp; Frontend — Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111827; --muted:#6B7280; --line:#E5E7EB; --paper:#EDF0F3; --card:#FFFFFF;
+  --accent:#2563EB;
+  --get:#16A34A; --post:#2563EB; --put:#D97706; --patch:#0D9488; --del:#DC2626;
+  --s2:#16A34A; --s3:#7C3AED; --s4:#D97706; --s5:#DC2626;
+  --node:#FFFFFF; --nodeline:#94A3B8; --slate:#334155;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+a{color:inherit}
+code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+code{background:#EEF2F7;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:.86em}
+
+/* top bar */
+.bar{position:sticky;top:0;z-index:20;background:rgba(237,240,243,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar__in{max-width:900px;margin:0 auto;padding:10px 20px;display:flex;
+  align-items:center;justify-content:space-between;gap:12px}
+.bar__t{font-family:'Space Grotesk';font-weight:600;font-size:14px;letter-spacing:-.01em}
+.bar__t b{color:var(--accent)}
+.bar a.up{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);
+  text-decoration:none;border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:#fff}
+.bar a.up:hover{color:var(--ink);border-color:var(--accent)}
+
+/* hero */
+.hero{padding:44px 0 8px}
+.eyebrow{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,6vw,50px);
+  line-height:1.02;letter-spacing:-.025em;margin:0 0 12px}
+.lede{color:var(--muted);max-width:62ch;margin:0}
+.src{margin-top:14px;font-size:12.5px;color:var(--muted)}
+
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:24px 0 2px}
+.legend .lbl{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-right:2px}
+.chip{font-family:'JetBrains Mono';font-size:12px;padding:3px 8px;border-radius:6px;
+  border:1px solid var(--line);background:#fff}
+.chip--2{color:var(--s2);border-color:#BBF7D0;background:#F0FDF4}
+.chip--4{color:var(--s4);border-color:#FDE68A;background:#FFFBEB}
+.chip--5{color:var(--s5);border-color:#FECACA;background:#FEF2F2}
+
+/* section dividers */
+.sec{display:flex;align-items:center;gap:14px;margin:36px 4px 2px}
+.sec__l{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--accent);white-space:nowrap}
+.sec__r{height:1px;background:var(--line);flex:1}
+
+/* index */
+.index{margin:30px 0 8px}
+.index h3{font-family:'Space Grotesk';font-size:13px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+a.idx{display:flex;align-items:baseline;gap:10px;text-decoration:none;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  transition:border-color .15s,transform .15s}
+a.idx:hover{border-color:var(--accent);transform:translateY(-1px)}
+.idx__n{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);font-weight:500}
+.idx__t{font-size:13.5px;font-weight:500}
+
+/* concept */
+.concept{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:26px 26px 22px;margin-top:16px;scroll-margin-top:64px}
+.concept__head{display:flex;align-items:center;gap:14px;margin:0 0 12px}
+.concept__head .num{font-family:'JetBrains Mono';font-weight:500;font-size:15px;color:#fff;
+  background:var(--ink);width:38px;height:38px;border-radius:10px;display:grid;
+  place-items:center;flex:0 0 auto}
+.concept__head h2{font-family:'Space Grotesk';font-weight:600;font-size:22px;
+  letter-spacing:-.015em;margin:0}
+.def{margin:0 0 16px}
+.def strong{font-weight:600}
+.qa{border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
+.q{font-weight:600;margin:0 0 6px}
+.q::before{content:"Q";font-family:'JetBrains Mono';color:var(--accent);font-weight:600;
+  margin-right:9px;font-size:13px}
+ul.a,p.a{margin:0 0 2px}
+ul.a{padding-left:20px}
+ul.a li{margin:3px 0}
+.watch{margin:18px 0 0;background:#FFFBEB;border:1px solid #FDE68A;
+  border-left:3px solid var(--put);border-radius:8px;padding:10px 14px;font-size:14px}
+.watch__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--put);font-weight:600;display:block;margin-bottom:3px}
+
+/* table */
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 2px}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+table.t th{background:#F8FAFC;font-weight:600;font-family:'Space Grotesk';font-size:12px}
+table.t td:first-child{font-family:'JetBrains Mono';white-space:nowrap}
+
+/* diagrams */
+.dia{margin:16px 0 4px;background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px}
+.dia svg{width:100%;height:auto;display:block}
+.dia__cap{font-family:'JetBrains Mono';font-size:11.5px;color:var(--muted);margin:8px 2px 0}
+svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
+
+/* footer */
+.foot{margin-top:44px;text-align:center;color:var(--muted);font-size:12.5px}
+.foot b{font-family:'Space Grotesk';color:var(--ink)}
+
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+}
+@media print{
+  .bar{display:none} body{background:#fff}
+  .concept{break-inside:avoid;border-color:#ccc} a.idx{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+  </marker>
+</defs></svg>
+
+<header class="bar"><div class="bar__in">
+  <span class="bar__t"><b>React</b> Interview Prep · Frontend Deep Dive</span>
+  <a class="up" href="#top">↑ index</a>
+</div></header>
+
+<div class="wrap" id="top">
+
+  <div class="hero">
+    <p class="eyebrow">Technical Q&amp;A Knowledge Base</p>
+    <h1>React &amp; Frontend</h1>
+    <p class="lede">The React internals, patterns, performance techniques and browser fundamentals that senior frontend and full-stack interviews actually test — each with a tight definition, the questions you'll be asked, model answers, and the trap to avoid.</p>
+    <div class="legend">
+      <span class="lbl">Diagrams</span>
+      <span class="chip chip--2">green · preferred</span>
+      <span class="chip chip--5">red · pitfall</span>
+      <span class="chip chip--4">amber · watch out</span>
+    </div>
+  </div>
+
+  <nav class="index">
+    <h3>Jump to</h3>
+    <div class="grid">
+      <a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t">Virtual DOM &amp; Reconciliation</span></a>
+      <a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t">Keys in Lists</span></a>
+      <a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t">Rules of Hooks</span></a>
+      <a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t">State &amp; Batching</span></a>
+      <a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t">useEffect &amp; Dependencies</span></a>
+      <a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t">Stale Closures</span></a>
+      <a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t">Memoization</span></a>
+      <a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t">useRef</span></a>
+      <a class="idx" href="#c09"><span class="idx__n">09</span><span class="idx__t">Context API</span></a>
+      <a class="idx" href="#c10"><span class="idx__n">10</span><span class="idx__t">Custom Hooks</span></a>
+      <a class="idx" href="#c11"><span class="idx__n">11</span><span class="idx__t">Controlled vs Uncontrolled</span></a>
+      <a class="idx" href="#c12"><span class="idx__n">12</span><span class="idx__t">Client vs Server State</span></a>
+      <a class="idx" href="#c13"><span class="idx__n">13</span><span class="idx__t">Data Fetching Patterns</span></a>
+      <a class="idx" href="#c14"><span class="idx__n">14</span><span class="idx__t">Suspense &amp; Error Boundaries</span></a>
+      <a class="idx" href="#c15"><span class="idx__n">15</span><span class="idx__t">Code Splitting &amp; Lazy</span></a>
+      <a class="idx" href="#c16"><span class="idx__n">16</span><span class="idx__t">List Virtualization</span></a>
+      <a class="idx" href="#c17"><span class="idx__n">17</span><span class="idx__t">Re-render Optimization</span></a>
+      <a class="idx" href="#c18"><span class="idx__n">18</span><span class="idx__t">Rendering Strategies</span></a>
+      <a class="idx" href="#c19"><span class="idx__n">19</span><span class="idx__t">Core Web Vitals</span></a>
+      <a class="idx" href="#c20"><span class="idx__n">20</span><span class="idx__t">Browser Event Loop</span></a>
+      <a class="idx" href="#c21"><span class="idx__n">21</span><span class="idx__t">Reflow &amp; Repaint</span></a>
+      <a class="idx" href="#c22"><span class="idx__n">22</span><span class="idx__t">CORS</span></a>
+      <a class="idx" href="#c23"><span class="idx__n">23</span><span class="idx__t">TypeScript + React</span></a>
+    </div>
+  </nav>
+
+  <div class="sec"><span class="sec__l">React Core</span><span class="sec__r"></span></div>
+
+  <!-- 01 -->
+  <section class="concept" id="c01">
+    <div class="concept__head"><span class="num">01</span><h2>Virtual DOM &amp; Reconciliation</h2></div>
+    <p class="def"><strong>React renders a lightweight in-memory tree, diffs it against the previous one (reconciliation), and applies only the minimal real-DOM mutations.</strong></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 200" role="img" aria-label="Reconciliation flow from virtual DOM to minimal DOM operations">
+        <rect x="30" y="40" width="170" height="54" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <text x="115" y="72" text-anchor="middle" font-size="12.5" fill="var(--ink)">new Virtual DOM</text>
+        <line x1="200" y1="67" x2="253" y2="67" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <rect x="255" y="40" width="190" height="54" rx="10" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/>
+        <text x="350" y="66" text-anchor="middle" font-size="12.5" fill="var(--post)">diff by type + key</text>
+        <text x="350" y="83" text-anchor="middle" font-size="10.5" fill="var(--muted)">O(n) heuristic</text>
+        <line x1="445" y1="67" x2="498" y2="67" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <rect x="500" y="40" width="150" height="54" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <text x="575" y="72" text-anchor="middle" font-size="12.5" fill="var(--ink)">min DOM ops</text>
+        <line x1="350" y1="94" x2="350" y2="126" stroke="#CBD5E1" stroke-width="1.5"/>
+        <text x="330" y="146" text-anchor="end" font-size="11" fill="var(--get)">same type → patch props/children</text>
+        <text x="370" y="146" text-anchor="start" font-size="11" fill="var(--del)">different type → replace subtree</text>
+      </svg>
+      <p class="dia__cap">Same type + key → reuse and patch. Different type → tear down and rebuild.</p>
+    </div>
+    <div class="qa">
+      <p class="q">What's the diffing heuristic?</p>
+      <ul class="a">
+        <li>An O(n) heuristic, not a full tree diff. Two assumptions: different element types produce different trees; stable keys identify which children moved.</li>
+      </ul>
+      <p class="q">What actually causes a re-render?</p>
+      <ul class="a">
+        <li>A state change, a parent re-render, a consumed context value changing, or a subscribing hook firing.</li>
+        <li>Re-render ≠ DOM update — reconciliation may find nothing changed and touch no DOM.</li>
+      </ul>
+      <p class="q">Render vs commit phase?</p>
+      <ul class="a">
+        <li><strong>Render:</strong> React calls your components and builds the tree — pure, and pausable in concurrent mode.</li>
+        <li><strong>Commit:</strong> applies DOM changes and runs effects — synchronous.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>A re-render is relatively cheap; the cost is <em>your</em> render logic. Don't optimize re-renders you haven't profiled.</p>
+  </section>
+
+  <!-- 02 -->
+  <section class="concept" id="c02">
+    <div class="concept__head"><span class="num">02</span><h2>Keys in Lists</h2></div>
+    <p class="def"><strong><code>key</code> is the stable identity React uses to match elements across renders.</strong></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 250" role="img" aria-label="Index keys versus id keys when prepending to a list">
+        <text x="340" y="26" text-anchor="middle" font-size="13" fill="var(--ink)" font-weight="600">prepend C to [ A, B ]</text>
+        <!-- index -->
+        <text x="170" y="58" text-anchor="middle" font-size="12" fill="var(--del)" font-weight="600">key = index</text>
+        <g font-size="12" fill="var(--ink)">
+          <rect x="90" y="72" width="160" height="30" rx="7" fill="#FEF2F2" stroke="var(--del)" stroke-width="1.5"/><text x="170" y="92" text-anchor="middle">key 0 → C (was A)</text>
+          <rect x="90" y="108" width="160" height="30" rx="7" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="170" y="128" text-anchor="middle">key 1 → A (was B)</text>
+          <rect x="90" y="144" width="160" height="30" rx="7" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="170" y="164" text-anchor="middle">key 2 → B (new node)</text>
+        </g>
+        <text x="170" y="196" text-anchor="middle" font-size="11" fill="var(--del)">React reuses row 0's DOM/state as C → wrong</text>
+        <!-- id -->
+        <text x="510" y="58" text-anchor="middle" font-size="12" fill="var(--get)" font-weight="600">key = id</text>
+        <g font-size="12" fill="var(--ink)">
+          <rect x="430" y="72" width="160" height="30" rx="7" fill="#F0FDF4" stroke="var(--get)" stroke-width="1.5"/><text x="510" y="92" text-anchor="middle">key c → C (inserted)</text>
+          <rect x="430" y="108" width="160" height="30" rx="7" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="510" y="128" text-anchor="middle">key a → A (unchanged)</text>
+          <rect x="430" y="144" width="160" height="30" rx="7" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="510" y="164" text-anchor="middle">key b → B (unchanged)</text>
+        </g>
+        <text x="510" y="196" text-anchor="middle" font-size="11" fill="var(--get)">state stays with the right row → correct</text>
+      </svg>
+      <p class="dia__cap">With index keys, inserting at the top shifts every key and misassigns DOM/state.</p>
+    </div>
+    <div class="qa">
+      <p class="q">Why not use the array index as a key?</p>
+      <ul class="a">
+        <li>On insert/reorder/delete, indexes shift, so React reuses the wrong DOM node and component state — e.g. an input's value sticks to the wrong row.</li>
+      </ul>
+      <p class="q">What makes a good key?</p>
+      <ul class="a">
+        <li>Stable, unique among siblings, and tied to the data's identity (an ID) — not its position. It only needs to be unique within the list, not globally.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Index keys are safe only for static, never-reordered lists. The classic bug: uncontrolled inputs in a reorderable list keyed by index.</p>
+  </section>
+
+  <!-- 03 -->
+  <section class="concept" id="c03">
+    <div class="concept__head"><span class="num">03</span><h2>Rules of Hooks</h2></div>
+    <p class="def"><strong>Call hooks only at the top level</strong> — never in loops, conditions or nested functions — <strong>and only from React functions</strong> (components or custom hooks).</p>
+    <div class="qa">
+      <p class="q">Why the top-level rule?</p>
+      <ul class="a">
+        <li>React tracks hook state by <em>call order</em>, not by name. A conditional hook shifts the order between renders, so state gets misassigned to the wrong hook.</li>
+      </ul>
+      <p class="q">How do you do conditional logic then?</p>
+      <ul class="a">
+        <li>Put the condition <em>inside</em> the hook (e.g. inside <code>useEffect</code>), or split into separate components — never wrap the hook call itself.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span><code>eslint-plugin-react-hooks</code> catches most violations — don't disable it to “make it work.”</p>
+  </section>
+
+  <!-- 04 -->
+  <section class="concept" id="c04">
+    <div class="concept__head"><span class="num">04</span><h2>State &amp; Batching</h2></div>
+    <p class="def"><strong><code>useState</code> returns a value + setter; React batches multiple setState calls in one event into a single re-render.</strong></p>
+    <div class="qa">
+      <p class="q">Why does calling <code>setCount(count + 1)</code> three times only add 1?</p>
+      <ul class="a">
+        <li>All three read the same stale <code>count</code> from the render's closure. Use the functional updater <code>setCount(c =&gt; c + 1)</code> so each builds on the latest value.</li>
+      </ul>
+      <p class="q">Is state synchronous?</p>
+      <ul class="a">
+        <li>No — setters schedule a re-render; the variable only changes on the <em>next</em> render. React 18 batches across all contexts, including promises and timeouts (automatic batching).</li>
+      </ul>
+      <p class="q">Why immutability?</p>
+      <ul class="a">
+        <li>React detects change by reference. Mutating state in place doesn't change the reference, so the update is missed. Always return new objects/arrays.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Reading state right after setting it gives the old value — updates aren't applied synchronously.</p>
+  </section>
+
+  <!-- 05 -->
+  <section class="concept" id="c05">
+    <div class="concept__head"><span class="num">05</span><h2>useEffect &amp; Dependencies</h2></div>
+    <p class="def"><strong><code>useEffect</code> runs a side effect after render, re-running whenever a value in its dependency array changes.</strong></p>
+    <div class="qa">
+      <p class="q">What belongs in the dependency array?</p>
+      <ul class="a">
+        <li>Every reactive value used inside the effect (props, state, and anything derived from them). Missing deps → stale values; the lint rule enforces the full set.</li>
+      </ul>
+      <p class="q">When does the cleanup function run?</p>
+      <ul class="a">
+        <li>Before the next effect run and on unmount. Use it for subscriptions, timers and listeners to avoid leaks and race conditions.</li>
+      </ul>
+      <p class="q"><code>[]</code> vs no array vs <code>[deps]</code>?</p>
+      <ul class="a">
+        <li>No array → after every render. <code>[]</code> → once after mount. <code>[deps]</code> → when deps change.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Don't use an effect to derive state from props/state — compute it during render. Effects are for <em>synchronizing with external systems</em>, not reacting to your own state. Object/function deps recreated each render cause infinite loops → memoize or move them.</p>
+  </section>
+
+  <!-- 06 -->
+  <section class="concept" id="c06">
+    <div class="concept__head"><span class="num">06</span><h2>Stale Closures</h2></div>
+    <p class="def"><strong>A closure that captured a value from an earlier render and keeps using that old snapshot.</strong></p>
+    <div class="qa">
+      <p class="q">Where does it bite?</p>
+      <ul class="a">
+        <li>Event handlers, <code>setTimeout</code>/<code>setInterval</code>, and effects with missing deps — they all close over the render's snapshot of state and props.</li>
+      </ul>
+      <p class="q">How do you fix it?</p>
+      <ul class="a">
+        <li>Add the value to the deps (re-create the closure), use the functional updater, or stash the latest value in a ref and read <code>ref.current</code>.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>A <code>setInterval</code> created in <code>useEffect([])</code> that reads state will forever see the initial value — the textbook stale closure.</p>
+  </section>
+
+  <!-- 07 -->
+  <section class="concept" id="c07">
+    <div class="concept__head"><span class="num">07</span><h2>Memoization</h2></div>
+    <p class="def"><strong>Caching to skip work:</strong> <code>React.memo</code> skips a re-render on shallow-equal props; <code>useMemo</code> caches a computed value; <code>useCallback</code> caches a function reference.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 210" role="img" aria-label="React.memo skipping a child when props are referentially equal">
+        <rect x="265" y="30" width="150" height="46" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <text x="340" y="58" text-anchor="middle" font-size="12.5" fill="var(--ink)">Parent re-renders</text>
+        <line x1="320" y1="76" x2="215" y2="126" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="212" y="104" text-anchor="end" font-size="10.5" fill="var(--get)">stable props</text>
+        <line x1="360" y1="76" x2="465" y2="126" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="468" y="104" text-anchor="start" font-size="10.5" fill="var(--del)">new object each render</text>
+        <rect x="90" y="128" width="200" height="54" rx="10" fill="#F0FDF4" stroke="var(--get)" stroke-width="1.5"/>
+        <text x="190" y="152" text-anchor="middle" font-size="12" fill="var(--get)" font-weight="600">memo(Child)</text>
+        <text x="190" y="170" text-anchor="middle" font-size="11" fill="var(--get)">same props → skipped</text>
+        <rect x="390" y="128" width="200" height="54" rx="10" fill="#FEF2F2" stroke="var(--del)" stroke-width="1.5"/>
+        <text x="490" y="152" text-anchor="middle" font-size="12" fill="var(--del)" font-weight="600">memo(Child)</text>
+        <text x="490" y="170" text-anchor="middle" font-size="11" fill="var(--del)">new prop ref → re-renders</text>
+      </svg>
+      <p class="dia__cap">A new object/function passed as a prop defeats <code>memo</code>'s shallow comparison.</p>
+    </div>
+    <div class="qa">
+      <p class="q">When is each worth it?</p>
+      <ul class="a">
+        <li><strong>useMemo</strong> — a genuinely expensive computation, or a stable value fed to memoized children / effect deps.</li>
+        <li><strong>useCallback</strong> — a function passed to a <code>memo</code> child or used as an effect dep.</li>
+        <li><strong>React.memo</strong> — a component that re-renders often with the same props and has a non-trivial render.</li>
+      </ul>
+      <p class="q">Why do useMemo/useCallback often do nothing?</p>
+      <ul class="a">
+        <li>If the memoized value still feeds a non-memoized child, or the deps change every render, you pay the overhead for no benefit.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Memoization costs memory + comparison. Default to <em>not</em> memoizing; add it when profiling shows a real problem. (The React Compiler auto-memoizes, reducing the manual need.)</p>
+  </section>
+
+  <!-- 08 -->
+  <section class="concept" id="c08">
+    <div class="concept__head"><span class="num">08</span><h2>useRef</h2></div>
+    <p class="def"><strong>A mutable container (<code>{ current }</code>) that persists across renders without triggering one when it changes.</strong></p>
+    <div class="qa">
+      <p class="q">Two main uses?</p>
+      <ul class="a">
+        <li>Accessing DOM nodes (<code>ref={myRef}</code>), and holding mutable values that shouldn't cause renders (timer IDs, the previous value, a “latest state” ref).</li>
+      </ul>
+      <p class="q">useRef vs useState?</p>
+      <ul class="a">
+        <li>Changing state re-renders; changing a ref doesn't. Use a ref when the value isn't part of the rendered output.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Don't read/write <code>ref.current</code> during render for rendered data — it's outside React's data flow and won't reflect in the UI.</p>
+  </section>
+
+  <!-- 09 -->
+  <section class="concept" id="c09">
+    <div class="concept__head"><span class="num">09</span><h2>Context API</h2></div>
+    <p class="def"><strong>Passes data through the tree without prop drilling; consumers re-render when the provider's value changes.</strong></p>
+    <div class="qa">
+      <p class="q">The performance gotcha?</p>
+      <ul class="a">
+        <li>Every consumer re-renders on any value change, even if it uses only part of it. A fresh object literal as <code>value</code> re-renders all consumers on every parent render.</li>
+      </ul>
+      <p class="q">How do you mitigate it?</p>
+      <ul class="a">
+        <li>Memoize the value, split contexts by update frequency, or move to a store (Zustand/Redux) with selector-based subscriptions for high-frequency state.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Context is a dependency-injection / low-frequency-state tool (theme, auth, locale) — not a general state manager for rapidly-changing data.</p>
+  </section>
+
+  <!-- 10 -->
+  <section class="concept" id="c10">
+    <div class="concept__head"><span class="num">10</span><h2>Custom Hooks</h2></div>
+    <p class="def"><strong>A function starting with <code>use</code> that composes built-in hooks to extract and reuse stateful logic.</strong></p>
+    <div class="qa">
+      <p class="q">What do they share — and not share?</p>
+      <ul class="a">
+        <li>They share <em>logic</em>, not <em>state</em>. Each call gets its own independent state — two components using <code>useCounter()</code> don't share a counter.</li>
+      </ul>
+      <p class="q">When should you extract one?</p>
+      <ul class="a">
+        <li>Repeated stateful logic — fetching, form state, subscriptions, debouncing — to keep components declarative and testable.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>A custom hook is just a function — the Rules of Hooks still apply (top-level calls, React-functions only).</p>
+  </section>
+
+  <!-- 11 -->
+  <section class="concept" id="c11">
+    <div class="concept__head"><span class="num">11</span><h2>Controlled vs Uncontrolled</h2></div>
+    <p class="def"><strong>Controlled:</strong> React state is the source of truth (<code>value</code> + <code>onChange</code>). <strong>Uncontrolled:</strong> the DOM holds the value, read via a ref (<code>defaultValue</code>).</p>
+    <div class="qa">
+      <p class="q">Trade-offs?</p>
+      <ul class="a">
+        <li><strong>Controlled:</strong> full control and live validation, but a re-render per keystroke.</li>
+        <li><strong>Uncontrolled:</strong> less code, good for simple/large forms and file inputs, but harder to validate or transform on the fly.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Flipping a field between controlled and uncontrolled (value going <code>undefined</code> → defined) triggers React's warning — always initialize with a defined value like <code>''</code>.</p>
+  </section>
+
+  <div class="sec"><span class="sec__l">State &amp; Data</span><span class="sec__r"></span></div>
+
+  <!-- 12 -->
+  <section class="concept" id="c12">
+    <div class="concept__head"><span class="num">12</span><h2>Client vs Server State</h2></div>
+    <p class="def"><strong>Client state</strong> is UI state you own (modals, inputs, toggles). <strong>Server state</strong> is remote data — fetched async, shared, and able to go stale.</p>
+    <div class="qa">
+      <p class="q">Why treat them differently?</p>
+      <ul class="a">
+        <li>Server state needs caching, background refetch, dedup, retry, invalidation and staleness handling — none of which a plain <code>useState</code> or Redux slice gives you. That's what React Query / SWR / RTK Query solve.</li>
+      </ul>
+      <p class="q">What does a server-state library give you?</p>
+      <ul class="a">
+        <li>Request dedup, cache + stale-while-revalidate, background updates, pagination/infinite scroll, optimistic updates, and loading/error state out of the box.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Dumping fetched data into Redux/Context and hand-rolling caching is the source of most “why is my data stale” bugs. Keep client and server state separate.</p>
+  </section>
+
+  <!-- 13 -->
+  <section class="concept" id="c13">
+    <div class="concept__head"><span class="num">13</span><h2>Data Fetching Patterns</h2></div>
+    <p class="def"><strong>How and when you load remote data</strong> — on render, on route load, or on the server.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 220" role="img" aria-label="Sequential waterfall fetch versus parallel fetch">
+        <line x1="360" y1="24" x2="360" y2="196" stroke="#E2E8F0" stroke-width="1.5"/>
+        <text x="180" y="34" text-anchor="middle" font-size="13" fill="var(--del)" font-weight="600">Waterfall</text>
+        <rect x="60" y="60" width="90" height="22" rx="5" fill="#DBEAFE" stroke="var(--post)" stroke-width="1.2"/><text x="105" y="76" text-anchor="middle" font-size="11" fill="var(--post)">fetch A</text>
+        <rect x="150" y="94" width="90" height="22" rx="5" fill="#DBEAFE" stroke="var(--post)" stroke-width="1.2"/><text x="195" y="110" text-anchor="middle" font-size="11" fill="var(--post)">fetch B</text>
+        <rect x="240" y="128" width="90" height="22" rx="5" fill="#DBEAFE" stroke="var(--post)" stroke-width="1.2"/><text x="285" y="144" text-anchor="middle" font-size="11" fill="var(--post)">fetch C</text>
+        <text x="180" y="180" text-anchor="middle" font-size="11.5" fill="var(--del)">3× latency — each waits for the last</text>
+        <text x="524" y="34" text-anchor="middle" font-size="13" fill="var(--get)" font-weight="600">Parallel</text>
+        <rect x="404" y="60" width="90" height="22" rx="5" fill="#DCFCE7" stroke="var(--get)" stroke-width="1.2"/><text x="449" y="76" text-anchor="middle" font-size="11" fill="var(--get)">fetch A</text>
+        <rect x="404" y="94" width="90" height="22" rx="5" fill="#DCFCE7" stroke="var(--get)" stroke-width="1.2"/><text x="449" y="110" text-anchor="middle" font-size="11" fill="var(--get)">fetch B</text>
+        <rect x="404" y="128" width="90" height="22" rx="5" fill="#DCFCE7" stroke="var(--get)" stroke-width="1.2"/><text x="449" y="144" text-anchor="middle" font-size="11" fill="var(--get)">fetch C</text>
+        <text x="524" y="180" text-anchor="middle" font-size="11.5" fill="var(--get)">1× latency — independent calls together</text>
+      </svg>
+      <p class="dia__cap">Parallelize independent requests; only chain when B truly depends on A.</p>
+    </div>
+    <div class="qa">
+      <p class="q">Common problems and fixes?</p>
+      <ul class="a">
+        <li><strong>Race conditions:</strong> a slow earlier request resolves after a newer one — cancel with <code>AbortController</code> or ignore stale results in cleanup.</li>
+        <li><strong>Waterfalls:</strong> sequential dependent fetches — parallelize independent ones or fetch higher up.</li>
+      </ul>
+      <p class="q">Where should data be fetched?</p>
+      <ul class="a">
+        <li>Close to where it's used, but avoid per-component waterfalls — route-level or server-side fetching (RSC/loaders) cuts round trips.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span><code>useEffect</code> fetching has no built-in dedup or caching — two components fetching the same thing means two requests. Use a server-state library or hoist the fetch.</p>
+  </section>
+
+  <!-- 14 -->
+  <section class="concept" id="c14">
+    <div class="concept__head"><span class="num">14</span><h2>Suspense &amp; Error Boundaries</h2></div>
+    <p class="def"><strong>Suspense</strong> lets a component wait for something (lazy code, data) and show a fallback. <strong>Error Boundaries</strong> catch render-time errors in their subtree and show a fallback UI.</p>
+    <div class="qa">
+      <p class="q">What can an Error Boundary catch — and not?</p>
+      <ul class="a">
+        <li><strong>Catches:</strong> errors during render, lifecycle and child constructors.</li>
+        <li><strong>Doesn't catch:</strong> event handlers, async code, SSR, or errors in the boundary itself — use try/catch for those.</li>
+      </ul>
+      <p class="q">Why is Suspense useful?</p>
+      <ul class="a">
+        <li>Declarative loading states, coordinating multiple async dependencies, and enabling streaming SSR and Server Components.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Error Boundaries are still class components (or a library like <code>react-error-boundary</code>) — there's no hook that catches render errors.</p>
+  </section>
+
+  <div class="sec"><span class="sec__l">Performance</span><span class="sec__r"></span></div>
+
+  <!-- 15 -->
+  <section class="concept" id="c15">
+    <div class="concept__head"><span class="num">15</span><h2>Code Splitting &amp; Lazy Loading</h2></div>
+    <p class="def"><strong>Splitting the bundle so the browser downloads only what it needs, loading the rest on demand.</strong></p>
+    <div class="qa">
+      <p class="q">How in React?</p>
+      <ul class="a">
+        <li><code>React.lazy(() =&gt; import('./X'))</code> + <code>&lt;Suspense fallback&gt;</code>. Split by route first (the biggest win), then heavy components.</li>
+      </ul>
+      <p class="q">Why does it matter?</p>
+      <ul class="a">
+        <li>A smaller initial bundle means faster first load (TTI/LCP). The bundler emits a separate chunk per dynamic import.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Over-splitting creates many tiny chunks and request overhead. Split at meaningful boundaries (routes, rarely-used heavy features), not everything.</p>
+  </section>
+
+  <!-- 16 -->
+  <section class="concept" id="c16">
+    <div class="concept__head"><span class="num">16</span><h2>List Virtualization</h2></div>
+    <p class="def"><strong>Rendering only the rows currently in the viewport (plus a small buffer) instead of the whole list.</strong></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 250" role="img" aria-label="Virtualized list rendering only rows in the viewport">
+        <text x="150" y="130" text-anchor="middle" font-size="12" fill="var(--muted)" transform="rotate(-90 150 130)">10,000 items</text>
+        <g>
+          <rect x="250" y="40" width="180" height="14" rx="3" fill="#EEF2F7" stroke="#E2E8F0"/>
+          <rect x="250" y="58" width="180" height="14" rx="3" fill="#EEF2F7" stroke="#E2E8F0"/>
+          <rect x="250" y="76" width="180" height="14" rx="3" fill="#EEF2F7" stroke="#E2E8F0"/>
+          <rect x="250" y="94" width="180" height="14" rx="3" fill="#EEF2F7" stroke="#E2E8F0"/>
+          <rect x="250" y="112" width="180" height="14" rx="3" fill="#DBEAFE" stroke="var(--post)"/>
+          <rect x="250" y="130" width="180" height="14" rx="3" fill="#DBEAFE" stroke="var(--post)"/>
+          <rect x="250" y="148" width="180" height="14" rx="3" fill="#DBEAFE" stroke="var(--post)"/>
+          <rect x="250" y="166" width="180" height="14" rx="3" fill="#DBEAFE" stroke="var(--post)"/>
+          <rect x="250" y="184" width="180" height="14" rx="3" fill="#EEF2F7" stroke="#E2E8F0"/>
+          <rect x="250" y="202" width="180" height="14" rx="3" fill="#EEF2F7" stroke="#E2E8F0"/>
+        </g>
+        <rect x="242" y="108" width="196" height="76" rx="6" fill="none" stroke="var(--post)" stroke-width="2"/>
+        <text x="470" y="140" font-size="11.5" fill="var(--post)">viewport</text>
+        <text x="470" y="158" font-size="11" fill="var(--muted)">only these rows</text>
+        <text x="470" y="173" font-size="11" fill="var(--muted)">are in the DOM</text>
+      </svg>
+      <p class="dia__cap">The DOM node count stays roughly constant no matter how long the list is.</p>
+    </div>
+    <div class="qa">
+      <p class="q">Why and when?</p>
+      <ul class="a">
+        <li>Large lists (thousands of rows) create thousands of DOM nodes → slow render, high memory, janky scroll. Virtualization keeps the node count constant. Libraries: react-window, TanStack Virtual.</li>
+      </ul>
+      <p class="q">The catch?</p>
+      <ul class="a">
+        <li>Off-screen content isn't in the DOM → breaks Ctrl+F and screen readers if unhandled, and needs known or estimated row heights (variable heights are trickier).</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Don't virtualize small lists — the machinery costs more than it saves. It's strictly for the long-list case.</p>
+  </section>
+
+  <!-- 17 -->
+  <section class="concept" id="c17">
+    <div class="concept__head"><span class="num">17</span><h2>Re-render Optimization</h2></div>
+    <p class="def"><strong>Reducing unnecessary re-renders and the cost of each one.</strong></p>
+    <div class="qa">
+      <p class="q">The main strategies, in order?</p>
+      <ul class="a">
+        <li><strong>Don't re-render:</strong> push state down, split components, pass <code>children</code> as props so a re-rendering parent doesn't re-render static subtrees.</li>
+        <li><strong>Then memoize:</strong> <code>React.memo</code> + stable props via <code>useMemo</code>/<code>useCallback</code>.</li>
+        <li><strong>For global state:</strong> selector-based subscriptions so only components using a changed slice update.</li>
+      </ul>
+      <p class="q">How do you find the problem?</p>
+      <ul class="a">
+        <li>The React DevTools Profiler (highlight updates / flamegraph). Measure before optimizing.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Wrapping everything in <code>memo</code> is an anti-pattern — it adds comparison cost and hides the real fix, which is usually state placement or component structure.</p>
+  </section>
+
+  <!-- 18 -->
+  <section class="concept" id="c18">
+    <div class="concept__head"><span class="num">18</span><h2>Rendering Strategies</h2></div>
+    <p class="def"><strong>Where and when the HTML is produced</strong> — CSR, SSR, SSG or React Server Components.</p>
+    <table class="t">
+      <tr><th>Strategy</th><th>HTML made</th><th>Best for</th><th>Trade-off</th></tr>
+      <tr><td>CSR</td><td>in the browser</td><td>highly interactive apps, SEO not critical</td><td>slow first paint</td></tr>
+      <tr><td>SSR</td><td>per request, server</td><td>SEO + dynamic content</td><td>server cost + hydration</td></tr>
+      <tr><td>SSG</td><td>at build time</td><td>content that rarely changes</td><td>rebuild to update (ISR helps)</td></tr>
+      <tr><td>RSC</td><td>server, no JS shipped</td><td>data-heavy UI, less client JS</td><td>needs framework support</td></tr>
+    </table>
+    <div class="qa" style="margin-top:14px">
+      <p class="q">What is hydration, and why is it costly?</p>
+      <ul class="a">
+        <li>Attaching React (event listeners, state) to server-rendered HTML. It's expensive on large pages; RSC + streaming / partial hydration reduce it.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>SSR isn't automatically faster — it moves work to the server and adds a hydration step. Choose per page based on SEO, freshness and interactivity.</p>
+  </section>
+
+  <!-- 19 -->
+  <section class="concept" id="c19">
+    <div class="concept__head"><span class="num">19</span><h2>Core Web Vitals</h2></div>
+    <p class="def"><strong>Google's user-centric performance metrics</strong> — loading, responsiveness and visual stability.</p>
+    <table class="t">
+      <tr><th>Metric</th><th>Measures</th><th>Good</th><th>Fix</th></tr>
+      <tr><td>LCP</td><td>loading</td><td>&lt; 2.5s</td><td>optimize/preload hero, cut server + render-blocking resources</td></tr>
+      <tr><td>INP</td><td>responsiveness</td><td>&lt; 200ms</td><td>break up long tasks, defer non-critical JS</td></tr>
+      <tr><td>CLS</td><td>visual stability</td><td>&lt; 0.1</td><td>size images/embeds, reserve space, don't insert above content</td></tr>
+    </table>
+    <p class="watch"><span class="watch__tag">Watch out</span>INP replaced FID as a Core Web Vital in 2024 — if your prep still calls FID current, it's outdated.</p>
+  </section>
+
+  <div class="sec"><span class="sec__l">Browser &amp; Language</span><span class="sec__r"></span></div>
+
+  <!-- 20 -->
+  <section class="concept" id="c20">
+    <div class="concept__head"><span class="num">20</span><h2>Browser Event Loop</h2></div>
+    <p class="def"><strong>The single-threaded loop that runs JS:</strong> empty the call stack, drain all microtasks, render, then take one macrotask — and repeat.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 220" role="img" aria-label="Browser event loop order: task, microtasks, render">
+        <rect x="30" y="46" width="150" height="48" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <text x="105" y="75" text-anchor="middle" font-size="12.5" fill="var(--ink)">1 macrotask</text>
+        <line x1="180" y1="70" x2="233" y2="70" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <rect x="235" y="46" width="200" height="48" rx="10" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/>
+        <text x="335" y="75" text-anchor="middle" font-size="12.5" fill="var(--post)">drain ALL microtasks</text>
+        <line x1="435" y1="70" x2="488" y2="70" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <rect x="490" y="46" width="150" height="48" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <text x="565" y="75" text-anchor="middle" font-size="12.5" fill="var(--ink)">render frame</text>
+        <path d="M565,94 C565,140 105,140 105,96" fill="none" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+        <text x="335" y="135" text-anchor="middle" font-size="11" fill="var(--muted)">next tick</text>
+        <text x="335" y="176" text-anchor="middle" font-size="11" fill="#334155">micro = Promise .then · queueMicrotask · MutationObserver</text>
+        <text x="335" y="194" text-anchor="middle" font-size="11" fill="#334155">macro = setTimeout · I/O · DOM events</text>
+      </svg>
+      <p class="dia__cap">Microtasks drain fully before the next macrotask — so a resolved Promise runs before <code>setTimeout(0)</code>.</p>
+    </div>
+    <div class="qa">
+      <p class="q">Microtasks vs macrotasks?</p>
+      <ul class="a">
+        <li><strong>Microtasks</strong> (Promise callbacks, <code>queueMicrotask</code>, MutationObserver) drain fully after each task, before rendering.</li>
+        <li><strong>Macrotasks</strong> (<code>setTimeout</code>, events, I/O) run one per loop iteration — so a Promise resolves before <code>setTimeout(0)</code>.</li>
+      </ul>
+      <p class="q">Why does this matter for UI?</p>
+      <ul class="a">
+        <li>Long synchronous tasks or microtask floods block rendering and input → jank and poor INP. Break work up with chunking, <code>setTimeout</code>, or <code>requestIdleCallback</code>.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>This is the <em>browser</em> loop (task → microtasks → render). Node's event loop has different phases (timers, poll, check…) — don't conflate them in a full-stack interview.</p>
+  </section>
+
+  <!-- 21 -->
+  <section class="concept" id="c21">
+    <div class="concept__head"><span class="num">21</span><h2>Reflow &amp; Repaint</h2></div>
+    <p class="def"><strong>Reflow (layout)</strong> recomputes element geometry and can cascade; <strong>repaint</strong> redraws pixels without a layout change. Reflow is the more expensive one.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 170" role="img" aria-label="Browser rendering pipeline stages">
+        <g font-size="12.5" fill="var(--ink)">
+          <rect x="8" y="40" width="116" height="48" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="66" y="69" text-anchor="middle">JS</text>
+          <rect x="140" y="40" width="116" height="48" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="198" y="69" text-anchor="middle">Style</text>
+          <rect x="272" y="40" width="116" height="48" rx="9" fill="#FEF2F2" stroke="var(--del)" stroke-width="1.5"/><text x="330" y="69" text-anchor="middle" fill="var(--del)">Layout</text>
+          <rect x="404" y="40" width="116" height="48" rx="9" fill="#FEF2F2" stroke="var(--del)" stroke-width="1.5"/><text x="462" y="69" text-anchor="middle" fill="var(--del)">Paint</text>
+          <rect x="536" y="40" width="116" height="48" rx="9" fill="#F0FDF4" stroke="var(--get)" stroke-width="1.5"/><text x="594" y="69" text-anchor="middle" fill="var(--get)">Composite</text>
+        </g>
+        <g stroke="#334155" stroke-width="1.5">
+          <line x1="124" y1="64" x2="139" y2="64" marker-end="url(#arrow)"/>
+          <line x1="256" y1="64" x2="271" y2="64" marker-end="url(#arrow)"/>
+          <line x1="388" y1="64" x2="403" y2="64" marker-end="url(#arrow)"/>
+          <line x1="520" y1="64" x2="535" y2="64" marker-end="url(#arrow)"/>
+        </g>
+        <path d="M272,100 L272,108 L520,108 L520,100" fill="none" stroke="var(--del)" stroke-width="1.5"/>
+        <text x="396" y="126" text-anchor="middle" font-size="11" fill="var(--del)">reflow + repaint — costly</text>
+        <text x="594" y="126" text-anchor="middle" font-size="10.5" fill="var(--get)">transform / opacity</text>
+        <text x="594" y="140" text-anchor="middle" font-size="10.5" fill="var(--get)">skip straight here</text>
+      </svg>
+      <p class="dia__cap">Animating <code>transform</code>/<code>opacity</code> jumps to the composite step and avoids layout.</p>
+    </div>
+    <div class="qa">
+      <p class="q">What triggers reflow, and what's “layout thrashing”?</p>
+      <ul class="a">
+        <li><strong>Triggers:</strong> DOM changes, size/position style changes, and <em>reading</em> layout props (<code>offsetHeight</code>, <code>getBoundingClientRect</code>).</li>
+        <li><strong>Thrashing:</strong> interleaving reads and writes in a loop forces a synchronous reflow each time. Fix: batch reads, then writes.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Animate with <code>transform</code>/<code>opacity</code>, not <code>top</code>/<code>left</code>/<code>width</code> — the latter trigger reflow every frame.</p>
+  </section>
+
+  <!-- 22 -->
+  <section class="concept" id="c22">
+    <div class="concept__head"><span class="num">22</span><h2>CORS</h2></div>
+    <p class="def"><strong>A browser security mechanism:</strong> cross-origin requests are only readable if the server opts in via response headers. Origin = scheme + host + port.</p>
+    <div class="qa">
+      <p class="q">How does it actually work?</p>
+      <ul class="a">
+        <li>The browser adds an <code>Origin</code> header; the server responds with <code>Access-Control-Allow-Origin</code>. If it doesn't match, the browser blocks the JS from <em>reading</em> the response.</li>
+      </ul>
+      <p class="q">What's a preflight?</p>
+      <ul class="a">
+        <li>For “non-simple” requests (custom headers, methods like PUT/DELETE, certain content types), the browser first sends an <code>OPTIONS</code> request; the server must approve with <code>Allow-Methods</code>/<code>Allow-Headers</code>.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>CORS is enforced by the <em>browser</em>, not the server — the request often still reaches the server. It protects the user, not the server, and it isn't authentication. Curl and Postman ignore it entirely.</p>
+  </section>
+
+  <!-- 23 -->
+  <section class="concept" id="c23">
+    <div class="concept__head"><span class="num">23</span><h2>TypeScript + React</h2></div>
+    <p class="def"><strong>Static typing over JS</strong> — in React it types props, state, hooks and events, catching errors at compile time.</p>
+    <div class="qa">
+      <p class="q">Key features to know?</p>
+      <ul class="a">
+        <li>Generics (reusable typed components/hooks), utility types (<code>Partial</code>, <code>Pick</code>, <code>Omit</code>, <code>Record</code>, <code>ReturnType</code>), unions + narrowing, and discriminated unions for variant props.</li>
+        <li><strong><code>type</code> vs <code>interface</code>:</strong> interfaces merge/extend (good for public APIs); types do unions, mapped and conditional types. Mostly interchangeable for object shapes.</li>
+      </ul>
+      <p class="q">Common typing patterns?</p>
+      <ul class="a">
+        <li>Props via <code>interface Props {}</code>; children as <code>React.ReactNode</code>; events as <code>React.ChangeEvent&lt;HTMLInputElement&gt;</code>; generic components as <code>function List&lt;T&gt;(props: { items: T[] })</code>.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Avoid <code>any</code> (it disables checking) and overusing <code>as</code> casts (they bypass safety) — prefer narrowing and generics.</p>
+  </section>
+
+  <p class="foot">React &amp; frontend · technical interview prep · <b>Q&amp;A knowledge base</b></p>
+
+</div>
+</body>
+</html>

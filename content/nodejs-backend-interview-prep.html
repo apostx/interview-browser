@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node.js &amp; Backend — Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111827; --muted:#6B7280; --line:#E5E7EB; --paper:#EDF0F3; --card:#FFFFFF;
+  --accent:#2563EB;
+  --get:#16A34A; --post:#2563EB; --put:#D97706; --patch:#0D9488; --del:#DC2626;
+  --s2:#16A34A; --s3:#7C3AED; --s4:#D97706; --s5:#DC2626;
+  --node:#FFFFFF; --nodeline:#94A3B8; --slate:#334155;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+a{color:inherit}
+code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+code{background:#EEF2F7;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:.86em}
+
+/* top bar */
+.bar{position:sticky;top:0;z-index:20;background:rgba(237,240,243,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar__in{max-width:900px;margin:0 auto;padding:10px 20px;display:flex;
+  align-items:center;justify-content:space-between;gap:12px}
+.bar__t{font-family:'Space Grotesk';font-weight:600;font-size:14px;letter-spacing:-.01em}
+.bar__t b{color:var(--accent)}
+.bar a.up{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);
+  text-decoration:none;border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:#fff}
+.bar a.up:hover{color:var(--ink);border-color:var(--accent)}
+
+/* hero */
+.hero{padding:44px 0 8px}
+.eyebrow{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,6vw,50px);
+  line-height:1.02;letter-spacing:-.025em;margin:0 0 12px}
+.lede{color:var(--muted);max-width:62ch;margin:0}
+
+/* section dividers */
+.sec{display:flex;align-items:center;gap:14px;margin:36px 4px 2px}
+.sec__l{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--accent);white-space:nowrap}
+.sec__r{height:1px;background:var(--line);flex:1}
+
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:24px 0 2px}
+.legend .lbl{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-right:2px}
+.chip{font-family:'JetBrains Mono';font-size:12px;padding:3px 8px;border-radius:6px;
+  border:1px solid var(--line);background:#fff}
+.chip--2{color:var(--s2);border-color:#BBF7D0;background:#F0FDF4}
+.chip--4{color:var(--s4);border-color:#FDE68A;background:#FFFBEB}
+.chip--5{color:var(--s5);border-color:#FECACA;background:#FEF2F2}
+
+/* index */
+.index{margin:30px 0 8px}
+.index h3{font-family:'Space Grotesk';font-size:13px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+a.idx{display:flex;align-items:baseline;gap:10px;text-decoration:none;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  transition:border-color .15s,transform .15s}
+a.idx:hover{border-color:var(--accent);transform:translateY(-1px)}
+.idx__n{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);font-weight:500}
+.idx__t{font-size:13.5px;font-weight:500}
+
+/* concept */
+.concept{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:26px 26px 22px;margin-top:16px;scroll-margin-top:64px}
+.concept__head{display:flex;align-items:center;gap:14px;margin:0 0 12px}
+.concept__head .num{font-family:'JetBrains Mono';font-weight:500;font-size:15px;color:#fff;
+  background:var(--ink);width:38px;height:38px;border-radius:10px;display:grid;
+  place-items:center;flex:0 0 auto}
+.concept__head h2{font-family:'Space Grotesk';font-weight:600;font-size:22px;
+  letter-spacing:-.015em;margin:0}
+.def{margin:0 0 16px}
+.def strong{font-weight:600}
+.qa{border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
+.q{font-weight:600;margin:0 0 6px}
+.q::before{content:"Q";font-family:'JetBrains Mono';color:var(--accent);font-weight:600;
+  margin-right:9px;font-size:13px}
+ul.a,p.a{margin:0 0 2px}
+ul.a{padding-left:20px}
+ul.a li{margin:3px 0}
+.watch{margin:18px 0 0;background:#FFFBEB;border:1px solid #FDE68A;
+  border-left:3px solid var(--put);border-radius:8px;padding:10px 14px;font-size:14px}
+.watch__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--put);font-weight:600;display:block;margin-bottom:3px}
+
+/* table */
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 2px}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+table.t th{background:#F8FAFC;font-weight:600;font-family:'Space Grotesk';font-size:12px}
+table.t td:first-child{font-family:'JetBrains Mono';white-space:nowrap}
+
+/* diagrams */
+.dia{margin:16px 0 4px;background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px}
+.dia svg{width:100%;height:auto;display:block}
+.dia__cap{font-family:'JetBrains Mono';font-size:11.5px;color:var(--muted);margin:8px 2px 0}
+svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
+
+/* footer */
+.foot{margin-top:44px;text-align:center;color:var(--muted);font-size:12.5px}
+.foot b{font-family:'Space Grotesk';color:var(--ink)}
+
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+}
+@media print{
+  .bar{display:none} body{background:#fff}
+  .concept{break-inside:avoid;border-color:#ccc} a.idx{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+  </marker>
+  <marker id="arrowg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#16A34A"/>
+  </marker>
+</defs></svg>
+
+<header class="bar"><div class="bar__in">
+  <span class="bar__t"><b>Node.js</b> Interview Prep · Backend Deep Dive</span>
+  <a class="up" href="#top">↑ index</a>
+</div></header>
+
+<div class="wrap" id="top">
+
+  <div class="hero">
+    <p class="eyebrow">Technical Q&amp;A Knowledge Base</p>
+    <h1>Node.js &amp; Backend</h1>
+    <p class="lede">The runtime internals, async model, data-layer fundamentals and reliability practices that senior backend and full-stack interviews test. API design, auth and caching live in the companion API deck — this one goes underneath, into how Node actually runs.</p>
+    <div class="legend">
+      <span class="lbl">Diagrams</span>
+      <span class="chip chip--2">green · preferred</span>
+      <span class="chip chip--5">red · pitfall</span>
+      <span class="chip chip--4">amber · watch out</span>
+    </div>
+  </div>
+
+  <nav class="index">
+    <h3>Jump to</h3>
+    <div class="grid">
+      <a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t">Event Loop (Node)</span></a>
+      <a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t">libuv &amp; Thread Pool</span></a>
+      <a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t">nextTick / setImmediate / setTimeout</span></a>
+      <a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t">Blocking the Event Loop</span></a>
+      <a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t">Workers, Cluster &amp; Child Process</span></a>
+      <a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t">CommonJS vs ES Modules</span></a>
+      <a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t">Streams &amp; Backpressure</span></a>
+      <a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t">EventEmitter</span></a>
+      <a class="idx" href="#c09"><span class="idx__n">09</span><span class="idx__t">Callbacks → Promises → async/await</span></a>
+      <a class="idx" href="#c10"><span class="idx__n">10</span><span class="idx__t">Async Error Handling</span></a>
+      <a class="idx" href="#c11"><span class="idx__n">11</span><span class="idx__t">Concurrency Control</span></a>
+      <a class="idx" href="#c12"><span class="idx__n">12</span><span class="idx__t">SQL vs NoSQL</span></a>
+      <a class="idx" href="#c13"><span class="idx__n">13</span><span class="idx__t">Database Indexing</span></a>
+      <a class="idx" href="#c14"><span class="idx__n">14</span><span class="idx__t">Transactions &amp; ACID</span></a>
+      <a class="idx" href="#c15"><span class="idx__n">15</span><span class="idx__t">N+1 Query Problem</span></a>
+      <a class="idx" href="#c16"><span class="idx__n">16</span><span class="idx__t">Connection Pooling</span></a>
+      <a class="idx" href="#c17"><span class="idx__n">17</span><span class="idx__t">Caching Strategies</span></a>
+      <a class="idx" href="#c18"><span class="idx__n">18</span><span class="idx__t">WebSockets vs SSE</span></a>
+      <a class="idx" href="#c19"><span class="idx__n">19</span><span class="idx__t">gRPC</span></a>
+      <a class="idx" href="#c20"><span class="idx__n">20</span><span class="idx__t">Graceful Shutdown</span></a>
+      <a class="idx" href="#c21"><span class="idx__n">21</span><span class="idx__t">Logging &amp; Observability</span></a>
+      <a class="idx" href="#c22"><span class="idx__n">22</span><span class="idx__t">Env Config &amp; 12-Factor</span></a>
+    </div>
+  </nav>
+
+  <div class="sec"><span class="sec__l">Node Runtime</span><span class="sec__r"></span></div>
+
+  <!-- 01 -->
+  <section class="concept" id="c01">
+    <div class="concept__head"><span class="num">01</span><h2>Event Loop (Node)</h2></div>
+    <p class="def"><strong>Node runs your JS on a single thread; the event loop (via libuv) processes callbacks in ordered phases, one cycle at a time.</strong></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 350" role="img" aria-label="Node event loop phases">
+        <g font-size="12" fill="var(--ink)">
+          <rect x="230" y="26" width="240" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="350" y="51" text-anchor="middle">timers · setTimeout / setInterval</text>
+          <rect x="230" y="86" width="240" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="350" y="111" text-anchor="middle">pending callbacks</text>
+          <rect x="230" y="146" width="240" height="40" rx="9" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/><text x="350" y="167" text-anchor="middle" fill="var(--post)">poll · I/O callbacks</text><text x="350" y="181" text-anchor="middle" font-size="10" fill="var(--muted)">waits here for work</text>
+          <rect x="230" y="206" width="240" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="350" y="231" text-anchor="middle">check · setImmediate</text>
+          <rect x="230" y="266" width="240" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="350" y="291" text-anchor="middle">close callbacks</text>
+        </g>
+        <g stroke="#334155" stroke-width="1.5">
+          <line x1="350" y1="66" x2="350" y2="84" marker-end="url(#arrow)"/>
+          <line x1="350" y1="126" x2="350" y2="144" marker-end="url(#arrow)"/>
+          <line x1="350" y1="186" x2="350" y2="204" marker-end="url(#arrow)"/>
+          <line x1="350" y1="246" x2="350" y2="264" marker-end="url(#arrow)"/>
+        </g>
+        <path d="M470,286 C610,286 610,46 472,46" fill="none" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+        <text x="600" y="166" text-anchor="middle" font-size="11" fill="var(--muted)" transform="rotate(90 600 166)">next iteration</text>
+        <text x="120" y="150" text-anchor="middle" font-size="11" fill="var(--del)">between phases:</text>
+        <text x="120" y="168" text-anchor="middle" font-size="11" fill="var(--del)">drain nextTick,</text>
+        <text x="120" y="186" text-anchor="middle" font-size="11" fill="var(--del)">then Promises</text>
+      </svg>
+      <p class="dia__cap">Each phase runs its callback queue; <code>nextTick</code> + Promise microtasks drain between them.</p>
+    </div>
+    <div class="qa">
+      <p class="q">How does it differ from the browser event loop?</p>
+      <ul class="a">
+        <li>Browser: task → drain microtasks → render. Node has multiple phases (timers, poll, check…), no rendering, and adds <code>process.nextTick</code> as a separate, higher-priority queue.</li>
+      </ul>
+      <p class="q">Where do Promises and nextTick run?</p>
+      <ul class="a">
+        <li>After each operation/phase transition, Node drains the <code>process.nextTick</code> queue first, then the Promise microtask queue — before continuing.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>“Single-threaded” refers to your JS. libuv and the OS handle the actual I/O, so one Node process serves thousands of concurrent connections without a thread per request.</p>
+  </section>
+
+  <!-- 02 -->
+  <section class="concept" id="c02">
+    <div class="concept__head"><span class="num">02</span><h2>libuv &amp; Thread Pool</h2></div>
+    <p class="def"><strong>libuv is the C library behind Node's event loop and async I/O.</strong> Most I/O is OS-level async; a few operations use a small thread pool.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 240" role="img" aria-label="Event loop offloading blocking work to the libuv thread pool">
+        <rect x="30" y="80" width="180" height="70" rx="10" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/>
+        <text x="120" y="110" text-anchor="middle" font-size="12.5" fill="var(--post)">Event Loop</text>
+        <text x="120" y="128" text-anchor="middle" font-size="11" fill="var(--muted)">single JS thread</text>
+        <rect x="440" y="50" width="210" height="140" rx="12" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <text x="545" y="76" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">libuv thread pool (4)</text>
+        <g fill="#DBEAFE" stroke="var(--post)" stroke-width="1.2">
+          <rect x="460" y="92" width="170" height="18" rx="4"/><rect x="460" y="116" width="170" height="18" rx="4"/>
+          <rect x="460" y="140" width="170" height="18" rx="4"/><rect x="460" y="164" width="170" height="18" rx="4"/>
+        </g>
+        <line x1="210" y1="100" x2="438" y2="100" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="324" y="92" text-anchor="middle" font-size="11" fill="#334155">fs · DNS lookup · crypto · zlib</text>
+        <line x1="438" y1="140" x2="210" y2="140" stroke="#16A34A" stroke-width="1.5" marker-end="url(#arrowg)"/>
+        <text x="324" y="158" text-anchor="middle" font-size="11" fill="var(--get)">done → callback queued</text>
+        <text x="340" y="216" text-anchor="middle" font-size="11" fill="var(--muted)">network sockets → OS-level async, they bypass the pool</text>
+      </svg>
+      <p class="dia__cap">Only pool-backed ops (fs, DNS, some crypto/zlib) are limited by the thread count.</p>
+    </div>
+    <div class="qa">
+      <p class="q">What actually uses the thread pool?</p>
+      <ul class="a">
+        <li>File system, DNS lookups (<code>dns.lookup</code>), some crypto (e.g. <code>pbkdf2</code>) and zlib. Network sockets do <em>not</em> — they're OS-async (epoll/kqueue/IOCP).</li>
+        <li>Default pool size is 4 (<code>UV_THREADPOOL_SIZE</code>, up to 1024).</li>
+      </ul>
+      <p class="q">Why does this matter?</p>
+      <ul class="a">
+        <li>CPU-heavy pool work (many crypto hashes) can exhaust the 4 threads and stall unrelated fs/DNS work — tune the pool or move to worker threads.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Network requests scale far beyond the pool because sockets are OS-async — only pool-backed operations are capped by <code>UV_THREADPOOL_SIZE</code>.</p>
+  </section>
+
+  <!-- 03 -->
+  <section class="concept" id="c03">
+    <div class="concept__head"><span class="num">03</span><h2>nextTick / setImmediate / setTimeout</h2></div>
+    <p class="def"><strong>Three ways to defer work, each with different timing and priority.</strong></p>
+    <table class="t">
+      <tr><th>API</th><th>Runs</th><th>Priority</th></tr>
+      <tr><td>process.nextTick</td><td>before the loop continues (after current op)</td><td>highest</td></tr>
+      <tr><td>Promise.then</td><td>microtask, right after the nextTick queue</td><td>high</td></tr>
+      <tr><td>setImmediate</td><td>check phase (just after poll)</td><td>per-loop</td></tr>
+      <tr><td>setTimeout(_, 0)</td><td>timers phase (≥ ~1ms)</td><td>per-loop</td></tr>
+    </table>
+    <div class="qa" style="margin-top:14px">
+      <p class="q"><code>setImmediate</code> vs <code>setTimeout(0)</code> — which fires first?</p>
+      <ul class="a">
+        <li>Inside an I/O callback, <code>setImmediate</code> always wins (check comes right after poll). At the top level, the order is non-deterministic.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Recursive <code>process.nextTick</code> can starve the event loop — I/O never gets a turn. Prefer <code>setImmediate</code> for “run after I/O” deferral.</p>
+  </section>
+
+  <!-- 04 -->
+  <section class="concept" id="c04">
+    <div class="concept__head"><span class="num">04</span><h2>Blocking the Event Loop</h2></div>
+    <p class="def"><strong>Any long synchronous work blocks the single JS thread</strong> — heavy loops, sync crypto, parsing huge payloads, sync fs. No other request is served until it finishes.</p>
+    <div class="qa">
+      <p class="q">How do you avoid it?</p>
+      <ul class="a">
+        <li>Never use <code>*Sync</code> fs/crypto methods in request handlers; offload CPU-bound work to Worker Threads or a separate service; stream large data instead of buffering; paginate and limit.</li>
+      </ul>
+      <p class="q">How do you detect it?</p>
+      <ul class="a">
+        <li>Event-loop lag metrics (<code>perf_hooks.monitorEventLoopDelay</code>), an APM tool, or clinic.js.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>One slow synchronous handler degrades the whole process for every user — the single most common Node performance pitfall.</p>
+  </section>
+
+  <!-- 05 -->
+  <section class="concept" id="c05">
+    <div class="concept__head"><span class="num">05</span><h2>Workers, Cluster &amp; Child Process</h2></div>
+    <p class="def"><strong>Three ways to use more than one thread or process</strong> — Worker Threads (CPU work), Cluster (scale a server across cores), Child Process (run other programs).</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 250" role="img" aria-label="Cluster master forking workers that share a port">
+        <text x="60" y="122" text-anchor="middle" font-size="11.5" fill="var(--muted)">requests</text>
+        <text x="60" y="138" text-anchor="middle" font-size="11.5" fill="var(--muted)">:3000</text>
+        <line x1="110" y1="130" x2="158" y2="130" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <rect x="160" y="104" width="130" height="52" rx="10" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/>
+        <text x="225" y="135" text-anchor="middle" font-size="12.5" fill="var(--post)">Master</text>
+        <g font-size="12" fill="var(--ink)">
+          <rect x="420" y="26" width="200" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="520" y="51" text-anchor="middle">Worker 1 · core 1</text>
+          <rect x="420" y="86" width="200" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="520" y="111" text-anchor="middle">Worker 2 · core 2</text>
+          <rect x="420" y="146" width="200" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="520" y="171" text-anchor="middle">Worker 3 · core 3</text>
+          <rect x="420" y="206" width="200" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="520" y="231" text-anchor="middle">Worker 4 · core 4</text>
+        </g>
+        <g stroke="#334155" stroke-width="1.5">
+          <line x1="290" y1="120" x2="418" y2="48" marker-end="url(#arrow)"/>
+          <line x1="290" y1="126" x2="418" y2="106" marker-end="url(#arrow)"/>
+          <line x1="290" y1="136" x2="418" y2="166" marker-end="url(#arrow)"/>
+          <line x1="290" y1="142" x2="418" y2="226" marker-end="url(#arrow)"/>
+        </g>
+      </svg>
+      <p class="dia__cap">Cluster workers share the listening port; the OS/master load-balances connections.</p>
+    </div>
+    <div class="qa">
+      <p class="q">CPU-bound vs scaling — which do you reach for?</p>
+      <ul class="a">
+        <li>CPU-bound task (image processing, crypto) → <strong>Worker Threads</strong> (real threads, same process).</li>
+        <li>Use all cores for a web server → <strong>Cluster</strong> (forked processes sharing a port) — or run N containers behind a load balancer, common in production.</li>
+      </ul>
+      <p class="q">Why not just use threads everywhere?</p>
+      <ul class="a">
+        <li>Node's model is built for I/O-bound concurrency on one thread; threads/processes add memory + coordination cost. Use them for CPU work, not I/O.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Cluster workers don't share memory — shared state needs an external store (Redis). In k8s, horizontal pod scaling usually replaces cluster.</p>
+  </section>
+
+  <!-- 06 -->
+  <section class="concept" id="c06">
+    <div class="concept__head"><span class="num">06</span><h2>CommonJS vs ES Modules</h2></div>
+    <p class="def"><strong>Two module systems.</strong> CJS (<code>require</code>/<code>module.exports</code>) — synchronous, Node's original. ESM (<code>import</code>/<code>export</code>) — the standard, static, async.</p>
+    <div class="qa">
+      <p class="q">Key differences?</p>
+      <ul class="a">
+        <li>CJS loads synchronously and resolves at runtime; ESM is static (imports hoisted, analyzable, tree-shakeable).</li>
+        <li>ESM has top-level <code>await</code> and <code>import.meta.url</code>; CJS has <code>__dirname</code>/<code>__filename</code>. ESM exports are live bindings; CJS exports are a value snapshot.</li>
+      </ul>
+      <p class="q">How do you pick per file?</p>
+      <ul class="a">
+        <li><code>.mjs</code> or <code>"type": "module"</code> → ESM; <code>.cjs</code> or default → CJS. ESM can import CJS; CJS importing ESM needs dynamic <code>import()</code>.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>You can't <code>require()</code> an ESM module — mixing the two trips people up. New projects default to ESM.</p>
+  </section>
+
+  <!-- 07 -->
+  <section class="concept" id="c07">
+    <div class="concept__head"><span class="num">07</span><h2>Streams &amp; Backpressure</h2></div>
+    <p class="def"><strong>Streams process data in chunks instead of loading it all into memory.</strong> Four types: Readable, Writable, Duplex, Transform.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 210" role="img" aria-label="Backpressure between a readable and writable stream">
+        <rect x="50" y="60" width="170" height="64" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <text x="135" y="88" text-anchor="middle" font-size="12.5" fill="var(--ink)">Readable</text>
+        <text x="135" y="106" text-anchor="middle" font-size="11" fill="var(--muted)">source</text>
+        <rect x="460" y="60" width="170" height="64" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <text x="545" y="88" text-anchor="middle" font-size="12.5" fill="var(--ink)">Writable</text>
+        <text x="545" y="106" text-anchor="middle" font-size="11" fill="var(--muted)">sink</text>
+        <line x1="220" y1="80" x2="458" y2="80" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="339" y="72" text-anchor="middle" font-size="11" fill="#334155">chunks →</text>
+        <line x1="458" y1="108" x2="220" y2="108" stroke="var(--del)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+        <text x="339" y="126" text-anchor="middle" font-size="11" fill="var(--del)">backpressure: pause when buffer is full</text>
+        <text x="340" y="176" text-anchor="middle" font-size="11" fill="var(--muted)">pipeline() handles backpressure AND errors · raw .pipe() forwards neither</text>
+      </svg>
+      <p class="dia__cap">When the sink can't keep up, the source pauses until the buffer drains.</p>
+    </div>
+    <div class="qa">
+      <p class="q">Why streams?</p>
+      <ul class="a">
+        <li>Constant memory for arbitrarily large data (files, HTTP bodies, uploads), start processing before all data arrives, and composability via <code>pipe</code>/<code>pipeline</code>.</li>
+      </ul>
+      <p class="q">What is backpressure?</p>
+      <ul class="a">
+        <li>When a writable can't keep up, its buffer fills. <code>pipeline()</code> pauses the source until the destination drains — preventing unbounded memory growth.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Use <code>stream.pipeline()</code>, not raw <code>.pipe()</code> — pipeline handles backpressure <em>and</em> propagates errors + cleans up. Plain <code>.pipe()</code> silently drops errors.</p>
+  </section>
+
+  <!-- 08 -->
+  <section class="concept" id="c08">
+    <div class="concept__head"><span class="num">08</span><h2>EventEmitter</h2></div>
+    <p class="def"><strong>Node's pub/sub primitive:</strong> objects emit named events, listeners subscribe with <code>.on()</code>. Much of core (streams, HTTP server, process) is built on it.</p>
+    <div class="qa">
+      <p class="q">Is it sync or async?</p>
+      <ul class="a">
+        <li>Listeners run <em>synchronously</em> in registration order when <code>emit()</code> fires — it's not a queue; <code>emit</code> blocks until every listener returns.</li>
+      </ul>
+      <p class="q">Common pitfalls?</p>
+      <ul class="a">
+        <li>Leaks from listeners never removed (the “MaxListenersExceededWarning” at &gt;10). Use <code>.once()</code> for one-shot and remove listeners on cleanup.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>An <code>'error'</code> event with no listener throws and can crash the process — always attach an error listener to emitters and streams.</p>
+  </section>
+
+  <div class="sec"><span class="sec__l">Async &amp; Errors</span><span class="sec__r"></span></div>
+
+  <!-- 09 -->
+  <section class="concept" id="c09">
+    <div class="concept__head"><span class="num">09</span><h2>Callbacks → Promises → async/await</h2></div>
+    <p class="def"><strong>The evolution of async in Node:</strong> error-first callbacks → Promises → <code>async/await</code> syntax over Promises.</p>
+    <div class="qa">
+      <p class="q">What problem did each solve?</p>
+      <ul class="a">
+        <li>Callbacks → “callback hell” (nesting, inversion of control). Promises → chaining and a single error path. async/await → synchronous-looking code with <code>try/catch</code>.</li>
+      </ul>
+      <p class="q">How do async functions work?</p>
+      <ul class="a">
+        <li>An <code>async</code> function always returns a Promise; <code>await</code> pauses it until the Promise settles — without blocking the event loop, so other work runs meanwhile.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span><code>await</code> in a loop serializes independent operations — use <code>Promise.all</code> for parallelism. And forgetting to <code>await</code> returns a pending Promise (a silent bug).</p>
+  </section>
+
+  <!-- 10 -->
+  <section class="concept" id="c10">
+    <div class="concept__head"><span class="num">10</span><h2>Async Error Handling</h2></div>
+    <p class="def"><strong>Errors must be caught on the right path</strong> — a sync throw, a rejected Promise, or an error-first callback.</p>
+    <div class="qa">
+      <p class="q">How do you catch each?</p>
+      <ul class="a">
+        <li>async/await → <code>try/catch</code>. Promises → <code>.catch()</code>. Callbacks → check the first arg. Streams/emitters → an <code>'error'</code> listener.</li>
+      </ul>
+      <p class="q">The dangerous cases?</p>
+      <ul class="a">
+        <li>Unhandled rejections (<code>process.on('unhandledRejection')</code>) — which crash by default in current Node — and uncaught exceptions.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>A throw inside a <code>setTimeout</code>/callback isn't caught by an outer <code>try/catch</code> — the try already returned. Let a top-level handler log &amp; exit; don't try to “resume” after an uncaught exception — process state is unknown.</p>
+  </section>
+
+  <!-- 11 -->
+  <section class="concept" id="c11">
+    <div class="concept__head"><span class="num">11</span><h2>Concurrency Control</h2></div>
+    <p class="def"><strong>Running multiple async operations with the right amount of parallelism.</strong></p>
+    <div class="qa">
+      <p class="q">Promise combinators?</p>
+      <ul class="a">
+        <li><code>all</code> — all succeed, or reject on first failure. <code>allSettled</code> — wait for all, get each result/error. <code>race</code> — first to settle. <code>any</code> — first to fulfill.</li>
+      </ul>
+      <p class="q">Why limit concurrency?</p>
+      <ul class="a">
+        <li>Firing 10,000 requests/queries at once exhausts sockets, connections and memory. Cap in-flight work with a limiter (<code>p-limit</code>) or batching.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span><code>Promise.all</code> rejects on the first failure, but the other promises keep running — they aren't cancelled. Use <code>allSettled</code> when you need every result regardless of individual failures.</p>
+  </section>
+
+  <div class="sec"><span class="sec__l">Data &amp; Persistence</span><span class="sec__r"></span></div>
+
+  <!-- 12 -->
+  <section class="concept" id="c12">
+    <div class="concept__head"><span class="num">12</span><h2>SQL vs NoSQL</h2></div>
+    <p class="def"><strong>Relational (SQL) vs non-relational (NoSQL) databases</strong> — chosen by data model and access pattern.</p>
+    <table class="t">
+      <tr><th>Type</th><th>Model</th><th>Best for</th><th>Examples</th></tr>
+      <tr><td>SQL</td><td>relational, schema, joins, ACID</td><td>structured data, complex queries, transactions</td><td>Postgres, MySQL</td></tr>
+      <tr><td>Document</td><td>flexible JSON documents</td><td>evolving schemas, nested data</td><td>MongoDB</td></tr>
+      <tr><td>Key-value</td><td>key → value, very fast</td><td>caching, sessions, high throughput</td><td>Redis, DynamoDB</td></tr>
+      <tr><td>Graph</td><td>nodes + edges</td><td>relationship-heavy queries</td><td>Neo4j</td></tr>
+    </table>
+    <div class="qa" style="margin-top:14px">
+      <p class="q">How do you choose?</p>
+      <ul class="a">
+        <li>SQL by default for most apps (relations, transactions, mature tooling). Reach for NoSQL for a specific access pattern: schema flexibility, massive horizontal scale, or key-based/high-write workloads.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>“NoSQL scales, SQL doesn't” is outdated — modern Postgres scales far. Choose by data model, not hype; many systems use both (polyglot persistence).</p>
+  </section>
+
+  <!-- 13 -->
+  <section class="concept" id="c13">
+    <div class="concept__head"><span class="num">13</span><h2>Database Indexing</h2></div>
+    <p class="def"><strong>A data structure (usually a B-tree) that lets the DB find rows without scanning the whole table</strong> — like a book's index.</p>
+    <div class="qa">
+      <p class="q">When does an index help, and when does it hurt?</p>
+      <ul class="a">
+        <li><strong>Helps:</strong> <code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code> on the indexed column(s) — turns an O(n) scan into an O(log n) lookup.</li>
+        <li><strong>Hurts:</strong> every write must update the index → slower writes + storage. Unused indexes are pure cost.</li>
+      </ul>
+      <p class="q">Composite index / column order?</p>
+      <ul class="a">
+        <li>A multi-column index <code>(a, b)</code> serves queries on <code>a</code> or <code>a + b</code> (leftmost-prefix rule), but not on <code>b</code> alone.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Indexes don't help low-selectivity columns (e.g. a boolean) or leading-wildcard <code>LIKE '%x'</code>. Use <code>EXPLAIN ANALYZE</code> to confirm one is actually used.</p>
+  </section>
+
+  <!-- 14 -->
+  <section class="concept" id="c14">
+    <div class="concept__head"><span class="num">14</span><h2>Transactions &amp; ACID</h2></div>
+    <p class="def"><strong>A transaction groups operations so they succeed or fail together.</strong> ACID = Atomicity, Consistency, Isolation, Durability.</p>
+    <table class="t">
+      <tr><th>Isolation level</th><th>Prevents</th></tr>
+      <tr><td>Read Uncommitted</td><td>— (allows dirty reads)</td></tr>
+      <tr><td>Read Committed</td><td>dirty reads · Postgres default</td></tr>
+      <tr><td>Repeatable Read</td><td>+ non-repeatable reads</td></tr>
+      <tr><td>Serializable</td><td>+ phantom reads · strictest</td></tr>
+    </table>
+    <div class="qa" style="margin-top:14px">
+      <p class="q">What does each ACID letter mean?</p>
+      <ul class="a">
+        <li>Atomicity — all-or-nothing. Consistency — constraints stay valid. Isolation — concurrent txns don't corrupt each other. Durability — committed data survives crashes.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Higher isolation trades throughput for safety (more locking). And long-running transactions hold locks and bloat — keep them short.</p>
+  </section>
+
+  <!-- 15 -->
+  <section class="concept" id="c15">
+    <div class="concept__head"><span class="num">15</span><h2>N+1 Query Problem</h2></div>
+    <p class="def"><strong>Fetching N parent rows, then firing one query per parent for its children</strong> → 1 + N queries instead of one.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 230" role="img" aria-label="N plus one queries versus a single batched query">
+        <line x1="350" y1="20" x2="350" y2="205" stroke="#E2E8F0" stroke-width="1.5"/>
+        <text x="180" y="34" text-anchor="middle" font-size="13" fill="var(--del)" font-weight="600">N + 1 queries</text>
+        <rect x="40" y="54" width="80" height="38" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="80" y="78" text-anchor="middle" font-size="12" fill="var(--ink)">App</text>
+        <rect x="240" y="54" width="80" height="38" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="280" y="78" text-anchor="middle" font-size="12" fill="var(--ink)">DB</text>
+        <g stroke="#334155" stroke-width="1.4" font-size="10">
+          <line x1="120" y1="66" x2="238" y2="66" marker-end="url(#arrow)"/>
+          <line x1="120" y1="112" x2="238" y2="112" marker-end="url(#arrow)"/>
+          <line x1="120" y1="134" x2="238" y2="134" marker-end="url(#arrow)"/>
+          <line x1="120" y1="156" x2="238" y2="156" marker-end="url(#arrow)"/>
+        </g>
+        <text x="180" y="62" text-anchor="middle" font-size="10" fill="#334155">users (1)</text>
+        <text x="180" y="178" text-anchor="middle" font-size="10" fill="var(--del)">posts per user (N) …</text>
+        <text x="524" y="34" text-anchor="middle" font-size="13" fill="var(--get)" font-weight="600">batched</text>
+        <rect x="404" y="54" width="80" height="38" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="444" y="78" text-anchor="middle" font-size="12" fill="var(--ink)">App</text>
+        <rect x="604" y="54" width="60" height="38" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="634" y="78" text-anchor="middle" font-size="12" fill="var(--ink)">DB</text>
+        <line x1="484" y1="90" x2="602" y2="90" stroke="#16A34A" stroke-width="1.5" marker-end="url(#arrowg)"/>
+        <text x="543" y="118" text-anchor="middle" font-size="10.5" fill="var(--get)">JOIN / WHERE id IN (…)</text>
+        <text x="543" y="150" text-anchor="middle" font-size="10.5" fill="var(--get)">1 round trip</text>
+      </svg>
+      <p class="dia__cap">Invisible with 10 rows in dev; catastrophic with 10,000 in prod.</p>
+    </div>
+    <div class="qa">
+      <p class="q">Where does it come from, and how do you fix it?</p>
+      <ul class="a">
+        <li>Classic with ORMs + lazy loading: loop over users, access <code>user.posts</code> → a query each.</li>
+        <li><strong>Fix:</strong> eager-load with a <code>JOIN</code>, or batch into one <code>WHERE ... IN (...)</code> (DataLoader batches + caches per request).</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Inspect query counts and use <code>EXPLAIN</code> — the fix is ORM eager-loading (<code>include</code>/<code>join</code>), not more indexes.</p>
+  </section>
+
+  <!-- 16 -->
+  <section class="concept" id="c16">
+    <div class="concept__head"><span class="num">16</span><h2>Connection Pooling</h2></div>
+    <p class="def"><strong>Reusing a fixed set of open DB connections across requests</strong> instead of opening/closing one per query.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 210" role="img" aria-label="Requests borrowing connections from a pool to reach the database">
+        <g font-size="11.5" fill="var(--ink)">
+          <rect x="30" y="34" width="90" height="34" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="75" y="56" text-anchor="middle">req 1</text>
+          <rect x="30" y="88" width="90" height="34" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="75" y="110" text-anchor="middle">req 2</text>
+          <rect x="30" y="142" width="90" height="34" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="75" y="164" text-anchor="middle">req 3</text>
+        </g>
+        <rect x="250" y="40" width="180" height="130" rx="12" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/>
+        <text x="340" y="64" text-anchor="middle" font-size="12" fill="var(--post)" font-weight="600">Connection Pool</text>
+        <g fill="#DBEAFE" stroke="var(--post)" stroke-width="1.2">
+          <rect x="270" y="80" width="140" height="16" rx="4"/><rect x="270" y="104" width="140" height="16" rx="4"/>
+          <rect x="270" y="128" width="140" height="16" rx="4"/><rect x="270" y="152" width="140" height="10" rx="4"/>
+        </g>
+        <rect x="520" y="72" width="130" height="66" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <text x="585" y="110" text-anchor="middle" font-size="12.5" fill="var(--ink)">Database</text>
+        <g stroke="#334155" stroke-width="1.4">
+          <line x1="120" y1="51" x2="248" y2="90" marker-end="url(#arrow)"/>
+          <line x1="120" y1="105" x2="248" y2="112" marker-end="url(#arrow)"/>
+          <line x1="120" y1="159" x2="248" y2="140" marker-end="url(#arrow)"/>
+          <line x1="430" y1="105" x2="518" y2="105" marker-end="url(#arrow)"/>
+        </g>
+        <text x="185" y="196" text-anchor="middle" font-size="10.5" fill="var(--muted)">borrow → query → return</text>
+        <text x="475" y="196" text-anchor="middle" font-size="10.5" fill="var(--muted)">warm, reused connections</text>
+      </svg>
+      <p class="dia__cap">The pool caps total connections and skips the per-query TCP + auth handshake.</p>
+    </div>
+    <div class="qa">
+      <p class="q">Why pool?</p>
+      <ul class="a">
+        <li>Opening a DB connection is expensive (TCP + auth). A pool keeps connections warm; requests borrow and return them, capping the total the DB must handle.</li>
+      </ul>
+      <p class="q">How do you size it?</p>
+      <ul class="a">
+        <li>Bounded by the DB's max connections and CPU — bigger isn't better. Too many connections thrash the DB; a modest pool per instance often wins.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Pool exhaustion (all borrowed, none returned) makes requests hang — usually from leaked connections or long queries. In serverless, use a pooler like PgBouncer to avoid connection storms.</p>
+  </section>
+
+  <!-- 17 -->
+  <section class="concept" id="c17">
+    <div class="concept__head"><span class="num">17</span><h2>Caching Strategies</h2></div>
+    <p class="def"><strong>Storing hot data in a fast store (Redis/in-memory) to cut DB load and latency.</strong> This is application-level caching — distinct from HTTP caching.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 250" role="img" aria-label="Cache-aside read path">
+        <rect x="270" y="26" width="150" height="44" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="345" y="53" text-anchor="middle" font-size="12.5" fill="var(--ink)">App</text>
+        <rect x="270" y="104" width="150" height="44" rx="10" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/><text x="345" y="131" text-anchor="middle" font-size="12.5" fill="var(--post)">Cache (Redis)</text>
+        <rect x="270" y="182" width="150" height="44" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="345" y="209" text-anchor="middle" font-size="12.5" fill="var(--ink)">Database</text>
+        <line x1="335" y1="70" x2="335" y2="102" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="300" y="90" text-anchor="end" font-size="10.5" fill="#334155">1 get</text>
+        <line x1="388" y1="102" x2="388" y2="72" stroke="#16A34A" stroke-width="1.5" marker-end="url(#arrowg)"/>
+        <text x="428" y="90" text-anchor="start" font-size="10.5" fill="var(--get)">hit → return</text>
+        <line x1="335" y1="148" x2="335" y2="180" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="300" y="168" text-anchor="end" font-size="10.5" fill="var(--del)">2 miss → query</text>
+        <line x1="388" y1="180" x2="388" y2="150" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="428" y="168" text-anchor="start" font-size="10.5" fill="#334155">3 row → set (TTL)</text>
+        <text x="560" y="120" text-anchor="middle" font-size="11" fill="var(--get)">on a hit, the DB</text>
+        <text x="560" y="136" text-anchor="middle" font-size="11" fill="var(--get)">is never touched</text>
+      </svg>
+      <p class="dia__cap">Cache-aside: read cache first; on a miss, read the DB and populate the cache.</p>
+    </div>
+    <div class="qa">
+      <p class="q">Cache-aside (lazy) pattern?</p>
+      <ul class="a">
+        <li><strong>Read:</strong> check cache → hit returns; miss → read DB, write to cache, return. <strong>Write:</strong> update DB, then invalidate/update the cache entry.</li>
+      </ul>
+      <p class="q">Other patterns, and the hard part?</p>
+      <ul class="a">
+        <li>Write-through (cache + DB together), write-behind (async). The hard part is invalidation + staleness — use TTLs and explicit invalidation on writes.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Cache stampede: when a hot key expires, many misses hit the DB at once. Mitigate with a lock, staggered TTLs, or stale-while-revalidate.</p>
+  </section>
+
+  <div class="sec"><span class="sec__l">Communication &amp; Reliability</span><span class="sec__r"></span></div>
+
+  <!-- 18 -->
+  <section class="concept" id="c18">
+    <div class="concept__head"><span class="num">18</span><h2>WebSockets vs SSE</h2></div>
+    <p class="def"><strong>Ways to push server data to clients in real time</strong> — polling, Server-Sent Events, and WebSockets.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 240" role="img" aria-label="Polling versus SSE versus WebSockets">
+        <text x="30" y="66" font-size="12" fill="var(--ink)" font-weight="600">Polling</text>
+        <text x="30" y="136" font-size="12" fill="var(--ink)" font-weight="600">SSE</text>
+        <text x="30" y="206" font-size="12" fill="var(--ink)" font-weight="600">WebSocket</text>
+        <g font-size="11.5" fill="var(--ink)">
+          <rect x="180" y="40" width="100" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="230" y="64" text-anchor="middle">Client</text>
+          <rect x="520" y="40" width="100" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="570" y="64" text-anchor="middle">Server</text>
+          <rect x="180" y="110" width="100" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="230" y="134" text-anchor="middle">Client</text>
+          <rect x="520" y="110" width="100" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="570" y="134" text-anchor="middle">Server</text>
+          <rect x="180" y="180" width="100" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="230" y="204" text-anchor="middle">Client</text>
+          <rect x="520" y="180" width="100" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="570" y="204" text-anchor="middle">Server</text>
+        </g>
+        <line x1="280" y1="60" x2="518" y2="60" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="399" y="52" text-anchor="middle" font-size="10.5" fill="var(--muted)">repeated request (×N) — pull</text>
+        <line x1="518" y1="130" x2="282" y2="130" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="400" y="122" text-anchor="middle" font-size="10.5" fill="var(--muted)">server push — one-way stream</text>
+        <line x1="280" y1="194" x2="518" y2="194" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="518" y1="208" x2="282" y2="208" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="400" y="228" text-anchor="middle" font-size="10.5" fill="var(--muted)">bidirectional — full-duplex</text>
+      </svg>
+      <p class="dia__cap">SSE is one-way server→client over HTTP; WebSockets are full-duplex over a persistent TCP connection.</p>
+    </div>
+    <div class="qa">
+      <p class="q">How do you choose?</p>
+      <ul class="a">
+        <li><strong>One-way updates</strong> (notifications, live scores, log streams) → <strong>SSE</strong> — simpler, plain HTTP, auto-reconnect, text only.</li>
+        <li><strong>Bidirectional / low-latency</strong> (chat, multiplayer, collab editing) → <strong>WebSockets</strong> — full-duplex, binary or text.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>A WebSocket connection lives on one server — scaling across instances needs sticky sessions or a shared pub/sub (Redis).</p>
+  </section>
+
+  <!-- 19 -->
+  <section class="concept" id="c19">
+    <div class="concept__head"><span class="num">19</span><h2>gRPC</h2></div>
+    <p class="def"><strong>A high-performance RPC framework over HTTP/2 with Protocol Buffers</strong> (binary, schema-defined) for service-to-service communication.</p>
+    <div class="qa">
+      <p class="q">Why gRPC over REST for internal services?</p>
+      <ul class="a">
+        <li>Binary protobuf (smaller/faster than JSON), HTTP/2 multiplexing + streaming, strongly-typed contracts with codegen, and bidirectional streaming.</li>
+      </ul>
+      <p class="q">Trade-offs / when not to?</p>
+      <ul class="a">
+        <li>Not natively browser-friendly (needs grpc-web + a proxy), harder to debug (binary), less human-readable. REST/JSON stays better for public/browser-facing APIs.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>gRPC shines for internal microservice-to-microservice traffic; for public APIs consumed by browsers or third parties, REST or GraphQL is usually the better fit.</p>
+  </section>
+
+  <!-- 20 -->
+  <section class="concept" id="c20">
+    <div class="concept__head"><span class="num">20</span><h2>Graceful Shutdown</h2></div>
+    <p class="def"><strong>On a termination signal, stop taking new work, finish in-flight requests, close resources, then exit</strong> — instead of dropping connections mid-flight.</p>
+    <div class="qa">
+      <p class="q">What's the sequence?</p>
+      <ul class="a">
+        <li>Catch <code>SIGTERM</code> → <code>server.close()</code> (stop accepting new connections) → let in-flight requests finish (with a timeout) → close DB pools / flush queues → <code>exit(0)</code>. Force-exit if it hangs.</li>
+      </ul>
+      <p class="q">Why does it matter?</p>
+      <ul class="a">
+        <li>In k8s/containers, deploys send <code>SIGTERM</code>. Without graceful shutdown you drop live requests and corrupt in-flight work on every rollout.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Always include a hard timeout — a hung connection shouldn't block shutdown forever (the orchestrator will <code>SIGKILL</code> after the grace period anyway).</p>
+  </section>
+
+  <!-- 21 -->
+  <section class="concept" id="c21">
+    <div class="concept__head"><span class="num">21</span><h2>Logging &amp; Observability</h2></div>
+    <p class="def"><strong>The three pillars:</strong> logs (events), metrics (numbers over time), traces (a request's path across services).</p>
+    <div class="qa">
+      <p class="q">Logging best practices in Node?</p>
+      <ul class="a">
+        <li>Structured JSON logs (pino/winston), log levels, a correlation/request ID per request, and no secrets/PII. Write to stdout and let the platform ship them.</li>
+      </ul>
+      <p class="q">What are traces for?</p>
+      <ul class="a">
+        <li>Following one request across services (OpenTelemetry) — essential for debugging latency and errors in a distributed system.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span><code>console.log</code> is synchronous and can block under load, and unstructured logs are hard to query — use a proper structured logger to stdout.</p>
+  </section>
+
+  <!-- 22 -->
+  <section class="concept" id="c22">
+    <div class="concept__head"><span class="num">22</span><h2>Env Config &amp; 12-Factor</h2></div>
+    <p class="def"><strong>Config (secrets, URLs, flags) belongs in the environment, not in code</strong> — one build runs unchanged in every environment.</p>
+    <div class="qa">
+      <p class="q">Key principles?</p>
+      <ul class="a">
+        <li>Config in env vars (never committed); secrets in a secret manager (Vault / AWS Secrets Manager / KMS); validate config at startup and fail fast on missing vars.</li>
+      </ul>
+      <p class="q">Why?</p>
+      <ul class="a">
+        <li>The same artifact promotes dev → staging → prod with only env differences, keeps secrets out of source control, and makes the app portable/containerizable.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Committing a <code>.env</code> with real secrets is a classic leak — gitignore it, rotate anything exposed, and inject secrets at deploy time.</p>
+  </section>
+
+  <p class="foot">Node.js &amp; backend · technical interview prep · <b>Q&amp;A knowledge base</b></p>
+
+</div>
+</body>
+</html>
