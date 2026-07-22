@@ -36,10 +36,18 @@ const GROUP_PREFIX = '@';
 const DIRECT_VERSION_NAME = 'current';
 const FACETS_FILE = '_facets.json';
 const FACET_SEP = '_';
+const CONTENT_FILE_RE = /\.(html|pdf)$/i;
 
-// Each entry is either a label string, or an object { label, keepPosition }.
-// Normalized to { label, keepPosition } objects; keepPosition means the viewer
-// should preserve scroll position when only this dimension changes.
+// Each entry is one axis, given as either a label string or an object:
+//   { label, keepPosition }                  -> folder axis: a segment of the
+//                                               version folder name
+//   { label, param, values, keepPosition }   -> param axis: not part of the
+//                                               folder name at all; the viewer
+//                                               offers `values` and passes the
+//                                               choice to HTML content as the
+//                                               `param` URL parameter
+// keepPosition means the viewer preserves scroll position when only this axis
+// changes.
 function readFacetsConfig(dir) {
   const file = path.join(dir, FACETS_FILE);
   if (!fs.existsSync(file)) return null;
@@ -48,18 +56,34 @@ function readFacetsConfig(dir) {
     if (Array.isArray(parsed) && parsed.length > 0) {
       const facets = parsed.map((entry) => {
         if (typeof entry === 'string') return { label: entry, keepPosition: false };
-        if (entry && typeof entry.label === 'string') {
-          return { label: entry.label, keepPosition: entry.keepPosition === true };
-        }
-        return null;
+        if (!entry || typeof entry.label !== 'string') return null;
+        const axis = { label: entry.label, keepPosition: entry.keepPosition === true };
+        if (entry.param === undefined && entry.values === undefined) return axis;
+        const valid =
+          typeof entry.param === 'string' &&
+          entry.param.length > 0 &&
+          Array.isArray(entry.values) &&
+          entry.values.length > 0 &&
+          entry.values.every((v) => typeof v === 'string');
+        if (!valid) return null;
+        return { ...axis, param: entry.param, values: entry.values };
       });
       if (facets.every(Boolean)) return facets;
     }
-    console.warn(`  [warn] ignoring ${FACETS_FILE} (expected a non-empty array of labels or {label,keepPosition}): ${file}`);
+    console.warn(`  [warn] ignoring ${FACETS_FILE} (expected an array of labels, {label,keepPosition} or {label,param,values}): ${file}`);
   } catch (err) {
     console.warn(`  [warn] ignoring invalid ${FACETS_FILE}: ${file} (${err.message})`);
   }
   return null;
+}
+
+// Folder axes come from the version folder name; param axes are passed to HTML
+// content as URL parameters and take no part in the folder naming.
+function splitAxes(config) {
+  const folder = [];
+  const param = [];
+  for (const axis of config || []) (axis.param ? param : folder).push(axis);
+  return { folder, param };
 }
 
 function naturalCompare(a, b) {
@@ -89,7 +113,7 @@ function joinRel(relPath, name) {
   return relPath ? `${relPath}/${name}` : name;
 }
 
-function scanMaterial(dir, relPath, globalConfig) {
+function scanMaterial(dir, relPath, inheritedConfig) {
   const versions = [];
 
   const direct = pickContentFile(dir);
@@ -130,51 +154,82 @@ function scanMaterial(dir, relPath, globalConfig) {
     versions,
   };
 
-  // A per-material config fully overrides the global default.
-  const config = readFacetsConfig(dir) || globalConfig;
+  // The nearest config wins: a material's own file overrides what it inherits.
+  const config = readFacetsConfig(dir) || inheritedConfig;
+  const { folder: folderAxes, param: paramAxes } = splitAxes(config);
   const facetable =
-    config &&
+    folderAxes.length > 0 &&
     !direct &&
-    versions.every((v) => v.name.split(FACET_SEP).length === config.length);
-  if (config && !facetable && !direct && versions.length > 1) {
-    console.log(`  [info] not faceted (names don't split into ${config.length} facets): ${relPath}`);
+    versions.every((v) => v.name.split(FACET_SEP).length === folderAxes.length);
+  if (folderAxes.length > 0 && !facetable && !direct && versions.length > 1) {
+    console.log(`  [info] not faceted (names don't split into ${folderAxes.length} facets): ${relPath}`);
   }
   if (facetable) {
-    material.facets = config;
+    material.facets = folderAxes;
     for (const v of versions) v.values = v.name.split(FACET_SEP);
   }
+  if (paramAxes.length > 0) material.paramFacets = paramAxes;
 
   return material;
 }
 
-function scanLevel(dir, relPath, globalConfig) {
-  const items = [];
-  const dirs = listDir(dir)
+// A stray .html/.pdf sitting at a group (or root) level is a material of its
+// own with a single, unversioned content file — no folder needed.
+function looseMaterial(dir, relPath, fileName, inheritedConfig) {
+  const materialRel = joinRel(relPath, fileName);
+  const material = {
+    type: 'material',
+    name: fileName.replace(/\.[^.]+$/, ''),
+    path: materialRel,
+    versions: [
+      { name: DIRECT_VERSION_NAME, file: `content/${materialRel}`, kind: kindOf(fileName) },
+    ],
+  };
+  // Folder axes need version folders, so only param axes can apply here.
+  const { param: paramAxes } = splitAxes(inheritedConfig);
+  if (paramAxes.length > 0) material.paramFacets = paramAxes;
+  return material;
+}
+
+function scanLevel(dir, relPath, inheritedConfig) {
+  // Nearest config wins: this level's own file overrides what it inherits.
+  const config = readFacetsConfig(dir) || inheritedConfig;
+  const entries = listDir(dir);
+  const dirs = entries
     .filter((e) => e.isDirectory())
     .map((e) => e.name)
     .sort(naturalCompare);
 
+  const groups = [];
   for (const name of dirs.filter((n) => n.startsWith(GROUP_PREFIX))) {
     const groupRel = joinRel(relPath, name);
-    const children = scanLevel(path.join(dir, name), groupRel, globalConfig);
+    const children = scanLevel(path.join(dir, name), groupRel, config);
     if (children.length === 0) {
       console.warn(`  [warn] skipping empty group: ${groupRel}`);
       continue;
     }
-    items.push({ type: 'group', name: name.slice(GROUP_PREFIX.length), path: groupRel, children });
+    groups.push({ type: 'group', name: name.slice(GROUP_PREFIX.length), path: groupRel, children });
   }
 
+  const materials = [];
   for (const name of dirs.filter((n) => !n.startsWith(GROUP_PREFIX))) {
     const materialRel = joinRel(relPath, name);
-    const material = scanMaterial(path.join(dir, name), materialRel, globalConfig);
+    const material = scanMaterial(path.join(dir, name), materialRel, config);
     if (!material) {
       console.warn(`  [warn] skipping material without content: ${materialRel}`);
       continue;
     }
-    items.push(material);
+    materials.push(material);
   }
 
-  return items;
+  for (const entry of entries) {
+    if (entry.isFile() && CONTENT_FILE_RE.test(entry.name)) {
+      materials.push(looseMaterial(dir, relPath, entry.name, config));
+    }
+  }
+
+  materials.sort((a, b) => naturalCompare(a.name, b.name));
+  return [...groups, ...materials];
 }
 
 function countMaterials(items) {
@@ -191,8 +246,7 @@ function build() {
   }
 
   console.log('Scanning content/ ...');
-  const globalConfig = readFacetsConfig(CONTENT_DIR);
-  const items = scanLevel(CONTENT_DIR, '', globalConfig);
+  const items = scanLevel(CONTENT_DIR, '', null);
 
   fs.rmSync(DIST_DIR, { recursive: true, force: true });
   fs.mkdirSync(DIST_DIR, { recursive: true });

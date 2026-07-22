@@ -25,8 +25,10 @@ Rules:
 - **Group:** a folder with an `@` prefix (displayed without the prefix). May contain groups and materials, nested to any depth.
 - **Material:** any unmarked folder inside a group or at the root. Its subfolders are **versions** (named freely — dates, v1, anything).
 - **Content file** within a folder: `index.html` > alphabetically first `*.html` > first `*.pdf`. All other files (images, css, js) are copied verbatim, so relative references keep working.
+- **Loose file:** an `.html` or `.pdf` sitting directly at a group or root level (not in a folder of its own) is also a material — a single, unversioned one, named after the file. Use it for one-off contents that need no versioning.
 - **Default version:** if the material folder directly contains a content file, that is the default (shown as "current"); otherwise the first version in descending name order (for date-named folders that is the newest).
 - A subfolder without a content file is not a version but an asset folder — the build omits it from the list but still copies its files.
+- **Display names:** underscores in group, material and file names are shown as spaces in the UI, with every word capitalised (`system_design` → *System Design*). Anything else in the name is left as-is.
 
 ### Faceted versions (optional)
 
@@ -46,10 +48,24 @@ content/
 ```
 
 - Version folder name = the axis values joined by `_`, in the order the labels declare. **Values must not contain `_`** (it's the axis separator); `-` and `.` are fine inside a value, so `gpt-5.5` is one value.
-- **Config resolution:** `content/_facets.json` is the global default; a `_facets.json` inside a material folder **fully overrides** it for that material.
+- **Config resolution:** the **nearest** `_facets.json` wins and **fully overrides** what it would inherit — a material's own file beats the one in its group, which beats `content/_facets.json` (the global default).
 - **Opt-in / fallback:** faceting applies only if a config is in effect *and* every version folder name splits into exactly as many segments as there are labels. Otherwise (no config, or a name that doesn't match) the material falls back to the plain flat version list — so simple date-named or single-file materials are unaffected.
 - **Sparse matrices are fine:** not every combination has to exist. In each dropdown, options that don't combine with the current selection are marked `(n/a)`. Picking one isn't blocked — the app resolves to the closest existing version (keeping the axis you just changed, then matching as many other axes as possible, earlier axes first) and shows a *closest match* hint.
 - **`keepPosition`:** for a PDF version, switching a `keepPosition` axis preserves the current scroll position instead of jumping back to page 1 — useful when the variants share the same layout (e.g. the same document in two languages). Position is only kept when *every* axis that changed is `keepPosition`; otherwise the view resets to the top.
+
+#### Param axes (URL parameters for HTML content)
+
+An axis can also live entirely in the config instead of in the folder names — useful when a single HTML content handles the variants itself (e.g. it has its own language switch). Give the axis a `param` and its `values`:
+
+```json
+[
+  { "label": "Language", "param": "lang", "values": ["hu", "en"], "keepPosition": true }
+]
+```
+
+- The viewer offers `values` in a dropdown and passes the choice to the content as a URL parameter — here `content/…/page.html?lang=en`. The first value is the default, and the choice is part of the deep link.
+- Param axes take **no part in the folder naming**, so they don't count towards the segment check and work for single-file materials, including loose files.
+- They apply to HTML content only (a PDF can't read URL parameters), so the dropdown is only shown for HTML versions. `keepPosition` works here too: the frame is scrolled back to where it was after the switch.
 
 The version bar itself is collapsible: it shows a one-line summary of the current selection and expands to the dropdowns on tap (the collapsed/expanded choice is remembered).
 

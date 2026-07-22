@@ -25,7 +25,7 @@
       byPath.set(item.path, item);
       parentOf.set(item.path, parent);
       if (item.type === 'group') {
-        indexTree(item.children, item, groupNames.concat(item.name));
+        indexTree(item.children, item, groupNames.concat(prettyName(item.name)));
       } else {
         item.groupLabel = groupNames.join(' / ');
         allMaterials.push(item);
@@ -37,24 +37,26 @@
     return p.split('/').map(encodeURIComponent).join('/');
   }
 
-  function hashFor(path, version) {
-    let h = '#/' + encodePath(path);
-    if (version) h += '?v=' + encodeURIComponent(version);
-    return h;
+  function hashFor(path, version, params) {
+    const query = new URLSearchParams();
+    if (version) query.set('v', version);
+    for (const [key, value] of Object.entries(params || {})) query.set(key, value);
+    const q = query.toString();
+    return '#/' + encodePath(path) + (q ? '?' + q : '');
   }
 
   function currentRoute() {
     const raw = location.hash.replace(/^#\/?/, '');
     const qIndex = raw.indexOf('?');
     const rawPath = qIndex === -1 ? raw : raw.slice(0, qIndex);
-    const query = qIndex === -1 ? '' : raw.slice(qIndex + 1);
+    const query = new URLSearchParams(qIndex === -1 ? '' : raw.slice(qIndex + 1));
     let path = '';
     try {
       path = rawPath.split('/').map(decodeURIComponent).join('/');
     } catch {
       path = '';
     }
-    return { path, version: new URLSearchParams(query).get('v') };
+    return { path, version: query.get('v'), query };
   }
 
   function rowHtml({ href, icon, title, sub, chevron }) {
@@ -78,6 +80,15 @@
     return String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' });
   }
 
+  // Folder and file names separate words with underscores; show them as words,
+  // each capitalised. Anything else in the name is left alone.
+  function prettyName(name) {
+    return String(name)
+      .replace(/_+/g, ' ')
+      .trim()
+      .replace(/(^|\s)(\S)/g, (match, space, ch) => space + ch.toUpperCase());
+  }
+
   function materialSub(mat) {
     const n = mat.versions.length;
     const pdfBadge = mat.versions[0].kind === 'pdf' ? 'PDF' : '';
@@ -94,19 +105,24 @@
     el.viewer.hidden = true;
     el.listView.hidden = false;
     el.frame.src = 'about:blank';
-    document.title = group.path ? `${group.name} – Interview Browser` : 'Interview Browser';
-    el.listTitle.textContent = group.name;
+    const groupTitle = prettyName(group.name);
+    document.title = group.path ? `${groupTitle} – Interview Browser` : 'Interview Browser';
+    el.listTitle.textContent = groupTitle;
     el.upBtn.hidden = !group.path;
 
     const query = el.search.value.trim().toLowerCase();
     if (query) {
       renderRows(
         allMaterials
-          .filter((m) => m.name.toLowerCase().includes(query))
+          .filter(
+            (m) =>
+              m.name.toLowerCase().includes(query) ||
+              prettyName(m.name).toLowerCase().includes(query)
+          )
           .map((m) => rowHtml({
             href: hashFor(m.path),
             icon: '📄',
-            title: m.name,
+            title: prettyName(m.name),
             sub: [m.groupLabel, materialSub(m)].filter(Boolean).join(' · '),
           }))
       );
@@ -119,25 +135,41 @@
           ? rowHtml({
               href: hashFor(item.path),
               icon: '📁',
-              title: item.name,
+              title: prettyName(item.name),
               sub: item.children.length === 1 ? '1 item' : `${item.children.length} items`,
               chevron: true,
             })
           : rowHtml({
               href: hashFor(item.path),
               icon: '📄',
-              title: item.name,
+              title: prettyName(item.name),
               sub: materialSub(item),
             })
       )
     );
   }
 
-  function frameSrcFor(version, scrollTop) {
-    if (version.kind !== 'pdf') return encodeURI(version.file);
-    let src = 'pdf.html?file=' + encodeURIComponent(version.file);
-    if (scrollTop > 0) src += '&top=' + Math.round(scrollTop);
-    return src;
+  function frameSrcFor(version, scrollTop, paramValues) {
+    if (version.kind === 'pdf') {
+      let src = 'pdf.html?file=' + encodeURIComponent(version.file);
+      if (scrollTop > 0) src += '&top=' + Math.round(scrollTop);
+      return src;
+    }
+    // Param axes are handed to HTML content as URL parameters.
+    const src = encodeURI(version.file);
+    const query = new URLSearchParams(paramValues || {}).toString();
+    return query ? src + (src.includes('?') ? '&' : '?') + query : src;
+  }
+
+  // Current value of each param axis, read from the route; the first configured
+  // value is the default.
+  function paramValuesFor(mat, query) {
+    const values = {};
+    for (const axis of mat.paramFacets || []) {
+      const value = query.get(axis.param);
+      values[axis.param] = axis.values.includes(value) ? value : axis.values[0];
+    }
+    return values;
   }
 
   // Collapsed/expanded state of the version bar is remembered across materials.
@@ -189,23 +221,36 @@
   }
 
   function selectVersion(mat, versionName, fallback, scrollTop) {
-    history.replaceState(null, '', hashFor(mat.path, versionName));
+    const params = paramValuesFor(mat, currentRoute().query);
+    history.replaceState(null, '', hashFor(mat.path, versionName, params));
     renderViewer(mat, versionName, fallback, scrollTop);
   }
 
-  // Build the inner controls (a single dropdown, or one per facet dimension).
-  function versionControlsHtml(mat, version, fallback) {
+  function selectParam(mat, version, axis, value) {
+    const params = { ...paramValuesFor(mat, currentRoute().query), [axis.param]: value };
+    let scrollTop = 0;
+    if (axis.keepPosition) {
+      try { scrollTop = el.frame.contentWindow.scrollY || 0; } catch { scrollTop = 0; }
+    }
+    history.replaceState(null, '', hashFor(mat.path, version.name, params));
+    renderViewer(mat, version.name, false, scrollTop);
+  }
+
+  // Build the inner controls: the version dropdown(s) plus any param axes.
+  function versionControlsHtml(mat, version, fallback, paramValues, paramAxes) {
+    let html = '';
     if (!mat.facets) {
-      return (
-        `<select class="version-select" aria-label="Version">` +
-        mat.versions
-          .map((v) => `<option value="${escapeHtml(v.name)}"${v === version ? ' selected' : ''}>${escapeHtml(v.name)}</option>`)
-          .join('') +
-        `</select>`
-      );
+      if (mat.versions.length > 1) {
+        html +=
+          `<select class="version-select" aria-label="Version">` +
+          mat.versions
+            .map((v) => `<option value="${escapeHtml(v.name)}"${v === version ? ' selected' : ''}>${escapeHtml(v.name)}</option>`)
+            .join('') +
+          `</select>`;
+      }
+      return html + paramControlsHtml(paramAxes, paramValues) + (fallback ? `<div class="facet-note">closest match</div>` : '');
     }
     const values = version.values;
-    let html = '';
     for (let i = 0; i < mat.facets.length; i++) {
       const options = [...new Set(mat.versions.map((v) => v.values[i]))].sort(naturalCompare);
       const optionsHtml = options
@@ -223,24 +268,46 @@
         `<div class="facet"><label>${escapeHtml(mat.facets[i].label)}</label>` +
         `<select data-dim="${i}" aria-label="${escapeHtml(mat.facets[i].label)}">${optionsHtml}</select></div>`;
     }
+    html += paramControlsHtml(paramAxes, paramValues);
     if (fallback) html += `<div class="facet-note">closest match</div>`;
     return html;
   }
 
-  function renderVersionBar(mat, version, fallback) {
-    if (mat.versions.length < 2) {
+  function paramControlsHtml(paramAxes, paramValues) {
+    return paramAxes
+      .map((axis) => {
+        const optionsHtml = axis.values
+          .map((val) => `<option value="${escapeHtml(val)}"${val === paramValues[axis.param] ? ' selected' : ''}>${escapeHtml(val)}</option>`)
+          .join('');
+        return (
+          `<div class="facet"><label>${escapeHtml(axis.label)}</label>` +
+          `<select data-param="${escapeHtml(axis.param)}" aria-label="${escapeHtml(axis.label)}">${optionsHtml}</select></div>`
+        );
+      })
+      .join('');
+  }
+
+  function renderVersionBar(mat, version, fallback, paramValues) {
+    // Param axes only mean something for HTML content, which can read them.
+    const paramAxes = version.kind === 'pdf' ? [] : mat.paramFacets || [];
+    if (mat.versions.length < 2 && paramAxes.length === 0) {
       el.versionBar.hidden = true;
       el.versionBar.innerHTML = '';
       return;
     }
     el.versionBar.hidden = false;
 
-    const summary = mat.facets ? version.values.join(' · ') : version.name;
+    const parts = [];
+    if (mat.facets) parts.push(...version.values);
+    else if (mat.versions.length > 1) parts.push(version.name);
+    for (const axis of paramAxes) parts.push(paramValues[axis.param]);
+
     const open = versionBarOpen();
     el.versionBar.innerHTML =
       `<button type="button" class="version-summary" aria-expanded="${open}">` +
-      `<span class="vs-text">${escapeHtml(summary)}</span><span class="vs-caret">▾</span></button>` +
-      `<div class="version-controls"${open ? '' : ' hidden'}>${versionControlsHtml(mat, version, fallback)}</div>`;
+      `<span class="vs-text">${escapeHtml(parts.join(' · '))}</span><span class="vs-caret">▾</span></button>` +
+      `<div class="version-controls"${open ? '' : ' hidden'}>` +
+      `${versionControlsHtml(mat, version, fallback, paramValues, paramAxes)}</div>`;
 
     const summaryBtn = el.versionBar.querySelector('.version-summary');
     const controls = el.versionBar.querySelector('.version-controls');
@@ -251,11 +318,16 @@
       setVersionBarOpen(nextOpen);
     };
 
-    if (!mat.facets) {
-      controls.querySelector('select').onchange = (e) => selectVersion(mat, e.target.value);
-      return;
-    }
     controls.querySelectorAll('select').forEach((sel) => {
+      if (sel.dataset.param !== undefined) {
+        const axis = paramAxes.find((a) => a.param === sel.dataset.param);
+        sel.onchange = () => selectParam(mat, version, axis, sel.value);
+        return;
+      }
+      if (sel.dataset.dim === undefined) {
+        sel.onchange = (e) => selectVersion(mat, e.target.value);
+        return;
+      }
       sel.onchange = () => {
         const dim = Number(sel.dataset.dim);
         const target = version.values.slice();
@@ -273,14 +345,27 @@
   function renderViewer(mat, versionName, fallback, scrollTop) {
     el.listView.hidden = true;
     el.viewer.hidden = false;
-    document.title = `${mat.name} – Interview Browser`;
-    el.viewerTitle.textContent = mat.name;
+    const title = prettyName(mat.name);
+    document.title = `${title} – Interview Browser`;
+    el.viewerTitle.textContent = title;
 
     const version = mat.versions.find((v) => v.name === versionName) || mat.versions[0];
-    renderVersionBar(mat, version, !!fallback);
+    const paramValues = paramValuesFor(mat, currentRoute().query);
+    renderVersionBar(mat, version, !!fallback, paramValues);
 
-    const src = frameSrcFor(version, scrollTop);
-    if (el.frame.getAttribute('src') !== src) el.frame.src = src;
+    const src = frameSrcFor(version, scrollTop, paramValues);
+    if (el.frame.getAttribute('src') !== src) {
+      // A PDF restores the offset itself (via &top=); HTML content is scrolled
+      // back once the frame has loaded.
+      if (scrollTop > 0 && version.kind !== 'pdf') {
+        el.frame.addEventListener(
+          'load',
+          () => { try { el.frame.contentWindow.scrollTo(0, scrollTop); } catch {} },
+          { once: true }
+        );
+      }
+      el.frame.src = src;
+    }
   }
 
   function render() {
