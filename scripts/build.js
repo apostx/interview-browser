@@ -53,6 +53,9 @@ function readFacetsConfig(dir) {
   if (!fs.existsSync(file)) return null;
   try {
     const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+    // An empty array is a valid config meaning "no axes here" — it overrides
+    // (and so switches off) whatever this level would otherwise inherit.
+    if (Array.isArray(parsed) && parsed.length === 0) return parsed;
     if (Array.isArray(parsed) && parsed.length > 0) {
       const facets = parsed.map((entry) => {
         if (typeof entry === 'string') return { label: entry, keepPosition: false };
