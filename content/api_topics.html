@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>20 API Concepts — Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111827; --muted:#6B7280; --line:#E5E7EB; --paper:#EDF0F3; --card:#FFFFFF;
+  --accent:#2563EB;
+  --get:#16A34A; --post:#2563EB; --put:#D97706; --patch:#0D9488; --del:#DC2626;
+  --s2:#16A34A; --s3:#7C3AED; --s4:#D97706; --s5:#DC2626;
+  --node:#FFFFFF; --nodeline:#94A3B8; --slate:#334155;
+}
+
+/* ── language toggling ─────────────────────────────────────────
+   Both languages live in the DOM; only the attribute changes.
+   No network requests, no re-render, so switching cannot fail.  */
+:root[data-lang="hu"] [lang="en"]{display:none}
+:root[data-lang="en"] [lang="hu"]{display:none}
+/* SVG text nodes need the rule stated on the element itself */
+:root[data-lang="hu"] svg text[lang="en"]{display:none}
+:root[data-lang="en"] svg text[lang="hu"]{display:none}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+a{color:inherit}
+code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+code{background:#EEF2F7;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:.86em}
+
+.bar{position:sticky;top:0;z-index:20;background:rgba(237,240,243,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar__in{max-width:900px;margin:0 auto;padding:10px 20px;display:flex;
+  align-items:center;justify-content:space-between;gap:12px}
+.bar__t{font-family:'Space Grotesk';font-weight:600;font-size:14px;letter-spacing:-.01em}
+.bar__t b{color:var(--accent)}
+.bar__r{display:flex;align-items:center;gap:8px}
+.bar a.up{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);
+  text-decoration:none;border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:#fff}
+.bar a.up:hover{color:var(--ink);border-color:var(--accent)}
+
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;background:#fff;overflow:hidden}
+.lang button{font-family:'JetBrains Mono';font-size:12px;padding:4px 11px;border:0;
+  background:transparent;color:var(--muted);cursor:pointer;line-height:1.5;
+  transition:background .15s,color .15s}
+.lang button:hover{color:var(--ink)}
+.lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
+
+.hero{padding:44px 0 8px}
+.eyebrow{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,6vw,50px);
+  line-height:1.02;letter-spacing:-.025em;margin:0 0 12px}
+.lede{color:var(--muted);max-width:62ch;margin:0}
+.src{margin-top:14px;font-size:12.5px;color:var(--muted)}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:24px 0 2px}
+.legend .lbl{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-right:2px}
+.m{font-family:'JetBrains Mono';font-weight:500;font-size:12px;padding:3px 8px;
+  border-radius:6px;color:#fff;letter-spacing:.02em;white-space:nowrap}
+.m--get{background:var(--get)} .m--post{background:var(--post)}
+.m--put{background:var(--put)} .m--patch{background:var(--patch)} .m--del{background:var(--del)}
+.chip{font-family:'JetBrains Mono';font-size:12px;padding:3px 8px;border-radius:6px;
+  border:1px solid var(--line);background:#fff}
+.chip--2{color:var(--s2);border-color:#BBF7D0;background:#F0FDF4}
+.chip--3{color:var(--s3);border-color:#DDD6FE;background:#F5F3FF}
+.chip--4{color:var(--s4);border-color:#FDE68A;background:#FFFBEB}
+.chip--5{color:var(--s5);border-color:#FECACA;background:#FEF2F2}
+
+.index{margin:30px 0 8px}
+.index h3{font-family:'Space Grotesk';font-size:13px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(184px,1fr));gap:8px}
+a.idx{display:flex;align-items:baseline;gap:10px;text-decoration:none;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  transition:border-color .15s,transform .15s}
+a.idx:hover{border-color:var(--accent);transform:translateY(-1px)}
+.idx__n{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);font-weight:500}
+.idx__t{font-size:13.5px;font-weight:500}
+
+.concept{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:26px 26px 22px;margin-top:16px;scroll-margin-top:64px}
+.concept__head{display:flex;align-items:center;gap:14px;margin:0 0 12px}
+.concept__head .num{font-family:'JetBrains Mono';font-weight:500;font-size:15px;color:#fff;
+  background:var(--ink);width:38px;height:38px;border-radius:10px;display:grid;
+  place-items:center;flex:0 0 auto}
+.concept__head h2{font-family:'Space Grotesk';font-weight:600;font-size:22px;
+  letter-spacing:-.015em;margin:0}
+.def{margin:0 0 16px}
+.def strong{font-weight:600}
+.qa{border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
+.q{font-weight:600;margin:0 0 6px}
+.q::before{content:"Q";font-family:'JetBrains Mono';color:var(--accent);font-weight:600;
+  margin-right:9px;font-size:13px}
+ul.a,p.a{margin:0 0 2px}
+ul.a{padding-left:20px}
+ul.a li{margin:3px 0}
+.watch{margin:18px 0 0;background:#FFFBEB;border:1px solid #FDE68A;
+  border-left:3px solid var(--put);border-radius:8px;padding:10px 14px;font-size:14px}
+.watch__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--put);font-weight:600;display:block;margin-bottom:3px}
+
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 2px}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:middle}
+table.t th{background:#F8FAFC;font-weight:600;font-family:'Space Grotesk';font-size:12px}
+.yes{color:var(--get);font-weight:600} .no{color:var(--muted)}
+
+.dia{margin:16px 0 4px;background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px}
+.dia svg{width:100%;height:auto;display:block}
+.dia__cap{font-family:'JetBrains Mono';font-size:11.5px;color:var(--muted);margin:8px 2px 0}
+svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
+
+.foot{margin-top:44px;text-align:center;color:var(--muted);font-size:12.5px}
+.foot b{font-family:'Space Grotesk';color:var(--ink)}
+
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr 1fr}
+  .concept__head h2{font-size:19px}
+  .bar__t{font-size:12.5px}
+}
+@media print{
+  .bar{display:none} body{background:#fff}
+  .concept{break-inside:avoid;border-color:#ccc} a.idx{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+  </marker>
+</defs></svg>
+
+<header class="bar"><div class="bar__in">
+  <span class="bar__t"><b>API</b> <span lang="en">Interview Prep · 20 Concepts</span><span lang="hu">Interjú-felkészítő · 20 koncepció</span></span>
+  <span class="bar__r">
+    <span class="lang" role="group" aria-label="Language / Nyelv">
+      <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-set-lang="hu" aria-pressed="false">HU</button>
+    </span>
+    <a class="up" href="#top">↑ <span lang="en">index</span><span lang="hu">tartalom</span></a>
+  </span>
+</div></header>
+
+<div class="wrap" id="top">
+
+  <div class="hero">
+    <p class="eyebrow"><span lang="en">Technical Q&amp;A Knowledge Base</span><span lang="hu">Technikai Q&amp;A tudásbázis</span></p>
+    <h1>20 API <span lang="en">Concepts</span><span lang="hu">koncepció</span></h1>
+    <p class="lede"><span lang="en">A focused review of the core API concepts that come up in backend and full-stack interviews — each with a crisp definition, the questions interviewers actually ask, model answers, and the trap to avoid. Diagrams included for the concepts that are easier to see than to describe.</span><span lang="hu">A backend és full-stack interjúkon visszatérő API-koncepciók fókuszált áttekintése — mindegyiknél tömör definíció, a ténylegesen elhangzó kérdések, mintaválaszok és a klasszikus buktató. Diagram ott, ahol könnyebb látni, mint leírni.</span></p>
+    <p class="src"><span lang="en">Concept list adapted from Neo Kim's “20 API Concepts” · answers are original.</span><span lang="hu">A koncepciólista Neo Kim „20 API Concepts” anyaga alapján · a válaszok saját kidolgozás.</span></p>
+
+    <div class="legend">
+      <span class="lbl"><span lang="en">Methods</span><span lang="hu">Metódusok</span></span>
+      <span class="m m--get">GET</span>
+      <span class="m m--post">POST</span>
+      <span class="m m--put">PUT</span>
+      <span class="m m--patch">PATCH</span>
+      <span class="m m--del">DELETE</span>
+    </div>
+    <div class="legend">
+      <span class="lbl">Status</span>
+      <span class="chip chip--2">2xx&nbsp;<span lang="en">success</span><span lang="hu">siker</span></span>
+      <span class="chip chip--3">3xx&nbsp;<span lang="en">redirect</span><span lang="hu">átirányítás</span></span>
+      <span class="chip chip--4">4xx&nbsp;<span lang="en">client</span><span lang="hu">kliens</span></span>
+      <span class="chip chip--5">5xx&nbsp;<span lang="en">server</span><span lang="hu">szerver</span></span>
+    </div>
+  </div>
+
+  <nav class="index">
+    <h3><span lang="en">Jump to</span><span lang="hu">Ugrás</span></h3>
+    <div class="grid">
+      <a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t">Endpoint</span></a>
+      <a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t">HTTP <span lang="en">Methods</span><span lang="hu">metódusok</span></span></a>
+      <a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t">Request–Response</span></a>
+      <a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t">Status <span lang="en">Codes</span><span lang="hu">kódok</span></span></a>
+      <a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t">Authentication</span></a>
+      <a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t">Authorization</span></a>
+      <a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t">Access Tokens</span></a>
+      <a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t">OAuth 2.0</span></a>
+      <a class="idx" href="#c09"><span class="idx__n">09</span><span class="idx__t">Rate-Limiting</span></a>
+      <a class="idx" href="#c10"><span class="idx__n">10</span><span class="idx__t">Throttling</span></a>
+      <a class="idx" href="#c11"><span class="idx__n">11</span><span class="idx__t">Pagination</span></a>
+      <a class="idx" href="#c12"><span class="idx__n">12</span><span class="idx__t">Caching</span></a>
+      <a class="idx" href="#c13"><span class="idx__n">13</span><span class="idx__t">Idempotency</span></a>
+      <a class="idx" href="#c14"><span class="idx__n">14</span><span class="idx__t">Webhooks</span></a>
+      <a class="idx" href="#c15"><span class="idx__n">15</span><span class="idx__t">API Versioning</span></a>
+      <a class="idx" href="#c16"><span class="idx__n">16</span><span class="idx__t">OpenAPI</span></a>
+      <a class="idx" href="#c17"><span class="idx__n">17</span><span class="idx__t">REST vs GraphQL</span></a>
+      <a class="idx" href="#c18"><span class="idx__n">18</span><span class="idx__t">API Gateway</span></a>
+      <a class="idx" href="#c19"><span class="idx__n">19</span><span class="idx__t">Microservices</span></a>
+      <a class="idx" href="#c20"><span class="idx__n">20</span><span class="idx__t">Error Handling</span></a>
+    </div>
+  </nav>
+
+  <!-- 01 -->
+  <section class="concept" id="c01">
+    <div class="concept__head"><span class="num">01</span><h2>Endpoint</h2></div>
+    <p class="def"><span lang="en"><strong>An endpoint is a specific URL that exposes a resource or collection a client can act on</strong> — base URL + a resource path (e.g. <code>https://api.shop.com/orders/42</code>).</span><span lang="hu"><strong>Az endpoint egy konkrét URL, ami egy resource-t vagy collection-t tesz elérhetővé a kliens számára</strong> — base URL + resource path (pl. <code>https://api.shop.com/orders/42</code>).</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">How does REST resource design differ from RPC-style endpoints?</span><span lang="hu">Miben tér el a REST resource-design az RPC-stílusú endpointoktól?</span></p>
+      <ul class="a">
+        <li><span lang="en">REST models <em>nouns</em>: <code>/orders/42</code>, and the HTTP method carries the verb.</span><span lang="hu">A REST <em>főneveket</em> modellez: <code>/orders/42</code>, az igét pedig a HTTP metódus hordozza.</span></li>
+        <li><span lang="en">RPC bakes the action into the path: <code>/getOrder?id=42</code>, <code>/cancelOrder</code>.</span><span lang="hu">Az RPC a műveletet a path-ba égeti: <code>/getOrder?id=42</code>, <code>/cancelOrder</code>.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How should endpoints be named?</span><span lang="hu">Hogyan érdemes elnevezni az endpointokat?</span></p>
+      <ul class="a">
+        <li><span lang="en">Plural nouns for collections (<code>/orders</code>), path params for identity (<code>/orders/42</code>).</span><span lang="hu">Többes számú főnév a collection-ökhöz (<code>/orders</code>), path param az azonosításhoz (<code>/orders/42</code>).</span></li>
+        <li><span lang="en">No verbs in the path; filtering / sorting go in the query string (<code>/orders?status=paid&amp;sort=-created</code>).</span><span lang="hu">Ige ne legyen a path-ban; a szűrés és a rendezés a query stringbe megy (<code>/orders?status=paid&amp;sort=-created</code>).</span></li>
+        <li><span lang="en">Nest to show relationships (<code>/users/7/orders</code>), but avoid going much deeper than two levels.</span><span lang="hu">A kapcsolatokat nesteléssel jelezd (<code>/users/7/orders</code>), de két szintnél sokkal mélyebbre ne menj.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">The endpoint is the URL; the <em>operation</em> is endpoint + method. <code>GET /orders</code> and <code>POST /orders</code> are two different operations on one endpoint.</span><span lang="hu">Az endpoint maga az URL; a <em>művelet</em> az endpoint + metódus. A <code>GET /orders</code> és a <code>POST /orders</code> két külön művelet ugyanazon az endpointon.</span></p>
+  </section>
+
+  <!-- 02 -->
+  <section class="concept" id="c02">
+    <div class="concept__head"><span class="num">02</span><h2>HTTP <span lang="en">Methods</span><span lang="hu">metódusok</span></h2></div>
+    <p class="def"><span lang="en"><strong>Methods are the verbs that define what action a request performs on a resource.</strong></span><span lang="hu"><strong>A metódusok azok az igék, amelyek megadják, hogy a kérés milyen műveletet végez a resource-on.</strong></span></p>
+    <table class="t">
+      <tr><th>Method</th><th><span lang="en">Purpose</span><span lang="hu">Cél</span></th><th>Safe</th><th>Idempotent</th></tr>
+      <tr><td><span class="m m--get">GET</span></td><td><span lang="en">Read a resource</span><span lang="hu">Resource olvasása</span></td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td><span class="m m--post">POST</span></td><td><span lang="en">Create / non-idempotent action</span><span lang="hu">Létrehozás / nem idempotens művelet</span></td><td class="no">—</td><td class="no">—</td></tr>
+      <tr><td><span class="m m--put">PUT</span></td><td><span lang="en">Full replace</span><span lang="hu">Teljes csere</span></td><td class="no">—</td><td class="yes">✓</td></tr>
+      <tr><td><span class="m m--patch">PATCH</span></td><td><span lang="en">Partial update</span><span lang="hu">Részleges módosítás</span></td><td class="no">—</td><td class="no">—*</td></tr>
+      <tr><td><span class="m m--del">DELETE</span></td><td><span lang="en">Remove a resource</span><span lang="hu">Resource törlése</span></td><td class="no">—</td><td class="yes">✓</td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">Safe vs idempotent — what's the difference?</span><span lang="hu">Safe vs idempotent — mi a különbség?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Safe</strong> = no server state change (GET, HEAD).</span><span lang="hu"><strong>Safe</strong> = nem változtat szerver-oldali állapotot (GET, HEAD).</span></li>
+        <li><span lang="en"><strong>Idempotent</strong> = repeating N times has the same effect as once (GET, PUT, DELETE).</span><span lang="hu"><strong>Idempotent</strong> = N-szer megismételve ugyanaz a hatás, mint egyszer (GET, PUT, DELETE).</span></li>
+        <li><span lang="en">Every safe method is idempotent; the reverse isn't true.</span><span lang="hu">Minden safe metódus idempotens; fordítva nem igaz.</span></li>
+      </ul>
+      <p class="q">PUT vs PATCH?</p>
+      <ul class="a">
+        <li><span lang="en">PUT replaces the whole resource — fields you omit get cleared/defaulted.</span><span lang="hu">A PUT a teljes resource-t lecseréli — a kihagyott mezők törlődnek vagy default értéket kapnak.</span></li>
+        <li><span lang="en">PATCH applies a partial change. *It isn't inherently idempotent (e.g. an <code>increment</code> op).</span><span lang="hu">A PATCH részleges módosítást alkalmaz. *Önmagában nem idempotens (pl. egy <code>increment</code> művelet).</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">POST is the catch-all for non-idempotent creates and RPC-ish actions that don't map cleanly onto the other verbs.</span><span lang="hu">A POST a gyűjtőmetódus a nem idempotens létrehozásokhoz és azokhoz az RPC-szerű műveletekhez, amelyek nem illenek tisztán a többi igére.</span></p>
+  </section>
+
+  <!-- 03 -->
+  <section class="concept" id="c03">
+    <div class="concept__head"><span class="num">03</span><h2>Request–Response</h2></div>
+    <p class="def"><span lang="en"><strong>A stateless exchange: the client sends a request (method, path, headers, optional body); the server returns a response (status, headers, optional body).</strong></span><span lang="hu"><strong>Stateless csere: a kliens kérést küld (metódus, path, headerek, opcionális body), a szerver választ ad vissza (status, headerek, opcionális body).</strong></span></p>
+    <div class="dia">
+      <svg viewBox="0 0 640 160" role="img" aria-label="Request and response cycle between client and server">
+        <rect x="24" y="46" width="120" height="64" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <text x="84" y="83" text-anchor="middle" font-size="14" fill="var(--ink)" font-weight="600">Client</text>
+        <rect x="496" y="46" width="120" height="64" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <text x="556" y="83" text-anchor="middle" font-size="14" fill="var(--ink)" font-weight="600">Server</text>
+        <line x1="146" y1="62" x2="492" y2="62" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="320" y="52" text-anchor="middle" font-size="12" fill="#334155">GET /orders · Accept: json</text>
+        <line x1="492" y1="96" x2="146" y2="96" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="320" y="115" text-anchor="middle" font-size="12" fill="#334155">200 OK · Content-Type: json</text>
+        <text x="320" y="142" text-anchor="middle" font-size="11.5" fill="var(--muted)" lang="en">stateless — each request stands on its own</text>
+        <text x="320" y="142" text-anchor="middle" font-size="11.5" fill="var(--muted)" lang="hu">stateless — minden kérés önmagában áll</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">A single request/response round trip.</span><span lang="hu">Egyetlen request/response körút.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Why is HTTP stateless, and how do we keep sessions?</span><span lang="hu">Miért stateless a HTTP, és hogyan tartunk fenn session-t?</span></p>
+      <ul class="a">
+        <li><span lang="en">Each request is independent — the server keeps no memory of the client between them.</span><span lang="hu">Minden kérés független — a szerver nem őriz emléket a kliensről a kérések között.</span></li>
+        <li><span lang="en">State is carried by the client (cookie / token) or looked up server-side by a session ID.</span><span lang="hu">Az állapotot a kliens hordozza (cookie / token), vagy a szerver session ID alapján keresi ki.</span></li>
+      </ul>
+      <p class="q">Content-Type vs Accept?</p>
+      <ul class="a">
+        <li><span lang="en"><code>Content-Type</code> describes the body you're <em>sending</em>.</span><span lang="hu">A <code>Content-Type</code> azt írja le, amit <em>küldesz</em> a body-ban.</span></li>
+        <li><span lang="en"><code>Accept</code> tells the server which formats you can <em>handle</em> (content negotiation).</span><span lang="hu">Az <code>Accept</code> megmondja a szervernek, milyen formátumot tudsz <em>kezelni</em> (content negotiation).</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section class="concept" id="c04">
+    <div class="concept__head"><span class="num">04</span><h2>Status <span lang="en">Codes</span><span lang="hu">kódok</span></h2></div>
+    <p class="def"><span lang="en"><strong>Three-digit codes signalling the outcome</strong> — 1xx info, 2xx success, 3xx redirect, 4xx client error, 5xx server error.</span><span lang="hu"><strong>Háromjegyű kódok, amelyek a kimenetet jelzik</strong> — 1xx info, 2xx siker, 3xx átirányítás, 4xx kliens-hiba, 5xx szerver-hiba.</span></p>
+    <div class="legend">
+      <span class="chip chip--2">200 OK</span><span class="chip chip--2">201 Created</span><span class="chip chip--2">204 No Content</span>
+      <span class="chip chip--3">301/302</span><span class="chip chip--3">304 Not Modified</span>
+      <span class="chip chip--4">400</span><span class="chip chip--4">401</span><span class="chip chip--4">403</span><span class="chip chip--4">404</span><span class="chip chip--4">409</span><span class="chip chip--4">422</span><span class="chip chip--4">429</span>
+      <span class="chip chip--5">500</span><span class="chip chip--5">502</span><span class="chip chip--5">503</span><span class="chip chip--5">504</span>
+    </div>
+    <div class="qa" style="margin-top:16px">
+      <p class="q">401 vs 403?</p>
+      <ul class="a">
+        <li><span lang="en"><strong>401 Unauthorized</strong> = not authenticated — missing/invalid credentials (“who are you?”).</span><span lang="hu"><strong>401 Unauthorized</strong> = nincs authentikálva — hiányzó vagy érvénytelen credential („ki vagy te?”).</span></li>
+        <li><span lang="en"><strong>403 Forbidden</strong> = authenticated, but not allowed to do this.</span><span lang="hu"><strong>403 Forbidden</strong> = authentikálva van, de nincs joga ehhez a művelethez.</span></li>
+      </ul>
+      <p class="q">400 vs 422?</p>
+      <ul class="a">
+        <li><span lang="en"><strong>400</strong> — malformed request (bad JSON, wrong types).</span><span lang="hu"><strong>400</strong> — hibás formátumú kérés (rossz JSON, rossz típusok).</span></li>
+        <li><span lang="en"><strong>422</strong> — syntactically valid but semantically invalid (validation failed).</span><span lang="hu"><strong>422</strong> — szintaktikailag helyes, de szemantikailag érvénytelen (validáció bukott).</span></li>
+      </ul>
+      <p class="q">201 vs 200 vs 204?</p>
+      <ul class="a">
+        <li><span lang="en"><strong>201</strong> after a create (often with a <code>Location</code> header).</span><span lang="hu"><strong>201</strong> létrehozás után (gyakran <code>Location</code> headerrel).</span></li>
+        <li><span lang="en"><strong>200</strong> success with a body; <strong>204</strong> success with no body (e.g. a DELETE).</span><span lang="hu"><strong>200</strong> siker body-val; <strong>204</strong> siker body nélkül (pl. egy DELETE).</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Never return <code>200</code> with an error inside the body — clients, proxies and monitoring all trust the status line.</span><span lang="hu">Soha ne adj vissza <code>200</code>-at úgy, hogy a hiba a body-ban van — a kliensek, a proxyk és a monitoring mind a status sorra támaszkodnak.</span></p>
+  </section>
+
+  <!-- 05 -->
+  <section class="concept" id="c05">
+    <div class="concept__head"><span class="num">05</span><h2>Authentication</h2></div>
+    <p class="def"><span lang="en"><strong>Authentication proves <em>who</em> the caller is.</strong></span><span lang="hu"><strong>Az authentication azt igazolja, hogy <em>ki</em> a hívó fél.</strong></span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Session-based vs token-based auth?</span><span lang="hu">Session-alapú vs token-alapú auth?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Session:</strong> server stores session state; client holds an opaque session-ID cookie. Easy to revoke, but stateful.</span><span lang="hu"><strong>Session:</strong> a szerver tárolja a session állapotát, a kliensnél egy opaque session-ID cookie van. Könnyen visszavonható, de stateful.</span></li>
+        <li><span lang="en"><strong>Token (JWT):</strong> self-contained and stateless — scales horizontally, but hard to revoke before it expires.</span><span lang="hu"><strong>Token (JWT):</strong> önhordó és stateless — jól skálázódik horizontálisan, viszont lejárat előtt nehéz visszavonni.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Where do you store a token in the browser?</span><span lang="hu">Hol tárolod a tokent a böngészőben?</span></p>
+      <ul class="a">
+        <li><span lang="en">An <code>httpOnly · Secure · SameSite</code> cookie resists XSS token theft (but needs CSRF defence).</span><span lang="hu">Egy <code>httpOnly · Secure · SameSite</code> cookie véd az XSS-es token-lopás ellen (de kell mellé CSRF-védelem).</span></li>
+        <li><span lang="en"><code>localStorage</code> is readable by any injected script. Prefer a short-lived access token + refresh flow.</span><span lang="hu">A <code>localStorage</code>-ot bármelyik injektált script olvassa. Inkább rövid életű access token + refresh flow.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">A JWT is <em>signed, not encrypted</em> — anyone can base64-decode and read the payload. Never put secrets in the claims.</span><span lang="hu">A JWT <em>aláírt, nem titkosított</em> — bárki base64-dekódolhatja és elolvashatja a payloadot. Soha ne tegyél titkot a claimekbe.</span></p>
+  </section>
+
+  <!-- 06 -->
+  <section class="concept" id="c06">
+    <div class="concept__head"><span class="num">06</span><h2>Authorization</h2></div>
+    <p class="def"><span lang="en"><strong>Authorization decides <em>what</em> an authenticated caller is allowed to do.</strong></span><span lang="hu"><strong>Az authorization azt dönti el, hogy egy authentikált hívó <em>mit</em> csinálhat.</strong></span></p>
+    <div class="qa">
+      <p class="q">AuthN vs AuthZ?</p>
+      <p class="a"><span lang="en">Authentication = identity (login). Authorization = permissions (access). AuthN always comes first.</span><span lang="hu">Authentication = identitás (belépés). Authorization = jogosultságok (hozzáférés). Az AuthN mindig előbb jön.</span></p>
+      <p class="q"><span lang="en">RBAC vs ABAC vs scopes?</span><span lang="hu">RBAC vs ABAC vs scope-ok?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>RBAC</strong> — permissions grouped into roles (admin, editor).</span><span lang="hu"><strong>RBAC</strong> — a jogosultságok szerepekbe csoportosítva (admin, editor).</span></li>
+        <li><span lang="en"><strong>ABAC</strong> — rules over attributes of user, resource and context; finer-grained.</span><span lang="hu"><strong>ABAC</strong> — szabályok a user, a resource és a kontextus attribútumai felett; finomabb szemcsézettség.</span></li>
+        <li><span lang="en"><strong>Scopes</strong> — coarse capability grants attached to a token (<code>read:orders</code>).</span><span lang="hu"><strong>Scope-ok</strong> — durvább szemcsézetű képesség-engedélyek a tokenhez kötve (<code>read:orders</code>).</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Enforce authorization on the <em>server</em> for every request. Hiding a button in React is UX, not security.</span><span lang="hu">Az authorization-t minden kérésnél a <em>szerveren</em> kell kikényszeríteni. Egy gomb elrejtése Reactben UX, nem biztonság.</span></p>
+  </section>
+
+  <!-- 07 -->
+  <section class="concept" id="c07">
+    <div class="concept__head"><span class="num">07</span><h2>Access Tokens</h2></div>
+    <p class="def"><span lang="en"><strong>A credential — usually a Bearer token / JWT — that a client presents to prove an authenticated, authorized session</strong>, sent as <code>Authorization: Bearer &lt;token&gt;</code>.</span><span lang="hu"><strong>Egy credential — általában Bearer token / JWT —, amit a kliens felmutat egy authentikált, jogosult session igazolására</strong>, az <code>Authorization: Bearer &lt;token&gt;</code> headerben.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">What's the structure of a JWT?</span><span lang="hu">Mi a JWT felépítése?</span></p>
+      <p class="a"><span lang="en"><code>header.payload.signature</code>, each base64url-encoded. The signature (HMAC or RSA/EC) verifies integrity so the claims can't be tampered with.</span><span lang="hu"><code>header.payload.signature</code>, mindegyik base64url-kódolva. Az aláírás (HMAC vagy RSA/EC) igazolja az integritást, így a claimek nem módosíthatók.</span></p>
+      <p class="q">Access token vs refresh token?</p>
+      <ul class="a">
+        <li><span lang="en"><strong>Access:</strong> short-lived (minutes), sent on every call.</span><span lang="hu"><strong>Access:</strong> rövid életű (percek), minden híváskor megy.</span></li>
+        <li><span lang="en"><strong>Refresh:</strong> long-lived, stored securely, exchanged for a new access token without re-login. Rotate it to detect theft.</span><span lang="hu"><strong>Refresh:</strong> hosszú életű, biztonságosan tárolva, új access tokenre váltható újbóli belépés nélkül. Rotáld, hogy észrevehető legyen a lopás.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">A short access-token TTL limits the blast radius of a leak; pair it with a revocation list for high-value tokens.</span><span lang="hu">A rövid access-token TTL korlátozza egy szivárgás hatósugarát; értékes tokeneknél párosítsd revocation listával.</span></p>
+  </section>
+
+  <!-- 08 -->
+  <section class="concept" id="c08">
+    <div class="concept__head"><span class="num">08</span><h2>OAuth 2.0</h2></div>
+    <p class="def"><span lang="en"><strong>A delegated-authorization framework</strong> — it lets an app act on a user's behalf without ever handling their password. Roles: resource owner (user), client (app), authorization server, resource server.</span><span lang="hu"><strong>Delegált authorization keretrendszer</strong> — lehetővé teszi, hogy egy alkalmazás a felhasználó nevében járjon el anélkül, hogy valaha kezelné a jelszavát. Szerepek: resource owner (user), client (app), authorization server, resource server.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 780 400" role="img" aria-label="OAuth 2.0 authorization code flow">
+        <g font-size="12" font-weight="600" fill="var(--ink)">
+          <rect x="35" y="8" width="130" height="34" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="100" y="30" text-anchor="middle">User</text>
+          <rect x="235" y="8" width="130" height="34" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="300" y="30" text-anchor="middle">Client App</text>
+          <rect x="435" y="8" width="130" height="34" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="500" y="30" text-anchor="middle">Auth Server</text>
+          <rect x="635" y="8" width="130" height="34" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="700" y="30" text-anchor="middle">Resource API</text>
+        </g>
+        <g stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4 4">
+          <line x1="100" y1="46" x2="100" y2="392"/><line x1="300" y1="46" x2="300" y2="392"/>
+          <line x1="500" y1="46" x2="500" y2="392"/><line x1="700" y1="46" x2="700" y2="392"/>
+        </g>
+        <g font-size="11" fill="#334155">
+          <line x1="100" y1="82" x2="300" y2="82" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <text x="200" y="76" text-anchor="middle" lang="en">1  use app</text>
+          <text x="200" y="76" text-anchor="middle" lang="hu">1  app használata</text>
+          <line x1="300" y1="120" x2="500" y2="120" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/><text x="400" y="114" text-anchor="middle">2  → /authorize (PKCE)</text>
+          <path d="M500,158 c 44,-9 44,28 4,20" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <text x="556" y="162" lang="en">3  login + consent</text>
+          <text x="556" y="162" lang="hu">3  login + hozzájárulás</text>
+          <line x1="500" y1="200" x2="300" y2="200" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/><text x="400" y="194" text-anchor="middle">4  ← auth code</text>
+          <line x1="300" y1="238" x2="500" y2="238" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/><text x="400" y="232" text-anchor="middle">5  code + verifier →</text>
+          <line x1="500" y1="276" x2="300" y2="276" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/><text x="400" y="270" text-anchor="middle">6  ← access (+ id_token)</text>
+          <line x1="300" y1="316" x2="700" y2="316" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/><text x="500" y="310" text-anchor="middle">7  request + Bearer →</text>
+          <line x1="700" y1="354" x2="300" y2="354" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <text x="500" y="348" text-anchor="middle" lang="en">8  ← protected data</text>
+          <text x="500" y="348" text-anchor="middle" lang="hu">8  ← védett adat</text>
+        </g>
+      </svg>
+      <p class="dia__cap"><span lang="en">Authorization Code flow with PKCE — the default for web, SPA and mobile clients.</span><span lang="hu">Authorization Code flow PKCE-vel — ez az alapértelmezés web, SPA és mobil kliensekhez.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Which grant type for a web / SPA / mobile login?</span><span lang="hu">Melyik grant type kell web / SPA / mobil loginhoz?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Authorization Code + PKCE</strong> — PKCE stops an intercepted code from being exchanged by an attacker on public clients.</span><span lang="hu"><strong>Authorization Code + PKCE</strong> — a PKCE megakadályozza, hogy egy lehallgatott code-ot a támadó beváltson public clienteknél.</span></li>
+        <li><span lang="en"><strong>Client Credentials</strong> for machine-to-machine (no user involved).</span><span lang="hu"><strong>Client Credentials</strong> gép-gép kommunikációhoz (nincs benne felhasználó).</span></li>
+      </ul>
+      <p class="q">OAuth 2.0 vs OpenID Connect?</p>
+      <ul class="a">
+        <li><span lang="en">OAuth 2.0 handles <em>authorization</em> (access).</span><span lang="hu">Az OAuth 2.0 az <em>authorization</em>-t (hozzáférés) kezeli.</span></li>
+        <li><span lang="en">OIDC layers <em>authentication</em> on top, adding an <code>id_token</code> (JWT) that describes the user.</span><span lang="hu">Az OIDC ráépíti az <em>authentication</em>-t, egy <code>id_token</code>-nel (JWT), ami a felhasználót írja le.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">An access token proves access, not identity — don't use it to answer “who is this user?”. That's what OIDC's <code>id_token</code> is for.</span><span lang="hu">Az access token hozzáférést igazol, nem identitást — ne azzal válaszold meg, hogy „ki ez a felhasználó?”. Arra való az OIDC <code>id_token</code>-je.</span></p>
+  </section>
+
+  <!-- 09 -->
+  <section class="concept" id="c09">
+    <div class="concept__head"><span class="num">09</span><h2>Rate-Limiting</h2></div>
+    <p class="def"><span lang="en"><strong>Capping how many requests a client can make per time window</strong> to protect capacity and keep usage fair.</span><span lang="hu"><strong>Annak korlátozása, hány kérést tehet egy kliens időablakonként</strong> — a kapacitás védelmére és a fair használatért.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 640 250" role="img" aria-label="Token bucket rate limiting">
+        <text x="260" y="24" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600" lang="en">refill 5 tokens / sec</text>
+        <text x="260" y="24" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600" lang="hu">utántöltés 5 token / mp</text>
+        <line x1="260" y1="34" x2="260" y2="76" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <path d="M198,78 L322,78 L306,204 L214,204 Z" fill="#F1F5F9" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <circle cx="240" cy="150" r="9" fill="var(--get)"/><circle cx="270" cy="150" r="9" fill="var(--get)"/>
+        <circle cx="248" cy="125" r="9" fill="var(--get)"/><circle cx="278" cy="178" r="9" fill="var(--get)" opacity=".5"/>
+        <text x="260" y="226" text-anchor="middle" font-size="11.5" fill="var(--muted)">token bucket</text>
+        <text x="46" y="148" font-size="11.5" fill="var(--muted)" lang="en">bursts up to</text>
+        <text x="46" y="164" font-size="11.5" fill="var(--muted)" lang="en">bucket size</text>
+        <text x="46" y="148" font-size="11.5" fill="var(--muted)" lang="hu">burst a bucket</text>
+        <text x="46" y="164" font-size="11.5" fill="var(--muted)" lang="hu">méretéig</text>
+        <line x1="324" y1="120" x2="424" y2="120" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="374" y="110" text-anchor="middle" font-size="11" fill="#334155" lang="en">take 1</text>
+        <text x="374" y="110" text-anchor="middle" font-size="11" fill="#334155" lang="hu">vesz 1-et</text>
+        <rect x="428" y="98" width="180" height="46" rx="9" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1.5"/>
+        <text x="518" y="126" text-anchor="middle" font-size="13" fill="var(--get)" font-weight="600" lang="en">request served</text>
+        <text x="518" y="126" text-anchor="middle" font-size="13" fill="var(--get)" font-weight="600" lang="hu">kérés kiszolgálva</text>
+        <line x1="324" y1="178" x2="424" y2="178" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="374" y="168" text-anchor="middle" font-size="11" fill="#334155" lang="en">empty</text>
+        <text x="374" y="168" text-anchor="middle" font-size="11" fill="#334155" lang="hu">üres</text>
+        <rect x="428" y="156" width="180" height="46" rx="9" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1.5"/>
+        <text x="518" y="184" text-anchor="middle" font-size="13" fill="var(--del)" font-weight="600" lang="en">429 rejected</text>
+        <text x="518" y="184" text-anchor="middle" font-size="13" fill="var(--del)" font-weight="600" lang="hu">429 elutasítva</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">Token bucket: refills at a steady rate, allows short bursts up to its size.</span><span lang="hu">Token bucket: egyenletes ütemben töltődik, és a méretéig enged rövid burstöket.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Common algorithms?</span><span lang="hu">Gyakori algoritmusok?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Fixed window</strong> — simple, but allows bursts at the window edge.</span><span lang="hu"><strong>Fixed window</strong> — egyszerű, de az ablak határán burstöt enged.</span></li>
+        <li><span lang="en"><strong>Sliding window</strong> — smooths those edge bursts.</span><span lang="hu"><strong>Sliding window</strong> — kisimítja ezeket a határon jelentkező burstöket.</span></li>
+        <li><span lang="en"><strong>Token bucket</strong> — steady refill, bursts up to bucket size. <strong>Leaky bucket</strong> — constant outflow.</span><span lang="hu"><strong>Token bucket</strong> — egyenletes utántöltés, burst a bucket méretéig. <strong>Leaky bucket</strong> — állandó kifolyás.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you signal limits to clients?</span><span lang="hu">Hogyan jelzed a limiteket a klienseknek?</span></p>
+      <p class="a"><span lang="en"><code>429 Too Many Requests</code> + <code>Retry-After</code>, plus <code>X-RateLimit-Limit / Remaining / Reset</code> headers.</span><span lang="hu"><code>429 Too Many Requests</code> + <code>Retry-After</code>, valamint <code>X-RateLimit-Limit / Remaining / Reset</code> headerek.</span></p>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Across multiple instances, counters must live in shared storage (e.g. Redis) — otherwise every node limits independently and the real cap is N×.</span><span lang="hu">Több instance esetén a számlálóknak közös tárban kell lenniük (pl. Redis) — különben minden node külön limitál, és a tényleges korlát N-szerese lesz.</span></p>
+  </section>
+
+  <!-- 10 -->
+  <section class="concept" id="c10">
+    <div class="concept__head"><span class="num">10</span><h2>Throttling</h2></div>
+    <p class="def"><span lang="en"><strong>Controlling the <em>rate</em> of processing</strong> — typically by delaying, queuing or degrading excess requests instead of rejecting them outright.</span><span lang="hu"><strong>A feldolgozás <em>ütemének</em> szabályozása</strong> — jellemzően a többletkérések késleltetésével, sorba állításával vagy degradálásával, ahelyett hogy egyenesen elutasítanánk őket.</span></p>
+    <div class="qa">
+      <p class="q">Rate-limiting vs throttling?</p>
+      <ul class="a">
+        <li><span lang="en"><strong>Rate limiting</strong> usually <em>rejects</em> over-quota requests (<code>429</code>).</span><span lang="hu">A <strong>rate limiting</strong> jellemzően <em>elutasítja</em> a kvótán túli kéréseket (<code>429</code>).</span></li>
+        <li><span lang="en"><strong>Throttling</strong> <em>shapes</em> traffic — slows, queues or degrades it to stay within capacity.</span><span lang="hu">A <strong>throttling</strong> <em>formálja</em> a forgalmat — lassítja, sorba állítja vagy degradálja, hogy a kapacitáson belül maradjon.</span></li>
+        <li><span lang="en">The terms overlap; the distinction to state is intent: reject vs smooth.</span><span lang="hu">A két fogalom átfed; a lényeges különbség a szándék: elutasítás vs kisimítás.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Throttling improves stability but adds latency — make sure clients have sane timeouts and exponential backoff.</span><span lang="hu">A throttling javítja a stabilitást, de latenciát ad hozzá — ügyelj rá, hogy a klienseknek legyen értelmes timeoutja és exponential backoffja.</span></p>
+  </section>
+
+  <!-- 11 -->
+  <section class="concept" id="c11">
+    <div class="concept__head"><span class="num">11</span><h2>Pagination</h2></div>
+    <p class="def"><span lang="en"><strong>Splitting a large result set into pages</strong> instead of returning everything at once.</span><span lang="hu"><strong>Egy nagy találati halmaz lapokra bontása</strong> ahelyett, hogy egyszerre adnánk vissza mindent.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 300" role="img" aria-label="Offset versus cursor pagination">
+        <text x="20" y="28" font-size="13" fill="var(--ink)" font-weight="600">Offset / limit</text>
+        <g font-size="12" fill="var(--ink)">
+          <rect x="170" y="44" width="52" height="34" rx="7" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="196" y="66" text-anchor="middle">41</text>
+          <rect x="232" y="44" width="52" height="34" rx="7" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="258" y="66" text-anchor="middle">42</text>
+          <rect x="294" y="44" width="52" height="34" rx="7" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/><text x="320" y="66" text-anchor="middle">43</text>
+          <rect x="356" y="44" width="52" height="34" rx="7" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/><text x="382" y="66" text-anchor="middle">44</text>
+          <rect x="418" y="44" width="52" height="34" rx="7" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="444" y="66" text-anchor="middle">45</text>
+          <rect x="480" y="44" width="52" height="34" rx="7" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="506" y="66" text-anchor="middle">46</text>
+        </g>
+        <path d="M294,88 L294,96 L408,96 L408,88" fill="none" stroke="var(--post)" stroke-width="1.5"/>
+        <text x="351" y="112" text-anchor="middle" font-size="11.5" fill="var(--post)">page=2 · limit=2</text>
+        <text x="20" y="140" font-size="11.5" fill="var(--del)" lang="en">insert a row at the top → the window shifts → a row is skipped or repeated</text>
+        <text x="20" y="140" font-size="11.5" fill="var(--del)" lang="hu">új sor a tetején → az ablak elcsúszik → egy sor kimarad vagy ismétlődik</text>
+        <text x="20" y="188" font-size="13" fill="var(--ink)" font-weight="600">Cursor (keyset)</text>
+        <g font-size="12" fill="var(--ink)">
+          <rect x="170" y="204" width="52" height="34" rx="7" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="196" y="226" text-anchor="middle">41</text>
+          <rect x="232" y="204" width="52" height="34" rx="7" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="258" y="226" text-anchor="middle">42</text>
+          <rect x="294" y="204" width="52" height="34" rx="7" fill="#F0FDF4" stroke="var(--get)" stroke-width="1.5"/><text x="320" y="226" text-anchor="middle">43</text>
+          <rect x="356" y="204" width="52" height="34" rx="7" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="382" y="226" text-anchor="middle">44</text>
+          <rect x="418" y="204" width="52" height="34" rx="7" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="444" y="226" text-anchor="middle">45</text>
+          <rect x="480" y="204" width="52" height="34" rx="7" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="506" y="226" text-anchor="middle">46</text>
+        </g>
+        <line x1="320" y1="248" x2="320" y2="262" stroke="var(--get)" stroke-width="1.5"/>
+        <text x="330" y="266" font-size="11.5" fill="var(--get)" lang="en">after=43 → next page starts at 44, whatever gets inserted</text>
+        <text x="330" y="266" font-size="11.5" fill="var(--get)" lang="hu">after=43 → a következő lap 44-nél kezdődik, bármi is kerül be</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">Offset drifts when data changes; a cursor points at the last item and stays stable.</span><span lang="hu">Az offset elcsúszik, ha változik az adat; a cursor az utolsó elemre mutat és stabil marad.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Offset vs cursor (keyset)?</span><span lang="hu">Offset vs cursor (keyset)?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Offset/limit</strong> (<code>?page=3&amp;limit=20</code>) — simple, random access; but slow on deep offsets and can skip/duplicate rows when data shifts.</span><span lang="hu"><strong>Offset/limit</strong> (<code>?page=3&amp;limit=20</code>) — egyszerű, tetszőleges lapra ugorhatsz; viszont mély offseteknél lassú, és adatváltozáskor sorokat hagyhat ki vagy duplázhat.</span></li>
+        <li><span lang="en"><strong>Cursor</strong> (<code>?after=&lt;cursor&gt;</code>) — stable and fast on huge datasets, but you can't jump to an arbitrary page.</span><span lang="hu"><strong>Cursor</strong> (<code>?after=&lt;cursor&gt;</code>) — stabil és gyors nagy adathalmazokon, de nem tudsz tetszőleges lapra ugrani.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">For infinite scroll or high-write tables, prefer cursor pagination to avoid drift and slow deep-offset queries.</span><span lang="hu">Infinite scrollnál vagy sokat íródó tábláknál cursor pagination a jó választás — így elkerülöd az elcsúszást és a lassú, mély offsetes lekérdezéseket.</span></p>
+  </section>
+
+  <!-- 12 -->
+  <section class="concept" id="c12">
+    <div class="concept__head"><span class="num">12</span><h2>Caching</h2></div>
+    <p class="def"><span lang="en"><strong>Storing responses so repeated reads skip the work.</strong> Layers: browser → CDN → reverse proxy → application → database.</span><span lang="hu"><strong>Válaszok tárolása, hogy az ismételt olvasások megspórolják a munkát.</strong> Rétegek: böngésző → CDN → reverse proxy → alkalmazás → adatbázis.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 660 250" role="img" aria-label="Conditional request with ETag returning 304">
+        <text x="110" y="30" text-anchor="middle" font-size="13" fill="var(--ink)" font-weight="600">Client</text>
+        <text x="550" y="30" text-anchor="middle" font-size="13" fill="var(--ink)" font-weight="600">Server</text>
+        <g stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4 4">
+          <line x1="110" y1="42" x2="110" y2="228"/><line x1="550" y1="42" x2="550" y2="228"/>
+        </g>
+        <g font-size="11.5" fill="#334155">
+          <line x1="110" y1="82" x2="550" y2="82" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/><text x="330" y="76" text-anchor="middle">GET /r</text>
+          <line x1="550" y1="114" x2="110" y2="114" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/><text x="330" y="108" text-anchor="middle">200 OK · ETag 'abc'</text>
+          <text x="330" y="150" text-anchor="middle" fill="var(--muted)" lang="en">— later —</text>
+          <text x="330" y="150" text-anchor="middle" fill="var(--muted)" lang="hu">— később —</text>
+          <line x1="110" y1="184" x2="550" y2="184" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/><text x="330" y="178" text-anchor="middle">GET /r · If-None-Match 'abc'</text>
+          <line x1="550" y1="216" x2="110" y2="216" stroke="var(--get)" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <text x="330" y="210" text-anchor="middle" fill="var(--get)" lang="en">304 Not Modified · no body</text>
+          <text x="330" y="210" text-anchor="middle" fill="var(--get)" lang="hu">304 Not Modified · nincs body</text>
+        </g>
+      </svg>
+      <p class="dia__cap"><span lang="en">A matching ETag lets the server answer <code>304</code> and skip resending the body.</span><span lang="hu">Egyező ETag esetén a szerver <code>304</code>-gyel válaszol, és nem küldi újra a body-t.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Cache-Control basics?</span><span lang="hu">Cache-Control alapok?</span></p>
+      <p class="a"><span lang="en"><code>max-age</code> (freshness), <code>no-cache</code> (revalidate before use), <code>no-store</code> (never cache), <code>private</code> vs <code>public</code>.</span><span lang="hu"><code>max-age</code> (frissesség), <code>no-cache</code> (használat előtt revalidálj), <code>no-store</code> (soha ne cache-eld), <code>private</code> vs <code>public</code>.</span></p>
+      <p class="q"><span lang="en">How do conditional requests work?</span><span lang="hu">Hogyan működnek a conditional requestek?</span></p>
+      <p class="a"><span lang="en">The server returns <code>ETag</code> / <code>Last-Modified</code>. The client re-requests with <code>If-None-Match</code> / <code>If-Modified-Since</code>; unchanged → <code>304 Not Modified</code> with no body.</span><span lang="hu">A szerver <code>ETag</code> / <code>Last-Modified</code> headert ad vissza. A kliens <code>If-None-Match</code> / <code>If-Modified-Since</code> headerrel kérdez rá újra; ha nem változott → <code>304 Not Modified</code>, body nélkül.</span></p>
+      <p class="q"><span lang="en">What's the hard part?</span><span lang="hu">Mi benne a nehéz?</span></p>
+      <p class="a"><span lang="en">Invalidation — via TTL expiry, write-through updates, or cache-busting (versioned URLs/keys).</span><span lang="hu">Az invalidáció — TTL lejárattal, write-through frissítéssel vagy cache-bustinggal (verziózott URL-ek/kulcsok).</span></p>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Cache the right thing at the right layer — caching user-specific data in a shared/CDN cache leaks one user's data to another. Mark it <code>private</code>.</span><span lang="hu">A megfelelő dolgot cache-eld a megfelelő rétegben — felhasználó-specifikus adat közös/CDN cache-be tétele az egyik user adatát a másikhoz szivárogtatja. Jelöld <code>private</code>-nak.</span></p>
+  </section>
+
+  <!-- 13 -->
+  <section class="concept" id="c13">
+    <div class="concept__head"><span class="num">13</span><h2>Idempotency</h2></div>
+    <p class="def"><span lang="en"><strong>A request that produces the same result no matter how many times it's sent.</strong> This is what makes safe retries possible.</span><span lang="hu"><strong>Olyan kérés, ami ugyanazt az eredményt adja, akárhányszor küldöd el.</strong> Ez teszi lehetővé a biztonságos retry-t.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 260" role="img" aria-label="Idempotency key deduplicating a retried charge">
+        <text x="120" y="30" text-anchor="middle" font-size="13" fill="var(--ink)" font-weight="600">Client</text>
+        <text x="470" y="30" text-anchor="middle" font-size="13" fill="var(--ink)" font-weight="600">Server</text>
+        <g stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4 4">
+          <line x1="120" y1="42" x2="120" y2="240"/><line x1="470" y1="42" x2="470" y2="240"/>
+        </g>
+        <g font-size="11.5" fill="#334155">
+          <line x1="120" y1="80" x2="470" y2="80" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/><text x="295" y="74" text-anchor="middle">POST /charge · Key: k1</text>
+          <text x="486" y="84" font-size="11" fill="var(--get)" lang="en">new key → charge + store k1</text>
+          <text x="486" y="84" font-size="11" fill="var(--get)" lang="hu">új kulcs → terhelés + k1 mentése</text>
+          <line x1="470" y1="110" x2="120" y2="110" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/><text x="295" y="104" text-anchor="middle">201 Created</text>
+          <text x="295" y="148" text-anchor="middle" fill="var(--muted)" lang="en">— timeout, client retries —</text>
+          <text x="295" y="148" text-anchor="middle" fill="var(--muted)" lang="hu">— timeout, a kliens újrapróbál —</text>
+          <line x1="120" y1="182" x2="470" y2="182" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <text x="295" y="176" text-anchor="middle">POST /charge · Key: k1 (retry)</text>
+          <text x="486" y="186" font-size="11" fill="var(--post)" lang="en">k1 seen → return saved result</text>
+          <text x="486" y="186" font-size="11" fill="var(--post)" lang="hu">k1 ismert → mentett válasz</text>
+          <line x1="470" y1="212" x2="120" y2="212" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <text x="295" y="206" text-anchor="middle" lang="en">201 Created (same response)</text>
+          <text x="295" y="206" text-anchor="middle" lang="hu">201 Created (ugyanaz a válasz)</text>
+        </g>
+        <text x="295" y="244" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600" lang="en">the charge happens exactly once</text>
+        <text x="295" y="244" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600" lang="hu">a terhelés pontosan egyszer történik</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">An <code>Idempotency-Key</code> lets the server dedupe a retried write.</span><span lang="hu">Az <code>Idempotency-Key</code> lehetővé teszi, hogy a szerver deduplikálja az újraküldött írást.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Which methods are idempotent, and why does it matter?</span><span lang="hu">Mely metódusok idempotensek, és miért számít?</span></p>
+      <ul class="a">
+        <li><span lang="en">GET, PUT, DELETE, HEAD are; POST and PATCH generally aren't.</span><span lang="hu">A GET, PUT, DELETE, HEAD igen; a POST és a PATCH általában nem.</span></li>
+        <li><span lang="en">It matters for retries: after a timeout, a client can safely re-send an idempotent call with no side effects.</span><span lang="hu">A retry miatt számít: timeout után a kliens biztonságosan újraküldhet egy idempotens hívást mellékhatás nélkül.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you make POST idempotent (e.g. payments)?</span><span lang="hu">Hogyan teszel egy POST-ot idempotenssé (pl. fizetésnél)?</span></p>
+      <p class="a"><span lang="en">The client sends an <code>Idempotency-Key</code> header; the server stores key → result and returns the original response on any retry — so a double-submitted charge only bills once.</span><span lang="hu">A kliens küld egy <code>Idempotency-Key</code> headert; a szerver eltárolja a kulcs → eredmény párost, és minden retry-nál az eredeti választ adja vissza — így a duplán elküldött terhelés csak egyszer számláz.</span></p>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">DELETE twice: first returns 204, second 404 — still idempotent, because the <em>state</em> (resource gone) is unchanged.</span><span lang="hu">Kétszeri DELETE: az első 204-et ad, a második 404-et — ettől még idempotens, mert az <em>állapot</em> (a resource nincs meg) változatlan.</span></p>
+  </section>
+
+  <!-- 14 -->
+  <section class="concept" id="c14">
+    <div class="concept__head"><span class="num">14</span><h2>Webhooks</h2></div>
+    <p class="def"><span lang="en"><strong>Server-to-server HTTP callbacks</strong> — the provider POSTs an event to your URL the moment something happens. A “reverse API”.</span><span lang="hu"><strong>Szerver-szerver HTTP callbackek</strong> — a provider POST-ol egy eseményt a te URL-edre abban a pillanatban, amikor történik valami. Egyfajta „fordított API”.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 700 250" role="img" aria-label="Polling versus webhooks">
+        <line x1="350" y1="20" x2="350" y2="230" stroke="#E2E8F0" stroke-width="1.5"/>
+        <text x="180" y="34" text-anchor="middle" font-size="13" fill="var(--ink)" font-weight="600">Polling</text>
+        <rect x="40" y="56" width="90" height="44" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="85" y="82" text-anchor="middle" font-size="12" fill="var(--ink)">Client</text>
+        <rect x="232" y="56" width="90" height="44" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="277" y="82" text-anchor="middle" font-size="12" fill="var(--ink)">Provider</text>
+        <g font-size="11" fill="#334155">
+          <line x1="132" y1="132" x2="230" y2="132" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/><text x="181" y="126" text-anchor="middle">poll → 204</text>
+          <line x1="132" y1="164" x2="230" y2="164" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/><text x="181" y="158" text-anchor="middle">poll → 204</text>
+          <line x1="132" y1="196" x2="230" y2="196" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/><text x="181" y="190" text-anchor="middle" fill="var(--get)">poll → 200 ✓</text>
+        </g>
+        <text x="181" y="224" text-anchor="middle" font-size="11" fill="var(--muted)" lang="en">repeated calls · latency · waste</text>
+        <text x="181" y="224" text-anchor="middle" font-size="11" fill="var(--muted)" lang="hu">ismételt hívások · latencia · pazarlás</text>
+        <text x="524" y="34" text-anchor="middle" font-size="13" fill="var(--ink)" font-weight="600">Webhooks</text>
+        <rect x="392" y="56" width="90" height="44" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="437" y="82" text-anchor="middle" font-size="12" fill="var(--ink)">Provider</text>
+        <rect x="564" y="56" width="90" height="44" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="609" y="82" text-anchor="middle" font-size="12" fill="var(--ink)">Client</text>
+        <line x1="484" y1="150" x2="562" y2="150" stroke="var(--post)" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="523" y="144" text-anchor="middle" font-size="11" fill="var(--post)">POST event</text>
+        <text x="524" y="196" text-anchor="middle" font-size="11" fill="var(--muted)" lang="en">one push · when it happens</text>
+        <text x="524" y="196" text-anchor="middle" font-size="11" fill="var(--muted)" lang="hu">egy push · amikor megtörténik</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">Polling asks repeatedly; a webhook is pushed once, on the event.</span><span lang="hu">A polling ismételten kérdez; a webhook egyszer, az esemény pillanatában érkezik.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Webhooks vs polling?</span><span lang="hu">Webhook vs polling?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Polling</strong> repeatedly asks “any updates?” — wasteful and laggy.</span><span lang="hu">A <strong>polling</strong> ismételten rákérdez, hogy „van új?” — pazarló és késleltetett.</span></li>
+        <li><span lang="en"><strong>Webhooks</strong> push the event as it happens — efficient and near-real-time, but you must expose an endpoint and handle delivery failures.</span><span lang="hu">A <strong>webhook</strong> az esemény pillanatában küld — hatékony és közel valós idejű, viszont endpointot kell kitenned és kezelned kell a kézbesítési hibákat.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you secure and harden a receiver?</span><span lang="hu">Hogyan teszed biztonságossá és robusztussá a fogadót?</span></p>
+      <ul class="a">
+        <li><span lang="en">Verify a signature (HMAC of the payload) to prove it's really from the provider.</span><span lang="hu">Ellenőrizd az aláírást (a payload HMAC-je), hogy bizonyítsd: tényleg a providertől jött.</span></li>
+        <li><span lang="en">Return 2xx fast, process async; providers retry on non-2xx, so make handlers idempotent (dedupe by event ID).</span><span lang="hu">Adj vissza gyorsan 2xx-et, a feldolgozás menjen aszinkron; a providerek nem-2xx esetén újrapróbálnak, ezért a handler legyen idempotens (dedup event ID alapján).</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Assume at-least-once delivery and out-of-order events — dedupe on event ID and never rely on arrival order.</span><span lang="hu">Számíts at-least-once kézbesítésre és sorrenden kívüli eseményekre — dedupálj event ID alapján, és soha ne támaszkodj az érkezési sorrendre.</span></p>
+  </section>
+
+  <!-- 15 -->
+  <section class="concept" id="c15">
+    <div class="concept__head"><span class="num">15</span><h2>API Versioning</h2></div>
+    <p class="def"><span lang="en"><strong>Managing change so existing clients don't break as the API evolves.</strong></span><span lang="hu"><strong>A változás kezelése úgy, hogy a meglévő kliensek ne törjenek el az API fejlődése közben.</strong></span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Where can the version live?</span><span lang="hu">Hol lehet a verzió?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>URI path</strong> (<code>/v1/orders</code>) — most visible, trivial to route and test.</span><span lang="hu"><strong>URI path</strong> (<code>/v1/orders</code>) — a leglátványosabb, triviálisan routolható és tesztelhető.</span></li>
+        <li><span lang="en"><strong>Header / media type</strong> (<code>Accept: application/vnd.api.v2+json</code>) — cleaner URLs, harder to test by hand.</span><span lang="hu"><strong>Header / media type</strong> (<code>Accept: application/vnd.api.v2+json</code>) — tisztább URL-ek, kézzel nehezebben tesztelhető.</span></li>
+        <li><span lang="en"><strong>Query param</strong> (<code>?version=2</code>) — simple, less common.</span><span lang="hu"><strong>Query param</strong> (<code>?version=2</code>) — egyszerű, ritkábban használt.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Breaking vs non-breaking change?</span><span lang="hu">Breaking vs non-breaking változás?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Non-breaking (additive):</strong> new optional fields/endpoints — no version bump needed.</span><span lang="hu"><strong>Non-breaking (additív):</strong> új opcionális mezők/endpointok — nem kell verziót emelni.</span></li>
+        <li><span lang="en"><strong>Breaking:</strong> removing/renaming fields, changing types or semantics — needs a new version + deprecation window.</span><span lang="hu"><strong>Breaking:</strong> mezők törlése/átnevezése, típus- vagy szemantikaváltozás — új verzió kell + deprecation időablak.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Version only on breaking changes. Leaning on additive, backward-compatible evolution keeps you out of a version zoo.</span><span lang="hu">Csak breaking változásnál verziózz. Ha additív, visszafelé kompatibilis fejlődésre támaszkodsz, elkerülöd a verzió-dzsungelt.</span></p>
+  </section>
+
+  <!-- 16 -->
+  <section class="concept" id="c16">
+    <div class="concept__head"><span class="num">16</span><h2>OpenAPI</h2></div>
+    <p class="def"><span lang="en"><strong>A standard, language-agnostic spec (YAML/JSON) that describes a REST API</strong> — its endpoints, params, schemas and auth. Formerly Swagger.</span><span lang="hu"><strong>Szabványos, nyelvfüggetlen specifikáció (YAML/JSON), ami leír egy REST API-t</strong> — endpointok, paraméterek, sémák és auth. Korábbi neve: Swagger.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">What do you get from it?</span><span lang="hu">Mit nyersz vele?</span></p>
+      <p class="a"><span lang="en">Auto-generated docs, client/server SDK codegen, request validation, and contract/mock testing.</span><span lang="hu">Automatikusan generált dokumentációt, kliens/szerver SDK codegent, request validációt, valamint contract- és mock-tesztelést.</span></p>
+      <p class="q">Contract-first vs code-first?</p>
+      <ul class="a">
+        <li><span lang="en"><strong>Contract-first:</strong> write the spec, generate stubs — teams agree on the interface before coding.</span><span lang="hu"><strong>Contract-first:</strong> megírod a specifikációt, generálsz stubokat — a csapatok kódolás előtt megegyeznek az interfészben.</span></li>
+        <li><span lang="en"><strong>Code-first:</strong> generate the spec from annotated code — convenient, but the spec can drift if it isn't enforced.</span><span lang="hu"><strong>Code-first:</strong> a specifikációt annotált kódból generálod — kényelmes, de a spec elcsúszhat, ha nincs kikényszerítve.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">An OpenAPI doc is only useful if it stays in sync — validate the running API against the spec in CI.</span><span lang="hu">Egy OpenAPI dokumentáció csak akkor hasznos, ha szinkronban marad — validáld a futó API-t a spec ellen a CI-ban.</span></p>
+  </section>
+
+  <!-- 17 -->
+  <section class="concept" id="c17">
+    <div class="concept__head"><span class="num">17</span><h2>REST vs GraphQL</h2></div>
+    <p class="def"><span lang="en"><strong>Two API styles.</strong> REST exposes many resource endpoints; GraphQL exposes one endpoint where the client asks for exactly the fields it needs.</span><span lang="hu"><strong>Két API-stílus.</strong> A REST sok resource-endpointot tesz elérhetővé; a GraphQL egyetlen endpointot, ahol a kliens pontosan a szükséges mezőket kéri le.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 700 300" role="img" aria-label="REST over- and under-fetching versus a single GraphQL query">
+        <rect x="20" y="20" width="320" height="262" rx="12" fill="var(--node)" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="40" y="48" font-size="14" fill="var(--ink)" font-weight="600">REST</text>
+        <text x="40" y="80" font-size="12" fill="var(--post)">GET /users/1</text>
+        <text x="40" y="102" font-size="11.5" fill="var(--muted)">{ id, name, email, phone,</text>
+        <text x="40" y="120" font-size="11.5" fill="var(--muted)">&#160;&#160;address, avatar, ... }</text>
+        <text x="40" y="140" font-size="11" fill="var(--del)" lang="en">over-fetch: fields you don't need</text>
+        <text x="40" y="140" font-size="11" fill="var(--del)" lang="hu">over-fetch: felesleges mezők</text>
+        <text x="40" y="176" font-size="12" fill="var(--post)">GET /users/1/orders</text>
+        <text x="40" y="196" font-size="11.5" fill="var(--muted)">[ ... ]</text>
+        <text x="40" y="216" font-size="11" fill="var(--del)" lang="en">under-fetch: a 2nd round trip</text>
+        <text x="40" y="216" font-size="11" fill="var(--del)" lang="hu">under-fetch: második körút</text>
+        <rect x="40" y="240" width="120" height="26" rx="13" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1.2"/>
+        <text x="100" y="257" text-anchor="middle" font-size="11.5" fill="var(--del)" font-weight="600" lang="en">2 requests</text>
+        <text x="100" y="257" text-anchor="middle" font-size="11.5" fill="var(--del)" font-weight="600" lang="hu">2 kérés</text>
+
+        <rect x="360" y="20" width="320" height="262" rx="12" fill="var(--node)" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="380" y="48" font-size="14" fill="var(--ink)" font-weight="600">GraphQL</text>
+        <text x="380" y="80" font-size="12" fill="var(--post)">POST /graphql</text>
+        <text x="380" y="106" font-size="11.5" fill="var(--ink)">{ user(id: 1) {</text>
+        <text x="380" y="124" font-size="11.5" fill="var(--ink)">&#160;&#160;&#160;&#160;name</text>
+        <text x="380" y="142" font-size="11.5" fill="var(--ink)">&#160;&#160;&#160;&#160;orders { total }</text>
+        <text x="380" y="160" font-size="11.5" fill="var(--ink)">&#160;&#160;} }</text>
+        <text x="380" y="196" font-size="11" fill="var(--get)" lang="en">→ exactly those fields, nested</text>
+        <text x="380" y="196" font-size="11" fill="var(--get)" lang="hu">→ pontosan ezek a mezők, ágyazva</text>
+        <rect x="380" y="240" width="200" height="26" rx="13" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1.2"/>
+        <text x="480" y="257" text-anchor="middle" font-size="11.5" fill="var(--get)" font-weight="600" lang="en">1 request · exact shape</text>
+        <text x="480" y="257" text-anchor="middle" font-size="11.5" fill="var(--get)" font-weight="600" lang="hu">1 kérés · pontos alak</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">REST tends to over- and under-fetch; GraphQL returns exactly the requested shape in one call.</span><span lang="hu">A REST hajlamos over- és under-fetchre; a GraphQL egyetlen hívásban pontosan a kért alakot adja vissza.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Core trade-offs?</span><span lang="hu">Fő trade-offok?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>REST:</strong> simple, cache-friendly (HTTP caching per URL) — but over/under-fetching and multiple round trips for related data.</span><span lang="hu"><strong>REST:</strong> egyszerű, cache-barát (HTTP caching URL-enként) — viszont over/under-fetching és több körút a kapcsolódó adatokért.</span></li>
+        <li><span lang="en"><strong>GraphQL:</strong> no over-fetch, one request for nested data, strong typed schema — but HTTP caching is harder, and you must guard the N+1 problem (DataLoader/batching) and query cost/depth.</span><span lang="hu"><strong>GraphQL:</strong> nincs over-fetch, egy kérés az ágyazott adatokra, erősen típusos séma — viszont a HTTP caching nehezebb, és védekezned kell az N+1 probléma (DataLoader/batching), valamint a query költsége/mélysége ellen.</span></li>
+      </ul>
+      <p class="q"><span lang="en">When would you pick each?</span><span lang="hu">Mikor melyiket választanád?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>REST:</strong> public APIs, simple CRUD, CDN caching.</span><span lang="hu"><strong>REST:</strong> publikus API-k, egyszerű CRUD, CDN caching.</span></li>
+        <li><span lang="en"><strong>GraphQL:</strong> rich clients (mobile) with varied data needs, or aggregating many sources.</span><span lang="hu"><strong>GraphQL:</strong> gazdag kliensek (mobil) változatos adatigénnyel, vagy több forrás aggregálása.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">GraphQL moves complexity to the server (resolvers, query-cost limits) — it isn't automatically “better”.</span><span lang="hu">A GraphQL a komplexitást a szerverre tolja (resolverek, query-cost limitek) — nem automatikusan „jobb”.</span></p>
+  </section>
+
+  <!-- 18 -->
+  <section class="concept" id="c18">
+    <div class="concept__head"><span class="num">18</span><h2>API Gateway</h2></div>
+    <p class="def"><span lang="en"><strong>A single entry point in front of your services</strong> that handles cross-cutting concerns — routing, auth, rate limiting, TLS termination, transformation and aggregation.</span><span lang="hu"><strong>Egyetlen belépési pont a szolgáltatásaid előtt</strong>, ami a keresztmetsző feladatokat kezeli — routing, auth, rate limiting, TLS termináció, transzformáció és aggregáció.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 700 300" role="img" aria-label="API gateway routing clients to backend services">
+        <rect x="30" y="58" width="120" height="48" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="90" y="87" text-anchor="middle" font-size="12" fill="var(--ink)">Web app</text>
+        <rect x="30" y="160" width="120" height="48" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="90" y="189" text-anchor="middle" font-size="12" fill="var(--ink)">Mobile</text>
+        <rect x="250" y="78" width="170" height="120" rx="12" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/>
+        <text x="335" y="112" text-anchor="middle" font-size="14" fill="var(--post)" font-weight="600">API Gateway</text>
+        <text x="335" y="138" text-anchor="middle" font-size="11" fill="#334155">auth · rate-limit</text>
+        <text x="335" y="156" text-anchor="middle" font-size="11" fill="#334155">routing · TLS</text>
+        <text x="335" y="174" text-anchor="middle" font-size="11" fill="#334155" lang="en">aggregation</text>
+        <text x="335" y="174" text-anchor="middle" font-size="11" fill="#334155" lang="hu">aggregáció</text>
+        <rect x="520" y="50" width="150" height="44" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="595" y="77" text-anchor="middle" font-size="12" fill="var(--ink)">Orders svc</text>
+        <rect x="520" y="128" width="150" height="44" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="595" y="155" text-anchor="middle" font-size="12" fill="var(--ink)">Users svc</text>
+        <rect x="520" y="206" width="150" height="44" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="595" y="233" text-anchor="middle" font-size="12" fill="var(--ink)">Payments svc</text>
+        <g stroke="#334155" stroke-width="1.5">
+          <line x1="150" y1="82" x2="248" y2="118" marker-end="url(#arrow)"/>
+          <line x1="150" y1="184" x2="248" y2="158" marker-end="url(#arrow)"/>
+          <line x1="422" y1="112" x2="518" y2="72" marker-end="url(#arrow)"/>
+          <line x1="422" y1="138" x2="518" y2="150" marker-end="url(#arrow)"/>
+          <line x1="422" y1="166" x2="518" y2="228" marker-end="url(#arrow)"/>
+        </g>
+      </svg>
+      <p class="dia__cap"><span lang="en">Clients hit one gateway; it applies policy and routes to internal services.</span><span lang="hu">A kliensek egyetlen gateway-t hívnak; az alkalmazza a policy-t és routolja a belső szolgáltatásokhoz.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Why put a gateway in front of microservices?</span><span lang="hu">Miért teszünk gateway-t a microservice-ek elé?</span></p>
+      <p class="a"><span lang="en">It centralizes auth, rate limiting and logging so each service doesn't reimplement them, hides internal topology, and can aggregate several service calls into one client response.</span><span lang="hu">Központosítja az autht, a rate limitinget és a loggingot, így nem kell minden service-ben újraírni; elrejti a belső topológiát; és több service-hívást egyetlen kliens-válaszba aggregálhat.</span></p>
+      <p class="q">Gateway vs BFF (Backend-for-Frontend)?</p>
+      <p class="a"><span lang="en">A BFF is a gateway tailored per client type (web vs mobile), shaping responses to that client's exact needs.</span><span lang="hu">A BFF egy kliens-típusra szabott gateway (web vs mobil), ami az adott kliens pontos igényeire formálja a válaszokat.</span></p>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">The gateway is a single point of failure and an extra latency hop — make it highly available and keep its logic thin (routing/policy, never business rules).</span><span lang="hu">A gateway single point of failure és plusz latencia-ugrás — tedd magas rendelkezésre állásúvá, és tartsd vékonyan a logikáját (routing/policy, soha ne üzleti szabályok).</span></p>
+  </section>
+
+  <!-- 19 -->
+  <section class="concept" id="c19">
+    <div class="concept__head"><span class="num">19</span><h2>Microservices</h2></div>
+    <p class="def"><span lang="en"><strong>An architecture that splits an app into small, independently deployable services</strong>, each owning a bounded context and its own data.</span><span lang="hu"><strong>Olyan architektúra, ami az alkalmazást kicsi, egymástól függetlenül deployolható szolgáltatásokra bontja</strong>, mindegyik saját bounded contexttel és saját adattal.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Trade-offs vs a monolith?</span><span lang="hu">Trade-offok a monolithoz képest?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Pros:</strong> independent deploy/scaling, tech flexibility, fault isolation, team autonomy.</span><span lang="hu"><strong>Előnyök:</strong> független deploy/skálázás, technológiai rugalmasság, hibaizoláció, csapat-autonómia.</span></li>
+        <li><span lang="en"><strong>Cons:</strong> distributed-system complexity — network failures, data consistency, testing, observability.</span><span lang="hu"><strong>Hátrányok:</strong> elosztott rendszer komplexitása — hálózati hibák, adatkonzisztencia, tesztelés, observability.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do services communicate and stay consistent?</span><span lang="hu">Hogyan kommunikálnak a szolgáltatások és hogyan maradnak konzisztensek?</span></p>
+      <ul class="a">
+        <li><span lang="en">Sync (REST/gRPC) or async (events / message queues).</span><span lang="hu">Szinkron (REST/gRPC) vagy aszinkron (események / message queue-k).</span></li>
+        <li><span lang="en">No distributed ACID across services — use the <strong>Saga pattern</strong> (local transactions + compensating actions) and accept eventual consistency.</span><span lang="hu">Nincs elosztott ACID a szolgáltatások között — használd a <strong>Saga patternt</strong> (lokális tranzakciók + kompenzáló műveletek), és fogadd el az eventual consistencyt.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Don't reach for microservices on a small app — the operational overhead outweighs the benefits. Split when clear boundaries and scale justify it.</span><span lang="hu">Kis alkalmazásnál ne nyúlj microservice-ekhez — az üzemeltetési többletköltség felülmúlja az előnyöket. Akkor bonts, ha a tiszta határok és a méret indokolják.</span></p>
+  </section>
+
+  <!-- 20 -->
+  <section class="concept" id="c20">
+    <div class="concept__head"><span class="num">20</span><h2>Error Handling</h2></div>
+    <p class="def"><span lang="en"><strong>Returning consistent, actionable errors</strong> so clients can react programmatically and humans can debug.</span><span lang="hu"><strong>Konzisztens, kezelhető hibák visszaadása</strong>, hogy a kliensek programozottan reagálhassanak, az emberek pedig debugolni tudjanak.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">What does a good error response look like?</span><span lang="hu">Hogy néz ki egy jó hibaválasz?</span></p>
+      <p class="a"><span lang="en">The correct HTTP status + a consistent JSON body: a stable machine-readable <code>code</code>, a human <code>message</code>, and field-level details for validation. <code>application/problem+json</code> (RFC 7807) is a common shape.</span><span lang="hu">A helyes HTTP status + konzisztens JSON body: stabil, géppel olvasható <code>code</code>, emberi <code>message</code>, és mezőszintű részletek a validációhoz. Gyakori formátum az <code>application/problem+json</code> (RFC 7807).</span></p>
+      <p class="q"><span lang="en">What should you avoid?</span><span lang="hu">Mit kerülj el?</span></p>
+      <ul class="a">
+        <li><span lang="en">Leaking stack traces / internals (security risk).</span><span lang="hu">Stack trace / belső részletek kiszivárogtatását (biztonsági kockázat).</span></li>
+        <li><span lang="en">Returning <code>200</code> for failures.</span><span lang="hu"><code>200</code> visszaadását hibák esetén.</span></li>
+        <li><span lang="en">Inconsistent error shapes across endpoints.</span><span lang="hu">Endpointonként eltérő hibaformátumot.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you debug across services?</span><span lang="hu">Hogyan debugolsz szolgáltatásokon átívelően?</span></p>
+      <p class="a"><span lang="en">Propagate a correlation / trace ID through every service and include it in error responses and logs.</span><span lang="hu">Vigyél végig egy correlation / trace ID-t minden szolgáltatáson, és tedd bele a hibaválaszokba és a logokba.</span></p>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Distinguish client errors (4xx — don't retry) from transient server errors (5xx — retry with backoff) so clients behave correctly.</span><span lang="hu">Különítsd el a kliens-hibákat (4xx — ne próbáld újra) az átmeneti szerver-hibáktól (5xx — retry backoffal), hogy a kliensek helyesen viselkedjenek.</span></p>
+  </section>
+
+  <p class="foot">20 API <span lang="en">concepts · technical interview prep · <b>Q&amp;A knowledge base</b></span><span lang="hu">koncepció · technikai interjú-felkészítő · <b>Q&amp;A tudásbázis</b></span></p>
+
+</div>
+
+<script>
+(function () {
+  var SUPPORTED = ['en', 'hu'];
+
+  function applyLang(lang) {
+    if (SUPPORTED.indexOf(lang) === -1) lang = 'en';
+    document.documentElement.dataset.lang = lang;
+    document.documentElement.lang = lang;
+    var buttons = document.querySelectorAll('[data-set-lang]');
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].setAttribute('aria-pressed', String(buttons[i].dataset.setLang === lang));
+    }
+  }
+
+  /* In-place switch for the shell: synchronous, same-origin, nothing posted
+     or awaited. Defined early so the shell finds it at the moment of a switch. */
+  window.interviewBrowser = {
+    setParams: function (params) {
+      applyLang(params && params.lang);
+    }
+  };
+
+  var buttons = document.querySelectorAll('[data-set-lang]');
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('click', function () {
+      applyLang(this.dataset.setLang);
+    });
+  }
+
+  applyLang(new URLSearchParams(location.search).get('lang') || 'en');
+})();
+</script>
+</body>
+</html>

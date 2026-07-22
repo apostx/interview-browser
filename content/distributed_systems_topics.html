@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Distributed Systems — Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111827; --muted:#6B7280; --line:#E5E7EB; --paper:#EDF0F3; --card:#FFFFFF;
+  --accent:#2563EB;
+  --get:#16A34A; --post:#2563EB; --put:#D97706; --patch:#0D9488; --del:#DC2626;
+  --s2:#16A34A; --s3:#7C3AED; --s4:#D97706; --s5:#DC2626;
+  --node:#FFFFFF; --nodeline:#94A3B8; --slate:#334155;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+a{color:inherit}
+code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+code{background:#EEF2F7;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:.86em}
+
+.bar{position:sticky;top:0;z-index:20;background:rgba(237,240,243,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar__in{max-width:900px;margin:0 auto;padding:10px 20px;display:flex;
+  align-items:center;justify-content:space-between;gap:12px}
+.bar__t{font-family:'Space Grotesk';font-weight:600;font-size:14px;letter-spacing:-.01em}
+.bar__t b{color:var(--accent)}
+.bar a.up{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);
+  text-decoration:none;border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:#fff}
+.bar a.up:hover{color:var(--ink);border-color:var(--accent)}
+
+.hero{padding:44px 0 8px}
+.eyebrow{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,6vw,50px);
+  line-height:1.02;letter-spacing:-.025em;margin:0 0 12px}
+.lede{color:var(--muted);max-width:62ch;margin:0}
+
+.sec{display:flex;align-items:center;gap:14px;margin:36px 4px 2px}
+.sec__l{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--accent);white-space:nowrap}
+.sec__r{height:1px;background:var(--line);flex:1}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:24px 0 2px}
+.legend .lbl{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-right:2px}
+.chip{font-family:'JetBrains Mono';font-size:12px;padding:3px 8px;border-radius:6px;
+  border:1px solid var(--line);background:#fff}
+.chip--2{color:var(--s2);border-color:#BBF7D0;background:#F0FDF4}
+.chip--4{color:var(--s4);border-color:#FDE68A;background:#FFFBEB}
+.chip--5{color:var(--s5);border-color:#FECACA;background:#FEF2F2}
+
+.index{margin:30px 0 8px}
+.index h3{font-family:'Space Grotesk';font-size:13px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+a.idx{display:flex;align-items:baseline;gap:10px;text-decoration:none;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  transition:border-color .15s,transform .15s}
+a.idx:hover{border-color:var(--accent);transform:translateY(-1px)}
+.idx__n{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);font-weight:500}
+.idx__t{font-size:13.5px;font-weight:500}
+
+.concept{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:26px 26px 22px;margin-top:16px;scroll-margin-top:64px}
+.concept__head{display:flex;align-items:center;gap:14px;margin:0 0 12px}
+.concept__head .num{font-family:'JetBrains Mono';font-weight:500;font-size:15px;color:#fff;
+  background:var(--ink);width:38px;height:38px;border-radius:10px;display:grid;
+  place-items:center;flex:0 0 auto}
+.concept__head h2{font-family:'Space Grotesk';font-weight:600;font-size:22px;
+  letter-spacing:-.015em;margin:0}
+.def{margin:0 0 16px}
+.def strong{font-weight:600}
+.qa{border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
+.q{font-weight:600;margin:0 0 6px}
+.q::before{content:"Q";font-family:'JetBrains Mono';color:var(--accent);font-weight:600;
+  margin-right:9px;font-size:13px}
+ul.a,p.a{margin:0 0 2px}
+ul.a{padding-left:20px}
+ul.a li{margin:3px 0}
+.watch{margin:18px 0 0;background:#FFFBEB;border:1px solid #FDE68A;
+  border-left:3px solid var(--put);border-radius:8px;padding:10px 14px;font-size:14px}
+.watch__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--put);font-weight:600;display:block;margin-bottom:3px}
+
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 2px}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+table.t th{background:#F8FAFC;font-weight:600;font-family:'Space Grotesk';font-size:12px}
+table.t td:first-child{font-family:'JetBrains Mono';white-space:nowrap}
+
+.dia{margin:16px 0 4px;background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px}
+.dia svg{width:100%;height:auto;display:block}
+.dia__cap{font-family:'JetBrains Mono';font-size:11.5px;color:var(--muted);margin:8px 2px 0}
+svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
+
+.foot{margin-top:44px;text-align:center;color:var(--muted);font-size:12.5px}
+.foot b{font-family:'Space Grotesk';color:var(--ink)}
+
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+}
+@media print{
+  .bar{display:none} body{background:#fff}
+  .concept{break-inside:avoid;border-color:#ccc} a.idx{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+  </marker>
+  <marker id="arrowg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#16A34A"/>
+  </marker>
+  <marker id="arrowr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#DC2626"/>
+  </marker>
+</defs></svg>
+
+<header class="bar"><div class="bar__in">
+  <span class="bar__t"><b>Distributed Systems</b> Interview Prep</span>
+  <a class="up" href="#top">↑ index</a>
+</div></header>
+
+<div class="wrap" id="top">
+
+  <div class="hero">
+    <p class="eyebrow">Technical Q&amp;A Knowledge Base</p>
+    <h1>Distributed Systems</h1>
+    <p class="lede">The consistency, coordination, reliability and messaging concepts that senior system-design interviews probe once the basics are covered. This goes underneath the API deck's microservices and idempotency intro — into why distributed state is hard and the patterns that tame it.</p>
+    <div class="legend">
+      <span class="lbl">Diagrams</span>
+      <span class="chip chip--2">green · preferred</span>
+      <span class="chip chip--5">red · pitfall</span>
+      <span class="chip chip--4">amber · watch out</span>
+    </div>
+  </div>
+
+  <nav class="index">
+    <h3>Jump to</h3>
+    <div class="grid">
+      <a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t">CAP Theorem</span></a>
+      <a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t">PACELC</span></a>
+      <a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t">Consistency Models</span></a>
+      <a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t">Replication</span></a>
+      <a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t">Partitioning / Sharding</span></a>
+      <a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t">Consistent Hashing</span></a>
+      <a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t">Quorums (R + W &gt; N)</span></a>
+      <a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t">Consensus &amp; Raft</span></a>
+      <a class="idx" href="#c09"><span class="idx__n">09</span><span class="idx__t">Leader Election</span></a>
+      <a class="idx" href="#c10"><span class="idx__n">10</span><span class="idx__t">Clocks &amp; Ordering</span></a>
+      <a class="idx" href="#c11"><span class="idx__n">11</span><span class="idx__t">Idempotency &amp; Exactly-Once</span></a>
+      <a class="idx" href="#c12"><span class="idx__n">12</span><span class="idx__t">Retries, Backoff &amp; Jitter</span></a>
+      <a class="idx" href="#c13"><span class="idx__n">13</span><span class="idx__t">Circuit Breaker</span></a>
+      <a class="idx" href="#c14"><span class="idx__n">14</span><span class="idx__t">Timeouts &amp; Bulkheads</span></a>
+      <a class="idx" href="#c15"><span class="idx__n">15</span><span class="idx__t">Distributed Transactions &amp; Saga</span></a>
+      <a class="idx" href="#c16"><span class="idx__n">16</span><span class="idx__t">Two-Phase Commit</span></a>
+      <a class="idx" href="#c17"><span class="idx__n">17</span><span class="idx__t">Outbox Pattern</span></a>
+      <a class="idx" href="#c18"><span class="idx__n">18</span><span class="idx__t">Message Queues &amp; Pub/Sub</span></a>
+      <a class="idx" href="#c19"><span class="idx__n">19</span><span class="idx__t">Delivery Semantics</span></a>
+      <a class="idx" href="#c20"><span class="idx__n">20</span><span class="idx__t">Event Sourcing &amp; CQRS</span></a>
+      <a class="idx" href="#c21"><span class="idx__n">21</span><span class="idx__t">Failure Detection &amp; Heartbeats</span></a>
+    </div>
+  </nav>
+
+  <div class="sec"><span class="sec__l">Foundations</span><span class="sec__r"></span></div>
+
+  <!-- 01 -->
+  <section class="concept" id="c01">
+    <div class="concept__head"><span class="num">01</span><h2>CAP Theorem</h2></div>
+    <p class="def"><strong>During a network partition, a distributed system can guarantee at most two of Consistency, Availability, Partition tolerance</strong> — and since partitions are unavoidable, the real choice under one is C vs A.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 280" role="img" aria-label="CAP theorem triangle">
+        <path d="M340,50 L560,235 L120,235 Z" fill="none" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <circle cx="340" cy="50" r="6" fill="var(--post)"/><text x="340" y="38" text-anchor="middle" font-size="12.5" fill="var(--ink)" font-weight="600">Consistency</text>
+        <circle cx="120" cy="235" r="6" fill="var(--post)"/><text x="112" y="258" text-anchor="middle" font-size="12.5" fill="var(--ink)" font-weight="600">Availability</text>
+        <circle cx="560" cy="235" r="6" fill="var(--post)"/><text x="568" y="258" text-anchor="middle" font-size="12.5" fill="var(--ink)" font-weight="600">Partition tol.</text>
+        <text x="205" y="140" text-anchor="middle" font-size="11" fill="var(--muted)">CA · healthy net only</text>
+        <text x="475" y="140" text-anchor="middle" font-size="11" fill="var(--del)">CP · reject to stay consistent</text>
+        <text x="340" y="228" text-anchor="middle" font-size="11" fill="var(--get)">AP · serve possibly-stale data</text>
+        <text x="340" y="176" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">partition → pick C or A</text>
+      </svg>
+      <p class="dia__cap">P isn't optional — the choice is what to do <em>during</em> a partition: CP or AP.</p>
+    </div>
+    <div class="qa">
+      <p class="q">What do C, A, P actually mean here?</p>
+      <ul class="a">
+        <li><strong>Consistency</strong> (linearizability): every read sees the latest write. <strong>Availability</strong>: every request gets a non-error response. <strong>Partition tolerance</strong>: the system keeps working despite dropped/delayed messages between nodes.</li>
+      </ul>
+      <p class="q">So which do you “pick”?</p>
+      <ul class="a">
+        <li>Networks fail, so P is forced. The real decision is the partition response: CP (reject/block to stay consistent) or AP (serve possibly-stale data to stay available).</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>CAP only applies <em>during</em> a partition — a healthy network gives you both C and A. Real systems are tunable per-operation, not globally “CP” or “AP.”</p>
+  </section>
+
+  <!-- 02 -->
+  <section class="concept" id="c02">
+    <div class="concept__head"><span class="num">02</span><h2>PACELC</h2></div>
+    <p class="def"><strong>An extension of CAP:</strong> if there's a <strong>P</strong>artition, choose <strong>A</strong>vailability or <strong>C</strong>onsistency; <strong>E</strong>lse (normal operation), choose <strong>L</strong>atency or <strong>C</strong>onsistency.</p>
+    <div class="qa">
+      <p class="q">Why does PACELC matter?</p>
+      <ul class="a">
+        <li>CAP ignores the normal case. Even without a partition, stronger consistency costs latency (coordination round trips) — PACELC names that everyday trade-off.</li>
+        <li>Examples: Dynamo/Cassandra = PA/EL (availability + low latency); a strongly-consistent store = PC/EC.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>For most systems the interesting trade-off is the “else” branch — latency vs consistency in normal operation — not the rare partition case.</p>
+  </section>
+
+  <!-- 03 -->
+  <section class="concept" id="c03">
+    <div class="concept__head"><span class="num">03</span><h2>Consistency Models</h2></div>
+    <p class="def"><strong>The contract for what a read can observe after writes</strong> — from strongest to weakest.</p>
+    <table class="t">
+      <tr><th>Model</th><th>Guarantee</th></tr>
+      <tr><td>Linearizable</td><td>reads see the latest committed write; acts like one copy (costly)</td></tr>
+      <tr><td>Sequential</td><td>all nodes see operations in the same order (not real-time)</td></tr>
+      <tr><td>Causal</td><td>causally-related ops seen in order; concurrent ops may differ</td></tr>
+      <tr><td>Read-your-writes</td><td>you always see your own writes</td></tr>
+      <tr><td>Eventual</td><td>replicas converge if writes stop; reads may be stale meanwhile</td></tr>
+    </table>
+    <div class="qa" style="margin-top:14px">
+      <p class="q">Why not always use strong consistency?</p>
+      <ul class="a">
+        <li>It requires coordination (consensus/quorum) → higher latency and lower availability. Weaker models scale better and stay available under partitions.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>“Eventual” doesn't mean “no rules” — causal + read-your-writes are practical middle grounds that avoid the worst anomalies.</p>
+  </section>
+
+  <!-- 04 -->
+  <section class="concept" id="c04">
+    <div class="concept__head"><span class="num">04</span><h2>Replication</h2></div>
+    <p class="def"><strong>Keeping copies of data on multiple nodes</strong> for availability, durability and read scaling.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 240" role="img" aria-label="Single-leader replication to followers">
+        <rect x="40" y="92" width="120" height="46" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <text x="100" y="120" text-anchor="middle" font-size="12" fill="var(--ink)">Client</text>
+        <rect x="280" y="40" width="150" height="50" rx="10" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/>
+        <text x="355" y="70" text-anchor="middle" font-size="12.5" fill="var(--post)">Leader</text>
+        <rect x="250" y="160" width="150" height="46" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="325" y="188" text-anchor="middle" font-size="12" fill="var(--ink)">Follower</text>
+        <rect x="440" y="160" width="150" height="46" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="515" y="188" text-anchor="middle" font-size="12" fill="var(--ink)">Follower</text>
+        <line x1="160" y1="108" x2="278" y2="70" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="215" y="82" text-anchor="middle" font-size="10.5" fill="#334155">write</text>
+        <line x1="345" y1="90" x2="325" y2="158" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="375" y1="90" x2="500" y2="158" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="470" y="128" text-anchor="middle" font-size="10.5" fill="#334155">replicate</text>
+        <text x="510" y="228" text-anchor="middle" font-size="10.5" fill="var(--muted)">reads may be served by followers (can lag)</text>
+      </svg>
+      <p class="dia__cap">Single-leader: all writes hit the leader, then flow to followers.</p>
+    </div>
+    <div class="qa">
+      <p class="q">The main strategies?</p>
+      <ul class="a">
+        <li><strong>Single-leader:</strong> writes to the leader, replicated to followers. Simple, no write conflicts.</li>
+        <li><strong>Multi-leader:</strong> several nodes accept writes (multi-region) — needs conflict resolution.</li>
+        <li><strong>Leaderless (Dynamo):</strong> any replica takes reads/writes; uses quorums + read repair.</li>
+      </ul>
+      <p class="q">Sync vs async replication?</p>
+      <ul class="a">
+        <li><strong>Sync:</strong> leader waits for followers → durable but slower, and stalls if a follower is down. <strong>Async:</strong> fast, but a leader crash can lose un-replicated writes.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Async replication + failover can lose acknowledged writes and cause split-brain (two leaders) — which is why failover needs fencing/consensus.</p>
+  </section>
+
+  <!-- 05 -->
+  <section class="concept" id="c05">
+    <div class="concept__head"><span class="num">05</span><h2>Partitioning / Sharding</h2></div>
+    <p class="def"><strong>Splitting a dataset across nodes so each holds a subset</strong> — for horizontal scale beyond one machine.</p>
+    <div class="qa">
+      <p class="q">Partitioning strategies?</p>
+      <ul class="a">
+        <li><strong>Range:</strong> split by key ranges — good for range scans, but hotspots on skewed keys.</li>
+        <li><strong>Hash:</strong> hash the key to a partition — even distribution, but no efficient range queries.</li>
+      </ul>
+      <p class="q">What's the rebalancing problem?</p>
+      <ul class="a">
+        <li>Adding/removing a node with plain <code>key mod N</code> remaps almost every key. Consistent hashing minimizes movement.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>A bad partition key creates hotspots — one shard gets most traffic. Pick a high-cardinality, evenly-accessed key and watch for “celebrity” keys.</p>
+  </section>
+
+  <!-- 06 -->
+  <section class="concept" id="c06">
+    <div class="concept__head"><span class="num">06</span><h2>Consistent Hashing</h2></div>
+    <p class="def"><strong>Maps both keys and nodes onto a ring; a key belongs to the next node clockwise.</strong> Adding/removing a node moves only the keys in its arc — not everything.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 320" role="img" aria-label="Consistent hashing ring">
+        <circle cx="215" cy="160" r="110" fill="none" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <circle cx="215" cy="50" r="8" fill="var(--post)"/><text x="215" y="38" text-anchor="middle" font-size="12" fill="var(--post)" font-weight="600">N1</text>
+        <circle cx="310" cy="215" r="8" fill="var(--post)"/><text x="330" y="222" text-anchor="middle" font-size="12" fill="var(--post)" font-weight="600">N2</text>
+        <circle cx="120" cy="215" r="8" fill="var(--post)"/><text x="98" y="222" text-anchor="middle" font-size="12" fill="var(--post)" font-weight="600">N3</text>
+        <circle cx="300" cy="105" r="7" fill="none" stroke="var(--del)" stroke-width="1.5" stroke-dasharray="3 3"/><text x="322" y="100" text-anchor="middle" font-size="11" fill="var(--del)">N4 (new)</text>
+        <circle cx="278" cy="72" r="4" fill="var(--ink)"/><text x="262" y="66" text-anchor="middle" font-size="10" fill="var(--muted)">k</text>
+        <circle cx="215" cy="270" r="4" fill="var(--ink)"/><text x="215" y="288" text-anchor="middle" font-size="10" fill="var(--muted)">k</text>
+        <circle cx="120" cy="95" r="4" fill="var(--ink)"/><text x="104" y="90" text-anchor="middle" font-size="10" fill="var(--muted)">k</text>
+        <g font-size="11.5" fill="var(--ink)">
+          <text x="440" y="90">hash(node) &amp; hash(key)</text>
+          <text x="440" y="112" fill="var(--muted)">→ key owned by next node</text>
+          <text x="440" y="128" fill="var(--muted)">   clockwise</text>
+          <text x="440" y="164" fill="var(--del)">add N4:</text>
+          <text x="440" y="182" fill="var(--del)">only keys in its arc move</text>
+          <text x="440" y="198" fill="var(--del)">(~1/N of keys)</text>
+          <text x="440" y="234" fill="var(--get)">virtual nodes →</text>
+          <text x="440" y="250" fill="var(--get)">smoother distribution</text>
+        </g>
+      </svg>
+      <p class="dia__cap">A node change touches only ~1/N of keys, versus nearly all with <code>key mod N</code>.</p>
+    </div>
+    <div class="qa">
+      <p class="q">Why better than <code>key mod N</code>?</p>
+      <ul class="a">
+        <li>With mod N, changing N remaps ~all keys (cache/DB churn). Consistent hashing moves only ~1/N on a node change.</li>
+      </ul>
+      <p class="q">What are virtual nodes for?</p>
+      <ul class="a">
+        <li>Without them, load is uneven and removing a node dumps all its keys on one neighbor. Each physical node owns many small ring positions (vnodes) → smoother spread and rebalancing.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Plain consistent hashing still has variance — virtual nodes (or rendezvous hashing) are what make it practical.</p>
+  </section>
+
+  <!-- 07 -->
+  <section class="concept" id="c07">
+    <div class="concept__head"><span class="num">07</span><h2>Quorums (R + W &gt; N)</h2></div>
+    <p class="def"><strong>With N replicas, require W nodes to ack a write and R for a read.</strong> If R + W &gt; N, the read and write sets overlap on ≥1 node → the read sees the latest write.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 230" role="img" aria-label="Quorum with N=3, W=2, R=2 overlapping on one node">
+        <rect x="60" y="82" width="140" height="56" rx="10" fill="#DBEAFE" stroke="var(--post)" stroke-width="1.5"/><text x="130" y="115" text-anchor="middle" font-size="12.5" fill="var(--post)">N1</text>
+        <rect x="280" y="82" width="140" height="56" rx="10" fill="#FEF3C7" stroke="var(--put)" stroke-width="1.8"/><text x="350" y="110" text-anchor="middle" font-size="12.5" fill="var(--put)">N2</text><text x="350" y="126" text-anchor="middle" font-size="9.5" fill="var(--put)">overlap</text>
+        <rect x="500" y="82" width="140" height="56" rx="10" fill="#DCFCE7" stroke="var(--get)" stroke-width="1.5"/><text x="570" y="115" text-anchor="middle" font-size="12.5" fill="var(--get)">N3</text>
+        <path d="M60,72 L60,64 L420,64 L420,72" fill="none" stroke="var(--post)" stroke-width="1.5"/>
+        <text x="240" y="54" text-anchor="middle" font-size="11" fill="var(--post)">W = 2 · write acked</text>
+        <path d="M280,148 L280,156 L640,156 L640,148" fill="none" stroke="var(--get)" stroke-width="1.5"/>
+        <text x="460" y="176" text-anchor="middle" font-size="11" fill="var(--get)">R = 2 · read</text>
+        <text x="350" y="208" text-anchor="middle" font-size="11.5" fill="var(--ink)">R + W &gt; N ⇒ sets overlap on N2 ⇒ latest value seen</text>
+      </svg>
+      <p class="dia__cap">N=3, W=2, R=2 → any read set and any write set share at least one node.</p>
+    </div>
+    <div class="qa">
+      <p class="q">How do you tune R and W?</p>
+      <ul class="a">
+        <li>W=N, R=1 → fast reads, fragile writes. W=1, R=N → fast writes, slow reads. W=R=⌈(N+1)/2⌉ (N=3 → 2/2) → balanced, tolerates one node down.</li>
+      </ul>
+      <p class="q">Does a quorum give strong consistency?</p>
+      <ul class="a">
+        <li>It gives read-after-write on overlap, not full linearizability — concurrent writes, sloppy quorums and read-repair timing mean Dynamo-style stores are eventually consistent by default.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>R + W &gt; N guarantees overlap, not conflict resolution — concurrent writes still need last-write-wins or version vectors to reconcile.</p>
+  </section>
+
+  <div class="sec"><span class="sec__l">Coordination &amp; Consensus</span><span class="sec__r"></span></div>
+
+  <!-- 08 -->
+  <section class="concept" id="c08">
+    <div class="concept__head"><span class="num">08</span><h2>Consensus &amp; Raft</h2></div>
+    <p class="def"><strong>Getting a group of nodes to agree on a value or order despite failures.</strong> Raft (and Paxos) provide this — for leader election, replicated logs and config.</p>
+    <div class="qa">
+      <p class="q">How does Raft work at a high level?</p>
+      <ul class="a">
+        <li>Nodes elect a leader for a term. The leader appends entries to its log and replicates them; an entry commits once a majority acks. If the leader fails, a new election begins.</li>
+      </ul>
+      <p class="q">Why does it need a majority?</p>
+      <ul class="a">
+        <li>Any two majorities overlap, so decisions can't conflict and a committed entry survives failures. Hence odd cluster sizes (3, 5) tolerating ⌊N/2⌋ failures.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Consensus is expensive (round trips + majority). Use it for metadata/coordination (etcd, ZooKeeper), not the hot data path.</p>
+  </section>
+
+  <!-- 09 -->
+  <section class="concept" id="c09">
+    <div class="concept__head"><span class="num">09</span><h2>Leader Election</h2></div>
+    <p class="def"><strong>Choosing a single coordinator among nodes, and re-choosing when it fails.</strong></p>
+    <div class="qa">
+      <p class="q">How is it done safely?</p>
+      <ul class="a">
+        <li>Via a consensus system (Raft election) or a lease in ZooKeeper/etcd. The leader holds a time-bounded lease it must renew; if it can't, another node takes over.</li>
+      </ul>
+      <p class="q">What's split-brain, and how do you prevent it?</p>
+      <ul class="a">
+        <li>Two nodes both believe they're leader (e.g. after a partition) → conflicting writes. Prevent with quorum-based election + <strong>fencing tokens</strong> (monotonic IDs that let resources reject a stale leader).</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>A paused leader (GC/partition) may still think it's leader — always use fencing tokens so downstream systems reject its late writes.</p>
+  </section>
+
+  <!-- 10 -->
+  <section class="concept" id="c10">
+    <div class="concept__head"><span class="num">10</span><h2>Clocks &amp; Ordering</h2></div>
+    <p class="def"><strong>There's no single global clock,</strong> so ordering events across nodes needs logical clocks.</p>
+    <div class="qa">
+      <p class="q">Why not just use wall-clock timestamps?</p>
+      <ul class="a">
+        <li>Physical clocks drift and skew; “last write wins” by wall clock can silently drop the right update. NTP helps but isn't precise enough for ordering.</li>
+      </ul>
+      <p class="q">Lamport vs vector clocks?</p>
+      <ul class="a">
+        <li><strong>Lamport:</strong> a counter giving a total order consistent with causality, but can't tell if two events are concurrent.</li>
+        <li><strong>Vector clocks:</strong> per-node counters that <em>can</em> detect concurrency (and thus conflicts).</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Using server wall-clock time for ordering or conflict resolution is a classic bug — clock skew makes it non-deterministic. Use logical clocks or a sequencer.</p>
+  </section>
+
+  <div class="sec"><span class="sec__l">Reliability Patterns</span><span class="sec__r"></span></div>
+
+  <!-- 11 -->
+  <section class="concept" id="c11">
+    <div class="concept__head"><span class="num">11</span><h2>Idempotency &amp; Exactly-Once</h2></div>
+    <p class="def"><strong>An idempotent operation has the same effect applied once or many times</strong> — the foundation for safe retries over an unreliable network.</p>
+    <div class="qa">
+      <p class="q">Is “exactly-once delivery” real?</p>
+      <ul class="a">
+        <li>Not over an unreliable network. What you can achieve is exactly-once <em>effect</em>: at-least-once delivery + idempotent handling (dedup by message/operation ID).</li>
+      </ul>
+      <p class="q">How do you implement it?</p>
+      <ul class="a">
+        <li>Assign a unique ID per operation; the consumer records processed IDs (dedup table) and skips duplicates — ideally in the same transaction as the effect.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>“Exactly-once” in messaging means exactly-once <em>effect</em> via dedup, not magic delivery. If someone claims exactly-once delivery, ask how they handle a broker crash after send but before ack.</p>
+  </section>
+
+  <!-- 12 -->
+  <section class="concept" id="c12">
+    <div class="concept__head"><span class="num">12</span><h2>Retries, Backoff &amp; Jitter</h2></div>
+    <p class="def"><strong>Re-attempting failed operations, spaced out to avoid overloading a struggling service.</strong></p>
+    <div class="qa">
+      <p class="q">Why exponential backoff + jitter?</p>
+      <ul class="a">
+        <li>Immediate retries hammer a failing service. Exponential backoff (1s, 2s, 4s…) gives it room; jitter (randomized delay) prevents a thundering herd where all clients retry in sync.</li>
+      </ul>
+      <p class="q">What must you NOT retry?</p>
+      <ul class="a">
+        <li>Non-idempotent ops without an idempotency key (double-charge risk), and client errors (4xx). Only retry transient failures — timeouts, 5xx, resets.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Retries amplify load during an outage (retry storms). Cap attempts, add a deadline/budget, and combine with a circuit breaker so you stop hammering a dead dependency.</p>
+  </section>
+
+  <!-- 13 -->
+  <section class="concept" id="c13">
+    <div class="concept__head"><span class="num">13</span><h2>Circuit Breaker</h2></div>
+    <p class="def"><strong>A wrapper that “trips” after repeated failures, failing fast instead of piling up doomed calls</strong> — like an electrical breaker.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 260" role="img" aria-label="Circuit breaker state machine: closed, open, half-open">
+        <rect x="70" y="88" width="150" height="56" rx="12" fill="#F0FDF4" stroke="var(--get)" stroke-width="1.5"/><text x="145" y="112" text-anchor="middle" font-size="13" fill="var(--get)" font-weight="600">Closed</text><text x="145" y="130" text-anchor="middle" font-size="10.5" fill="var(--muted)">calls pass</text>
+        <rect x="460" y="88" width="150" height="56" rx="12" fill="#FEF2F2" stroke="var(--del)" stroke-width="1.5"/><text x="535" y="112" text-anchor="middle" font-size="13" fill="var(--del)" font-weight="600">Open</text><text x="535" y="130" text-anchor="middle" font-size="10.5" fill="var(--muted)">fail fast + fallback</text>
+        <rect x="265" y="188" width="160" height="56" rx="12" fill="#FFFBEB" stroke="var(--put)" stroke-width="1.5"/><text x="345" y="212" text-anchor="middle" font-size="13" fill="var(--put)" font-weight="600">Half-Open</text><text x="345" y="230" text-anchor="middle" font-size="10.5" fill="var(--muted)">trial calls</text>
+        <line x1="220" y1="108" x2="458" y2="108" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="339" y="100" text-anchor="middle" font-size="10.5" fill="#334155">failures ≥ threshold</text>
+        <line x1="500" y1="144" x2="410" y2="192" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="470" y="182" text-anchor="middle" font-size="10.5" fill="#334155">after cooldown</text>
+        <line x1="280" y1="200" x2="175" y2="146" stroke="#16A34A" stroke-width="1.5" marker-end="url(#arrowg)"/>
+        <text x="200" y="188" text-anchor="middle" font-size="10.5" fill="var(--get)">success → close</text>
+        <line x1="418" y1="206" x2="500" y2="146" stroke="#DC2626" stroke-width="1.5" marker-end="url(#arrowr)"/>
+        <text x="486" y="210" text-anchor="middle" font-size="10.5" fill="var(--del)">fail → open</text>
+      </svg>
+      <p class="dia__cap">Open fails fast during a cooldown; half-open probes recovery before fully closing.</p>
+    </div>
+    <div class="qa">
+      <p class="q">The three states?</p>
+      <ul class="a">
+        <li><strong>Closed:</strong> calls pass, failures counted. <strong>Open:</strong> calls fail immediately (fallback) for a cooldown. <strong>Half-open:</strong> a few trial calls — success closes it, failure re-opens.</li>
+      </ul>
+      <p class="q">Why is it needed?</p>
+      <ul class="a">
+        <li>Without it, a slow/dead dependency piles up threads/connections → cascading failure. The breaker isolates the failure and lets the caller degrade gracefully.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>A breaker needs a real fallback (cached data, default, queued work) — tripping without one just relocates the error. Pair with timeouts, or slow calls never count as failures.</p>
+  </section>
+
+  <!-- 14 -->
+  <section class="concept" id="c14">
+    <div class="concept__head"><span class="num">14</span><h2>Timeouts &amp; Bulkheads</h2></div>
+    <p class="def"><strong>Timeouts bound how long you wait; bulkheads isolate resources</strong> so one failing dependency can't sink the whole system — like watertight ship compartments.</p>
+    <div class="qa">
+      <p class="q">Why are timeouts non-negotiable?</p>
+      <ul class="a">
+        <li>Without one, a hung dependency holds a thread/connection forever; enough of them exhaust the pool → total outage. Every network call needs a timeout + deadline.</li>
+      </ul>
+      <p class="q">What's a bulkhead in practice?</p>
+      <ul class="a">
+        <li>Separate connection/thread pools per dependency (or tenant), so exhausting the pool for service A doesn't starve calls to service B.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Set timeouts shorter than the caller's (deadline propagation) — otherwise the client gives up while the server keeps working, wasting resources.</p>
+  </section>
+
+  <!-- 15 -->
+  <section class="concept" id="c15">
+    <div class="concept__head"><span class="num">15</span><h2>Distributed Transactions &amp; Saga</h2></div>
+    <p class="def"><strong>A transaction spanning services can't use one ACID commit.</strong> A Saga breaks it into a sequence of local transactions, each with a compensating action to undo it on failure.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 250" role="img" aria-label="Saga with forward steps and compensating actions on failure">
+        <g font-size="11.5" fill="var(--ink)">
+          <rect x="30" y="40" width="160" height="48" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="110" y="62" text-anchor="middle">T1 create order</text><text x="110" y="78" text-anchor="middle" font-size="9.5" fill="var(--muted)">local txn</text>
+          <rect x="250" y="40" width="160" height="48" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="330" y="62" text-anchor="middle">T2 reserve stock</text><text x="330" y="78" text-anchor="middle" font-size="9.5" fill="var(--muted)">local txn</text>
+          <rect x="470" y="40" width="160" height="48" rx="10" fill="#FEF2F2" stroke="var(--del)" stroke-width="1.5"/><text x="550" y="62" text-anchor="middle" fill="var(--del)">T3 charge card ✗</text><text x="550" y="78" text-anchor="middle" font-size="9.5" fill="var(--del)">fails</text>
+        </g>
+        <line x1="190" y1="64" x2="248" y2="64" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="410" y1="64" x2="468" y2="64" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="550" y1="88" x2="550" y2="130" stroke="var(--del)" stroke-width="1.5" marker-end="url(#arrowr)"/>
+        <text x="600" y="115" text-anchor="middle" font-size="10" fill="var(--del)">on failure</text>
+        <g font-size="11.5" fill="var(--ink)">
+          <rect x="30" y="160" width="160" height="48" rx="10" fill="#FFFBEB" stroke="var(--put)" stroke-width="1.5"/><text x="110" y="182" text-anchor="middle" fill="var(--put)">C1 cancel order</text><text x="110" y="198" text-anchor="middle" font-size="9.5" fill="var(--muted)">compensate</text>
+          <rect x="250" y="160" width="160" height="48" rx="10" fill="#FFFBEB" stroke="var(--put)" stroke-width="1.5"/><text x="330" y="182" text-anchor="middle" fill="var(--put)">C2 release stock</text><text x="330" y="198" text-anchor="middle" font-size="9.5" fill="var(--muted)">compensate</text>
+        </g>
+        <line x1="470" y1="150" x2="410" y2="176" stroke="var(--put)" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="250" y1="184" x2="192" y2="184" stroke="var(--put)" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="470" y="200" text-anchor="start" font-size="10" fill="var(--put)">undo completed steps, in reverse</text>
+      </svg>
+      <p class="dia__cap">If a step fails, the already-completed steps are compensated in reverse order.</p>
+    </div>
+    <div class="qa">
+      <p class="q">Choreography vs orchestration?</p>
+      <ul class="a">
+        <li><strong>Choreography:</strong> services react to each other's events (no coordinator) — decoupled, hard to trace.</li>
+        <li><strong>Orchestration:</strong> a central orchestrator drives each step and triggers compensations — clearer, but a coordinator to run.</li>
+      </ul>
+      <p class="q">What guarantee do you get?</p>
+      <ul class="a">
+        <li>Not isolation — intermediate states are visible (eventual consistency). You get atomicity via compensation: all steps complete, or completed ones are undone.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Compensation isn't a rollback — the money really moved and must be really refunded. Design each compensating action explicitly, and make steps idempotent (they'll be retried).</p>
+  </section>
+
+  <!-- 16 -->
+  <section class="concept" id="c16">
+    <div class="concept__head"><span class="num">16</span><h2>Two-Phase Commit</h2></div>
+    <p class="def"><strong>An atomic-commit protocol across nodes:</strong> a coordinator asks all participants to <em>prepare</em> (phase 1); if all vote yes, it tells them to <em>commit</em> (phase 2), else abort.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 240" role="img" aria-label="Two-phase commit coordinator and participants">
+        <rect x="265" y="26" width="160" height="46" rx="10" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/><text x="345" y="54" text-anchor="middle" font-size="12.5" fill="var(--post)">Coordinator</text>
+        <g font-size="12" fill="var(--ink)">
+          <rect x="60" y="150" width="150" height="46" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="135" y="178" text-anchor="middle">Participant 1</text>
+          <rect x="265" y="150" width="150" height="46" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="340" y="178" text-anchor="middle">Participant 2</text>
+          <rect x="470" y="150" width="150" height="46" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="545" y="178" text-anchor="middle">Participant 3</text>
+        </g>
+        <g stroke="#334155" stroke-width="1.4">
+          <line x1="320" y1="72" x2="150" y2="148" marker-end="url(#arrow)"/>
+          <line x1="345" y1="72" x2="340" y2="148" marker-end="url(#arrow)"/>
+          <line x1="370" y1="72" x2="530" y2="148" marker-end="url(#arrow)"/>
+        </g>
+        <text x="345" y="104" text-anchor="middle" font-size="11" fill="#334155">Phase 1: prepare → vote  ·  Phase 2: commit / abort</text>
+        <text x="345" y="224" text-anchor="middle" font-size="11" fill="var(--del)">coordinator crash after prepare → participants block holding locks</text>
+      </svg>
+      <p class="dia__cap">All-or-nothing across participants — but blocking if the coordinator dies mid-protocol.</p>
+    </div>
+    <div class="qa">
+      <p class="q">Why is it problematic at scale?</p>
+      <ul class="a">
+        <li>It's blocking: if the coordinator crashes after “prepare,” participants hold locks indefinitely, unsure whether to commit. It also lowers availability — any participant down blocks the commit.</li>
+      </ul>
+      <p class="q">2PC vs Saga?</p>
+      <ul class="a">
+        <li><strong>2PC:</strong> strong consistency, synchronous, locks, blocking — okay within one trust boundary (XA over a few DBs).</li>
+        <li><strong>Saga:</strong> eventual consistency, non-blocking, scales across services — preferred in microservices.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>2PC is largely avoided in microservices because of its blocking failure mode and lock-holding — Sagas + idempotency are the usual answer.</p>
+  </section>
+
+  <!-- 17 -->
+  <section class="concept" id="c17">
+    <div class="concept__head"><span class="num">17</span><h2>Outbox Pattern</h2></div>
+    <p class="def"><strong>A fix for the dual-write problem</strong> — you can't atomically write to a DB <em>and</em> publish to a broker. Write the event to an “outbox” table in the same DB transaction; a relay reads it and publishes.</p>
+    <div class="dia">
+      <svg viewBox="0 0 680 220" role="img" aria-label="Outbox pattern: state and event committed in one transaction, then relayed">
+        <rect x="20" y="86" width="100" height="46" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="70" y="114" text-anchor="middle" font-size="12" fill="var(--ink)">Service</text>
+        <rect x="160" y="50" width="180" height="120" rx="12" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/>
+        <text x="250" y="72" text-anchor="middle" font-size="11.5" fill="var(--post)" font-weight="600">one DB transaction</text>
+        <rect x="180" y="86" width="140" height="34" rx="7" fill="#fff" stroke="var(--nodeline)" stroke-width="1.2"/><text x="250" y="107" text-anchor="middle" font-size="11" fill="var(--ink)">orders row</text>
+        <rect x="180" y="126" width="140" height="34" rx="7" fill="#fff" stroke="var(--nodeline)" stroke-width="1.2"/><text x="250" y="147" text-anchor="middle" font-size="11" fill="var(--ink)">outbox row</text>
+        <rect x="380" y="86" width="130" height="46" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="445" y="108" text-anchor="middle" font-size="11.5" fill="var(--ink)">Relay / CDC</text><text x="445" y="123" text-anchor="middle" font-size="9.5" fill="var(--muted)">poll or log-tail</text>
+        <rect x="550" y="86" width="110" height="46" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="605" y="114" text-anchor="middle" font-size="12" fill="var(--ink)">Broker</text>
+        <line x1="120" y1="109" x2="158" y2="109" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="340" y1="143" x2="378" y2="120" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="510" y1="109" x2="548" y2="109" stroke="#16A34A" stroke-width="1.5" marker-end="url(#arrowg)"/>
+        <text x="530" y="100" text-anchor="middle" font-size="10" fill="var(--get)">≥1</text>
+        <text x="340" y="200" text-anchor="middle" font-size="10.5" fill="var(--muted)">state + event committed atomically → relay publishes at-least-once → consumers dedup</text>
+      </svg>
+      <p class="dia__cap">The write and the event share one local transaction, so they can't diverge.</p>
+    </div>
+    <div class="qa">
+      <p class="q">What problem does it solve?</p>
+      <ul class="a">
+        <li>Without it, a crash between “commit to DB” and “publish event” makes the DB and message log diverge (lost event, or event with no DB change). The outbox makes the write + event atomic.</li>
+      </ul>
+      <p class="q">How does the relay work?</p>
+      <ul class="a">
+        <li>A poller or CDC (change-data-capture, e.g. Debezium reading the DB log) reads new outbox rows and publishes them, marking them sent.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>The relay publishes at-least-once (it may re-send after a crash before marking sent) — consumers must be idempotent. The outbox guarantees eventual publish, not exactly once.</p>
+  </section>
+
+  <div class="sec"><span class="sec__l">Messaging &amp; Events</span><span class="sec__r"></span></div>
+
+  <!-- 18 -->
+  <section class="concept" id="c18">
+    <div class="concept__head"><span class="num">18</span><h2>Message Queues &amp; Pub/Sub</h2></div>
+    <p class="def"><strong>Async messaging decouples producers from consumers.</strong> Queues (one consumer per message, work distribution) vs pub/sub (topics, every subscriber gets a copy, fan-out).</p>
+    <div class="qa">
+      <p class="q">Why use them?</p>
+      <ul class="a">
+        <li>Decoupling (producer doesn't wait on consumers), buffering/load-leveling (absorb spikes), and resilience (consumer down ≠ lost work). Enables async, event-driven workflows.</li>
+      </ul>
+      <p class="q">Queue vs log (Kafka) model?</p>
+      <ul class="a">
+        <li><strong>Queue</strong> (RabbitMQ/SQS): message removed once consumed. <strong>Log</strong> (Kafka): an ordered, retained log; consumers track their own offset and can replay — favoring high-throughput streaming.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>A queue adds a component to operate — dead-letter queues, backlog, poison messages. And async breaks request/response: you need correlation IDs and idempotent consumers.</p>
+  </section>
+
+  <!-- 19 -->
+  <section class="concept" id="c19">
+    <div class="concept__head"><span class="num">19</span><h2>Delivery Semantics</h2></div>
+    <p class="def"><strong>The guarantee about how many times a message is delivered/processed.</strong></p>
+    <table class="t">
+      <tr><th>Semantic</th><th>Meaning</th><th>Use</th></tr>
+      <tr><td>At-most-once</td><td>may be lost, never duplicated</td><td>metrics, best-effort</td></tr>
+      <tr><td>At-least-once</td><td>never lost, may be duplicated</td><td>most systems (needs idempotent consumers)</td></tr>
+      <tr><td>Exactly-once</td><td>no loss, no duplicate effect</td><td>at-least-once + dedup/idempotency</td></tr>
+    </table>
+    <div class="qa" style="margin-top:14px">
+      <p class="q">Which do most systems use, and why?</p>
+      <ul class="a">
+        <li>At-least-once is the practical default: retry on a missing ack, and make consumers idempotent (dedup by ID) to tolerate the resulting duplicates.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>“Exactly-once” means exactly-once <em>processing</em> (via idempotency), not delivery. Ack timing — before vs after processing — is what makes a system at-most vs at-least-once.</p>
+  </section>
+
+  <!-- 20 -->
+  <section class="concept" id="c20">
+    <div class="concept__head"><span class="num">20</span><h2>Event Sourcing &amp; CQRS</h2></div>
+    <p class="def"><strong>Event Sourcing stores state as an append-only log of events</strong> (current state = replay the log). <strong>CQRS</strong> separates the write model from query-optimized read models.</p>
+    <div class="qa">
+      <p class="q">Why event sourcing?</p>
+      <ul class="a">
+        <li>Full audit history, time-travel/replay, and the ability to build new read projections from past events. The event log becomes the source of truth.</li>
+      </ul>
+      <p class="q">Why pair it with CQRS?</p>
+      <ul class="a">
+        <li>The log is great for writes but awkward to query; CQRS builds separate read models (projections) updated from the events, so reads and writes scale independently.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Both add real complexity — eventual consistency between write and read models, event schema/versioning, replay cost. Use them where audit/history or read/write asymmetry justifies it, not by default.</p>
+  </section>
+
+  <!-- 21 -->
+  <section class="concept" id="c21">
+    <div class="concept__head"><span class="num">21</span><h2>Failure Detection &amp; Heartbeats</h2></div>
+    <p class="def"><strong>Detecting that a node has failed so the system can react</strong> (failover, rebalance). Nodes send periodic heartbeats; a missed one suggests failure.</p>
+    <div class="qa">
+      <p class="q">Why is failure detection fundamentally hard?</p>
+      <ul class="a">
+        <li>You can't distinguish a crashed node from a slow one or a network partition — a missed heartbeat could be any of them. Detectors trade speed vs false positives.</li>
+      </ul>
+      <p class="q">How is it done in practice?</p>
+      <ul class="a">
+        <li>Heartbeats/health checks with timeouts, often gossiped for scale. Phi-accrual detectors give a suspicion <em>level</em> rather than a binary up/down.</li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag">Watch out</span>Aggressive timeouts evict healthy nodes (needless failover, thrash); lax ones detect failures slowly. There's no perfect setting — tune for your latency profile.</p>
+  </section>
+
+  <p class="foot">Distributed systems · technical interview prep · <b>Q&amp;A knowledge base</b></p>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node.js &amp; Backend — Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111827; --muted:#6B7280; --line:#E5E7EB; --paper:#EDF0F3; --card:#FFFFFF;
+  --accent:#2563EB;
+  --get:#16A34A; --post:#2563EB; --put:#D97706; --patch:#0D9488; --del:#DC2626;
+  --s2:#16A34A; --s3:#7C3AED; --s4:#D97706; --s5:#DC2626;
+  --node:#FFFFFF; --nodeline:#94A3B8; --slate:#334155;
+}
+
+/* ── language toggling ─────────────────────────────────────────
+   Both languages live in the DOM; only the attribute changes.
+   No network requests, no re-render, so switching cannot fail.  */
+:root[data-lang="hu"] [lang="en"]{display:none}
+:root[data-lang="en"] [lang="hu"]{display:none}
+/* SVG text nodes need the rule stated on the element itself */
+:root[data-lang="hu"] svg text[lang="en"]{display:none}
+:root[data-lang="en"] svg text[lang="hu"]{display:none}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+a{color:inherit}
+code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+code{background:#EEF2F7;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:.86em}
+
+.bar{position:sticky;top:0;z-index:20;background:rgba(237,240,243,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar__in{max-width:900px;margin:0 auto;padding:10px 20px;display:flex;
+  align-items:center;justify-content:space-between;gap:12px}
+.bar__t{font-family:'Space Grotesk';font-weight:600;font-size:14px;letter-spacing:-.01em}
+.bar__t b{color:var(--accent)}
+.bar__r{display:flex;align-items:center;gap:8px}
+.bar a.up{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);
+  text-decoration:none;border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:#fff}
+.bar a.up:hover{color:var(--ink);border-color:var(--accent)}
+
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;background:#fff;overflow:hidden}
+.lang button{font-family:'JetBrains Mono';font-size:12px;padding:4px 11px;border:0;
+  background:transparent;color:var(--muted);cursor:pointer;line-height:1.5;
+  transition:background .15s,color .15s}
+.lang button:hover{color:var(--ink)}
+.lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
+
+.hero{padding:44px 0 8px}
+.eyebrow{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,6vw,50px);
+  line-height:1.02;letter-spacing:-.025em;margin:0 0 12px}
+.lede{color:var(--muted);max-width:62ch;margin:0}
+
+.sec{display:flex;align-items:center;gap:14px;margin:36px 4px 2px}
+.sec__l{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--accent);white-space:nowrap}
+.sec__r{height:1px;background:var(--line);flex:1}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:24px 0 2px}
+.legend .lbl{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-right:2px}
+.chip{font-family:'JetBrains Mono';font-size:12px;padding:3px 8px;border-radius:6px;
+  border:1px solid var(--line);background:#fff}
+.chip--2{color:var(--s2);border-color:#BBF7D0;background:#F0FDF4}
+.chip--4{color:var(--s4);border-color:#FDE68A;background:#FFFBEB}
+.chip--5{color:var(--s5);border-color:#FECACA;background:#FEF2F2}
+
+.index{margin:30px 0 8px}
+.index h3{font-family:'Space Grotesk';font-size:13px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+a.idx{display:flex;align-items:baseline;gap:10px;text-decoration:none;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  transition:border-color .15s,transform .15s}
+a.idx:hover{border-color:var(--accent);transform:translateY(-1px)}
+.idx__n{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);font-weight:500}
+.idx__t{font-size:13.5px;font-weight:500}
+
+.concept{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:26px 26px 22px;margin-top:16px;scroll-margin-top:64px}
+.concept__head{display:flex;align-items:center;gap:14px;margin:0 0 12px}
+.concept__head .num{font-family:'JetBrains Mono';font-weight:500;font-size:15px;color:#fff;
+  background:var(--ink);width:38px;height:38px;border-radius:10px;display:grid;
+  place-items:center;flex:0 0 auto}
+.concept__head h2{font-family:'Space Grotesk';font-weight:600;font-size:22px;
+  letter-spacing:-.015em;margin:0}
+.def{margin:0 0 16px}
+.def strong{font-weight:600}
+.qa{border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
+.q{font-weight:600;margin:0 0 6px}
+.q::before{content:"Q";font-family:'JetBrains Mono';color:var(--accent);font-weight:600;
+  margin-right:9px;font-size:13px}
+ul.a,p.a{margin:0 0 2px}
+ul.a{padding-left:20px}
+ul.a li{margin:3px 0}
+.watch{margin:18px 0 0;background:#FFFBEB;border:1px solid #FDE68A;
+  border-left:3px solid var(--put);border-radius:8px;padding:10px 14px;font-size:14px}
+.watch__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--put);font-weight:600;display:block;margin-bottom:3px}
+
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 2px}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+table.t th{background:#F8FAFC;font-weight:600;font-family:'Space Grotesk';font-size:12px}
+table.t td:first-child{font-family:'JetBrains Mono';white-space:nowrap}
+
+.dia{margin:16px 0 4px;background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px}
+.dia svg{width:100%;height:auto;display:block}
+.dia__cap{font-family:'JetBrains Mono';font-size:11.5px;color:var(--muted);margin:8px 2px 0}
+svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
+
+.foot{margin-top:44px;text-align:center;color:var(--muted);font-size:12.5px}
+.foot b{font-family:'Space Grotesk';color:var(--ink)}
+
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+  .bar__t{font-size:12.5px}
+}
+@media print{
+  .bar{display:none} body{background:#fff}
+  .concept{break-inside:avoid;border-color:#ccc} a.idx{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+  </marker>
+  <marker id="arrowg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#16A34A"/>
+  </marker>
+</defs></svg>
+
+<header class="bar"><div class="bar__in">
+  <span class="bar__t"><b>Node.js</b> <span lang="en">Interview Prep · Backend Deep Dive</span><span lang="hu">Interjú-felkészítő · Backend mélymerülés</span></span>
+  <span class="bar__r">
+    <span class="lang" role="group" aria-label="Language / Nyelv">
+      <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-set-lang="hu" aria-pressed="false">HU</button>
+    </span>
+    <a class="up" href="#top">↑ <span lang="en">index</span><span lang="hu">tartalom</span></a>
+  </span>
+</div></header>
+
+<div class="wrap" id="top">
+
+  <div class="hero">
+    <p class="eyebrow"><span lang="en">Technical Q&amp;A Knowledge Base</span><span lang="hu">Technikai Q&amp;A tudásbázis</span></p>
+    <h1>Node.js &amp; Backend</h1>
+    <p class="lede"><span lang="en">The runtime internals, async model, data-layer fundamentals and reliability practices that senior backend and full-stack interviews test. API design, auth and caching live in the companion API deck — this one goes underneath, into how Node actually runs.</span><span lang="hu">A runtime internals, az async modell, az adatréteg alapjai és a megbízhatósági gyakorlatok, amiket a szenior backend és full-stack interjúk kérdeznek. Az API-design, az auth és a caching a párhuzamos API-anyagban van — ez alá megy, abba, hogy a Node valójában hogyan fut.</span></p>
+    <div class="legend">
+      <span class="lbl"><span lang="en">Diagrams</span><span lang="hu">Diagramok</span></span>
+      <span class="chip chip--2"><span lang="en">green · preferred</span><span lang="hu">zöld · ajánlott</span></span>
+      <span class="chip chip--5"><span lang="en">red · pitfall</span><span lang="hu">piros · hibalehetőség</span></span>
+      <span class="chip chip--4"><span lang="en">amber · watch out</span><span lang="hu">sárga · buktató</span></span>
+    </div>
+  </div>
+
+  <nav class="index">
+    <h3><span lang="en">Jump to</span><span lang="hu">Ugrás</span></h3>
+    <div class="grid">
+      <a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t">Event Loop (Node)</span></a>
+      <a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t">libuv &amp; Thread Pool</span></a>
+      <a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t">nextTick / setImmediate / setTimeout</span></a>
+      <a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t"><span lang="en">Blocking the Event Loop</span><span lang="hu">Az event loop blokkolása</span></span></a>
+      <a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t">Workers, Cluster &amp; Child Process</span></a>
+      <a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t">CommonJS vs ES Modules</span></a>
+      <a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t">Streams &amp; Backpressure</span></a>
+      <a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t">EventEmitter</span></a>
+      <a class="idx" href="#c09"><span class="idx__n">09</span><span class="idx__t">Callbacks → Promises → async/await</span></a>
+      <a class="idx" href="#c10"><span class="idx__n">10</span><span class="idx__t"><span lang="en">Async Error Handling</span><span lang="hu">Async hibakezelés</span></span></a>
+      <a class="idx" href="#c11"><span class="idx__n">11</span><span class="idx__t">Concurrency Control</span></a>
+      <a class="idx" href="#c12"><span class="idx__n">12</span><span class="idx__t">SQL vs NoSQL</span></a>
+      <a class="idx" href="#c13"><span class="idx__n">13</span><span class="idx__t"><span lang="en">Database Indexing</span><span lang="hu">Adatbázis-indexelés</span></span></a>
+      <a class="idx" href="#c14"><span class="idx__n">14</span><span class="idx__t">Transactions &amp; ACID</span></a>
+      <a class="idx" href="#c15"><span class="idx__n">15</span><span class="idx__t">N+1 Query Problem</span></a>
+      <a class="idx" href="#c16"><span class="idx__n">16</span><span class="idx__t">Connection Pooling</span></a>
+      <a class="idx" href="#c17"><span class="idx__n">17</span><span class="idx__t"><span lang="en">Caching Strategies</span><span lang="hu">Caching stratégiák</span></span></a>
+      <a class="idx" href="#c18"><span class="idx__n">18</span><span class="idx__t">WebSockets vs SSE</span></a>
+      <a class="idx" href="#c19"><span class="idx__n">19</span><span class="idx__t">gRPC</span></a>
+      <a class="idx" href="#c20"><span class="idx__n">20</span><span class="idx__t">Graceful Shutdown</span></a>
+      <a class="idx" href="#c21"><span class="idx__n">21</span><span class="idx__t">Logging &amp; Observability</span></a>
+      <a class="idx" href="#c22"><span class="idx__n">22</span><span class="idx__t">Env Config &amp; 12-Factor</span></a>
+    </div>
+  </nav>
+
+  <div class="sec"><span class="sec__l">Node Runtime</span><span class="sec__r"></span></div>
+
+  <!-- 01 -->
+  <section class="concept" id="c01">
+    <div class="concept__head"><span class="num">01</span><h2>Event Loop (Node)</h2></div>
+    <p class="def"><span lang="en"><strong>Node runs your JS on a single thread; the event loop (via libuv) processes callbacks in ordered phases, one cycle at a time.</strong></span><span lang="hu"><strong>A Node egyetlen szálon futtatja a JS-edet; az event loop (a libuv-on keresztül) rendezett fázisokban dolgozza fel a callbackeket, ciklusonként.</strong></span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 350" role="img" aria-label="Node event loop phases">
+        <g font-size="12" fill="var(--ink)">
+          <rect x="230" y="26" width="240" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="350" y="51" text-anchor="middle">timers · setTimeout / setInterval</text>
+          <rect x="230" y="86" width="240" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="350" y="111" text-anchor="middle">pending callbacks</text>
+          <rect x="230" y="146" width="240" height="40" rx="9" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/><text x="350" y="167" text-anchor="middle" fill="var(--post)">poll · I/O callbacks</text>
+          <text x="350" y="181" text-anchor="middle" font-size="10" fill="var(--muted)" lang="en">waits here for work</text>
+          <text x="350" y="181" text-anchor="middle" font-size="10" fill="var(--muted)" lang="hu">itt vár a munkára</text>
+          <rect x="230" y="206" width="240" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="350" y="231" text-anchor="middle">check · setImmediate</text>
+          <rect x="230" y="266" width="240" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="350" y="291" text-anchor="middle">close callbacks</text>
+        </g>
+        <g stroke="#334155" stroke-width="1.5">
+          <line x1="350" y1="66" x2="350" y2="84" marker-end="url(#arrow)"/>
+          <line x1="350" y1="126" x2="350" y2="144" marker-end="url(#arrow)"/>
+          <line x1="350" y1="186" x2="350" y2="204" marker-end="url(#arrow)"/>
+          <line x1="350" y1="246" x2="350" y2="264" marker-end="url(#arrow)"/>
+        </g>
+        <path d="M470,286 C610,286 610,46 472,46" fill="none" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+        <text x="600" y="166" text-anchor="middle" font-size="11" fill="var(--muted)" transform="rotate(90 600 166)" lang="en">next iteration</text>
+        <text x="600" y="166" text-anchor="middle" font-size="11" fill="var(--muted)" transform="rotate(90 600 166)" lang="hu">következő iteráció</text>
+        <text x="120" y="150" text-anchor="middle" font-size="11" fill="var(--del)" lang="en">between phases:</text>
+        <text x="120" y="168" text-anchor="middle" font-size="11" fill="var(--del)" lang="en">drain nextTick,</text>
+        <text x="120" y="186" text-anchor="middle" font-size="11" fill="var(--del)" lang="en">then Promises</text>
+        <text x="120" y="150" text-anchor="middle" font-size="11" fill="var(--del)" lang="hu">fázisok között:</text>
+        <text x="120" y="168" text-anchor="middle" font-size="11" fill="var(--del)" lang="hu">nextTick lefut,</text>
+        <text x="120" y="186" text-anchor="middle" font-size="11" fill="var(--del)" lang="hu">utána a Promise-ok</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">Each phase runs its callback queue; <code>nextTick</code> + Promise microtasks drain between them.</span><span lang="hu">Minden fázis lefuttatja a saját callback-sorát; a <code>nextTick</code> és a Promise microtaskok közöttük futnak le.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">How does it differ from the browser event loop?</span><span lang="hu">Miben tér el a böngésző event loopjától?</span></p>
+      <ul class="a">
+        <li><span lang="en">Browser: task → drain microtasks → render. Node has multiple phases (timers, poll, check…), no rendering, and adds <code>process.nextTick</code> as a separate, higher-priority queue.</span><span lang="hu">Böngésző: task → microtaskok lefutnak → render. A Node-nak több fázisa van (timers, poll, check…), nincs renderelés, és a <code>process.nextTick</code> külön, magasabb prioritású sorként jelenik meg.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Where do Promises and nextTick run?</span><span lang="hu">Hol futnak a Promise-ok és a nextTick?</span></p>
+      <ul class="a">
+        <li><span lang="en">After each operation/phase transition, Node drains the <code>process.nextTick</code> queue first, then the Promise microtask queue — before continuing.</span><span lang="hu">Minden művelet/fázisváltás után a Node először a <code>process.nextTick</code> sort futtatja le, utána a Promise microtask-sort — csak azután megy tovább.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">“Single-threaded” refers to your JS. libuv and the OS handle the actual I/O, so one Node process serves thousands of concurrent connections without a thread per request.</span><span lang="hu">Az „egyszálú” a te JS-edre vonatkozik. A tényleges I/O-t a libuv és az OS kezeli, így egyetlen Node process több ezer párhuzamos kapcsolatot szolgál ki anélkül, hogy kérésenként szálat indítana.</span></p>
+  </section>
+
+  <!-- 02 -->
+  <section class="concept" id="c02">
+    <div class="concept__head"><span class="num">02</span><h2>libuv &amp; Thread Pool</h2></div>
+    <p class="def"><span lang="en"><strong>libuv is the C library behind Node's event loop and async I/O.</strong> Most I/O is OS-level async; a few operations use a small thread pool.</span><span lang="hu"><strong>A libuv az a C könyvtár, ami a Node event loopja és aszinkron I/O-ja mögött áll.</strong> Az I/O nagy része OS-szintű aszinkron; néhány művelet egy kis thread poolt használ.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 240" role="img" aria-label="Event loop offloading blocking work to the libuv thread pool">
+        <rect x="30" y="80" width="180" height="70" rx="10" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/>
+        <text x="120" y="110" text-anchor="middle" font-size="12.5" fill="var(--post)">Event Loop</text>
+        <text x="120" y="128" text-anchor="middle" font-size="11" fill="var(--muted)" lang="en">single JS thread</text>
+        <text x="120" y="128" text-anchor="middle" font-size="11" fill="var(--muted)" lang="hu">egyetlen JS szál</text>
+        <rect x="440" y="50" width="210" height="140" rx="12" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <text x="545" y="76" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">libuv thread pool (4)</text>
+        <g fill="#DBEAFE" stroke="var(--post)" stroke-width="1.2">
+          <rect x="460" y="92" width="170" height="18" rx="4"/><rect x="460" y="116" width="170" height="18" rx="4"/>
+          <rect x="460" y="140" width="170" height="18" rx="4"/><rect x="460" y="164" width="170" height="18" rx="4"/>
+        </g>
+        <line x1="210" y1="100" x2="438" y2="100" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="324" y="92" text-anchor="middle" font-size="11" fill="#334155">fs · DNS lookup · crypto · zlib</text>
+        <line x1="438" y1="140" x2="210" y2="140" stroke="#16A34A" stroke-width="1.5" marker-end="url(#arrowg)"/>
+        <text x="324" y="158" text-anchor="middle" font-size="11" fill="var(--get)" lang="en">done → callback queued</text>
+        <text x="324" y="158" text-anchor="middle" font-size="11" fill="var(--get)" lang="hu">kész → callback sorba kerül</text>
+        <text x="340" y="216" text-anchor="middle" font-size="11" fill="var(--muted)" lang="en">network sockets → OS-level async, they bypass the pool</text>
+        <text x="340" y="216" text-anchor="middle" font-size="11" fill="var(--muted)" lang="hu">hálózati socketek → OS-szintű async, kikerülik a poolt</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">Only pool-backed ops (fs, DNS, some crypto/zlib) are limited by the thread count.</span><span lang="hu">Csak a pool-alapú műveleteket (fs, DNS, egyes crypto/zlib) korlátozza a szálak száma.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">What actually uses the thread pool?</span><span lang="hu">Mi használja ténylegesen a thread poolt?</span></p>
+      <ul class="a">
+        <li><span lang="en">File system, DNS lookups (<code>dns.lookup</code>), some crypto (e.g. <code>pbkdf2</code>) and zlib. Network sockets do <em>not</em> — they're OS-async (epoll/kqueue/IOCP).</span><span lang="hu">A fájlrendszer, a DNS lookupok (<code>dns.lookup</code>), egyes crypto műveletek (pl. <code>pbkdf2</code>) és a zlib. A hálózati socketek <em>nem</em> — azok OS-aszinkronok (epoll/kqueue/IOCP).</span></li>
+        <li><span lang="en">Default pool size is 4 (<code>UV_THREADPOOL_SIZE</code>, up to 1024).</span><span lang="hu">Az alapértelmezett pool-méret 4 (<code>UV_THREADPOOL_SIZE</code>, akár 1024-ig).</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why does this matter?</span><span lang="hu">Miért számít ez?</span></p>
+      <ul class="a">
+        <li><span lang="en">CPU-heavy pool work (many crypto hashes) can exhaust the 4 threads and stall unrelated fs/DNS work — tune the pool or move to worker threads.</span><span lang="hu">A CPU-igényes pool-munka (sok crypto hash) kimerítheti a 4 szálat, és megakaszthat tőle független fs/DNS műveleteket — hangold a poolt vagy válts worker threadekre.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Network requests scale far beyond the pool because sockets are OS-async — only pool-backed operations are capped by <code>UV_THREADPOOL_SIZE</code>.</span><span lang="hu">A hálózati kérések jóval a poolon túl skálázódnak, mert a socketek OS-aszinkronok — csak a pool-alapú műveleteket korlátozza az <code>UV_THREADPOOL_SIZE</code>.</span></p>
+  </section>
+
+  <!-- 03 -->
+  <section class="concept" id="c03">
+    <div class="concept__head"><span class="num">03</span><h2>nextTick / setImmediate / setTimeout</h2></div>
+    <p class="def"><span lang="en"><strong>Three ways to defer work, each with different timing and priority.</strong></span><span lang="hu"><strong>Három módszer a munka elhalasztására, mindegyik más időzítéssel és prioritással.</strong></span></p>
+    <table class="t">
+      <tr><th>API</th><th><span lang="en">Runs</span><span lang="hu">Mikor fut</span></th><th><span lang="en">Priority</span><span lang="hu">Prioritás</span></th></tr>
+      <tr><td>process.nextTick</td>
+        <td><span lang="en">before the loop continues (after current op)</span><span lang="hu">mielőtt a ciklus továbbmenne (az aktuális művelet után)</span></td>
+        <td><span lang="en">highest</span><span lang="hu">legmagasabb</span></td></tr>
+      <tr><td>Promise.then</td>
+        <td><span lang="en">microtask, right after the nextTick queue</span><span lang="hu">microtask, közvetlenül a nextTick sor után</span></td>
+        <td><span lang="en">high</span><span lang="hu">magas</span></td></tr>
+      <tr><td>setImmediate</td>
+        <td><span lang="en">check phase (just after poll)</span><span lang="hu">check fázis (közvetlenül a poll után)</span></td>
+        <td><span lang="en">per-loop</span><span lang="hu">ciklusonként</span></td></tr>
+      <tr><td>setTimeout(_, 0)</td>
+        <td><span lang="en">timers phase (≥ ~1ms)</span><span lang="hu">timers fázis (≥ ~1ms)</span></td>
+        <td><span lang="en">per-loop</span><span lang="hu">ciklusonként</span></td></tr>
+    </table>
+    <div class="qa" style="margin-top:14px">
+      <p class="q"><span lang="en"><code>setImmediate</code> vs <code>setTimeout(0)</code> — which fires first?</span><span lang="hu"><code>setImmediate</code> vs <code>setTimeout(0)</code> — melyik fut előbb?</span></p>
+      <ul class="a">
+        <li><span lang="en">Inside an I/O callback, <code>setImmediate</code> always wins (check comes right after poll). At the top level, the order is non-deterministic.</span><span lang="hu">Egy I/O callbacken belül a <code>setImmediate</code> mindig nyer (a check közvetlenül a poll után jön). Legfelső szinten a sorrend nem determinisztikus.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Recursive <code>process.nextTick</code> can starve the event loop — I/O never gets a turn. Prefer <code>setImmediate</code> for “run after I/O” deferral.</span><span lang="hu">A rekurzív <code>process.nextTick</code> kiéheztetheti az event loopot — az I/O soha nem kerül sorra. „Fusson az I/O után” halasztáshoz inkább <code>setImmediate</code>.</span></p>
+  </section>
+
+  <!-- 04 -->
+  <section class="concept" id="c04">
+    <div class="concept__head"><span class="num">04</span><h2><span lang="en">Blocking the Event Loop</span><span lang="hu">Az event loop blokkolása</span></h2></div>
+    <p class="def"><span lang="en"><strong>Any long synchronous work blocks the single JS thread</strong> — heavy loops, sync crypto, parsing huge payloads, sync fs. No other request is served until it finishes.</span><span lang="hu"><strong>Bármilyen hosszú szinkron munka blokkolja az egyetlen JS szálat</strong> — nehéz ciklusok, szinkron crypto, hatalmas payloadok parse-olása, szinkron fs. Amíg be nem fejeződik, egyetlen másik kérés sem szolgálódik ki.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">How do you avoid it?</span><span lang="hu">Hogyan kerülöd el?</span></p>
+      <ul class="a">
+        <li><span lang="en">Never use <code>*Sync</code> fs/crypto methods in request handlers; offload CPU-bound work to Worker Threads or a separate service; stream large data instead of buffering; paginate and limit.</span><span lang="hu">Soha ne használj <code>*Sync</code> fs/crypto metódusokat request handlerben; a CPU-igényes munkát told Worker Threadekre vagy külön szolgáltatásra; a nagy adatot streameld ahelyett, hogy pufferelnéd; lapozz és limitálj.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you detect it?</span><span lang="hu">Hogyan észleled?</span></p>
+      <ul class="a">
+        <li><span lang="en">Event-loop lag metrics (<code>perf_hooks.monitorEventLoopDelay</code>), an APM tool, or clinic.js.</span><span lang="hu">Event-loop lag metrikákkal (<code>perf_hooks.monitorEventLoopDelay</code>), APM eszközzel vagy a clinic.js-szel.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">One slow synchronous handler degrades the whole process for every user — the single most common Node performance pitfall.</span><span lang="hu">Egyetlen lassú szinkron handler az egész processzt lerontja minden felhasználó számára — ez a leggyakoribb Node performance-buktató.</span></p>
+  </section>
+
+  <!-- 05 -->
+  <section class="concept" id="c05">
+    <div class="concept__head"><span class="num">05</span><h2>Workers, Cluster &amp; Child Process</h2></div>
+    <p class="def"><span lang="en"><strong>Three ways to use more than one thread or process</strong> — Worker Threads (CPU work), Cluster (scale a server across cores), Child Process (run other programs).</span><span lang="hu"><strong>Három módszer több szál vagy processz használatára</strong> — Worker Threads (CPU-munka), Cluster (szerver skálázása magokra), Child Process (más programok futtatása).</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 250" role="img" aria-label="Cluster master forking workers that share a port">
+        <text x="60" y="122" text-anchor="middle" font-size="11.5" fill="var(--muted)" lang="en">requests</text>
+        <text x="60" y="122" text-anchor="middle" font-size="11.5" fill="var(--muted)" lang="hu">kérések</text>
+        <text x="60" y="138" text-anchor="middle" font-size="11.5" fill="var(--muted)">:3000</text>
+        <line x1="110" y1="130" x2="158" y2="130" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <rect x="160" y="104" width="130" height="52" rx="10" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/>
+        <text x="225" y="135" text-anchor="middle" font-size="12.5" fill="var(--post)">Master</text>
+        <g font-size="12" fill="var(--ink)">
+          <rect x="420" y="26" width="200" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="520" y="51" text-anchor="middle">Worker 1 · core 1</text>
+          <rect x="420" y="86" width="200" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="520" y="111" text-anchor="middle">Worker 2 · core 2</text>
+          <rect x="420" y="146" width="200" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="520" y="171" text-anchor="middle">Worker 3 · core 3</text>
+          <rect x="420" y="206" width="200" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="520" y="231" text-anchor="middle">Worker 4 · core 4</text>
+        </g>
+        <g stroke="#334155" stroke-width="1.5">
+          <line x1="290" y1="120" x2="418" y2="48" marker-end="url(#arrow)"/>
+          <line x1="290" y1="126" x2="418" y2="106" marker-end="url(#arrow)"/>
+          <line x1="290" y1="136" x2="418" y2="166" marker-end="url(#arrow)"/>
+          <line x1="290" y1="142" x2="418" y2="226" marker-end="url(#arrow)"/>
+        </g>
+      </svg>
+      <p class="dia__cap"><span lang="en">Cluster workers share the listening port; the OS/master load-balances connections.</span><span lang="hu">A cluster workerek közösen használják a figyelő portot; az OS/master osztja el a kapcsolatokat.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">CPU-bound vs scaling — which do you reach for?</span><span lang="hu">CPU-igényes munka vs skálázás — melyikhez nyúlsz?</span></p>
+      <ul class="a">
+        <li><span lang="en">CPU-bound task (image processing, crypto) → <strong>Worker Threads</strong> (real threads, same process).</span><span lang="hu">CPU-igényes feladat (képfeldolgozás, crypto) → <strong>Worker Threads</strong> (valódi szálak, ugyanabban a processzben).</span></li>
+        <li><span lang="en">Use all cores for a web server → <strong>Cluster</strong> (forked processes sharing a port) — or run N containers behind a load balancer, common in production.</span><span lang="hu">Az összes mag kihasználása webszerverhez → <strong>Cluster</strong> (forkolt processzek közös porton) — vagy N konténer egy load balancer mögött, ez a gyakoribb éles környezetben.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why not just use threads everywhere?</span><span lang="hu">Miért ne használjunk mindenhol szálakat?</span></p>
+      <ul class="a">
+        <li><span lang="en">Node's model is built for I/O-bound concurrency on one thread; threads/processes add memory + coordination cost. Use them for CPU work, not I/O.</span><span lang="hu">A Node modellje I/O-igényes párhuzamosságra épül egyetlen szálon; a szálak/processzek memória- és koordinációs költséget adnak. CPU-munkára használd őket, ne I/O-ra.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Cluster workers don't share memory — shared state needs an external store (Redis). In k8s, horizontal pod scaling usually replaces cluster.</span><span lang="hu">A cluster workerek nem osztanak memóriát — a közös állapothoz külső tár kell (Redis). Kubernetesben a horizontális pod-skálázás általában kiváltja a clustert.</span></p>
+  </section>
+
+  <!-- 06 -->
+  <section class="concept" id="c06">
+    <div class="concept__head"><span class="num">06</span><h2>CommonJS vs ES Modules</h2></div>
+    <p class="def"><span lang="en"><strong>Two module systems.</strong> CJS (<code>require</code>/<code>module.exports</code>) — synchronous, Node's original. ESM (<code>import</code>/<code>export</code>) — the standard, static, async.</span><span lang="hu"><strong>Két modulrendszer.</strong> CJS (<code>require</code>/<code>module.exports</code>) — szinkron, a Node eredeti megoldása. ESM (<code>import</code>/<code>export</code>) — a szabvány, statikus, aszinkron.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Key differences?</span><span lang="hu">Fő különbségek?</span></p>
+      <ul class="a">
+        <li><span lang="en">CJS loads synchronously and resolves at runtime; ESM is static (imports hoisted, analyzable, tree-shakeable).</span><span lang="hu">A CJS szinkron tölt be és futásidőben oldja fel; az ESM statikus (az importok hoistolódnak, elemezhetők, tree-shakelhetők).</span></li>
+        <li><span lang="en">ESM has top-level <code>await</code> and <code>import.meta.url</code>; CJS has <code>__dirname</code>/<code>__filename</code>. ESM exports are live bindings; CJS exports are a value snapshot.</span><span lang="hu">Az ESM-ben van top-level <code>await</code> és <code>import.meta.url</code>; a CJS-ben <code>__dirname</code>/<code>__filename</code>. Az ESM exportok élő kötések; a CJS exportok érték-pillanatképek.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you pick per file?</span><span lang="hu">Hogyan választasz fájlonként?</span></p>
+      <ul class="a">
+        <li><span lang="en"><code>.mjs</code> or <code>"type": "module"</code> → ESM; <code>.cjs</code> or default → CJS. ESM can import CJS; CJS importing ESM needs dynamic <code>import()</code>.</span><span lang="hu"><code>.mjs</code> vagy <code>"type": "module"</code> → ESM; <code>.cjs</code> vagy alapértelmezés → CJS. Az ESM tud CJS-t importálni; a CJS-ből ESM-hez dinamikus <code>import()</code> kell.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">You can't <code>require()</code> an ESM module — mixing the two trips people up. New projects default to ESM.</span><span lang="hu">Egy ESM modult nem tudsz <code>require()</code>-tel behúzni — a kettő keverése sokakat megfog. Új projektek alapból ESM-et használnak.</span></p>
+  </section>
+
+  <!-- 07 -->
+  <section class="concept" id="c07">
+    <div class="concept__head"><span class="num">07</span><h2>Streams &amp; Backpressure</h2></div>
+    <p class="def"><span lang="en"><strong>Streams process data in chunks instead of loading it all into memory.</strong> Four types: Readable, Writable, Duplex, Transform.</span><span lang="hu"><strong>A streamek darabokban dolgozzák fel az adatot ahelyett, hogy az egészet memóriába töltenék.</strong> Négy típus: Readable, Writable, Duplex, Transform.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 210" role="img" aria-label="Backpressure between a readable and writable stream">
+        <rect x="50" y="60" width="170" height="64" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <text x="135" y="88" text-anchor="middle" font-size="12.5" fill="var(--ink)">Readable</text>
+        <text x="135" y="106" text-anchor="middle" font-size="11" fill="var(--muted)" lang="en">source</text>
+        <text x="135" y="106" text-anchor="middle" font-size="11" fill="var(--muted)" lang="hu">forrás</text>
+        <rect x="460" y="60" width="170" height="64" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <text x="545" y="88" text-anchor="middle" font-size="12.5" fill="var(--ink)">Writable</text>
+        <text x="545" y="106" text-anchor="middle" font-size="11" fill="var(--muted)" lang="en">sink</text>
+        <text x="545" y="106" text-anchor="middle" font-size="11" fill="var(--muted)" lang="hu">nyelő</text>
+        <line x1="220" y1="80" x2="458" y2="80" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="339" y="72" text-anchor="middle" font-size="11" fill="#334155">chunks →</text>
+        <line x1="458" y1="108" x2="220" y2="108" stroke="var(--del)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+        <text x="339" y="126" text-anchor="middle" font-size="11" fill="var(--del)" lang="en">backpressure: pause when buffer is full</text>
+        <text x="339" y="126" text-anchor="middle" font-size="11" fill="var(--del)" lang="hu">backpressure: szünet, ha a buffer megtelt</text>
+        <text x="340" y="176" text-anchor="middle" font-size="11" fill="var(--muted)" lang="en">pipeline() handles backpressure AND errors · raw .pipe() forwards neither</text>
+        <text x="340" y="176" text-anchor="middle" font-size="11" fill="var(--muted)" lang="hu">a pipeline() kezeli a backpressure-t ÉS a hibákat · a sima .pipe() egyiket sem</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">When the sink can't keep up, the source pauses until the buffer drains.</span><span lang="hu">Ha a nyelő nem bírja a tempót, a forrás szünetel, amíg a buffer ki nem ürül.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Why streams?</span><span lang="hu">Miért streamek?</span></p>
+      <ul class="a">
+        <li><span lang="en">Constant memory for arbitrarily large data (files, HTTP bodies, uploads), start processing before all data arrives, and composability via <code>pipe</code>/<code>pipeline</code>.</span><span lang="hu">Állandó memóriahasználat tetszőlegesen nagy adatnál (fájlok, HTTP bodyk, feltöltések), a feldolgozás megkezdhető, mielőtt az összes adat megérkezne, és komponálhatóság a <code>pipe</code>/<code>pipeline</code> révén.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What is backpressure?</span><span lang="hu">Mi az a backpressure?</span></p>
+      <ul class="a">
+        <li><span lang="en">When a writable can't keep up, its buffer fills. <code>pipeline()</code> pauses the source until the destination drains — preventing unbounded memory growth.</span><span lang="hu">Amikor egy writable nem bírja a tempót, megtelik a buffere. A <code>pipeline()</code> szünetelteti a forrást, amíg a cél ki nem ürül — így nem nő korlátlanul a memóriahasználat.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Use <code>stream.pipeline()</code>, not raw <code>.pipe()</code> — pipeline handles backpressure <em>and</em> propagates errors + cleans up. Plain <code>.pipe()</code> silently drops errors.</span><span lang="hu"><code>stream.pipeline()</code>-t használj, ne sima <code>.pipe()</code>-ot — a pipeline kezeli a backpressure-t <em>és</em> továbbítja a hibákat + takarít. A sima <code>.pipe()</code> csendben elnyeli a hibákat.</span></p>
+  </section>
+
+  <!-- 08 -->
+  <section class="concept" id="c08">
+    <div class="concept__head"><span class="num">08</span><h2>EventEmitter</h2></div>
+    <p class="def"><span lang="en"><strong>Node's pub/sub primitive:</strong> objects emit named events, listeners subscribe with <code>.on()</code>. Much of core (streams, HTTP server, process) is built on it.</span><span lang="hu"><strong>A Node pub/sub primitívje:</strong> az objektumok névvel ellátott eseményeket bocsátanak ki, a listenerek <code>.on()</code>-nal iratkoznak fel. A core nagy része (streamek, HTTP szerver, process) erre épül.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Is it sync or async?</span><span lang="hu">Szinkron vagy aszinkron?</span></p>
+      <ul class="a">
+        <li><span lang="en">Listeners run <em>synchronously</em> in registration order when <code>emit()</code> fires — it's not a queue; <code>emit</code> blocks until every listener returns.</span><span lang="hu">A listenerek <em>szinkron</em> futnak, regisztrációs sorrendben, amikor az <code>emit()</code> elsül — ez nem sor; az <code>emit</code> blokkol, amíg minden listener vissza nem tér.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Common pitfalls?</span><span lang="hu">Gyakori buktatók?</span></p>
+      <ul class="a">
+        <li><span lang="en">Leaks from listeners never removed (the “MaxListenersExceededWarning” at &gt;10). Use <code>.once()</code> for one-shot and remove listeners on cleanup.</span><span lang="hu">Leakek a soha el nem távolított listenerekből (a „MaxListenersExceededWarning” 10 fölött). Egyszeri eseményre <code>.once()</code>, és cleanupkor távolítsd el a listenereket.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">An <code>'error'</code> event with no listener throws and can crash the process — always attach an error listener to emitters and streams.</span><span lang="hu">Egy listener nélküli <code>'error'</code> esemény dob, és összeomlaszthatja a processzt — mindig tegyél error listenert az emitterekre és a streamekre.</span></p>
+  </section>
+
+  <div class="sec"><span class="sec__l"><span lang="en">Async &amp; Errors</span><span lang="hu">Async &amp; hibák</span></span><span class="sec__r"></span></div>
+
+  <!-- 09 -->
+  <section class="concept" id="c09">
+    <div class="concept__head"><span class="num">09</span><h2>Callbacks → Promises → async/await</h2></div>
+    <p class="def"><span lang="en"><strong>The evolution of async in Node:</strong> error-first callbacks → Promises → <code>async/await</code> syntax over Promises.</span><span lang="hu"><strong>Az async fejlődése a Node-ban:</strong> error-first callbackek → Promise-ok → <code>async/await</code> szintaxis a Promise-ok fölött.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">What problem did each solve?</span><span lang="hu">Melyik milyen problémát oldott meg?</span></p>
+      <ul class="a">
+        <li><span lang="en">Callbacks → “callback hell” (nesting, inversion of control). Promises → chaining and a single error path. async/await → synchronous-looking code with <code>try/catch</code>.</span><span lang="hu">Callbackek → „callback hell” (egymásba ágyazás, inversion of control). Promise-ok → láncolás és egyetlen hibaút. async/await → szinkronnak kinéző kód <code>try/catch</code>-csel.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do async functions work?</span><span lang="hu">Hogyan működnek az async függvények?</span></p>
+      <ul class="a">
+        <li><span lang="en">An <code>async</code> function always returns a Promise; <code>await</code> pauses it until the Promise settles — without blocking the event loop, so other work runs meanwhile.</span><span lang="hu">Egy <code>async</code> függvény mindig Promise-t ad vissza; az <code>await</code> szünetelteti, amíg a Promise le nem zárul — az event loop blokkolása nélkül, így közben más munka is fut.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>await</code> in a loop serializes independent operations — use <code>Promise.all</code> for parallelism. And forgetting to <code>await</code> returns a pending Promise (a silent bug).</span><span lang="hu">A ciklusban lévő <code>await</code> sorosítja a független műveleteket — párhuzamossághoz <code>Promise.all</code>. Ha pedig elfelejted az <code>await</code>-et, egy függőben lévő Promise-t kapsz vissza (csendes bug).</span></p>
+  </section>
+
+  <!-- 10 -->
+  <section class="concept" id="c10">
+    <div class="concept__head"><span class="num">10</span><h2><span lang="en">Async Error Handling</span><span lang="hu">Async hibakezelés</span></h2></div>
+    <p class="def"><span lang="en"><strong>Errors must be caught on the right path</strong> — a sync throw, a rejected Promise, or an error-first callback.</span><span lang="hu"><strong>A hibákat a megfelelő úton kell elkapni</strong> — szinkron throw, elutasított Promise, vagy error-first callback.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">How do you catch each?</span><span lang="hu">Melyiket hogyan kapod el?</span></p>
+      <ul class="a">
+        <li><span lang="en">async/await → <code>try/catch</code>. Promises → <code>.catch()</code>. Callbacks → check the first arg. Streams/emitters → an <code>'error'</code> listener.</span><span lang="hu">async/await → <code>try/catch</code>. Promise-ok → <code>.catch()</code>. Callbackek → ellenőrizd az első argumentumot. Streamek/emitterek → <code>'error'</code> listener.</span></li>
+      </ul>
+      <p class="q"><span lang="en">The dangerous cases?</span><span lang="hu">A veszélyes esetek?</span></p>
+      <ul class="a">
+        <li><span lang="en">Unhandled rejections (<code>process.on('unhandledRejection')</code>) — which crash by default in current Node — and uncaught exceptions.</span><span lang="hu">A kezeletlen rejectek (<code>process.on('unhandledRejection')</code>) — amik a mai Node-ban alapból összeomlást okoznak — és az elkapatlan exceptionök.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">A throw inside a <code>setTimeout</code>/callback isn't caught by an outer <code>try/catch</code> — the try already returned. Let a top-level handler log &amp; exit; don't try to “resume” after an uncaught exception — process state is unknown.</span><span lang="hu">Egy <code>setTimeout</code>-ban/callbackben dobott hibát nem kap el a külső <code>try/catch</code> — a try már visszatért. Hagyd, hogy egy top-level handler logoljon és kilépjen; ne próbálj „folytatni” egy elkapatlan exception után — a processz állapota ismeretlen.</span></p>
+  </section>
+
+  <!-- 11 -->
+  <section class="concept" id="c11">
+    <div class="concept__head"><span class="num">11</span><h2>Concurrency Control</h2></div>
+    <p class="def"><span lang="en"><strong>Running multiple async operations with the right amount of parallelism.</strong></span><span lang="hu"><strong>Több aszinkron művelet futtatása a megfelelő mértékű párhuzamossággal.</strong></span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Promise combinators?</span><span lang="hu">Promise kombinátorok?</span></p>
+      <ul class="a">
+        <li><span lang="en"><code>all</code> — all succeed, or reject on first failure. <code>allSettled</code> — wait for all, get each result/error. <code>race</code> — first to settle. <code>any</code> — first to fulfill.</span><span lang="hu"><code>all</code> — mind sikerül, vagy az első hibánál elutasít. <code>allSettled</code> — megvárja mindet, minden eredményt/hibát megkapsz. <code>race</code> — az első, ami lezárul. <code>any</code> — az első, ami sikeresen teljesül.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why limit concurrency?</span><span lang="hu">Miért korlátozzuk a párhuzamosságot?</span></p>
+      <ul class="a">
+        <li><span lang="en">Firing 10,000 requests/queries at once exhausts sockets, connections and memory. Cap in-flight work with a limiter (<code>p-limit</code>) or batching.</span><span lang="hu">Ha egyszerre indítasz 10 000 kérést/lekérdezést, kimeríted a socketeket, a kapcsolatokat és a memóriát. Korlátozd a folyamatban lévő munkát limiterrel (<code>p-limit</code>) vagy batcheléssel.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>Promise.all</code> rejects on the first failure, but the other promises keep running — they aren't cancelled. Use <code>allSettled</code> when you need every result regardless of individual failures.</span><span lang="hu">A <code>Promise.all</code> az első hibánál elutasít, de a többi promise tovább fut — nem szakadnak meg. Használj <code>allSettled</code>-et, ha minden eredmény kell, függetlenül az egyedi hibáktól.</span></p>
+  </section>
+
+  <div class="sec"><span class="sec__l"><span lang="en">Data &amp; Persistence</span><span lang="hu">Adat &amp; perzisztencia</span></span><span class="sec__r"></span></div>
+
+  <!-- 12 -->
+  <section class="concept" id="c12">
+    <div class="concept__head"><span class="num">12</span><h2>SQL vs NoSQL</h2></div>
+    <p class="def"><span lang="en"><strong>Relational (SQL) vs non-relational (NoSQL) databases</strong> — chosen by data model and access pattern.</span><span lang="hu"><strong>Relációs (SQL) vs nem-relációs (NoSQL) adatbázisok</strong> — az adatmodell és a hozzáférési minta alapján választunk.</span></p>
+    <table class="t">
+      <tr>
+        <th><span lang="en">Type</span><span lang="hu">Típus</span></th>
+        <th><span lang="en">Model</span><span lang="hu">Modell</span></th>
+        <th><span lang="en">Best for</span><span lang="hu">Mire jó</span></th>
+        <th><span lang="en">Examples</span><span lang="hu">Példák</span></th>
+      </tr>
+      <tr><td>SQL</td>
+        <td><span lang="en">relational, schema, joins, ACID</span><span lang="hu">relációs, séma, joinok, ACID</span></td>
+        <td><span lang="en">structured data, complex queries, transactions</span><span lang="hu">strukturált adat, összetett lekérdezések, tranzakciók</span></td>
+        <td>Postgres, MySQL</td></tr>
+      <tr><td>Document</td>
+        <td><span lang="en">flexible JSON documents</span><span lang="hu">rugalmas JSON dokumentumok</span></td>
+        <td><span lang="en">evolving schemas, nested data</span><span lang="hu">változó sémák, ágyazott adat</span></td>
+        <td>MongoDB</td></tr>
+      <tr><td>Key-value</td>
+        <td><span lang="en">key → value, very fast</span><span lang="hu">kulcs → érték, nagyon gyors</span></td>
+        <td><span lang="en">caching, sessions, high throughput</span><span lang="hu">caching, sessionök, nagy átbocsátás</span></td>
+        <td>Redis, DynamoDB</td></tr>
+      <tr><td>Graph</td>
+        <td><span lang="en">nodes + edges</span><span lang="hu">csomópontok + élek</span></td>
+        <td><span lang="en">relationship-heavy queries</span><span lang="hu">kapcsolat-intenzív lekérdezések</span></td>
+        <td>Neo4j</td></tr>
+    </table>
+    <div class="qa" style="margin-top:14px">
+      <p class="q"><span lang="en">How do you choose?</span><span lang="hu">Hogyan választasz?</span></p>
+      <ul class="a">
+        <li><span lang="en">SQL by default for most apps (relations, transactions, mature tooling). Reach for NoSQL for a specific access pattern: schema flexibility, massive horizontal scale, or key-based/high-write workloads.</span><span lang="hu">A legtöbb alkalmazáshoz alapból SQL (relációk, tranzakciók, érett eszközkészlet). NoSQL-hez konkrét hozzáférési minta miatt nyúlj: séma-rugalmasság, hatalmas horizontális skála, vagy kulcs-alapú/sok írású terhelés.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">“NoSQL scales, SQL doesn't” is outdated — modern Postgres scales far. Choose by data model, not hype; many systems use both (polyglot persistence).</span><span lang="hu">A „NoSQL skálázódik, az SQL nem” elavult — a modern Postgres nagyon jól skálázódik. Adatmodell alapján válassz, ne hype alapján; sok rendszer mindkettőt használja (polyglot persistence).</span></p>
+  </section>
+
+  <!-- 13 -->
+  <section class="concept" id="c13">
+    <div class="concept__head"><span class="num">13</span><h2><span lang="en">Database Indexing</span><span lang="hu">Adatbázis-indexelés</span></h2></div>
+    <p class="def"><span lang="en"><strong>A data structure (usually a B-tree) that lets the DB find rows without scanning the whole table</strong> — like a book's index.</span><span lang="hu"><strong>Olyan adatszerkezet (általában B-fa), amivel az adatbázis a teljes tábla átolvasása nélkül találja meg a sorokat</strong> — mint egy könyv tárgymutatója.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">When does an index help, and when does it hurt?</span><span lang="hu">Mikor segít az index, és mikor árt?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Helps:</strong> <code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code> on the indexed column(s) — turns an O(n) scan into an O(log n) lookup.</span><span lang="hu"><strong>Segít:</strong> <code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code> az indexelt oszlop(ok)on — az O(n) végigolvasásból O(log n) keresés lesz.</span></li>
+        <li><span lang="en"><strong>Hurts:</strong> every write must update the index → slower writes + storage. Unused indexes are pure cost.</span><span lang="hu"><strong>Árt:</strong> minden írásnak frissítenie kell az indexet → lassabb írás + tárhely. A használatlan index tiszta költség.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Composite index / column order?</span><span lang="hu">Összetett index / oszlopsorrend?</span></p>
+      <ul class="a">
+        <li><span lang="en">A multi-column index <code>(a, b)</code> serves queries on <code>a</code> or <code>a + b</code> (leftmost-prefix rule), but not on <code>b</code> alone.</span><span lang="hu">Egy többoszlopos <code>(a, b)</code> index kiszolgálja az <code>a</code> vagy <code>a + b</code> szerinti lekérdezéseket (leftmost-prefix szabály), de a csak <code>b</code> szerintit nem.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Indexes don't help low-selectivity columns (e.g. a boolean) or leading-wildcard <code>LIKE '%x'</code>. Use <code>EXPLAIN ANALYZE</code> to confirm one is actually used.</span><span lang="hu">Az index nem segít alacsony szelektivitású oszlopoknál (pl. egy boolean) vagy vezető joker karakteres <code>LIKE '%x'</code> esetén. <code>EXPLAIN ANALYZE</code>-zal ellenőrizd, hogy tényleg használja-e.</span></p>
+  </section>
+
+  <!-- 14 -->
+  <section class="concept" id="c14">
+    <div class="concept__head"><span class="num">14</span><h2>Transactions &amp; ACID</h2></div>
+    <p class="def"><span lang="en"><strong>A transaction groups operations so they succeed or fail together.</strong> ACID = Atomicity, Consistency, Isolation, Durability.</span><span lang="hu"><strong>A tranzakció úgy csoportosítja a műveleteket, hogy együtt sikerüljenek vagy együtt bukjanak.</strong> ACID = Atomicity, Consistency, Isolation, Durability.</span></p>
+    <table class="t">
+      <tr>
+        <th><span lang="en">Isolation level</span><span lang="hu">Izolációs szint</span></th>
+        <th><span lang="en">Prevents</span><span lang="hu">Mit előz meg</span></th>
+      </tr>
+      <tr><td>Read Uncommitted</td><td><span lang="en">— (allows dirty reads)</span><span lang="hu">— (enged dirty readet)</span></td></tr>
+      <tr><td>Read Committed</td><td><span lang="en">dirty reads · Postgres default</span><span lang="hu">dirty read · a Postgres alapértelmezése</span></td></tr>
+      <tr><td>Repeatable Read</td><td><span lang="en">+ non-repeatable reads</span><span lang="hu">+ non-repeatable read</span></td></tr>
+      <tr><td>Serializable</td><td><span lang="en">+ phantom reads · strictest</span><span lang="hu">+ phantom read · a legszigorúbb</span></td></tr>
+    </table>
+    <div class="qa" style="margin-top:14px">
+      <p class="q"><span lang="en">What does each ACID letter mean?</span><span lang="hu">Mit jelent az ACID minden betűje?</span></p>
+      <ul class="a">
+        <li><span lang="en">Atomicity — all-or-nothing. Consistency — constraints stay valid. Isolation — concurrent txns don't corrupt each other. Durability — committed data survives crashes.</span><span lang="hu">Atomicity — mindent vagy semmit. Consistency — a megszorítások érvényesek maradnak. Isolation — a párhuzamos tranzakciók nem rontják el egymást. Durability — a commitolt adat túléli az összeomlást.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Higher isolation trades throughput for safety (more locking). And long-running transactions hold locks and bloat — keep them short.</span><span lang="hu">A magasabb izoláció átbocsátást áldoz a biztonságért (több lockolás). A hosszan futó tranzakciók pedig lockokat tartanak és bloatot okoznak — tartsd őket rövidre.</span></p>
+  </section>
+
+  <!-- 15 -->
+  <section class="concept" id="c15">
+    <div class="concept__head"><span class="num">15</span><h2>N+1 Query Problem</h2></div>
+    <p class="def"><span lang="en"><strong>Fetching N parent rows, then firing one query per parent for its children</strong> → 1 + N queries instead of one.</span><span lang="hu"><strong>N szülősort kérsz le, majd szülőnként egy-egy lekérdezést indítasz a gyerekeikért</strong> → 1 + N lekérdezés egy helyett.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 230" role="img" aria-label="N plus one queries versus a single batched query">
+        <line x1="350" y1="20" x2="350" y2="205" stroke="#E2E8F0" stroke-width="1.5"/>
+        <text x="180" y="34" text-anchor="middle" font-size="13" fill="var(--del)" font-weight="600" lang="en">N + 1 queries</text>
+        <text x="180" y="34" text-anchor="middle" font-size="13" fill="var(--del)" font-weight="600" lang="hu">N + 1 lekérdezés</text>
+        <rect x="40" y="54" width="80" height="38" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="80" y="78" text-anchor="middle" font-size="12" fill="var(--ink)">App</text>
+        <rect x="240" y="54" width="80" height="38" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="280" y="78" text-anchor="middle" font-size="12" fill="var(--ink)">DB</text>
+        <g stroke="#334155" stroke-width="1.4" font-size="10">
+          <line x1="120" y1="66" x2="238" y2="66" marker-end="url(#arrow)"/>
+          <line x1="120" y1="112" x2="238" y2="112" marker-end="url(#arrow)"/>
+          <line x1="120" y1="134" x2="238" y2="134" marker-end="url(#arrow)"/>
+          <line x1="120" y1="156" x2="238" y2="156" marker-end="url(#arrow)"/>
+        </g>
+        <text x="180" y="62" text-anchor="middle" font-size="10" fill="#334155">users (1)</text>
+        <text x="180" y="178" text-anchor="middle" font-size="10" fill="var(--del)" lang="en">posts per user (N) …</text>
+        <text x="180" y="178" text-anchor="middle" font-size="10" fill="var(--del)" lang="hu">userenként posts (N) …</text>
+        <text x="524" y="34" text-anchor="middle" font-size="13" fill="var(--get)" font-weight="600" lang="en">batched</text>
+        <text x="524" y="34" text-anchor="middle" font-size="13" fill="var(--get)" font-weight="600" lang="hu">batchelve</text>
+        <rect x="404" y="54" width="80" height="38" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="444" y="78" text-anchor="middle" font-size="12" fill="var(--ink)">App</text>
+        <rect x="604" y="54" width="60" height="38" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="634" y="78" text-anchor="middle" font-size="12" fill="var(--ink)">DB</text>
+        <line x1="484" y1="90" x2="602" y2="90" stroke="#16A34A" stroke-width="1.5" marker-end="url(#arrowg)"/>
+        <text x="543" y="118" text-anchor="middle" font-size="10.5" fill="var(--get)">JOIN / WHERE id IN (…)</text>
+        <text x="543" y="150" text-anchor="middle" font-size="10.5" fill="var(--get)" lang="en">1 round trip</text>
+        <text x="543" y="150" text-anchor="middle" font-size="10.5" fill="var(--get)" lang="hu">1 körút</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">Invisible with 10 rows in dev; catastrophic with 10,000 in prod.</span><span lang="hu">10 sorral fejlesztésben láthatatlan; 10 000-rel élesben katasztrofális.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Where does it come from, and how do you fix it?</span><span lang="hu">Honnan jön, és hogyan javítod?</span></p>
+      <ul class="a">
+        <li><span lang="en">Classic with ORMs + lazy loading: loop over users, access <code>user.posts</code> → a query each.</span><span lang="hu">Klasszikus ORM + lazy loading eset: végigmész a usereken, eléred a <code>user.posts</code>-ot → mindegyikhez egy lekérdezés.</span></li>
+        <li><span lang="en"><strong>Fix:</strong> eager-load with a <code>JOIN</code>, or batch into one <code>WHERE ... IN (...)</code> (DataLoader batches + caches per request).</span><span lang="hu"><strong>Javítás:</strong> eager loading <code>JOIN</code>-nal, vagy batchelés egyetlen <code>WHERE ... IN (...)</code>-be (a DataLoader kérésenként batchel és cache-el).</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Inspect query counts and use <code>EXPLAIN</code> — the fix is ORM eager-loading (<code>include</code>/<code>join</code>), not more indexes.</span><span lang="hu">Nézd meg a lekérdezésszámokat és használj <code>EXPLAIN</code>-t — a megoldás az ORM eager loadingja (<code>include</code>/<code>join</code>), nem több index.</span></p>
+  </section>
+
+  <!-- 16 -->
+  <section class="concept" id="c16">
+    <div class="concept__head"><span class="num">16</span><h2>Connection Pooling</h2></div>
+    <p class="def"><span lang="en"><strong>Reusing a fixed set of open DB connections across requests</strong> instead of opening/closing one per query.</span><span lang="hu"><strong>Egy fix készletnyi nyitott adatbázis-kapcsolat újrahasznosítása a kérések között</strong> ahelyett, hogy lekérdezésenként nyitnánk/zárnánk egyet.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 210" role="img" aria-label="Requests borrowing connections from a pool to reach the database">
+        <g font-size="11.5" fill="var(--ink)">
+          <rect x="30" y="34" width="90" height="34" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="75" y="56" text-anchor="middle">req 1</text>
+          <rect x="30" y="88" width="90" height="34" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="75" y="110" text-anchor="middle">req 2</text>
+          <rect x="30" y="142" width="90" height="34" rx="8" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="75" y="164" text-anchor="middle">req 3</text>
+        </g>
+        <rect x="250" y="40" width="180" height="130" rx="12" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/>
+        <text x="340" y="64" text-anchor="middle" font-size="12" fill="var(--post)" font-weight="600">Connection Pool</text>
+        <g fill="#DBEAFE" stroke="var(--post)" stroke-width="1.2">
+          <rect x="270" y="80" width="140" height="16" rx="4"/><rect x="270" y="104" width="140" height="16" rx="4"/>
+          <rect x="270" y="128" width="140" height="16" rx="4"/><rect x="270" y="152" width="140" height="10" rx="4"/>
+        </g>
+        <rect x="520" y="72" width="130" height="66" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <text x="585" y="110" text-anchor="middle" font-size="12.5" fill="var(--ink)">Database</text>
+        <g stroke="#334155" stroke-width="1.4">
+          <line x1="120" y1="51" x2="248" y2="90" marker-end="url(#arrow)"/>
+          <line x1="120" y1="105" x2="248" y2="112" marker-end="url(#arrow)"/>
+          <line x1="120" y1="159" x2="248" y2="140" marker-end="url(#arrow)"/>
+          <line x1="430" y1="105" x2="518" y2="105" marker-end="url(#arrow)"/>
+        </g>
+        <text x="185" y="196" text-anchor="middle" font-size="10.5" fill="var(--muted)" lang="en">borrow → query → return</text>
+        <text x="185" y="196" text-anchor="middle" font-size="10.5" fill="var(--muted)" lang="hu">kölcsönzés → lekérdezés → visszaadás</text>
+        <text x="475" y="196" text-anchor="middle" font-size="10.5" fill="var(--muted)" lang="en">warm, reused connections</text>
+        <text x="475" y="196" text-anchor="middle" font-size="10.5" fill="var(--muted)" lang="hu">meleg, újrahasznált kapcsolatok</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">The pool caps total connections and skips the per-query TCP + auth handshake.</span><span lang="hu">A pool korlátozza az összes kapcsolatot, és megspórolja a lekérdezésenkénti TCP + auth handshake-et.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Why pool?</span><span lang="hu">Miért poolozunk?</span></p>
+      <ul class="a">
+        <li><span lang="en">Opening a DB connection is expensive (TCP + auth). A pool keeps connections warm; requests borrow and return them, capping the total the DB must handle.</span><span lang="hu">Egy adatbázis-kapcsolat megnyitása drága (TCP + auth). A pool melegen tartja a kapcsolatokat; a kérések kölcsönzik és visszaadják őket, így korlátozódik, mennyit kell az adatbázisnak kezelnie.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you size it?</span><span lang="hu">Hogyan méretezed?</span></p>
+      <ul class="a">
+        <li><span lang="en">Bounded by the DB's max connections and CPU — bigger isn't better. Too many connections thrash the DB; a modest pool per instance often wins.</span><span lang="hu">Az adatbázis max kapcsolatszáma és CPU-ja határolja — a nagyobb nem jobb. A túl sok kapcsolat megfojtja az adatbázist; instance-onként egy mérsékelt pool gyakran jobb.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Pool exhaustion (all borrowed, none returned) makes requests hang — usually from leaked connections or long queries. In serverless, use a pooler like PgBouncer to avoid connection storms.</span><span lang="hu">A pool kimerülése (minden kikölcsönözve, semmi visszaadva) függő kéréseket okoz — általában elszivárgott kapcsolatok vagy hosszú lekérdezések miatt. Serverlessben használj poolert (pl. PgBouncer), hogy elkerüld a kapcsolat-viharokat.</span></p>
+  </section>
+
+  <!-- 17 -->
+  <section class="concept" id="c17">
+    <div class="concept__head"><span class="num">17</span><h2><span lang="en">Caching Strategies</span><span lang="hu">Caching stratégiák</span></h2></div>
+    <p class="def"><span lang="en"><strong>Storing hot data in a fast store (Redis/in-memory) to cut DB load and latency.</strong> This is application-level caching — distinct from HTTP caching.</span><span lang="hu"><strong>A gyakran használt adat gyors tárban (Redis/memória) tartása az adatbázis-terhelés és a latencia csökkentésére.</strong> Ez alkalmazás-szintű caching — külön dolog a HTTP cachingtől.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 250" role="img" aria-label="Cache-aside read path">
+        <rect x="270" y="26" width="150" height="44" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="345" y="53" text-anchor="middle" font-size="12.5" fill="var(--ink)">App</text>
+        <rect x="270" y="104" width="150" height="44" rx="10" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/><text x="345" y="131" text-anchor="middle" font-size="12.5" fill="var(--post)">Cache (Redis)</text>
+        <rect x="270" y="182" width="150" height="44" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="345" y="209" text-anchor="middle" font-size="12.5" fill="var(--ink)">Database</text>
+        <line x1="335" y1="70" x2="335" y2="102" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="300" y="90" text-anchor="end" font-size="10.5" fill="#334155">1 get</text>
+        <line x1="388" y1="102" x2="388" y2="72" stroke="#16A34A" stroke-width="1.5" marker-end="url(#arrowg)"/>
+        <text x="428" y="90" text-anchor="start" font-size="10.5" fill="var(--get)" lang="en">hit → return</text>
+        <text x="428" y="90" text-anchor="start" font-size="10.5" fill="var(--get)" lang="hu">hit → vissza</text>
+        <line x1="335" y1="148" x2="335" y2="180" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="300" y="168" text-anchor="end" font-size="10.5" fill="var(--del)" lang="en">2 miss → query</text>
+        <text x="300" y="168" text-anchor="end" font-size="10.5" fill="var(--del)" lang="hu">2 miss → lekérdez</text>
+        <line x1="388" y1="180" x2="388" y2="150" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="428" y="168" text-anchor="start" font-size="10.5" fill="#334155" lang="en">3 row → set (TTL)</text>
+        <text x="428" y="168" text-anchor="start" font-size="10.5" fill="#334155" lang="hu">3 sor → set (TTL)</text>
+        <text x="560" y="120" text-anchor="middle" font-size="11" fill="var(--get)" lang="en">on a hit, the DB</text>
+        <text x="560" y="136" text-anchor="middle" font-size="11" fill="var(--get)" lang="en">is never touched</text>
+        <text x="560" y="120" text-anchor="middle" font-size="11" fill="var(--get)" lang="hu">hit esetén az adatbázis</text>
+        <text x="560" y="136" text-anchor="middle" font-size="11" fill="var(--get)" lang="hu">szóba sem kerül</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">Cache-aside: read cache first; on a miss, read the DB and populate the cache.</span><span lang="hu">Cache-aside: előbb a cache-t olvasd; miss esetén az adatbázisból olvasol és feltöltöd a cache-t.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Cache-aside (lazy) pattern?</span><span lang="hu">Cache-aside (lazy) pattern?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Read:</strong> check cache → hit returns; miss → read DB, write to cache, return. <strong>Write:</strong> update DB, then invalidate/update the cache entry.</span><span lang="hu"><strong>Olvasás:</strong> nézd meg a cache-t → hit esetén visszaadod; miss esetén olvasd az adatbázist, írd a cache-be, add vissza. <strong>Írás:</strong> frissítsd az adatbázist, majd invalidáld/frissítsd a cache bejegyzést.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Other patterns, and the hard part?</span><span lang="hu">Más patternek, és mi benne a nehéz?</span></p>
+      <ul class="a">
+        <li><span lang="en">Write-through (cache + DB together), write-behind (async). The hard part is invalidation + staleness — use TTLs and explicit invalidation on writes.</span><span lang="hu">Write-through (cache + adatbázis együtt), write-behind (aszinkron). A nehéz rész az invalidáció és az elavulás — használj TTL-t és íráskor explicit invalidációt.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Cache stampede: when a hot key expires, many misses hit the DB at once. Mitigate with a lock, staggered TTLs, or stale-while-revalidate.</span><span lang="hu">Cache stampede: amikor egy gyakran használt kulcs lejár, sok miss egyszerre zúdul az adatbázisra. Enyhítsd lockkal, eltolt TTL-ekkel vagy stale-while-revalidate-tel.</span></p>
+  </section>
+
+  <div class="sec"><span class="sec__l"><span lang="en">Communication &amp; Reliability</span><span lang="hu">Kommunikáció &amp; megbízhatóság</span></span><span class="sec__r"></span></div>
+
+  <!-- 18 -->
+  <section class="concept" id="c18">
+    <div class="concept__head"><span class="num">18</span><h2>WebSockets vs SSE</h2></div>
+    <p class="def"><span lang="en"><strong>Ways to push server data to clients in real time</strong> — polling, Server-Sent Events, and WebSockets.</span><span lang="hu"><strong>Módok arra, hogy a szerver valós időben toljon adatot a klienseknek</strong> — polling, Server-Sent Events és WebSocketek.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 240" role="img" aria-label="Polling versus SSE versus WebSockets">
+        <text x="30" y="66" font-size="12" fill="var(--ink)" font-weight="600">Polling</text>
+        <text x="30" y="136" font-size="12" fill="var(--ink)" font-weight="600">SSE</text>
+        <text x="30" y="206" font-size="12" fill="var(--ink)" font-weight="600">WebSocket</text>
+        <g font-size="11.5" fill="var(--ink)">
+          <rect x="180" y="40" width="100" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="230" y="64" text-anchor="middle">Client</text>
+          <rect x="520" y="40" width="100" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="570" y="64" text-anchor="middle">Server</text>
+          <rect x="180" y="110" width="100" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="230" y="134" text-anchor="middle">Client</text>
+          <rect x="520" y="110" width="100" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="570" y="134" text-anchor="middle">Server</text>
+          <rect x="180" y="180" width="100" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="230" y="204" text-anchor="middle">Client</text>
+          <rect x="520" y="180" width="100" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="570" y="204" text-anchor="middle">Server</text>
+        </g>
+        <line x1="280" y1="60" x2="518" y2="60" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="399" y="52" text-anchor="middle" font-size="10.5" fill="var(--muted)" lang="en">repeated request (×N) — pull</text>
+        <text x="399" y="52" text-anchor="middle" font-size="10.5" fill="var(--muted)" lang="hu">ismételt kérés (×N) — pull</text>
+        <line x1="518" y1="130" x2="282" y2="130" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="400" y="122" text-anchor="middle" font-size="10.5" fill="var(--muted)" lang="en">server push — one-way stream</text>
+        <text x="400" y="122" text-anchor="middle" font-size="10.5" fill="var(--muted)" lang="hu">szerver push — egyirányú stream</text>
+        <line x1="280" y1="194" x2="518" y2="194" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="518" y1="208" x2="282" y2="208" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="400" y="228" text-anchor="middle" font-size="10.5" fill="var(--muted)" lang="en">bidirectional — full-duplex</text>
+        <text x="400" y="228" text-anchor="middle" font-size="10.5" fill="var(--muted)" lang="hu">kétirányú — full-duplex</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">SSE is one-way server→client over HTTP; WebSockets are full-duplex over a persistent TCP connection.</span><span lang="hu">Az SSE egyirányú, szerver→kliens HTTP fölött; a WebSocket full-duplex, tartós TCP kapcsolaton.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">How do you choose?</span><span lang="hu">Hogyan választasz?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>One-way updates</strong> (notifications, live scores, log streams) → <strong>SSE</strong> — simpler, plain HTTP, auto-reconnect, text only.</span><span lang="hu"><strong>Egyirányú frissítések</strong> (értesítések, élő eredmények, log streamek) → <strong>SSE</strong> — egyszerűbb, sima HTTP, automatikus újracsatlakozás, csak szöveg.</span></li>
+        <li><span lang="en"><strong>Bidirectional / low-latency</strong> (chat, multiplayer, collab editing) → <strong>WebSockets</strong> — full-duplex, binary or text.</span><span lang="hu"><strong>Kétirányú / alacsony latencia</strong> (chat, multiplayer, közös szerkesztés) → <strong>WebSocket</strong> — full-duplex, bináris vagy szöveges.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">A WebSocket connection lives on one server — scaling across instances needs sticky sessions or a shared pub/sub (Redis).</span><span lang="hu">Egy WebSocket kapcsolat egyetlen szerveren él — a több instance-ra skálázáshoz sticky session vagy közös pub/sub kell (Redis).</span></p>
+  </section>
+
+  <!-- 19 -->
+  <section class="concept" id="c19">
+    <div class="concept__head"><span class="num">19</span><h2>gRPC</h2></div>
+    <p class="def"><span lang="en"><strong>A high-performance RPC framework over HTTP/2 with Protocol Buffers</strong> (binary, schema-defined) for service-to-service communication.</span><span lang="hu"><strong>Nagy teljesítményű RPC keretrendszer HTTP/2 fölött, Protocol Buffersszel</strong> (bináris, sémával definiált) szolgáltatások közötti kommunikációhoz.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Why gRPC over REST for internal services?</span><span lang="hu">Miért gRPC REST helyett belső szolgáltatásokhoz?</span></p>
+      <ul class="a">
+        <li><span lang="en">Binary protobuf (smaller/faster than JSON), HTTP/2 multiplexing + streaming, strongly-typed contracts with codegen, and bidirectional streaming.</span><span lang="hu">Bináris protobuf (kisebb/gyorsabb a JSON-nál), HTTP/2 multiplexálás + streaming, erősen típusos szerződések codegennel, és kétirányú streaming.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Trade-offs / when not to?</span><span lang="hu">Trade-offok / mikor ne?</span></p>
+      <ul class="a">
+        <li><span lang="en">Not natively browser-friendly (needs grpc-web + a proxy), harder to debug (binary), less human-readable. REST/JSON stays better for public/browser-facing APIs.</span><span lang="hu">Natívan nem böngészőbarát (grpc-web + proxy kell hozzá), nehezebb debugolni (bináris), kevésbé olvasható emberi szemmel. Publikus/böngésző felé néző API-khoz a REST/JSON marad a jobb.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">gRPC shines for internal microservice-to-microservice traffic; for public APIs consumed by browsers or third parties, REST or GraphQL is usually the better fit.</span><span lang="hu">A gRPC belső, microservice-microservice forgalomnál ragyog; böngészők vagy harmadik felek által használt publikus API-khoz általában a REST vagy a GraphQL illik jobban.</span></p>
+  </section>
+
+  <!-- 20 -->
+  <section class="concept" id="c20">
+    <div class="concept__head"><span class="num">20</span><h2>Graceful Shutdown</h2></div>
+    <p class="def"><span lang="en"><strong>On a termination signal, stop taking new work, finish in-flight requests, close resources, then exit</strong> — instead of dropping connections mid-flight.</span><span lang="hu"><strong>Leállító szignálra ne vegyél fel új munkát, fejezd be a folyamatban lévő kéréseket, zárd le az erőforrásokat, majd lépj ki</strong> — ahelyett, hogy menet közben ejtenéd a kapcsolatokat.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">What's the sequence?</span><span lang="hu">Mi a sorrend?</span></p>
+      <ul class="a">
+        <li><span lang="en">Catch <code>SIGTERM</code> → <code>server.close()</code> (stop accepting new connections) → let in-flight requests finish (with a timeout) → close DB pools / flush queues → <code>exit(0)</code>. Force-exit if it hangs.</span><span lang="hu">Kapd el a <code>SIGTERM</code>-et → <code>server.close()</code> (ne fogadj új kapcsolatot) → hagyd befejeződni a folyamatban lévő kéréseket (timeouttal) → zárd le a DB poolokat / ürítsd a sorokat → <code>exit(0)</code>. Ha beragad, kényszerítsd a kilépést.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why does it matter?</span><span lang="hu">Miért számít?</span></p>
+      <ul class="a">
+        <li><span lang="en">In k8s/containers, deploys send <code>SIGTERM</code>. Without graceful shutdown you drop live requests and corrupt in-flight work on every rollout.</span><span lang="hu">Kubernetesben/konténerekben a deploy <code>SIGTERM</code>-et küld. Graceful shutdown nélkül minden rolloutnál élő kéréseket ejtesz el, és megsérül a folyamatban lévő munka.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Always include a hard timeout — a hung connection shouldn't block shutdown forever (the orchestrator will <code>SIGKILL</code> after the grace period anyway).</span><span lang="hu">Mindig tegyél bele kemény timeoutot — egy beragadt kapcsolat ne blokkolja örökre a leállást (az orchestrator a grace period után úgyis <code>SIGKILL</code>-t küld).</span></p>
+  </section>
+
+  <!-- 21 -->
+  <section class="concept" id="c21">
+    <div class="concept__head"><span class="num">21</span><h2>Logging &amp; Observability</h2></div>
+    <p class="def"><span lang="en"><strong>The three pillars:</strong> logs (events), metrics (numbers over time), traces (a request's path across services).</span><span lang="hu"><strong>A három pillér:</strong> logok (események), metrikák (számok az idő függvényében), trace-ek (egy kérés útja a szolgáltatásokon át).</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Logging best practices in Node?</span><span lang="hu">Logging best practice-ek Node-ban?</span></p>
+      <ul class="a">
+        <li><span lang="en">Structured JSON logs (pino/winston), log levels, a correlation/request ID per request, and no secrets/PII. Write to stdout and let the platform ship them.</span><span lang="hu">Strukturált JSON logok (pino/winston), log szintek, kérésenként correlation/request ID, és semmi titok/PII. Írj stdout-ra, a szállítást bízd a platformra.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What are traces for?</span><span lang="hu">Mire valók a trace-ek?</span></p>
+      <ul class="a">
+        <li><span lang="en">Following one request across services (OpenTelemetry) — essential for debugging latency and errors in a distributed system.</span><span lang="hu">Egy kérés követésére a szolgáltatásokon át (OpenTelemetry) — elengedhetetlen a latencia és a hibák debugolásához elosztott rendszerben.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>console.log</code> is synchronous and can block under load, and unstructured logs are hard to query — use a proper structured logger to stdout.</span><span lang="hu">A <code>console.log</code> szinkron, és terhelés alatt blokkolhat, a strukturálatlan logokat pedig nehéz lekérdezni — használj rendes strukturált loggert stdout-ra.</span></p>
+  </section>
+
+  <!-- 22 -->
+  <section class="concept" id="c22">
+    <div class="concept__head"><span class="num">22</span><h2>Env Config &amp; 12-Factor</h2></div>
+    <p class="def"><span lang="en"><strong>Config (secrets, URLs, flags) belongs in the environment, not in code</strong> — one build runs unchanged in every environment.</span><span lang="hu"><strong>A konfiguráció (titkok, URL-ek, flagek) a környezetbe való, nem a kódba</strong> — ugyanaz a build fut változtatás nélkül minden környezetben.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Key principles?</span><span lang="hu">Fő elvek?</span></p>
+      <ul class="a">
+        <li><span lang="en">Config in env vars (never committed); secrets in a secret manager (Vault / AWS Secrets Manager / KMS); validate config at startup and fail fast on missing vars.</span><span lang="hu">A konfig env változókban (soha ne commitold); a titkok secret managerben (Vault / AWS Secrets Manager / KMS); induláskor validáld a konfigot, és hiányzó változóra azonnal bukj el.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why?</span><span lang="hu">Miért?</span></p>
+      <ul class="a">
+        <li><span lang="en">The same artifact promotes dev → staging → prod with only env differences, keeps secrets out of source control, and makes the app portable/containerizable.</span><span lang="hu">Ugyanaz az artifact megy dev → staging → prod útvonalon, csak a környezeti eltérésekkel; a titkok kimaradnak a verziókezelésből; az alkalmazás pedig hordozható/konténerezhető lesz.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Committing a <code>.env</code> with real secrets is a classic leak — gitignore it, rotate anything exposed, and inject secrets at deploy time.</span><span lang="hu">Valódi titkokat tartalmazó <code>.env</code> commitolása klasszikus szivárgás — tedd gitignore-ba, rotálj mindent, ami kikerült, és deploy időben injektáld a titkokat.</span></p>
+  </section>
+
+  <p class="foot"><span lang="en">Node.js &amp; backend · technical interview prep · <b>Q&amp;A knowledge base</b></span><span lang="hu">Node.js &amp; backend · technikai interjú-felkészítő · <b>Q&amp;A tudásbázis</b></span></p>
+
+</div>
+
+<script>
+(function () {
+  var SUPPORTED = ['en', 'hu'];
+
+  function applyLang(lang) {
+    if (SUPPORTED.indexOf(lang) === -1) lang = 'en';
+    document.documentElement.dataset.lang = lang;
+    document.documentElement.lang = lang;
+    var buttons = document.querySelectorAll('[data-set-lang]');
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].setAttribute('aria-pressed', String(buttons[i].dataset.setLang === lang));
+    }
+  }
+
+  /* In-place switch for the shell: synchronous, same-origin, nothing posted
+     or awaited. Defined early so the shell finds it at the moment of a switch. */
+  window.interviewBrowser = {
+    setParams: function (params) {
+      applyLang(params && params.lang);
+    }
+  };
+
+  var buttons = document.querySelectorAll('[data-set-lang]');
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('click', function () {
+      applyLang(this.dataset.setLang);
+    });
+  }
+
+  applyLang(new URLSearchParams(location.search).get('lang') || 'en');
+})();
+</script>
+</body>
+</html>
