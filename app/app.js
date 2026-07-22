@@ -226,13 +226,37 @@
     renderViewer(mat, versionName, fallback, scrollTop);
   }
 
+  // Content can opt out of the reload: if it exposes
+  // window.interviewBrowser.setParams(params) it gets to apply the change in
+  // place (same origin, so the shell can just call it). Returns true when the
+  // content took over.
+  function applyParamsInPlace(paramValues) {
+    try {
+      const api = el.frame.contentWindow && el.frame.contentWindow.interviewBrowser;
+      if (api && typeof api.setParams === 'function') {
+        api.setParams({ ...paramValues });
+        return true;
+      }
+    } catch {}
+    return false;
+  }
+
   function selectParam(mat, version, axis, value) {
     const params = { ...paramValuesFor(mat, currentRoute().query), [axis.param]: value };
+    history.replaceState(null, '', hashFor(mat.path, version.name, params));
+
+    // Preferred path: the content swaps in place — no reload, no flash, and the
+    // reading position is left exactly where it was.
+    if (version.kind !== 'pdf' && applyParamsInPlace(params)) {
+      renderVersionBar(mat, version, false, params);
+      return;
+    }
+
+    // Fallback: reload the frame with the parameters in the URL.
     let scrollTop = 0;
     if (axis.keepPosition) {
       try { scrollTop = el.frame.contentWindow.scrollY || 0; } catch { scrollTop = 0; }
     }
-    history.replaceState(null, '', hashFor(mat.path, version.name, params));
     renderViewer(mat, version.name, false, scrollTop);
   }
 

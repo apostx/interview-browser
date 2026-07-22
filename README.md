@@ -66,6 +66,7 @@ An axis can also live entirely in the config instead of in the folder names — 
 - The viewer offers `values` in a dropdown and passes the choice to the content as a URL parameter — here `content/…/page.html?lang=en`. The first value is the default, and the choice is part of the deep link.
 - Param axes take **no part in the folder naming**, so they don't count towards the segment check and work for single-file materials, including loose files.
 - They apply to HTML content only (a PDF can't read URL parameters), so the dropdown is only shown for HTML versions. `keepPosition` works here too: the frame is scrolled back to where it was after the switch.
+- **Switching without a reload:** if the content page exposes `window.interviewBrowser.setParams(params)`, the shell calls it instead of reloading the frame — the switch is then instant and the reading position is untouched. Pages that don't are reloaded with the new parameter. See [docs/content-language-support.md](docs/content-language-support.md) for the content-side contract (hand that file to whoever writes the content).
 
 The version bar itself is collapsible: it shows a one-line summary of the current selection and expands to the dropdowns on tap (the collapsed/expanded choice is remembered).
 
