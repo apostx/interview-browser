@@ -63,7 +63,11 @@ function readFacetsConfig(dir) {
         if (!entry || typeof entry !== 'object') return null;
         // Configures the built-in version picker rather than adding an axis.
         if (entry.version === true) {
-          return { version: true, display: entry.display === 'inline' ? 'inline' : undefined };
+          const v = { version: true, display: entry.display === 'inline' ? 'inline' : undefined };
+          if (Array.isArray(entry.order) && entry.order.every((s) => typeof s === 'string')) {
+            v.order = entry.order;
+          }
+          return v;
         }
         if (typeof entry.label !== 'string') return null;
         const axis = { label: entry.label, keepPosition: entry.keepPosition === true };
@@ -188,7 +192,14 @@ function scanMaterial(dir, relPath, inheritedConfig) {
   const config = readFacetsConfig(dir) || inheritedConfig;
   const { folder: folderAxes, param: paramAxes } = splitAxes(config);
   const versionCfg = (config || []).find((a) => a && a.version);
-  if (versionCfg && versionCfg.display === 'inline') material.versionDisplay = 'inline';
+  if (versionCfg) {
+    if (versionCfg.display === 'inline') material.versionDisplay = 'inline';
+    // Explicit version order: listed names first (in that order), the rest after.
+    if (Array.isArray(versionCfg.order)) {
+      const rank = (n) => (versionCfg.order.indexOf(n) + 1 || Infinity);
+      material.versions.sort((a, b) => rank(a.name) - rank(b.name) || naturalCompare(a.name, b.name));
+    }
+  }
   const facetable =
     folderAxes.length > 0 &&
     !hasDirect &&
