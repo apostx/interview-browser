@@ -25,7 +25,7 @@
       byPath.set(item.path, item);
       parentOf.set(item.path, parent);
       if (item.type === 'group') {
-        indexTree(item.children, item, groupNames.concat(prettyName(item.name)));
+        indexTree(item.children, item, groupNames.concat(displayName(item.name)));
       } else {
         item.groupLabel = groupNames.join(' / ');
         allMaterials.push(item);
@@ -89,6 +89,12 @@
       .replace(/(^|\s)(\S)/g, (match, space, ch) => space + ch.toUpperCase());
   }
 
+  // Display name for a group or material: a leading "NN_" is an ordering prefix
+  // (it sorts the item but is hidden), so strip it before prettifying.
+  function displayName(name) {
+    return prettyName(String(name).replace(/^\d+_/, ''));
+  }
+
   function materialSub(mat) {
     const n = mat.versions.length;
     const pdfBadge = mat.versions[0].kind === 'pdf' ? 'PDF' : '';
@@ -105,9 +111,9 @@
     el.viewer.hidden = true;
     el.listView.hidden = false;
     el.frame.src = 'about:blank';
-    const groupTitle = prettyName(group.name);
+    const groupTitle = displayName(group.name);
     document.title = group.path ? `${groupTitle} – Interview Browser` : 'Interview Browser';
-    el.listTitle.textContent = groupTitle;
+    el.listTitle.textContent = group.path ? groupTitle : 'Interview Browser';
     el.upBtn.hidden = !group.path;
 
     const query = el.search.value.trim().toLowerCase();
@@ -117,12 +123,12 @@
           .filter(
             (m) =>
               m.name.toLowerCase().includes(query) ||
-              prettyName(m.name).toLowerCase().includes(query)
+              displayName(m.name).toLowerCase().includes(query)
           )
           .map((m) => rowHtml({
             href: hashFor(m.path),
             icon: '📄',
-            title: prettyName(m.name),
+            title: displayName(m.name),
             sub: [m.groupLabel, materialSub(m)].filter(Boolean).join(' · '),
           }))
       );
@@ -135,14 +141,14 @@
           ? rowHtml({
               href: hashFor(item.path),
               icon: '📁',
-              title: prettyName(item.name),
+              title: displayName(item.name),
               sub: item.children.length === 1 ? '1 item' : `${item.children.length} items`,
               chevron: true,
             })
           : rowHtml({
               href: hashFor(item.path),
               icon: '📄',
-              title: prettyName(item.name),
+              title: displayName(item.name),
               sub: materialSub(item),
             })
       )
@@ -392,7 +398,7 @@
   function renderViewer(mat, versionName, fallback, scrollTop) {
     el.listView.hidden = true;
     el.viewer.hidden = false;
-    const title = prettyName(mat.name);
+    const title = displayName(mat.name);
     document.title = `${title} – Interview Browser`;
     el.viewerTitle.textContent = title;
 

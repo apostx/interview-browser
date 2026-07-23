@@ -29,6 +29,7 @@ Rules:
 - **Default version:** a single direct file ("current"); otherwise the first version in ascending name order for direct files, or descending order for subfolders (so a date-named folder defaults to the newest).
 - A subfolder without a content file is not a version but an asset folder — the build omits it from the list but still copies its files.
 - **Display names:** underscores in group, material and file names are shown as spaces in the UI, with every word capitalised (`system_design` → *System Design*). Anything else in the name is left as-is.
+- **Ordering prefix:** a leading `NN_` (digits + underscore) on a group or material name orders it in the list but is hidden from the display name (`00_api` → *Api*, sorted first). Items without a prefix sort naturally after. Version names are not affected.
 
 ### Faceted versions (optional)
 
