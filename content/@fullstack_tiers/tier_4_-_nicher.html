@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tier 4 — Niche</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111827;
+  --muted:#6B7280;
+  --line:#E5E7EB;
+  --paper:#EDF0F3;
+  --card:#FFFFFF;
+  --accent:#2563EB;
+  --get:#16A34A;
+  --post:#2563EB;
+  --put:#D97706;
+  --patch:#0D9488;
+  --del:#DC2626;
+  --s2:#16A34A;
+  --s3:#7C3AED;
+  --s4:#D97706;
+  --s5:#DC2626;
+  --node:#FFFFFF;
+  --nodeline:#94A3B8;
+  --slate:#334155;
+  --safe:#16A34A;
+  --vuln:#DC2626;
+}
+:root[data-lang="hu"] [lang="en"]{display:none}
+:root[data-lang="en"] [lang="hu"]{display:none}
+:root[data-lang="hu"] svg text[lang="en"]{display:none}
+:root[data-lang="en"] svg text[lang="hu"]{display:none}
+/* ── language toggling ─────────────────────────────────────────
+   Both languages live in the DOM; only the attribute changes.
+   No network requests, no re-render, so switching cannot fail.  */
+:root[data-lang="hu"] [lang="en"]{display:none}
+/* SVG text nodes need the rule stated on the element itself */
+:root[data-lang="hu"] svg text[lang="en"]{display:none}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+a{color:inherit}
+code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+code{background:#EEF2F7;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:.86em}
+.bar{position:sticky;top:0;z-index:20;background:rgba(237,240,243,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar__in{max-width:900px;margin:0 auto;padding:10px 20px;display:flex;
+  align-items:center;justify-content:space-between;gap:12px}
+.bar__t{font-family:'Space Grotesk';font-weight:600;font-size:14px;letter-spacing:-.01em}
+.bar__t b{color:var(--accent)}
+.bar__r{display:flex;align-items:center;gap:8px}
+.bar a.up{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);
+  text-decoration:none;border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:#fff}
+.bar a.up:hover{color:var(--ink);border-color:var(--accent)}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;background:#fff;overflow:hidden}
+.lang button{font-family:'JetBrains Mono';font-size:12px;padding:4px 11px;border:0;
+  background:transparent;color:var(--muted);cursor:pointer;line-height:1.5;
+  transition:background .15s,color .15s}
+.lang button:hover{color:var(--ink)}
+.lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.hero{padding:44px 0 8px}
+.eyebrow{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,6vw,50px);
+  line-height:1.02;letter-spacing:-.025em;margin:0 0 12px}
+.lede{color:var(--muted);max-width:62ch;margin:0}
+.sec{display:flex;align-items:center;gap:14px;margin:36px 4px 2px}
+.sec__l{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--accent);white-space:nowrap}
+.sec__r{height:1px;background:var(--line);flex:1}
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:24px 0 2px}
+.legend .lbl{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-right:2px}
+.chip{font-family:'JetBrains Mono';font-size:12px;padding:3px 8px;border-radius:6px;
+  border:1px solid var(--line);background:#fff}
+.chip--2{color:var(--s2);border-color:#BBF7D0;background:#F0FDF4}
+.chip--4{color:var(--s4);border-color:#FDE68A;background:#FFFBEB}
+.chip--5{color:var(--s5);border-color:#FECACA;background:#FEF2F2}
+.index{margin:30px 0 8px}
+.index h3{font-family:'Space Grotesk';font-size:13px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+a.idx{display:flex;align-items:baseline;gap:10px;text-decoration:none;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  transition:border-color .15s,transform .15s}
+a.idx:hover{border-color:var(--accent);transform:translateY(-1px)}
+.idx__n{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);font-weight:500}
+.idx__t{font-size:13.5px;font-weight:500}
+.concept{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:26px 26px 22px;margin-top:16px;scroll-margin-top:64px}
+.concept__head{display:flex;align-items:center;gap:14px;margin:0 0 12px}
+.concept__head .num{font-family:'JetBrains Mono';font-weight:500;font-size:15px;color:#fff;
+  background:var(--ink);width:38px;height:38px;border-radius:10px;display:grid;
+  place-items:center;flex:0 0 auto}
+.concept__head h2{font-family:'Space Grotesk';font-weight:600;font-size:22px;
+  letter-spacing:-.015em;margin:0}
+.def{margin:0 0 16px}
+.def strong{font-weight:600}
+.qa{border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
+.q{font-weight:600;margin:0 0 6px}
+.q::before{content:"Q";font-family:'JetBrains Mono';color:var(--accent);font-weight:600;
+  margin-right:9px;font-size:13px}
+ul.a,p.a{margin:0 0 2px}
+ul.a{padding-left:20px}
+ul.a li{margin:3px 0}
+.watch{margin:18px 0 0;background:#FFFBEB;border:1px solid #FDE68A;
+  border-left:3px solid var(--put);border-radius:8px;padding:10px 14px;font-size:14px}
+.watch__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--put);font-weight:600;display:block;margin-bottom:3px}
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 2px}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+table.t th{background:#F8FAFC;font-weight:600;font-family:'Space Grotesk';font-size:12px}
+table.t td:first-child{font-family:'JetBrains Mono';white-space:nowrap}
+.dia{margin:16px 0 4px;background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px}
+.dia svg{width:100%;height:auto;display:block}
+.dia__cap{font-family:'JetBrains Mono';font-size:11.5px;color:var(--muted);margin:8px 2px 0}
+svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
+.foot{margin-top:44px;text-align:center;color:var(--muted);font-size:12.5px}
+.foot b{font-family:'Space Grotesk';color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.src{margin-top:14px;font-size:12.5px;color:var(--muted)}
+.m{font-family:'JetBrains Mono';font-weight:500;font-size:12px;padding:3px 8px;
+  border-radius:6px;color:#fff;letter-spacing:.02em;white-space:nowrap}
+.m--get{background:var(--get)}
+.m--post{background:var(--post)}
+.m--put{background:var(--put)}
+.m--patch{background:var(--patch)}
+.m--del{background:var(--del)}
+.chip--3{color:var(--s3);border-color:#DDD6FE;background:#F5F3FF}
+.yes{color:var(--get);font-weight:600}
+.no{color:var(--muted)}
+/* ── language toggling ─────────────────────────────────────────
+   Both languages live in the DOM; only the [data-lang] attribute on
+   <html> changes. No network requests, no re-render — switching can't fail. */
+[lang="hu"]{display:none}
+html[data-lang="hu"] [lang="en"]{display:none}
+html[data-lang="hu"] [lang="hu"]{display:inline}
+html[data-lang="hu"] li[lang="hu"]{display:list-item}
+html[data-lang="hu"] p[lang="hu"],
+html[data-lang="hu"] div[lang="hu"]{display:block}
+/* SVG <text>: display:none inheritance is unreliable across browsers with
+   a generic selector, so target text nodes explicitly. */
+svg text[lang="hu"]{display:none}
+html[data-lang="hu"] svg text[lang="en"]{display:none}
+html[data-lang="hu"] svg text[lang="hu"]{display:inline}
+/* header language switch */
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+.lang button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+/* ── language toggling ───────────────────────────────────────── */
+[lang="hu"]{display:none}
+svg text[lang="hu"]{display:none}
+.depth-note{margin:16px 0 0;font-size:13px;color:var(--muted);background:#fff;border:1px solid var(--line);
+  border-radius:10px;padding:11px 14px}
+.depth-note b{color:var(--ink);font-weight:600}
+.concept__head .num.pr{background:var(--accent)}
+.q:first-child{margin-top:0}
+.step{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--slate);margin:18px 0 6px;display:flex;align-items:center;gap:8px}
+.step::before{content:"";width:16px;height:2px;background:var(--accent);display:inline-block}
+.note{margin:14px 0 0;background:#EFF6FF;border:1px solid #BFDBFE;border-left:3px solid var(--post);
+  border-radius:8px;padding:10px 14px;font-size:14px}
+.note__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--post);font-weight:600;display:block;margin-bottom:3px}
+/* vulnerable vs fixed code pair */
+.codepair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 2px}
+.cbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}
+.cbox__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600}
+.cbox--bad .cbox__h{background:#FEF2F2;color:var(--vuln);border-bottom:1px solid #FECACA}
+.cbox--good .cbox__h{background:#F0FDF4;color:var(--safe);border-bottom:1px solid #BBF7D0}
+.cbox pre{margin:0;padding:10px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.55;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+/* ── complexity badges ───────────────────────────────────────── */
+.cx{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.cx span{font-family:'JetBrains Mono';font-size:11.5px;padding:3px 9px;border-radius:6px;
+  border:1px solid var(--line);background:#fff;white-space:nowrap}
+.cx .k{color:var(--muted)}
+.cx .t{color:var(--post);border-color:#BFDBFE;background:#EFF6FF}
+.cx .s{color:var(--patch);border-color:#99F6E4;background:#F0FDFA}
+.cx .good{color:var(--safe);border-color:#BBF7D0;background:#F0FDF4}
+.cx .bad{color:var(--vuln);border-color:#FECACA;background:#FEF2F2}
+/* ── single code block ───────────────────────────────────────── */
+.code{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;margin:12px 0 2px}
+.code__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600;background:#F8FAFC;color:var(--slate);border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.code__cx{font-size:10px;color:var(--post);text-transform:none;letter-spacing:0}
+.code pre{margin:0;padding:11px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.6;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+  .bar__t{font-size:12.5px}
+}
+@media print{
+  .bar{display:none} body{background:#fff}
+  .concept{break-inside:avoid;border-color:#ccc} a.idx{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr 1fr}
+  .concept__head h2{font-size:19px}
+  .bar__t{font-size:12.5px}
+}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+}
+@media (max-width:620px){.codepair{grid-template-columns:1fr}}
+</style>
+
+<style>
+/* ── tier-edition additions ─────────────────────────────────── */
+.areahead{display:flex;align-items:baseline;gap:12px;margin:52px 4px 6px;
+  padding-top:14px;border-top:2px solid var(--ink)}
+.areahead h2{font-family:'Space Grotesk';font-size:19px;font-weight:700;
+  letter-spacing:-.02em;margin:0;flex:1}
+.areahead .cnt{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);white-space:nowrap}
+
+.concept__head .src{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);border:1px solid var(--line);
+  border-radius:5px;padding:2px 7px;background:#fff;margin-left:auto;white-space:nowrap}
+.concept__head{flex-wrap:wrap}
+
+.idxgrp{font-family:'JetBrains Mono';font-size:11px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--accent);margin:18px 0 8px;font-weight:500}
+.idxgrp:first-of-type{margin-top:4px}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+  </marker>
+</defs></svg>
+
+<div class="wrap" id="top">
+
+  <div class="hero">
+    <p class="eyebrow"><span lang="en">Tier 4 of 4 · Technical Q&amp;A Knowledge Base</span><span lang="hu">4. tier a 4-ből · Technikai Q&amp;A tudásbázis</span></p>
+    <h1><span lang="en">Tier 4 — Niche</span><span lang="hu">4. tier — Niche</span></h1>
+    <p class="lede"><span lang="en">Situational material: specific stacks, specialist roles, or topics rarely asked outright. Recognition is usually enough — the goal is to not be blank if one comes up, not to have it memorised.</span><span lang="hu">Szituatív anyag: specifikus stackek, specialista pozíciók, vagy ritkán, közvetlenül kérdezett témák. Általában elég a felismerés — a cél az, hogy ne maradj néma, ha előjön, nem az, hogy fejből tudd.</span></p>
+    <div class="legend">
+      <span class="lbl"><span lang="en">Diagrams</span><span lang="hu">Diagramok</span></span>
+      <span class="chip chip--2"><span lang="en">green · preferred</span><span lang="hu">zöld · ajánlott</span></span>
+      <span class="chip chip--5"><span lang="en">red · pitfall</span><span lang="hu">piros · hibalehetőség</span></span>
+      <span class="chip chip--4"><span lang="en">amber · watch out</span><span lang="hu">sárga · buktató</span></span>
+    </div>
+  </div>
+
+  <nav class="index">
+    <h3><span lang="en">Jump to</span><span lang="hu">Ugrás</span></h3>
+    <p class="idxgrp"><span lang="en">React & Frontend</span><span lang="hu">React &amp; frontend</span></p>
+    <div class="grid"><a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t">List Virtualization</span></a></div>
+    <p class="idxgrp"><span lang="en">Node.js & Backend</span><span lang="hu">Node.js &amp; backend</span></p>
+    <div class="grid"><a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t">gRPC</span></a></div>
+    <p class="idxgrp"><span lang="en">APIs & HTTP</span><span lang="hu">API-k &amp; HTTP</span></p>
+    <div class="grid"><a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t">OpenAPI</span></a></div>
+    <p class="idxgrp"><span lang="en">Distributed Systems</span><span lang="hu">Elosztott rendszerek</span></p>
+    <div class="grid"><a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t">PACELC</span></a><a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t">Consistent Hashing</span></a><a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t">Quorums (R + W &gt; N)</span></a><a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t">Consensus &amp; Raft</span></a><a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t">Leader Election</span></a><a class="idx" href="#c09"><span class="idx__n">09</span><span class="idx__t">Clocks &amp; Ordering</span></a><a class="idx" href="#c10"><span class="idx__n">10</span><span class="idx__t">Two-Phase Commit</span></a><a class="idx" href="#c11"><span class="idx__n">11</span><span class="idx__t">Failure Detection &amp; Heartbeats</span></a></div>
+    <p class="idxgrp"><span lang="en">DevOps & Cloud</span><span lang="hu">DevOps &amp; felhő</span></p>
+    <div class="grid"><a class="idx" href="#c12"><span class="idx__n">12</span><span class="idx__t"><span lang="en">Infrastructure as Code</span><span lang="hu">Infrastructure as Code</span></span></a><a class="idx" href="#c13"><span class="idx__n">13</span><span class="idx__t"><span lang="en">Pipeline & Runtime Security</span><span lang="hu">Pipeline- & futásidő-biztonság</span></span></a></div>
+    <p class="idxgrp"><span lang="en">Data Structures & Algorithms</span><span lang="hu">Adatszerkezetek &amp; algoritmusok</span></p>
+    <div class="grid"><a class="idx" href="#c14"><span class="idx__n">14</span><span class="idx__t"><span lang="en">Heaps & Priority Queues</span><span lang="hu">Heapek & prioritási sorok</span></span></a><a class="idx" href="#c15"><span class="idx__n">15</span><span class="idx__t"><span lang="en">Dynamic Programming</span><span lang="hu">Dinamikus programozás</span></span></a><a class="idx" href="#c16"><span class="idx__n">16</span><span class="idx__t"><span lang="en">Greedy Algorithms</span><span lang="hu">Mohó algoritmusok</span></span></a></div>
+  </nav>
+
+  <div class="areahead">
+    <h2><span lang="en">React & Frontend</span><span lang="hu">React &amp; frontend</span></h2>
+    <span class="cnt">1</span>
+  </div>
+<section class="concept" id="c01">
+    <div class="concept__head"><span class="num">01</span><h2>List Virtualization</h2><span class="src">React</span></div>
+    <p class="def"><span lang="en"><strong>Rendering only the rows currently in the viewport (plus a small buffer) instead of the whole list.</strong></span><span lang="hu"><strong>Csak a viewportban éppen látható sorok (plusz egy kis buffer) renderelése az egész lista helyett.</strong></span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 250" role="img" aria-label="Virtualized list rendering only rows in the viewport">
+        <text x="150" y="130" text-anchor="middle" font-size="12" fill="var(--muted)" transform="rotate(-90 150 130)" lang="en">10,000 items</text>
+        <text x="150" y="130" text-anchor="middle" font-size="12" fill="var(--muted)" transform="rotate(-90 150 130)" lang="hu">10 000 elem</text>
+        <g>
+          <rect x="250" y="40" width="180" height="14" rx="3" fill="#EEF2F7" stroke="#E2E8F0"/>
+          <rect x="250" y="58" width="180" height="14" rx="3" fill="#EEF2F7" stroke="#E2E8F0"/>
+          <rect x="250" y="76" width="180" height="14" rx="3" fill="#EEF2F7" stroke="#E2E8F0"/>
+          <rect x="250" y="94" width="180" height="14" rx="3" fill="#EEF2F7" stroke="#E2E8F0"/>
+          <rect x="250" y="112" width="180" height="14" rx="3" fill="#DBEAFE" stroke="var(--post)"/>
+          <rect x="250" y="130" width="180" height="14" rx="3" fill="#DBEAFE" stroke="var(--post)"/>
+          <rect x="250" y="148" width="180" height="14" rx="3" fill="#DBEAFE" stroke="var(--post)"/>
+          <rect x="250" y="166" width="180" height="14" rx="3" fill="#DBEAFE" stroke="var(--post)"/>
+          <rect x="250" y="184" width="180" height="14" rx="3" fill="#EEF2F7" stroke="#E2E8F0"/>
+          <rect x="250" y="202" width="180" height="14" rx="3" fill="#EEF2F7" stroke="#E2E8F0"/>
+        </g>
+        <rect x="242" y="108" width="196" height="76" rx="6" fill="none" stroke="var(--post)" stroke-width="2"/>
+        <text x="470" y="140" font-size="11.5" fill="var(--post)">viewport</text>
+        <text x="470" y="158" font-size="11" fill="var(--muted)" lang="en">only these rows</text>
+        <text x="470" y="173" font-size="11" fill="var(--muted)" lang="en">are in the DOM</text>
+        <text x="470" y="158" font-size="11" fill="var(--muted)" lang="hu">csak ezek a sorok</text>
+        <text x="470" y="173" font-size="11" fill="var(--muted)" lang="hu">vannak a DOM-ban</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">The DOM node count stays roughly constant no matter how long the list is.</span><span lang="hu">A DOM-node-ok száma nagyjából állandó marad, bármilyen hosszú is a lista.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Why and when?</span><span lang="hu">Miért és mikor?</span></p>
+      <ul class="a">
+        <li><span lang="en">Large lists (thousands of rows) create thousands of DOM nodes → slow render, high memory, janky scroll. Virtualization keeps the node count constant. Libraries: react-window, TanStack Virtual.</span><span lang="hu">A nagy listák (több ezer sor) több ezer DOM-node-ot hoznak létre → lassú render, magas memóriahasználat, akadozó görgetés. A virtualizáció állandón tartja a node-ok számát. Libraryk: react-window, TanStack Virtual.</span></li>
+      </ul>
+      <p class="q"><span lang="en">The catch?</span><span lang="hu">Mi a bökkenő?</span></p>
+      <ul class="a">
+        <li><span lang="en">Off-screen content isn't in the DOM → breaks Ctrl+F and screen readers if unhandled, and needs known or estimated row heights (variable heights are trickier).</span><span lang="hu">A képernyőn kívüli tartalom nincs a DOM-ban → kezeletlenül elrontja a Ctrl+F-et és a képernyőolvasókat, továbbá ismert vagy becsült sormagasság kell hozzá (a változó magasság trükkösebb).</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Don't virtualize small lists — the machinery costs more than it saves. It's strictly for the long-list case.</span><span lang="hu">Kis listát ne virtualizálj — a gépezet többe kerül, mint amennyit megspórol. Kizárólag hosszú listákra való.</span></p>
+  </section>
+
+  <div class="areahead">
+    <h2><span lang="en">Node.js & Backend</span><span lang="hu">Node.js &amp; backend</span></h2>
+    <span class="cnt">1</span>
+  </div>
+<section class="concept" id="c02">
+    <div class="concept__head"><span class="num">02</span><h2>gRPC</h2><span class="src">Node</span></div>
+    <p class="def"><span lang="en"><strong>A high-performance RPC framework over HTTP/2 with Protocol Buffers</strong> (binary, schema-defined) for service-to-service communication.</span><span lang="hu"><strong>Nagy teljesítményű RPC keretrendszer HTTP/2 fölött, Protocol Buffersszel</strong> (bináris, sémával definiált) szolgáltatások közötti kommunikációhoz.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Why gRPC over REST for internal services?</span><span lang="hu">Miért gRPC REST helyett belső szolgáltatásokhoz?</span></p>
+      <ul class="a">
+        <li><span lang="en">Binary protobuf (smaller/faster than JSON), HTTP/2 multiplexing + streaming, strongly-typed contracts with codegen, and bidirectional streaming.</span><span lang="hu">Bináris protobuf (kisebb/gyorsabb a JSON-nál), HTTP/2 multiplexálás + streaming, erősen típusos szerződések codegennel, és kétirányú streaming.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Trade-offs / when not to?</span><span lang="hu">Trade-offok / mikor ne?</span></p>
+      <ul class="a">
+        <li><span lang="en">Not natively browser-friendly (needs grpc-web + a proxy), harder to debug (binary), less human-readable. REST/JSON stays better for public/browser-facing APIs.</span><span lang="hu">Natívan nem böngészőbarát (grpc-web + proxy kell hozzá), nehezebb debugolni (bináris), kevésbé olvasható emberi szemmel. Publikus/böngésző felé néző API-khoz a REST/JSON marad a jobb.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">gRPC shines for internal microservice-to-microservice traffic; for public APIs consumed by browsers or third parties, REST or GraphQL is usually the better fit.</span><span lang="hu">A gRPC belső, microservice-microservice forgalomnál ragyog; böngészők vagy harmadik felek által használt publikus API-khoz általában a REST vagy a GraphQL illik jobban.</span></p>
+  </section>
+
+  <div class="areahead">
+    <h2><span lang="en">APIs & HTTP</span><span lang="hu">API-k &amp; HTTP</span></h2>
+    <span class="cnt">1</span>
+  </div>
+<section class="concept" id="c03">
+    <div class="concept__head"><span class="num">03</span><h2>OpenAPI</h2><span class="src">API</span></div>
+    <p class="def"><span lang="en"><strong>A standard, language-agnostic spec (YAML/JSON) that describes a REST API</strong> — its endpoints, params, schemas and auth. Formerly Swagger.</span><span lang="hu"><strong>Szabványos, nyelvfüggetlen specifikáció (YAML/JSON), ami leír egy REST API-t</strong> — endpointok, paraméterek, sémák és auth. Korábbi neve: Swagger.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">What do you get from it?</span><span lang="hu">Mit nyersz vele?</span></p>
+      <p class="a"><span lang="en">Auto-generated docs, client/server SDK codegen, request validation, and contract/mock testing.</span><span lang="hu">Automatikusan generált dokumentációt, kliens/szerver SDK codegent, request validációt, valamint contract- és mock-tesztelést.</span></p>
+      <p class="q">Contract-first vs code-first?</p>
+      <ul class="a">
+        <li><span lang="en"><strong>Contract-first:</strong> write the spec, generate stubs — teams agree on the interface before coding.</span><span lang="hu"><strong>Contract-first:</strong> megírod a specifikációt, generálsz stubokat — a csapatok kódolás előtt megegyeznek az interfészben.</span></li>
+        <li><span lang="en"><strong>Code-first:</strong> generate the spec from annotated code — convenient, but the spec can drift if it isn't enforced.</span><span lang="hu"><strong>Code-first:</strong> a specifikációt annotált kódból generálod — kényelmes, de a spec elcsúszhat, ha nincs kikényszerítve.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">An OpenAPI doc is only useful if it stays in sync — validate the running API against the spec in CI.</span><span lang="hu">Egy OpenAPI dokumentáció csak akkor hasznos, ha szinkronban marad — validáld a futó API-t a spec ellen a CI-ban.</span></p>
+  </section>
+
+  <div class="areahead">
+    <h2><span lang="en">Distributed Systems</span><span lang="hu">Elosztott rendszerek</span></h2>
+    <span class="cnt">8</span>
+  </div>
+<section class="concept" id="c04">
+    <div class="concept__head"><span class="num">04</span><h2>PACELC</h2><span class="src">Distributed</span></div>
+    <p class="def"><span lang="en"><strong>An extension of CAP:</strong> if there's a <strong>P</strong>artition, choose <strong>A</strong>vailability or <strong>C</strong>onsistency; <strong>E</strong>lse (normal operation), choose <strong>L</strong>atency or <strong>C</strong>onsistency.</span><span lang="hu"><strong>A CAP kiterjesztése:</strong> ha van <strong>P</strong>artíció, válassz <strong>A</strong>vailability vagy <strong>C</strong>onsistency; <strong>E</strong>lse (normál működés), válassz <strong>L</strong>atency vagy <strong>C</strong>onsistency.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Why does PACELC matter?</span><span lang="hu">Miért számít a PACELC?</span></p>
+      <ul class="a">
+        <li><span lang="en">CAP ignores the normal case. Even without a partition, stronger consistency costs latency (coordination round trips) — PACELC names that everyday trade-off.</span><span lang="hu">A CAP a normál esetet figyelmen kívül hagyja. Partíció nélkül is: az erősebb konzisztencia latenciába kerül (koordinációs körök) — a PACELC ezt a hétköznapi trade-offot nevezi meg.</span></li>
+        <li><span lang="en">Examples: Dynamo/Cassandra = PA/EL (availability + low latency); a strongly-consistent store = PC/EC.</span><span lang="hu">Példák: Dynamo/Cassandra = PA/EL (availability + alacsony latencia); egy erősen konzisztens tár = PC/EC.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">For most systems the interesting trade-off is the “else” branch — latency vs consistency in normal operation — not the rare partition case.</span><span lang="hu">A legtöbb rendszernél az érdekes trade-off az „else" ág — latencia vs konzisztencia normál működésben —, nem a ritka partíció-eset.</span></p>
+  </section>
+<section class="concept" id="c05">
+    <div class="concept__head"><span class="num">05</span><h2>Consistent Hashing</h2><span class="src">Distributed</span></div>
+    <p class="def"><span lang="en"><strong>Maps both keys and nodes onto a ring; a key belongs to the next node clockwise.</strong> Adding/removing a node moves only the keys in its arc — not everything.</span><span lang="hu"><strong>A kulcsokat és a node-okat is egy gyűrűre képezi; egy kulcs az óramutató szerinti következő node-hoz tartozik.</strong> Egy node hozzáadása/eltávolítása csak az ívében lévő kulcsokat mozgatja — nem az összeset.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 320" role="img" aria-label="Consistent hashing ring">
+        <circle cx="215" cy="160" r="110" fill="none" stroke="var(--nodeline)" stroke-width="1.5"/>
+        <circle cx="215" cy="50" r="8" fill="var(--post)"/><text x="215" y="38" text-anchor="middle" font-size="12" fill="var(--post)" font-weight="600">N1</text>
+        <circle cx="310" cy="215" r="8" fill="var(--post)"/><text x="330" y="222" text-anchor="middle" font-size="12" fill="var(--post)" font-weight="600">N2</text>
+        <circle cx="120" cy="215" r="8" fill="var(--post)"/><text x="98" y="222" text-anchor="middle" font-size="12" fill="var(--post)" font-weight="600">N3</text>
+        <circle cx="300" cy="105" r="7" fill="none" stroke="var(--del)" stroke-width="1.5" stroke-dasharray="3 3"/><text lang="en" x="322" y="100" text-anchor="middle" font-size="11" fill="var(--del)">N4 (new)</text><text lang="hu" x="322" y="100" text-anchor="middle" font-size="11" fill="var(--del)">N4 (új)</text>
+        <circle cx="278" cy="72" r="4" fill="var(--ink)"/><text x="262" y="66" text-anchor="middle" font-size="10" fill="var(--muted)">k</text>
+        <circle cx="215" cy="270" r="4" fill="var(--ink)"/><text x="215" y="288" text-anchor="middle" font-size="10" fill="var(--muted)">k</text>
+        <circle cx="120" cy="95" r="4" fill="var(--ink)"/><text x="104" y="90" text-anchor="middle" font-size="10" fill="var(--muted)">k</text>
+        <g font-size="11.5" fill="var(--ink)">
+          <text lang="en" x="440" y="90">hash(node) &amp; hash(key)</text><text lang="hu" x="440" y="90">hash(node) &amp; hash(key)</text>
+          <text lang="en" x="440" y="112" fill="var(--muted)">→ key owned by next node</text><text lang="hu" x="440" y="112" fill="var(--muted)">→ a kulcs a következő node-é</text>
+          <text lang="en" x="440" y="128" fill="var(--muted)">   clockwise</text><text lang="hu" x="440" y="128" fill="var(--muted)">   az óramutató szerint</text>
+          <text lang="en" x="440" y="164" fill="var(--del)">add N4:</text><text lang="hu" x="440" y="164" fill="var(--del)">N4 hozzáadása:</text>
+          <text lang="en" x="440" y="182" fill="var(--del)">only keys in its arc move</text><text lang="hu" x="440" y="182" fill="var(--del)">csak az ívében lévő kulcsok mozognak</text>
+          <text lang="en" x="440" y="198" fill="var(--del)">(~1/N of keys)</text><text lang="hu" x="440" y="198" fill="var(--del)">(a kulcsok ~1/N-e)</text>
+          <text lang="en" x="440" y="234" fill="var(--get)">virtual nodes →</text><text lang="hu" x="440" y="234" fill="var(--get)">virtual node-ok →</text>
+          <text lang="en" x="440" y="250" fill="var(--get)">smoother distribution</text><text lang="hu" x="440" y="250" fill="var(--get)">simább eloszlás</text>
+        </g>
+      </svg>
+      <p class="dia__cap"><span lang="en">A node change touches only ~1/N of keys, versus nearly all with <code>key mod N</code>.</span><span lang="hu">Egy node-változás csak a kulcsok ~1/N-ét érinti, szemben a <code>key mod N</code> szinte-mindenével.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Why better than <code>key mod N</code>?</span><span lang="hu">Miért jobb, mint a <code>key mod N</code>?</span></p>
+      <ul class="a">
+        <li><span lang="en">With mod N, changing N remaps ~all keys (cache/DB churn). Consistent hashing moves only ~1/N on a node change.</span><span lang="hu">A mod N-nél az N változtatása ~minden kulcsot áthelyez (cache/DB churn). A consistent hashing egy node-változásnál csak ~1/N-et mozgat.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What are virtual nodes for?</span><span lang="hu">Mire valók a virtual node-ok?</span></p>
+      <ul class="a">
+        <li><span lang="en">Without them, load is uneven and removing a node dumps all its keys on one neighbor. Each physical node owns many small ring positions (vnodes) → smoother spread and rebalancing.</span><span lang="hu">Nélkülük a terhelés egyenetlen, és egy node eltávolítása az összes kulcsát egy szomszédra zúdítja. Minden fizikai node sok kis gyűrűpozíciót birtokol (vnode) → simább eloszlás és rebalancing.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Plain consistent hashing still has variance — virtual nodes (or rendezvous hashing) are what make it practical.</span><span lang="hu">A sima consistent hashingnek is van szórása — a virtual node-ok (vagy a rendezvous hashing) teszik praktikussá.</span></p>
+  </section>
+<section class="concept" id="c06">
+    <div class="concept__head"><span class="num">06</span><h2>Quorums (R + W &gt; N)</h2><span class="src">Distributed</span></div>
+    <p class="def"><span lang="en"><strong>With N replicas, require W nodes to ack a write and R for a read.</strong> If R + W &gt; N, the read and write sets overlap on ≥1 node → the read sees the latest write.</span><span lang="hu"><strong>N replikánál egy íráshoz W node visszaigazolása kell, egy olvasáshoz R.</strong> Ha R + W &gt; N, az olvasási és írási halmaz ≥1 node-on átfed → az olvasás a legfrissebb írást látja.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 230" role="img" aria-label="Quorum with N=3, W=2, R=2 overlapping on one node">
+        <rect x="60" y="82" width="140" height="56" rx="10" fill="#DBEAFE" stroke="var(--post)" stroke-width="1.5"/><text x="130" y="115" text-anchor="middle" font-size="12.5" fill="var(--post)">N1</text>
+        <rect x="280" y="82" width="140" height="56" rx="10" fill="#FEF3C7" stroke="var(--put)" stroke-width="1.8"/><text x="350" y="110" text-anchor="middle" font-size="12.5" fill="var(--put)">N2</text><text lang="en" x="350" y="126" text-anchor="middle" font-size="9.5" fill="var(--put)">overlap</text><text lang="hu" x="350" y="126" text-anchor="middle" font-size="9.5" fill="var(--put)">átfedés</text>
+        <rect x="500" y="82" width="140" height="56" rx="10" fill="#DCFCE7" stroke="var(--get)" stroke-width="1.5"/><text x="570" y="115" text-anchor="middle" font-size="12.5" fill="var(--get)">N3</text>
+        <path d="M60,72 L60,64 L420,64 L420,72" fill="none" stroke="var(--post)" stroke-width="1.5"/>
+        <text lang="en" x="240" y="54" text-anchor="middle" font-size="11" fill="var(--post)">W = 2 · write acked</text><text lang="hu" x="240" y="54" text-anchor="middle" font-size="11" fill="var(--post)">W = 2 · írás visszaigazolva</text>
+        <path d="M280,148 L280,156 L640,156 L640,148" fill="none" stroke="var(--get)" stroke-width="1.5"/>
+        <text lang="en" x="460" y="176" text-anchor="middle" font-size="11" fill="var(--get)">R = 2 · read</text><text lang="hu" x="460" y="176" text-anchor="middle" font-size="11" fill="var(--get)">R = 2 · olvasás</text>
+        <text lang="en" x="350" y="208" text-anchor="middle" font-size="11.5" fill="var(--ink)">R + W &gt; N ⇒ sets overlap on N2 ⇒ latest value seen</text><text lang="hu" x="350" y="208" text-anchor="middle" font-size="11.5" fill="var(--ink)">R + W &gt; N ⇒ átfedés N2-n ⇒ a legfrissebb érték látszik</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">N=3, W=2, R=2 → any read set and any write set share at least one node.</span><span lang="hu">N=3, W=2, R=2 → bármely olvasási és bármely írási halmaz legalább egy node-on osztozik.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">How do you tune R and W?</span><span lang="hu">Hogyan hangolod az R-t és W-t?</span></p>
+      <ul class="a">
+        <li><span lang="en">W=N, R=1 → fast reads, fragile writes. W=1, R=N → fast writes, slow reads. W=R=⌈(N+1)/2⌉ (N=3 → 2/2) → balanced, tolerates one node down.</span><span lang="hu">W=N, R=1 → gyors olvasás, törékeny írás. W=1, R=N → gyors írás, lassú olvasás. W=R=⌈(N+1)/2⌉ (N=3 → 2/2) → kiegyensúlyozott, elvisel egy kieső node-ot.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Does a quorum give strong consistency?</span><span lang="hu">Ad a quorum strong consistency-t?</span></p>
+      <ul class="a">
+        <li><span lang="en">It gives read-after-write on overlap, not full linearizability — concurrent writes, sloppy quorums and read-repair timing mean Dynamo-style stores are eventually consistent by default.</span><span lang="hu">Read-after-write-ot ad az átfedésen, nem teljes linearizability-t — a párhuzamos írások, a sloppy quorum és a read-repair időzítése miatt a Dynamo-stílusú tárak alapból eventually consistent-ek.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">R + W &gt; N guarantees overlap, not conflict resolution — concurrent writes still need last-write-wins or version vectors to reconcile.</span><span lang="hu">Az R + W &gt; N az átfedést garantálja, nem a konfliktusfeloldást — a párhuzamos írásokhoz továbbra is last-write-wins vagy version vector kell az összefésüléshez.</span></p>
+  </section>
+<section class="concept" id="c07">
+    <div class="concept__head"><span class="num">07</span><h2>Consensus &amp; Raft</h2><span class="src">Distributed</span></div>
+    <p class="def"><span lang="en"><strong>Getting a group of nodes to agree on a value or order despite failures.</strong> Raft (and Paxos) provide this — for leader election, replicated logs and config.</span><span lang="hu"><strong>Egy node-csoport rábírása, hogy hibák ellenére megegyezzen egy értékben vagy sorrendben.</strong> A Raft (és a Paxos) ezt biztosítja — leader electionhöz, replikált loghoz és konfighoz.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">How does Raft work at a high level?</span><span lang="hu">Hogyan működik a Raft magas szinten?</span></p>
+      <ul class="a">
+        <li><span lang="en">Nodes elect a leader for a term. The leader appends entries to its log and replicates them; an entry commits once a majority acks. If the leader fails, a new election begins.</span><span lang="hu">A node-ok egy termre leadert választanak. A leader bejegyzéseket fűz a logjához és replikálja őket; egy bejegyzés akkor commitál, ha a többség visszaigazolja. Ha a leader kiesik, új választás indul.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why does it need a majority?</span><span lang="hu">Miért kell hozzá többség?</span></p>
+      <ul class="a">
+        <li><span lang="en">Any two majorities overlap, so decisions can't conflict and a committed entry survives failures. Hence odd cluster sizes (3, 5) tolerating ⌊N/2⌋ failures.</span><span lang="hu">Bármely két többség átfed, így a döntések nem ütközhetnek, és egy committált bejegyzés túléli a hibákat. Innen a páratlan klaszterméret (3, 5), amely ⌊N/2⌋ hibát tolerál.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Consensus is expensive (round trips + majority). Use it for metadata/coordination (etcd, ZooKeeper), not the hot data path.</span><span lang="hu">A consensus drága (körök + többség). Metaadathoz/koordinációhoz használd (etcd, ZooKeeper), ne a forró adatútra.</span></p>
+  </section>
+<section class="concept" id="c08">
+    <div class="concept__head"><span class="num">08</span><h2>Leader Election</h2><span class="src">Distributed</span></div>
+    <p class="def"><span lang="en"><strong>Choosing a single coordinator among nodes, and re-choosing when it fails.</strong></span><span lang="hu"><strong>Egyetlen koordinátor kiválasztása a node-ok közül, és újraválasztása, ha kiesik.</strong></span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">How is it done safely?</span><span lang="hu">Hogyan csinálják biztonságosan?</span></p>
+      <ul class="a">
+        <li><span lang="en">Via a consensus system (Raft election) or a lease in ZooKeeper/etcd. The leader holds a time-bounded lease it must renew; if it can't, another node takes over.</span><span lang="hu">Consensus-rendszerrel (Raft election) vagy lease-szel ZooKeeperben/etcd-ben. A leader időkorlátos lease-t tart, amit meg kell újítania; ha nem tudja, egy másik node veszi át.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What's split-brain, and how do you prevent it?</span><span lang="hu">Mi a split-brain, és hogyan előzöd meg?</span></p>
+      <ul class="a">
+        <li><span lang="en">Two nodes both believe they're leader (e.g. after a partition) → conflicting writes. Prevent with quorum-based election + <strong>fencing tokens</strong> (monotonic IDs that let resources reject a stale leader).</span><span lang="hu">Két node is leadernek hiszi magát (pl. partíció után) → ütköző írások. Megelőzés quorum-alapú választással + <strong>fencing tokenekkel</strong> (monoton ID-k, amelyekkel a resource-ok elutasíthatják az elavult leadert).</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">A paused leader (GC/partition) may still think it's leader — always use fencing tokens so downstream systems reject its late writes.</span><span lang="hu">Egy megállt leader (GC/partíció) még mindig leadernek hiheti magát — mindig használj fencing tokent, hogy a downstream rendszerek elutasítsák a késői írásait.</span></p>
+  </section>
+<section class="concept" id="c09">
+    <div class="concept__head"><span class="num">09</span><h2>Clocks &amp; Ordering</h2><span class="src">Distributed</span></div>
+    <p class="def"><span lang="en"><strong>There's no single global clock,</strong> so ordering events across nodes needs logical clocks.</span><span lang="hu"><strong>Nincs egyetlen globális óra,</strong> így a node-ok közti események rendezéséhez logikai órák kellenek.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Why not just use wall-clock timestamps?</span><span lang="hu">Miért ne csak wall-clock időbélyeget használjunk?</span></p>
+      <ul class="a">
+        <li><span lang="en">Physical clocks drift and skew; “last write wins” by wall clock can silently drop the right update. NTP helps but isn't precise enough for ordering.</span><span lang="hu">A fizikai órák driftelnek és eltérnek; a wall-clock szerinti „last write wins" csendben eldobhatja a helyes frissítést. Az NTP segít, de rendezéshez nem elég pontos.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Lamport vs vector clocks?</span><span lang="hu">Lamport vs vector clock?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Lamport:</strong> a counter giving a total order consistent with causality, but can't tell if two events are concurrent.</span><span lang="hu"><strong>Lamport:</strong> egy számláló, amely az okságival konzisztens teljes rendezést ad, de nem mondja meg, ha két esemény párhuzamos.</span></li>
+        <li><span lang="en"><strong>Vector clocks:</strong> per-node counters that <em>can</em> detect concurrency (and thus conflicts).</span><span lang="hu"><strong>Vector clock:</strong> node-onkénti számlálók, amelyek <em>képesek</em> párhuzamosságot (és így konfliktust) észlelni.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Using server wall-clock time for ordering or conflict resolution is a classic bug — clock skew makes it non-deterministic. Use logical clocks or a sequencer.</span><span lang="hu">A szerver wall-clock idejének használata rendezésre vagy konfliktusfeloldásra klasszikus bug — az óraeltérés nemdeterminisztikussá teszi. Használj logikai órát vagy sequencert.</span></p>
+  </section>
+<section class="concept" id="c10">
+    <div class="concept__head"><span class="num">10</span><h2>Two-Phase Commit</h2><span class="src">Distributed</span></div>
+    <p class="def"><span lang="en"><strong>An atomic-commit protocol across nodes:</strong> a coordinator asks all participants to <em>prepare</em> (phase 1); if all vote yes, it tells them to <em>commit</em> (phase 2), else abort.</span><span lang="hu"><strong>Egy atomi-commit protokoll node-ok között:</strong> egy koordinátor megkéri az összes résztvevőt, hogy <em>prepare</em> (1. fázis); ha mind igennel szavaz, szól, hogy <em>commit</em> (2. fázis), különben abort.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 240" role="img" aria-label="Two-phase commit coordinator and participants">
+        <rect x="265" y="26" width="160" height="46" rx="10" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/><text x="345" y="54" text-anchor="middle" font-size="12.5" fill="var(--post)">Coordinator</text>
+        <g font-size="12" fill="var(--ink)">
+          <rect x="60" y="150" width="150" height="46" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="135" y="178" text-anchor="middle">Participant 1</text>
+          <rect x="265" y="150" width="150" height="46" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="340" y="178" text-anchor="middle">Participant 2</text>
+          <rect x="470" y="150" width="150" height="46" rx="10" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.5"/><text x="545" y="178" text-anchor="middle">Participant 3</text>
+        </g>
+        <g stroke="#334155" stroke-width="1.4">
+          <line x1="320" y1="72" x2="150" y2="148" marker-end="url(#arrow)"/>
+          <line x1="345" y1="72" x2="340" y2="148" marker-end="url(#arrow)"/>
+          <line x1="370" y1="72" x2="530" y2="148" marker-end="url(#arrow)"/>
+        </g>
+        <text lang="en" x="345" y="104" text-anchor="middle" font-size="11" fill="#334155">Phase 1: prepare → vote  ·  Phase 2: commit / abort</text><text lang="hu" x="345" y="104" text-anchor="middle" font-size="11" fill="#334155">1. fázis: prepare → szavazás  ·  2. fázis: commit / abort</text>
+        <text lang="en" x="345" y="224" text-anchor="middle" font-size="11" fill="var(--del)">coordinator crash after prepare → participants block holding locks</text><text lang="hu" x="345" y="224" text-anchor="middle" font-size="11" fill="var(--del)">koordinátor összeomlik prepare után → a résztvevők lockot tartva blokkolnak</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">All-or-nothing across participants — but blocking if the coordinator dies mid-protocol.</span><span lang="hu">Mindent-vagy-semmit a résztvevők között — de blokkol, ha a koordinátor a protokoll közben kiesik.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Why is it problematic at scale?</span><span lang="hu">Miért problémás nagyban?</span></p>
+      <ul class="a">
+        <li><span lang="en">It's blocking: if the coordinator crashes after “prepare,” participants hold locks indefinitely, unsure whether to commit. It also lowers availability — any participant down blocks the commit.</span><span lang="hu">Blokkoló: ha a koordinátor a „prepare" után összeomlik, a résztvevők határozatlan ideig tartják a lockokat, nem tudva, commitáljanak-e. Csökkenti az elérhetőséget is — bármelyik résztvevő kiesése blokkolja a commitot.</span></li>
+      </ul>
+      <p class="q"><span lang="en">2PC vs Saga?</span><span lang="hu">2PC vs Saga?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>2PC:</strong> strong consistency, synchronous, locks, blocking — okay within one trust boundary (XA over a few DBs).</span><span lang="hu"><strong>2PC:</strong> strong consistency, szinkron, lockok, blokkoló — rendben egy trust boundary-n belül (XA néhány DB felett).</span></li>
+        <li><span lang="en"><strong>Saga:</strong> eventual consistency, non-blocking, scales across services — preferred in microservices.</span><span lang="hu"><strong>Saga:</strong> eventual consistency, nem blokkoló, szolgáltatásokon át skálázódik — microservicesben ez az ajánlott.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">2PC is largely avoided in microservices because of its blocking failure mode and lock-holding — Sagas + idempotency are the usual answer.</span><span lang="hu">A 2PC-t microservicesben többnyire kerülik a blokkoló hibamódja és a lock-tartás miatt — a Saga + idempotency a szokásos válasz.</span></p>
+  </section>
+<section class="concept" id="c11">
+    <div class="concept__head"><span class="num">11</span><h2>Failure Detection &amp; Heartbeats</h2><span class="src">Distributed</span></div>
+    <p class="def"><span lang="en"><strong>Detecting that a node has failed so the system can react</strong> (failover, rebalance). Nodes send periodic heartbeats; a missed one suggests failure.</span><span lang="hu"><strong>Egy node kiesésének észlelése, hogy a rendszer reagálhasson</strong> (failover, rebalance). A node-ok periodikus heartbeatet küldenek; egy kimaradó hibát jelez.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Why is failure detection fundamentally hard?</span><span lang="hu">Miért alapvetően nehéz a failure detection?</span></p>
+      <ul class="a">
+        <li><span lang="en">You can't distinguish a crashed node from a slow one or a network partition — a missed heartbeat could be any of them. Detectors trade speed vs false positives.</span><span lang="hu">Nem tudod megkülönböztetni az összeomlott node-ot a lassútól vagy a hálózati partíciótól — egy kimaradó heartbeat bármelyik lehet. A detektorok a sebesség és a téves riasztás közt egyensúlyoznak.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How is it done in practice?</span><span lang="hu">Hogyan csinálják a gyakorlatban?</span></p>
+      <ul class="a">
+        <li><span lang="en">Heartbeats/health checks with timeouts, often gossiped for scale. Phi-accrual detectors give a suspicion <em>level</em> rather than a binary up/down.</span><span lang="hu">Heartbeat/health check timeouttal, skálázáshoz gyakran gossip-elve. A phi-accrual detektorok gyanú-<em>szintet</em> adnak bináris up/down helyett.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Aggressive timeouts evict healthy nodes (needless failover, thrash); lax ones detect failures slowly. There's no perfect setting — tune for your latency profile.</span><span lang="hu">A túl agresszív timeout egészséges node-okat zár ki (felesleges failover, kapkodás); a túl engedékeny lassan észleli a hibát. Nincs tökéletes beállítás — a saját latencia-profilodhoz hangold.</span></p>
+  </section>
+
+  <div class="areahead">
+    <h2><span lang="en">DevOps & Cloud</span><span lang="hu">DevOps &amp; felhő</span></h2>
+    <span class="cnt">2</span>
+  </div>
+<section class="concept" id="c12">
+    <div class="concept__head"><span class="num">12</span><h2><span lang="en">Infrastructure as Code</span><span lang="hu">Infrastructure as Code</span></h2><span class="src">DevOps</span></div>
+    <p class="def"><span lang="en"><strong>Defining infrastructure in version-controlled code</strong> rather than clicking through a console — making environments reproducible, reviewable and diffable.</span><span lang="hu"><strong>Az infrastruktúra definiálása verziókövetett kódban</strong> ahelyett, hogy egy konzolon kattintgatnál — reprodukálhatóvá, átnézhetővé és összehasonlíthatóvá téve a környezeteket.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Declarative vs imperative IaC?</span><span lang="hu">Deklaratív vs imperatív IaC?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Declarative</strong> (Terraform, CloudFormation): you describe the desired end state and the tool computes the diff. <strong>Imperative</strong> (scripts): you specify the steps. Declarative wins because it's idempotent — applying it twice changes nothing the second time.</span><span lang="hu"><strong>Deklaratív</strong> (Terraform, CloudFormation): leírod a kívánt végállapotot és az eszköz kiszámolja a különbséget. <strong>Imperatív</strong> (szkriptek): megadod a lépéseket. A deklaratív nyer, mert idempotens — kétszer alkalmazva másodszor semmit nem változtat.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What is state, and why is it dangerous?</span><span lang="hu">Mi a state, és miért veszélyes?</span></p>
+      <ul class="a">
+        <li><span lang="en">Terraform records what it created in a state file, and diffs against it. If that file is lost, corrupted or edited by two people at once, the tool loses track of reality — so keep state in a remote backend with locking, never in git.</span><span lang="hu">A Terraform egy state fájlban rögzíti, mit hozott létre, és ahhoz képest számol különbséget. Ha ez a fájl elvész, sérül, vagy ketten egyszerre szerkesztik, az eszköz elveszti a kapcsolatot a valósággal — ezért tartsd a state-et távoli backendben lockolással, sosem gitben.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What is configuration drift?</span><span lang="hu">Mi a configuration drift?</span></p>
+      <ul class="a">
+        <li><span lang="en">When someone changes infrastructure manually, reality diverges from the code. The next apply may revert their fix or fail unexpectedly. The discipline is: no manual changes in production — the console is read-only.</span><span lang="hu">Amikor valaki kézzel változtat az infrastruktúrán, a valóság eltér a kódtól. A következő apply visszavonhatja a javítását vagy váratlanul elbukhat. A fegyelem: semmi kézi változtatás a productionben — a konzol csak olvasható.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Never run a destructive apply without reading the plan — Terraform will happily replace a database if a change forces recreation. Review the plan output, and protect stateful resources with lifecycle rules that prevent destruction.</span><span lang="hu">Sose futtass destruktív apply-t a plan elolvasása nélkül — a Terraform készséggel lecserél egy adatbázist, ha egy változtatás újralétrehozást kényszerít. Nézd át a plan kimenetét, és védd a stateful erőforrásokat lifecycle szabályokkal, amelyek megakadályozzák a megsemmisítést.</span></p>
+  </section>
+<section class="concept" id="c13">
+    <div class="concept__head"><span class="num">13</span><h2><span lang="en">Pipeline & Runtime Security</span><span lang="hu">Pipeline- & futásidő-biztonság</span></h2><span class="src">DevOps</span></div>
+    <p class="def"><span lang="en"><strong>Securing the pipeline and the runtime</strong> — secrets, image provenance, least privilege, and keeping credentials out of the places they habitually leak.</span><span lang="hu"><strong>A pipeline és a futásidő biztonsága</strong> — titkok, image-eredet, legkisebb jogosultság, és a hitelesítő adatok távoltartása azoktól a helyektől, ahonnan rendszeresen kiszivárognak.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Where do secrets belong in a deployment?</span><span lang="hu">Hol a helyük a titkoknak egy deployban?</span></p>
+      <ul class="a">
+        <li><span lang="en">In a secrets manager or the platform's secret store, injected at runtime as environment variables or mounted files — never in the image, the repo, or CI logs. Prefer short-lived credentials issued per workload over long-lived static keys.</span><span lang="hu">Egy secrets managerben vagy a platform titok-tárában, futásidőben injektálva környezeti változóként vagy csatolt fájlként — sosem az image-ben, a repóban vagy a CI-logokban. Inkább rövid életű, terhelésenként kiadott hitelesítő adatok, mint hosszú életű statikus kulcsok.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you secure the CI pipeline itself?</span><span lang="hu">Hogyan véded magát a CI pipeline-t?</span></p>
+      <ul class="a">
+        <li><span lang="en">It holds production credentials, so treat it as production. Scope tokens to the minimum, don't expose secrets to pull-request builds from forks, pin third-party actions to a commit SHA rather than a mutable tag, and require review for changes to the pipeline definition.</span><span lang="hu">Production-hitelesítő adatokat tart, szóval kezeld productionként. Szűkítsd a tokeneket a minimumra, ne tedd elérhetővé a titkokat fork-okból érkező pull-request buildeknek, rögzítsd a harmadik féltől való action-öket commit SHA-hoz mutálható tag helyett, és követelj review-t a pipeline-definíció változtatásaihoz.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What does least privilege mean for workloads?</span><span lang="hu">Mit jelent a legkisebb jogosultság a terhelésekre?</span></p>
+      <ul class="a">
+        <li><span lang="en">Each service gets its own identity with only the permissions it needs — not a shared admin role. Combined with network policies restricting which services may talk to which, this limits what a single compromised container can reach.</span><span lang="hu">Minden szolgáltatás saját identitást kap, csak a szükséges jogosultságokkal — nem közös admin szerepet. Hálózati szabályzatokkal kombinálva, amelyek korlátozzák, mely szolgáltatások beszélhetnek melyikkel, ez korlátozza, mit érhet el egy kompromittált konténer.</span></li>
+      </ul>
+    </div>
+    <p class="note"><span class="note__tag"><span lang="en">Note</span><span lang="hu">Megjegyzés</span></span><span lang="en">This extends the <b>Web Security</b> deck's secrets and supply-chain sections into the deployment layer.</span><span lang="hu">Ez kiterjeszti a <b>Web Security</b> deck titok- és supply-chain szakaszait a deploy-rétegre.</span></p>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Echoing an environment variable for debugging, or a tool printing its config on error, puts secrets into CI logs that are often world-readable and retained for months. Mask secrets in the CI configuration and rotate anything that ever appeared in a log.</span><span lang="hu">Egy környezeti változó kiírása debughoz, vagy egy eszköz, amely hibánál kinyomtatja a konfigját, titkokat tesz a CI-logokba, amelyek gyakran bárki által olvashatók és hónapokig megmaradnak. Maszkold a titkokat a CI konfigurációjában, és forgass mindent, ami valaha megjelent egy logban.</span></p>
+  </section>
+
+  <div class="areahead">
+    <h2><span lang="en">Data Structures & Algorithms</span><span lang="hu">Adatszerkezetek &amp; algoritmusok</span></h2>
+    <span class="cnt">3</span>
+  </div>
+<section class="concept" id="c14">
+    <div class="concept__head"><span class="num">14</span><h2><span lang="en">Heaps & Priority Queues</span><span lang="hu">Heapek & prioritási sorok</span></h2><span class="src">DS&amp;A</span></div>
+    <p class="def"><span lang="en"><strong>A complete binary tree keeping the min (or max) at the root</strong> — O(log n) insert and extract, O(1) peek. The structure behind “top k” and “next smallest” problems.</span><span lang="hu"><strong>Egy teljes bináris fa, amely a minimumot (vagy maximumot) tartja a gyökérben</strong> — O(log n) beszúrás és kivétel, O(1) peek. A „top k” és „következő legkisebb” feladatok mögötti szerkezet.</span></p>
+    <div class="cx"><span class="good"><span lang="en">peek O(1)</span><span lang="hu">peek O(1)</span></span><span class="t"><span lang="en">insert/extract O(log n)</span><span lang="hu">beszúrás/kivétel O(log n)</span></span><span class="t"><span lang="en">heapify O(n)</span><span lang="hu">heapify O(n)</span></span><span class="s"><span lang="en">space O(n)</span><span lang="hu">tár O(n)</span></span></div>
+    <div class="qa">
+      <p class="q"><span lang="en">When is a heap the right answer?</span><span lang="hu">Mikor a heap a helyes válasz?</span></p>
+      <ul class="a">
+        <li><span lang="en">“Top k” / “k-th largest” (keep a size-k heap → O(n log k), better than sorting's O(n log n)), merging k sorted lists, running median (two heaps), and any scheduler picking the next-smallest item.</span><span lang="hu">„Top k” / „k-adik legnagyobb” (tarts k méretű heapet → O(n log k), jobb, mint a rendezés O(n log n)-je), k rendezett lista összefésülése, futó medián (két heap), és bármely ütemező, amely a következő legkisebb elemet választja.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why does a size-k heap beat sorting?</span><span lang="hu">Miért veri a k méretű heap a rendezést?</span></p>
+      <ul class="a">
+        <li><span lang="en">Sorting does full work on all n elements: O(n log n). A heap capped at k only ever holds k items, so each of the n insertions costs O(log k): total O(n log k). When k ≪ n this is a large win, and space drops from O(n) to O(k).</span><span lang="hu">A rendezés teljes munkát végez mind az n elemen: O(n log n). Egy k-ra korlátozott heap sosem tart k-nál többet, így az n beszúrás mindegyike O(log k): összesen O(n log k). Ha k ≪ n, ez nagy nyereség, és a tár O(n)-ről O(k)-ra csökken.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">JavaScript has no built-in heap — say this out loud and either write a compact one or state that you'd use a library. Reaching for <code>sort()</code> on every insertion instead is O(n² log n) and a red flag.</span><span lang="hu">A JavaScriptben nincs beépített heap — mondd ki ezt hangosan, és vagy írj egy tömöret, vagy jelezd, hogy library-t használnál. Ha helyette minden beszúrásnál <code>sort()</code>-ot hívsz, az O(n² log n) és vörös zászló.</span></p>
+  </section>
+<section class="concept" id="c15">
+    <div class="concept__head"><span class="num">15</span><h2><span lang="en">Dynamic Programming</span><span lang="hu">Dinamikus programozás</span></h2><span class="src">DS&amp;A</span></div>
+    <p class="def"><span lang="en"><strong>Solving overlapping subproblems once and reusing the results</strong> — either top-down with memoization or bottom-up with a table. It turns exponential recursion into polynomial time.</span><span lang="hu"><strong>Átfedő részfeladatok egyszeri megoldása és az eredmények újrafelhasználása</strong> — vagy top-down memoizációval, vagy bottom-up táblával. Exponenciális rekurziót alakít polinomiális idejűvé.</span></p>
+    <div class="cx"><span class="t"><span lang="en">typically O(states × transition)</span><span lang="hu">tipikusan O(állapotok × átmenet)</span></span><span class="s"><span lang="en">O(states), often reducible</span><span lang="hu">O(állapotok), gyakran csökkenthető</span></span></div>
+    <div class="qa">
+      <p class="q"><span lang="en">When is DP applicable?</span><span lang="hu">Mikor alkalmazható a DP?</span></p>
+      <ul class="a">
+        <li><span lang="en">Two conditions: <strong>optimal substructure</strong> (the optimal answer is built from optimal answers to subproblems) and <strong>overlapping subproblems</strong> (the same subproblem recurs). Without overlap, plain recursion or greedy is enough.</span><span lang="hu">Két feltétel: <strong>optimális részszerkezet</strong> (az optimális válasz részfeladatok optimális válaszaiból épül) és <strong>átfedő részfeladatok</strong> (ugyanaz a részfeladat ismétlődik). Átfedés nélkül elég a sima rekurzió vagy a mohó megoldás.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Memoization vs tabulation?</span><span lang="hu">Memoizáció vs tabuláció?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Memoization</strong> (top-down): write the natural recursion, cache results — easier to derive, but uses the call stack. <strong>Tabulation</strong> (bottom-up): fill a table iteratively — no stack risk and often allows space optimization.</span><span lang="hu"><strong>Memoizáció</strong> (top-down): írd meg a természetes rekurziót, cache-eld az eredményeket — könnyebb levezetni, de a hívási vermet használja. <strong>Tabuláció</strong> (bottom-up): töltsd a táblát iteratívan — nincs verem-kockázat és gyakran engedi a tár-optimalizálást.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you approach a DP problem in an interview?</span><span lang="hu">Hogyan állsz neki egy DP feladatnak interjún?</span></p>
+      <ul class="a">
+        <li><span lang="en">Define the state in words first (“dp[i] = the best answer using the first i items”), write the recurrence, identify the base cases, then decide the iteration order. Start with brute-force recursion and add memoization — deriving the table directly is harder and error-prone.</span><span lang="hu">Előbb definiáld az állapotot szavakban („dp[i] = a legjobb válasz az első i elemmel”), írd fel a rekurziót, azonosítsd a báziseseteket, majd döntsd el az iterációs sorrendet. Indulj nyers erejű rekurzióval és add hozzá a memoizációt — a tábla közvetlen levezetése nehezebb és hibalehetőség.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">Climbing stairs — three stages of the same idea</span><span lang="hu">Lépcsőzés — ugyanaz az ötlet három szakaszban</span><span class="code__cx">O(2ⁿ) → O(n)/O(n) → O(n)/O(1)</span></div><pre>// 1. naive recursion — O(2ⁿ)
+const naive = n =&gt; n &lt;= 2 ? n : naive(n-1) + naive(n-2);
+
+// 2. memoized — O(n) time, O(n) space
+function memo(n, cache = new Map()) {
+  if (n &lt;= 2) return n;
+  if (cache.has(n)) return cache.get(n);
+  const r = memo(n-1, cache) + memo(n-2, cache);
+  cache.set(n, r);
+  return r;
+}
+
+// 3. tabulated + space-optimized — O(n) time, O(1) space
+function best(n) {
+  if (n &lt;= 2) return n;
+  let a = 1, b = 2;
+  for (let i = 3; i &lt;= n; i++) [a, b] = [b, a + b];
+  return b;
+}</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Only the last row (or two) of a DP table is usually needed — say “I can reduce space from O(n·m) to O(m)” even if you don't implement it; interviewers listen for that. And a memo key must capture <em>every</em> varying parameter, or you'll return cached answers for different states.</span><span lang="hu">Egy DP-táblából általában csak az utolsó sor (vagy kettő) kell — mondd ki, hogy „a tárat O(n·m)-ről O(m)-re tudom csökkenteni”, akkor is, ha nem implementálod; az interjúztatók erre figyelnek. És a memo-kulcsnak <em>minden</em> változó paramétert meg kell fognia, különben eltérő állapotokra adsz vissza cache-elt válaszokat.</span></p>
+  </section>
+<section class="concept" id="c16">
+    <div class="concept__head"><span class="num">16</span><h2><span lang="en">Greedy Algorithms</span><span lang="hu">Mohó algoritmusok</span></h2><span class="src">DS&amp;A</span></div>
+    <p class="def"><span lang="en"><strong>Making the locally optimal choice at each step and never reconsidering</strong> — fast and simple when it works, but it needs proof that local optimality yields a global optimum.</span><span lang="hu"><strong>A lokálisan optimális választás minden lépésben, újragondolás nélkül</strong> — gyors és egyszerű, amikor működik, de bizonyítani kell, hogy a lokális optimalitás globális optimumot ad.</span></p>
+    <div class="cx"><span class="good"><span lang="en">often O(n log n) (sort + pass)</span><span lang="hu">gyakran O(n log n) (rendezés + végigmenés)</span></span><span class="bad"><span lang="en">wrong without the exchange argument</span><span lang="hu">hibás az exchange argument nélkül</span></span></div>
+    <div class="qa">
+      <p class="q"><span lang="en">Greedy vs DP — how do you tell?</span><span lang="hu">Greedy vs DP — hogyan döntöd el?</span></p>
+      <ul class="a">
+        <li><span lang="en">If a locally best choice can be proven never to hurt the final answer (an exchange argument), greedy works and is cheaper. If a choice's value depends on future choices, you need DP. Coin change with arbitrary denominations is the classic case where greedy fails and DP is required.</span><span lang="hu">Ha egy lokálisan legjobb választásról bizonyítható, hogy sosem ront a végső válaszon (exchange argument), a greedy működik és olcsóbb. Ha egy választás értéke a jövőbeli választásoktól függ, DP kell. A tetszőleges címletű pénzváltás a klasszikus eset, ahol a greedy elbukik és DP kell.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Typical greedy problems?</span><span lang="hu">Tipikus greedy feladatok?</span></p>
+      <ul class="a">
+        <li><span lang="en">Interval scheduling (sort by end time), merging intervals (sort by start), jump game, assigning tasks by deadline, and Huffman coding. Nearly all begin with a sort that establishes the greedy order.</span><span lang="hu">Intervallum-ütemezés (végidő szerint rendezve), intervallumok összevonása (kezdet szerint rendezve), jump game, taszkok kiosztása határidő szerint, és Huffman-kódolás. Szinte mind egy rendezéssel kezdődik, amely megállapítja a mohó sorrendet.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">Merge overlapping intervals</span><span lang="hu">Átfedő intervallumok összevonása</span><span class="code__cx">O(n log n) time / O(n) space</span></div><pre>function merge(intervals) {
+  if (!intervals.length) return [];
+  intervals.sort((a, b) =&gt; a[0] - b[0]);        // by start
+  const out = [intervals[0].slice()];
+  for (const [s, e] of intervals.slice(1)) {
+    const last = out[out.length - 1];
+    if (s &lt;= last[1]) last[1] = Math.max(last[1], e);  // overlap
+    else out.push([s, e]);
+  }
+  return out;
+}</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Never assert a greedy solution without justifying why the local choice is safe — “it seems to work on the examples” is exactly how greedy fails. If you can't argue it, reach for DP.</span><span lang="hu">Sose állíts mohó megoldást annak indoklása nélkül, hogy miért biztonságos a lokális választás — a „a példákon működni látszik” pontosan az, ahogy a greedy elbukik. Ha nem tudod megindokolni, nyúlj a DP-hez.</span></p>
+  </section>
+
+  <p class="foot"><span lang="en">Tier 4 · 16 concepts · <b>Q&amp;A knowledge base</b></span><span lang="hu">4. tier · 16 fogalom · <b>Q&amp;A tudásbázis</b></span></p>
+
+</div>
+
+<script>
+(function () {
+  var SUPPORTED = ['en', 'hu'];
+  var root = document.documentElement;
+
+  // The smallest block element at the top-centre of the viewport (where the
+  // text is) that exists in both languages — used to hold the reading position
+  // steady across a switch. Sampling the centre, not the edge, lands on a
+  // paragraph rather than a large container, so the visible line stays put.
+  function anchor() {
+    var el = document.elementFromPoint(window.innerWidth / 2, 8);
+    while (el && el !== document.body &&
+           (el.hasAttribute('lang') || getComputedStyle(el).display === 'inline')) {
+      el = el.parentElement;
+    }
+    return el && el !== document.body ? el : null;
+  }
+
+  function applyLang(lang) {
+    if (SUPPORTED.indexOf(lang) === -1) lang = 'en';
+    if (root.dataset.lang === lang) return;
+    var a = window.scrollY > 0 ? anchor() : null;
+    var before = a ? a.getBoundingClientRect().top : 0;
+    // Toggle via data-lang only. Deliberately NOT setting root.lang: some pages
+    // hide the other language with a bare [lang="…"]{display:none} rule, which
+    // would then match <html lang="…"> and hide the whole page. Visible spans
+    // still carry their own lang attribute for assistive tech.
+    root.dataset.lang = lang;
+    if (a) window.scrollBy(0, a.getBoundingClientRect().top - before);
+  }
+
+  // In-place switch for the shell (synchronous, same-origin).
+  window.interviewBrowser = {
+    setParams: function (params) { applyLang(params && params.lang); }
+  };
+
+  applyLang(new URLSearchParams(location.search).get('lang') || 'en');
+})();
+</script>
+</body>
+</html>
