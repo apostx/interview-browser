@@ -95,6 +95,10 @@
     return prettyName(String(name).replace(/^\d+_/, ''));
   }
 
+  function hasOrderPrefix(name) {
+    return /^\d+_/.test(String(name));
+  }
+
   function materialSub(mat) {
     const n = mat.versions.length;
     const pdfBadge = mat.versions[0].kind === 'pdf' ? 'PDF' : '';
@@ -135,23 +139,28 @@
       return;
     }
 
+    // Materials with an ordering prefix are shown as a numbered list (1..N,
+    // sequential — groups and unprefixed materials are not numbered).
+    let ordinal = 0;
     renderRows(
-      group.children.map((item) =>
-        item.type === 'group'
-          ? rowHtml({
-              href: hashFor(item.path),
-              icon: '📁',
-              title: displayName(item.name),
-              sub: item.children.length === 1 ? '1 item' : `${item.children.length} items`,
-              chevron: true,
-            })
-          : rowHtml({
-              href: hashFor(item.path),
-              icon: '📄',
-              title: displayName(item.name),
-              sub: materialSub(item),
-            })
-      )
+      group.children.map((item) => {
+        if (item.type === 'group') {
+          return rowHtml({
+            href: hashFor(item.path),
+            icon: '📁',
+            title: displayName(item.name),
+            sub: item.children.length === 1 ? '1 item' : `${item.children.length} items`,
+            chevron: true,
+          });
+        }
+        const numbered = hasOrderPrefix(item.name);
+        return rowHtml({
+          href: hashFor(item.path),
+          icon: numbered ? `<span class="row-num">${++ordinal}</span>` : '📄',
+          title: displayName(item.name),
+          sub: materialSub(item),
+        });
+      })
     );
   }
 
