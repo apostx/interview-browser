@@ -260,55 +260,83 @@
     renderViewer(mat, version.name, false, scrollTop);
   }
 
-  // Build the inner controls: the version dropdown(s) plus any param axes.
+  // One axis control: a dropdown, or side-by-side pills when the axis config
+  // sets display:inline. `options` is [{ value, selected, available }].
+  function axisControlHtml(dataAttr, label, inline, options) {
+    let inner;
+    if (inline) {
+      inner =
+        `<div class="pills" ${dataAttr}>` +
+        options
+          .map((o) =>
+            `<button type="button" class="pill${o.available === false ? ' na' : ''}" ` +
+            `data-val="${escapeHtml(o.value)}" aria-pressed="${o.selected ? 'true' : 'false'}">${escapeHtml(o.value)}</button>`
+          )
+          .join('') +
+        `</div>`;
+    } else {
+      inner =
+        `<select ${dataAttr} aria-label="${escapeHtml(label)}">` +
+        options
+          .map((o) => {
+            const text = o.available === false ? `${o.value} (n/a)` : o.value;
+            return `<option value="${escapeHtml(o.value)}"${o.selected ? ' selected' : ''}>${escapeHtml(text)}</option>`;
+          })
+          .join('') +
+        `</select>`;
+    }
+    return `<div class="facet"><label>${escapeHtml(label)}</label>${inner}</div>`;
+  }
+
+  // Build the inner controls: the version dropdown(s)/facets plus any param axes.
   function versionControlsHtml(mat, version, fallback, paramValues, paramAxes) {
     let html = '';
-    if (!mat.facets) {
-      if (mat.versions.length > 1) {
-        html +=
-          `<select class="version-select" aria-label="Version">` +
-          mat.versions
-            .map((v) => `<option value="${escapeHtml(v.name)}"${v === version ? ' selected' : ''}>${escapeHtml(v.name)}</option>`)
-            .join('') +
-          `</select>`;
-      }
-      return html + paramControlsHtml(paramAxes, paramValues) + (fallback ? `<div class="facet-note">closest match</div>` : '');
+    if (!mat.facets && mat.versions.length > 1) {
+      html +=
+        `<select class="version-select" aria-label="Version">` +
+        mat.versions
+          .map((v) => `<option value="${escapeHtml(v.name)}"${v === version ? ' selected' : ''}>${escapeHtml(v.name)}</option>`)
+          .join('') +
+        `</select>`;
     }
-    const values = version.values;
-    for (let i = 0; i < mat.facets.length; i++) {
-      const options = [...new Set(mat.versions.map((v) => v.values[i]))].sort(naturalCompare);
-      const optionsHtml = options
-        .map((val) => {
+    if (mat.facets) {
+      const values = version.values;
+      for (let i = 0; i < mat.facets.length; i++) {
+        const options = [...new Set(mat.versions.map((v) => v.values[i]))].sort(naturalCompare).map((val) => ({
+          value: val,
+          selected: val === values[i],
           // Available if some version matches the current selection on every
           // other dimension, with this dimension set to `val`.
-          const available = mat.versions.some(
+          available: mat.versions.some(
             (v) => v.values[i] === val && v.values.every((x, k) => k === i || x === values[k])
-          );
-          const label = available ? val : `${val} (n/a)`;
-          return `<option value="${escapeHtml(val)}"${val === values[i] ? ' selected' : ''}>${escapeHtml(label)}</option>`;
-        })
-        .join('');
-      html +=
-        `<div class="facet"><label>${escapeHtml(mat.facets[i].label)}</label>` +
-        `<select data-dim="${i}" aria-label="${escapeHtml(mat.facets[i].label)}">${optionsHtml}</select></div>`;
+          ),
+        }));
+        html += axisControlHtml(`data-dim="${i}"`, mat.facets[i].label, mat.facets[i].display === 'inline', options);
+      }
     }
-    html += paramControlsHtml(paramAxes, paramValues);
+    for (const axis of paramAxes) {
+      const options = axis.values.map((val) => ({ value: val, selected: val === paramValues[axis.param], available: true }));
+      html += axisControlHtml(`data-param="${escapeHtml(axis.param)}"`, axis.label, axis.display === 'inline', options);
+    }
     if (fallback) html += `<div class="facet-note">closest match</div>`;
     return html;
   }
 
-  function paramControlsHtml(paramAxes, paramValues) {
-    return paramAxes
-      .map((axis) => {
-        const optionsHtml = axis.values
-          .map((val) => `<option value="${escapeHtml(val)}"${val === paramValues[axis.param] ? ' selected' : ''}>${escapeHtml(val)}</option>`)
-          .join('');
-        return (
-          `<div class="facet"><label>${escapeHtml(axis.label)}</label>` +
-          `<select data-param="${escapeHtml(axis.param)}" aria-label="${escapeHtml(axis.label)}">${optionsHtml}</select></div>`
-        );
-      })
-      .join('');
+  function changeParamValue(mat, version, param, value) {
+    const axes = version.kind === 'pdf' ? [] : mat.paramFacets || [];
+    const axis = axes.find((a) => a.param === param);
+    if (axis) selectParam(mat, version, axis, value);
+  }
+
+  function changeFacetValue(mat, version, dim, value) {
+    const target = version.values.slice();
+    target[dim] = value;
+    const resolved = resolveFaceted(mat, target, dim);
+    let scrollTop = 0;
+    if (keepsPosition(mat, version.values, resolved.version.values)) {
+      try { scrollTop = el.frame.contentWindow.scrollY || 0; } catch { scrollTop = 0; }
+    }
+    selectVersion(mat, resolved.version.name, resolved.fallback, scrollTop);
   }
 
   function renderVersionBar(mat, version, fallback, paramValues) {
@@ -343,26 +371,17 @@
     };
 
     controls.querySelectorAll('select').forEach((sel) => {
-      if (sel.dataset.param !== undefined) {
-        const axis = paramAxes.find((a) => a.param === sel.dataset.param);
-        sel.onchange = () => selectParam(mat, version, axis, sel.value);
-        return;
-      }
-      if (sel.dataset.dim === undefined) {
-        sel.onchange = (e) => selectVersion(mat, e.target.value);
-        return;
-      }
-      sel.onchange = () => {
-        const dim = Number(sel.dataset.dim);
-        const target = version.values.slice();
-        target[dim] = sel.value;
-        const resolved = resolveFaceted(mat, target, dim);
-        let scrollTop = 0;
-        if (keepsPosition(mat, version.values, resolved.version.values)) {
-          try { scrollTop = el.frame.contentWindow.scrollY || 0; } catch { scrollTop = 0; }
-        }
-        selectVersion(mat, resolved.version.name, resolved.fallback, scrollTop);
-      };
+      if (sel.dataset.param !== undefined) sel.onchange = () => changeParamValue(mat, version, sel.dataset.param, sel.value);
+      else if (sel.dataset.dim !== undefined) sel.onchange = () => changeFacetValue(mat, version, Number(sel.dataset.dim), sel.value);
+      else sel.onchange = (e) => selectVersion(mat, e.target.value);
+    });
+    controls.querySelectorAll('.pills').forEach((group) => {
+      group.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-val]');
+        if (!btn) return;
+        if (group.dataset.param !== undefined) changeParamValue(mat, version, group.dataset.param, btn.dataset.val);
+        else if (group.dataset.dim !== undefined) changeFacetValue(mat, version, Number(group.dataset.dim), btn.dataset.val);
+      });
     });
   }
 

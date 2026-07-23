@@ -236,6 +236,35 @@ body {
   max-width: 46vw;
 }
 
+.pills {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.pills .pill {
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.pills .pill[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface);
+  font-weight: 500;
+}
+
+.pills .pill.na {
+  color: var(--muted);
+  opacity: 0.55;
+}
+
 .facet-note {
   align-self: center;
   font-size: 11px;

@@ -47,7 +47,8 @@ const CONTENT_FILE_RE = /\.(html|pdf)$/i;
 //                                               choice to HTML content as the
 //                                               `param` URL parameter
 // keepPosition means the viewer preserves scroll position when only this axis
-// changes.
+// changes. `display: "inline"` renders the axis as side-by-side buttons instead
+// of a dropdown. An empty array is a valid config meaning "no axes here".
 function readFacetsConfig(dir) {
   const file = path.join(dir, FACETS_FILE);
   if (!fs.existsSync(file)) return null;
@@ -61,6 +62,7 @@ function readFacetsConfig(dir) {
         if (typeof entry === 'string') return { label: entry, keepPosition: false };
         if (!entry || typeof entry.label !== 'string') return null;
         const axis = { label: entry.label, keepPosition: entry.keepPosition === true };
+        if (entry.display === 'inline') axis.display = 'inline';
         if (entry.param === undefined && entry.values === undefined) return axis;
         const valid =
           typeof entry.param === 'string' &&
