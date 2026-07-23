@@ -1,5 +1,5 @@
 [
-  { "label": "Language", "keepPosition": true },
+  { "label": "Language", "keepPosition": true, "display": "inline" },
   "Model",
   "Doc version"
 ]

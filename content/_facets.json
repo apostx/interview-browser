@@ -1,3 +1,3 @@
 [
-  { "label": "Language", "param": "lang", "values": ["en", "hu"], "keepPosition": true }
+  { "label": "Language", "param": "lang", "values": ["en", "hu"], "keepPosition": true, "display": "inline" }
 ]
