@@ -121,15 +121,7 @@ function joinRel(relPath, name) {
 function scanMaterial(dir, relPath, inheritedConfig) {
   const versions = [];
 
-  const direct = pickContentFile(dir);
-  if (direct) {
-    versions.push({
-      name: DIRECT_VERSION_NAME,
-      file: `content/${relPath}/${direct}`,
-      kind: kindOf(direct),
-    });
-  }
-
+  // Subfolders that contain a content file are versions named after the folder.
   const subdirs = listDir(dir)
     .filter((e) => e.isDirectory())
     .map((e) => e.name)
@@ -150,6 +142,31 @@ function scanMaterial(dir, relPath, inheritedConfig) {
     });
   }
 
+  // Content files sitting directly in the material folder. A single one is the
+  // material's one "current" version; several become one version each, named
+  // after the file (so a folder of loose files is a set of versions).
+  const directFiles = listDir(dir)
+    .filter((e) => e.isFile() && CONTENT_FILE_RE.test(e.name))
+    .map((e) => e.name)
+    .sort(naturalCompare);
+  const hasDirect = directFiles.length > 0;
+
+  if (directFiles.length === 1 && versions.length === 0) {
+    versions.push({
+      name: DIRECT_VERSION_NAME,
+      file: `content/${relPath}/${directFiles[0]}`,
+      kind: kindOf(directFiles[0]),
+    });
+  } else {
+    for (const f of directFiles) {
+      versions.push({
+        name: f.replace(/\.[^.]+$/, ''),
+        file: `content/${relPath}/${f}`,
+        kind: kindOf(f),
+      });
+    }
+  }
+
   if (versions.length === 0) return null;
 
   const material = {
@@ -164,9 +181,9 @@ function scanMaterial(dir, relPath, inheritedConfig) {
   const { folder: folderAxes, param: paramAxes } = splitAxes(config);
   const facetable =
     folderAxes.length > 0 &&
-    !direct &&
+    !hasDirect &&
     versions.every((v) => v.name.split(FACET_SEP).length === folderAxes.length);
-  if (folderAxes.length > 0 && !facetable && !direct && versions.length > 1) {
+  if (folderAxes.length > 0 && !facetable && !hasDirect && versions.length > 1) {
     console.log(`  [info] not faceted (names don't split into ${folderAxes.length} facets): ${relPath}`);
   }
   if (facetable) {

@@ -23,10 +23,10 @@ content/
 Rules:
 
 - **Group:** a folder with an `@` prefix (displayed without the prefix). May contain groups and materials, nested to any depth.
-- **Material:** any unmarked folder inside a group or at the root. Its subfolders are **versions** (named freely — dates, v1, anything).
-- **Content file** within a folder: `index.html` > alphabetically first `*.html` > first `*.pdf`. All other files (images, css, js) are copied verbatim, so relative references keep working.
+- **Material:** any unmarked folder inside a group or at the root. Its **versions** come from its subfolders (named after the folder) and/or the content files sitting directly in it. A single direct file is the material's one version ("current"); **several direct files each become a version** named after the file (e.g. `system_design/core.html`, `full.html`, `quick.html` → three versions). Version names are free-form — dates, v1, core/full/quick, anything.
+- **Content file** of a version folder: `index.html` > alphabetically first `*.html` > first `*.pdf`. Non-content files (images, css, js) are copied verbatim, so relative references keep working.
 - **Loose file:** an `.html` or `.pdf` sitting directly at a group or root level (not in a folder of its own) is also a material — a single, unversioned one, named after the file. Use it for one-off contents that need no versioning.
-- **Default version:** if the material folder directly contains a content file, that is the default (shown as "current"); otherwise the first version in descending name order (for date-named folders that is the newest).
+- **Default version:** a single direct file ("current"); otherwise the first version in ascending name order for direct files, or descending order for subfolders (so a date-named folder defaults to the newest).
 - A subfolder without a content file is not a version but an asset folder — the build omits it from the list but still copies its files.
 - **Display names:** underscores in group, material and file names are shown as spaces in the UI, with every word capitalised (`system_design` → *System Design*). Anything else in the name is left as-is.
 

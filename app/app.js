@@ -295,7 +295,7 @@
       html +=
         `<select class="version-select" aria-label="Version">` +
         mat.versions
-          .map((v) => `<option value="${escapeHtml(v.name)}"${v === version ? ' selected' : ''}>${escapeHtml(v.name)}</option>`)
+          .map((v) => `<option value="${escapeHtml(v.name)}"${v === version ? ' selected' : ''}>${escapeHtml(prettyName(v.name))}</option>`)
           .join('') +
         `</select>`;
     }
@@ -351,7 +351,7 @@
 
     const parts = [];
     if (mat.facets) parts.push(...version.values);
-    else if (mat.versions.length > 1) parts.push(version.name);
+    else if (mat.versions.length > 1) parts.push(prettyName(version.name));
     for (const axis of paramAxes) parts.push(paramValues[axis.param]);
 
     const open = versionBarOpen();
