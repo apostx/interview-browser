@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testing — Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111827; --muted:#6B7280; --line:#E5E7EB; --paper:#EDF0F3; --card:#FFFFFF;
+  --accent:#16A34A;
+  --get:#16A34A; --post:#2563EB; --put:#D97706; --patch:#0D9488; --del:#DC2626;
+  --node:#FFFFFF; --nodeline:#94A3B8; --slate:#334155;
+  --safe:#16A34A; --vuln:#DC2626;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+a{color:inherit}
+code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+code{background:#EEF2F7;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:.86em}
+
+/* ── language toggling ───────────────────────────────────────── */
+[lang="hu"]{display:none}
+html[data-lang="hu"] [lang="en"]{display:none}
+html[data-lang="hu"] [lang="hu"]{display:inline}
+html[data-lang="hu"] li[lang="hu"]{display:list-item}
+html[data-lang="hu"] p[lang="hu"],
+html[data-lang="hu"] div[lang="hu"]{display:block}
+svg text[lang="hu"]{display:none}
+html[data-lang="hu"] svg text[lang="en"]{display:none}
+html[data-lang="hu"] svg text[lang="hu"]{display:inline}
+
+.bar{position:sticky;top:0;z-index:20;background:rgba(237,240,243,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar__in{max-width:900px;margin:0 auto;padding:10px 20px;display:flex;
+  align-items:center;justify-content:space-between;gap:12px}
+.bar__t{font-family:'Space Grotesk';font-weight:600;font-size:14px;letter-spacing:-.01em;
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.bar__t b{color:var(--accent)}
+.bar__r{display:flex;align-items:center;gap:10px}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+.lang button{font-family:'JetBrains Mono';font-size:12px;padding:4px 11px;border:0;background:#fff;
+  color:var(--muted);cursor:pointer;line-height:1.4}
+.lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.lang button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.bar a.up{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);
+  text-decoration:none;border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:#fff}
+.bar a.up:hover{color:var(--ink);border-color:var(--accent)}
+
+.hero{padding:44px 0 8px}
+.eyebrow{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,6vw,50px);
+  line-height:1.02;letter-spacing:-.025em;margin:0 0 12px}
+.lede{color:var(--muted);max-width:64ch;margin:0}
+.depth-note{margin:16px 0 0;font-size:13px;color:var(--muted);background:#fff;border:1px solid var(--line);
+  border-radius:10px;padding:11px 14px}
+.depth-note b{color:var(--ink);font-weight:600}
+
+.sec{display:flex;align-items:center;gap:14px;margin:40px 4px 2px}
+.sec__l{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--accent);white-space:nowrap}
+.sec__r{height:1px;background:var(--line);flex:1}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:24px 0 2px}
+.legend .lbl{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-right:2px}
+.chip{font-family:'JetBrains Mono';font-size:12px;padding:3px 8px;border-radius:6px;
+  border:1px solid var(--line);background:#fff}
+.chip--2{color:var(--safe);border-color:#BBF7D0;background:#F0FDF4}
+.chip--4{color:var(--put);border-color:#FDE68A;background:#FFFBEB}
+.chip--5{color:var(--vuln);border-color:#FECACA;background:#FEF2F2}
+
+.index{margin:30px 0 8px}
+.index h3{font-family:'Space Grotesk';font-size:13px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+a.idx{display:flex;align-items:baseline;gap:10px;text-decoration:none;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  transition:border-color .15s,transform .15s}
+a.idx:hover{border-color:var(--accent);transform:translateY(-1px)}
+.idx__n{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);font-weight:500}
+.idx__t{font-size:13.5px;font-weight:500}
+
+.concept{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:26px 26px 22px;margin-top:16px;scroll-margin-top:64px}
+.concept__head{display:flex;align-items:center;gap:14px;margin:0 0 12px}
+.concept__head .num{font-family:'JetBrains Mono';font-weight:500;font-size:15px;color:#fff;
+  background:var(--ink);width:38px;height:38px;border-radius:10px;display:grid;
+  place-items:center;flex:0 0 auto}
+.concept__head .num.pr{background:var(--accent)}
+.concept__head h2{font-family:'Space Grotesk';font-weight:600;font-size:22px;
+  letter-spacing:-.015em;margin:0}
+.def{margin:0 0 16px}
+.def strong{font-weight:600}
+.qa{border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
+.q{font-weight:600;margin:14px 0 6px}
+.q:first-child{margin-top:0}
+.q::before{content:"Q";font-family:'JetBrains Mono';color:var(--accent);font-weight:600;
+  margin-right:9px;font-size:13px}
+ul.a,p.a{margin:0 0 2px}
+ul.a{padding-left:20px}
+ul.a li{margin:3px 0}
+.step{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--slate);margin:18px 0 6px;display:flex;align-items:center;gap:8px}
+.step::before{content:"";width:16px;height:2px;background:var(--accent);display:inline-block}
+.watch{margin:18px 0 0;background:#FFFBEB;border:1px solid #FDE68A;
+  border-left:3px solid var(--put);border-radius:8px;padding:10px 14px;font-size:14px}
+.watch__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--put);font-weight:600;display:block;margin-bottom:3px}
+.note{margin:14px 0 0;background:#EFF6FF;border:1px solid #BFDBFE;border-left:3px solid var(--post);
+  border-radius:8px;padding:10px 14px;font-size:14px}
+.note__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--post);font-weight:600;display:block;margin-bottom:3px}
+
+/* vulnerable vs fixed code pair */
+.codepair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 2px}
+.cbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}
+.cbox__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600}
+.cbox--bad .cbox__h{background:#FEF2F2;color:var(--vuln);border-bottom:1px solid #FECACA}
+.cbox--good .cbox__h{background:#F0FDF4;color:var(--safe);border-bottom:1px solid #BBF7D0}
+.cbox pre{margin:0;padding:10px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.55;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+@media (max-width:620px){.codepair{grid-template-columns:1fr}}
+
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 2px}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+table.t th{background:#F8FAFC;font-weight:600;font-family:'Space Grotesk';font-size:12px}
+table.t td:first-child{font-family:'JetBrains Mono';white-space:nowrap}
+
+.dia{margin:16px 0 4px;background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px}
+.dia svg{width:100%;height:auto;display:block}
+.dia__cap{font-family:'JetBrains Mono';font-size:11.5px;color:var(--muted);margin:8px 2px 0}
+svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
+
+.foot{margin-top:44px;text-align:center;color:var(--muted);font-size:12.5px}
+.foot b{font-family:'Space Grotesk';color:var(--ink)}
+
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+}
+@media print{
+  .bar{display:none} body{background:#fff}
+  .concept{break-inside:avoid;border-color:#ccc} a.idx{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+/* ── complexity badges ───────────────────────────────────────── */
+.cx{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.cx span{font-family:'JetBrains Mono';font-size:11.5px;padding:3px 9px;border-radius:6px;
+  border:1px solid var(--line);background:#fff;white-space:nowrap}
+.cx .k{color:var(--muted)}
+.cx .t{color:var(--post);border-color:#BFDBFE;background:#EFF6FF}
+.cx .s{color:var(--patch);border-color:#99F6E4;background:#F0FDFA}
+.cx .good{color:var(--safe);border-color:#BBF7D0;background:#F0FDF4}
+.cx .bad{color:var(--vuln);border-color:#FECACA;background:#FEF2F2}
+
+/* ── single code block ───────────────────────────────────────── */
+.code{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;margin:12px 0 2px}
+.code__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600;background:#F8FAFC;color:var(--slate);border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.code__cx{font-size:10px;color:var(--post);text-transform:none;letter-spacing:0}
+.code pre{margin:0;padding:11px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.6;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+  </marker>
+  <marker id="arrowg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#16A34A"/>
+  </marker>
+  <marker id="arrowr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#DC2626"/>
+  </marker>
+  <marker id="arrowb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#2563EB"/>
+  </marker>
+</defs></svg>
+
+<div class="wrap" id="top">
+
+  <div class="hero">
+    <p class="eyebrow"><span lang="en">Technical Q&amp;A Knowledge Base</span><span lang="hu">Technikai Q&amp;A tudásbázis</span></p>
+    <h1><span lang="en">Testing</span><span lang="hu">Tesztelés</span></h1>
+    <p class="lede"><span lang="en">What to test at each level and why, how to use test doubles without testing your own mocks, and the Jest/RTL/supertest patterns a Node and React codebase actually needs.</span><span lang="hu">Mit tesztelj melyik szinten és miért, hogyan használj teszt-helyettesítőket anélkül, hogy a saját mockjaidat tesztelnéd, és azok a Jest/RTL/supertest minták, amikre egy Node és React kódbázisnak ténylegesen szüksége van.</span></p>
+    <p class="depth-note"><span lang="en">Pairs with the <b>Architecture</b> deck — testable code is mostly a structural property, not a testing technique.</span><span lang="hu">Párja az <b>Architektúra</b> deck — a tesztelhető kód nagyrészt szerkezeti tulajdonság, nem tesztelési technika.</span></p>
+  </div>
+  <div class="legend"><span class="lbl"><span lang="en">Code</span><span lang="hu">Kód</span></span><span class="chip chip--5"><span lang="en">red · problematic</span><span lang="hu">piros · problémás</span></span><span class="chip chip--2"><span lang="en">green · preferred</span><span lang="hu">zöld · ajánlott</span></span><span class="chip chip--4"><span lang="en">amber · watch out</span><span lang="hu">sárga · buktató</span></span></div>
+  <div class="index">
+    <h3><span lang="en">Jump to</span><span lang="hu">Ugrás</span></h3>
+    <div class="grid">
+      <a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t"><span lang="en">The Test Pyramid</span><span lang="hu">A teszt-piramis</span></span></a>
+      <a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t"><span lang="en">Unit Testing</span><span lang="hu">Unit tesztelés</span></span></a>
+      <a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t"><span lang="en">Test Doubles: Mocks, Stubs & Fakes</span><span lang="hu">Teszt-helyettesítők: mockok, stubok & fake-ek</span></span></a>
+      <a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t"><span lang="en">Integration Testing</span><span lang="hu">Integrációs tesztelés</span></span></a>
+      <a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t"><span lang="en">End-to-End Testing</span><span lang="hu">End-to-end tesztelés</span></span></a>
+      <a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t"><span lang="en">Testing React Components</span><span lang="hu">React komponensek tesztelése</span></span></a>
+      <a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t"><span lang="en">Test-Driven Development</span><span lang="hu">Test-Driven Development</span></span></a>
+      <a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t"><span lang="en">CI & Quality Gates</span><span lang="hu">CI & quality gate-ek</span></span></a>
+    </div>
+  </div>
+  <div class="sec"><span class="sec__l"><span lang="en">Strategy</span><span lang="hu">Stratégia</span></span><span class="sec__r"></span></div>
+  <section class="concept" id="c01">
+    <div class="concept__head"><span class="num">01</span><h2><span lang="en">The Test Pyramid</span><span lang="hu">A teszt-piramis</span></h2></div>
+    <p class="def"><span lang="en"><strong>A model for how many tests of each kind to write:</strong> many fast unit tests at the base, fewer integration tests in the middle, very few slow end-to-end tests at the top.</span><span lang="hu"><strong>Egy modell arról, hány tesztet írj mindegyik fajtából:</strong> sok gyors unit teszt az alapon, kevesebb integrációs teszt középen, nagyon kevés lassú end-to-end teszt a csúcson.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 250" role="img" aria-label="The test pyramid">
+        <rect x="250" y="60" width="180" height="46" rx="8" fill="#FEF2F2" stroke="var(--vuln)" stroke-width="1.6"/>
+        <text lang="en" x="340" y="81" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">E2E</text><text lang="hu" x="340" y="81" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">E2E</text>
+        <text lang="en" x="340" y="97" text-anchor="middle" font-size="9" fill="var(--muted)">few · slow · high confidence</text><text lang="hu" x="340" y="97" text-anchor="middle" font-size="9" fill="var(--muted)">kevés · lassú · nagy bizalom</text>
+        <rect x="170" y="110" width="340" height="46" rx="8" fill="#FFFBEB" stroke="var(--put)" stroke-width="1.6"/>
+        <text lang="en" x="340" y="131" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">Integration</text><text lang="hu" x="340" y="131" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">Integrációs</text>
+        <text lang="en" x="340" y="147" text-anchor="middle" font-size="9" fill="var(--muted)">some · medium</text><text lang="hu" x="340" y="147" text-anchor="middle" font-size="9" fill="var(--muted)">néhány · közepes</text>
+        <rect x="80" y="160" width="520" height="46" rx="8" fill="#F0FDF4" stroke="var(--safe)" stroke-width="1.6"/>
+        <text lang="en" x="340" y="181" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">Unit</text><text lang="hu" x="340" y="181" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">Unit</text>
+        <text lang="en" x="340" y="197" text-anchor="middle" font-size="9" fill="var(--muted)">many · fast · pinpoint</text><text lang="hu" x="340" y="197" text-anchor="middle" font-size="9" fill="var(--muted)">sok · gyors · pontos</text>
+        <line x1="40" y1="216" x2="40" y2="62" stroke="#94A3B8" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <text lang="en" x="46" y="100" text-anchor="start" font-size="9" fill="var(--muted)">cost, runtime ↑</text><text lang="hu" x="46" y="100" text-anchor="start" font-size="9" fill="var(--muted)">költség, futásidő ↑</text>
+        <line x1="640" y1="62" x2="640" y2="216" stroke="#94A3B8" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <text lang="en" x="634" y="190" text-anchor="end" font-size="9" fill="var(--muted)">count ↑</text><text lang="hu" x="634" y="190" text-anchor="end" font-size="9" fill="var(--muted)">darabszám ↑</text>
+        <text lang="en" x="340" y="240" text-anchor="middle" font-size="9" fill="var(--slate)">write many cheap tests, few expensive ones</text><text lang="hu" x="340" y="240" text-anchor="middle" font-size="9" fill="var(--slate)">sok olcsó tesztet írj, keveset a drágából</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">Cost and runtime grow upward; confidence that the whole system works grows with them.</span><span lang="hu">A költség és a futásidő felfelé nő; a bizalom, hogy az egész rendszer működik, velük együtt nő.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Why not just write end-to-end tests?</span><span lang="hu">Miért ne írjunk csak end-to-end teszteket?</span></p>
+      <ul class="a">
+        <li><span lang="en">They're slow, flaky and expensive to maintain, and when one fails it doesn't tell you <em>where</em> the bug is. Unit tests are fast and pinpoint the failure; E2E tests prove the pieces actually work together. You need both, in different proportions.</span><span lang="hu">Lassúak, flaky-k és drágán karbantarthatók, és ha elbukik egy, nem mondja meg, <em>hol</em> a hiba. A unit tesztek gyorsak és pontosan megmutatják a hibát; az E2E tesztek bizonyítják, hogy a darabok tényleg működnek együtt. Mindkettő kell, eltérő arányban.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What's the “testing trophy” alternative?</span><span lang="hu">Mi a „testing trophy” alternatíva?</span></p>
+      <ul class="a">
+        <li><span lang="en">A newer model that puts the most weight on <strong>integration</strong> tests rather than unit tests, arguing they give the best confidence-per-effort for typical web apps. In a React/Node stack it's often the more practical shape.</span><span lang="hu">Egy újabb modell, amely a legnagyobb súlyt az <strong>integrációs</strong> tesztekre helyezi a unit tesztek helyett, azzal érvelve, hogy tipikus webappoknál ezek adják a legjobb bizalom/ráfordítás arányt. React/Node stacken gyakran ez a praktikusabb forma.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What actually makes a test valuable?</span><span lang="hu">Mitől értékes ténylegesen egy teszt?</span></p>
+      <ul class="a">
+        <li><span lang="en">It fails when the behaviour breaks and passes otherwise. A test that breaks on every refactor (too coupled to implementation) or that never fails (asserting nothing meaningful) is a maintenance cost with no return.</span><span lang="hu">Elbukik, amikor a viselkedés elromlik, és átmegy egyébként. Egy teszt, amely minden refaktornál eltörik (túlságosan az implementációhoz kötött), vagy amely sosem bukik el (semmi értelmeset nem állít), karbantartási költség hozam nélkül.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Chasing 100% coverage produces tests written to touch lines rather than to verify behaviour. Coverage tells you what <em>isn't</em> tested; it says nothing about whether what is tested is tested well.</span><span lang="hu">A 100%-os lefedettség hajszolása olyan teszteket szül, amelyek sorokat érintenek, nem viselkedést ellenőriznek. A lefedettség megmondja, mi <em>nincs</em> tesztelve; arról semmit nem mond, hogy ami tesztelve van, az jól van-e tesztelve.</span></p>
+  </section>
+  <div class="sec"><span class="sec__l"><span lang="en">Writing Tests</span><span lang="hu">Tesztek írása</span></span><span class="sec__r"></span></div>
+  <section class="concept" id="c02">
+    <div class="concept__head"><span class="num">02</span><h2><span lang="en">Unit Testing</span><span lang="hu">Unit tesztelés</span></h2></div>
+    <p class="def"><span lang="en"><strong>Testing one unit of behaviour in isolation</strong> — fast, deterministic, and run on every save. The base of the pyramid and the tests you'll write most often.</span><span lang="hu"><strong>Egy viselkedési egység izolált tesztelése</strong> — gyors, determinisztikus, és minden mentésnél fut. A piramis alapja, és ezekből írsz majd a legtöbbet.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">What makes a good unit test?</span><span lang="hu">Mitől jó egy unit teszt?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Fast</strong> (milliseconds), <strong>isolated</strong> (no DB, network or filesystem), <strong>deterministic</strong> (same result every run), and <strong>focused</strong> — one behaviour per test, so a failure names the problem.</span><span lang="hu"><strong>Gyors</strong> (ezredmásodpercek), <strong>izolált</strong> (nincs DB, hálózat vagy fájlrendszer), <strong>determinisztikus</strong> (minden futásnál ugyanaz), és <strong>fókuszált</strong> — egy viselkedés tesztenként, hogy egy bukás megnevezze a problémát.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What is the Arrange-Act-Assert structure?</span><span lang="hu">Mi az Arrange-Act-Assert szerkezet?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Arrange</strong> the inputs and state, <strong>Act</strong> by calling the thing under test, <strong>Assert</strong> the outcome. Keeping the three visually separate makes tests readable and stops you from asserting mid-setup.</span><span lang="hu"><strong>Arrange</strong> — állítsd be az inputokat és állapotot, <strong>Act</strong> — hívd meg a tesztelt dolgot, <strong>Assert</strong> — ellenőrizd az eredményt. A három vizuális elkülönítése olvashatóvá teszi a teszteket és megakadályozza, hogy setup közben állíts.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Should you test implementation or behaviour?</span><span lang="hu">Az implementációt vagy a viselkedést teszteld?</span></p>
+      <ul class="a">
+        <li><span lang="en">Behaviour — the public contract. Tests that assert on internal state, private methods or call order break on every refactor even when the behaviour is unchanged, which trains the team to ignore failing tests.</span><span lang="hu">A viselkedést — a nyilvános szerződést. Azok a tesztek, amelyek belső állapotra, privát metódusokra vagy hívási sorrendre állítanak, minden refaktornál eltörnek, akkor is, ha a viselkedés változatlan — ez arra tanítja a csapatot, hogy figyelmen kívül hagyja a bukó teszteket.</span></li>
+      </ul>
+    </div>
+    <div class="codepair">
+      <div class="cbox cbox--bad"><div class="cbox__h"><span lang="en">Coupled to implementation</span><span lang="hu">Implementációhoz kötött</span></div><pre>// breaks if you rename the helper
+// or reorder internal calls
+it('adds a user', () =&gt; {
+  const spy = jest.spyOn(svc, '_validate');
+  svc.addUser({ name: 'Ann' });
+  expect(spy).toHaveBeenCalled();
+  expect(svc._cache.size).toBe(1);
+});</pre></div>
+      <div class="cbox cbox--good"><div class="cbox__h"><span lang="en">Tests behaviour</span><span lang="hu">Viselkedést tesztel</span></div><pre>it('adds a user', async () =&gt; {
+  // Arrange
+  const svc = makeService();
+  // Act
+  await svc.addUser({ name: 'Ann' });
+  // Assert — the observable outcome
+  expect(await svc.findByName('Ann'))
+    .toEqual({ id: expect.any(String),
+               name: 'Ann' });
+});</pre></div>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">A test with no assertion, or one that only checks a mock was called, proves nothing about correctness. Ask of each test: “if I broke this feature, would this test fail?” If not, it isn't earning its keep.</span><span lang="hu">Egy teszt állítás nélkül, vagy amely csak azt ellenőrzi, hogy egy mockot meghívtak, semmit nem bizonyít a helyességről. Kérdezd meg minden tesztről: „ha elrontanám ezt a feature-t, elbukna ez a teszt?” Ha nem, akkor nem termeli ki magát.</span></p>
+  </section>
+  <section class="concept" id="c03">
+    <div class="concept__head"><span class="num">03</span><h2><span lang="en">Test Doubles: Mocks, Stubs & Fakes</span><span lang="hu">Teszt-helyettesítők: mockok, stubok & fake-ek</span></h2></div>
+    <p class="def"><span lang="en"><strong>Stand-ins for real dependencies</strong> — mocks, stubs, spies, fakes. They isolate the unit under test and make slow or unpredictable dependencies deterministic.</span><span lang="hu"><strong>Helyettesítők valódi függőségekhez</strong> — mockok, stubok, spy-ok, fake-ek. Izolálják a tesztelt egységet, és determinisztikussá teszik a lassú vagy kiszámíthatatlan függőségeket.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Double</span><span lang="hu">Helyettesítő</span></th><th><span lang="en">What it does</span><span lang="hu">Mit csinál</span></th><th><span lang="en">Use when</span><span lang="hu">Mikor</span></th></tr>
+      <tr><td><span lang="en">Stub</span><span lang="hu">Stub</span></td><td><span lang="en">returns canned values</span><span lang="hu">előre megadott értékeket ad vissza</span></td><td><span lang="en">you need an input from a dependency</span><span lang="hu">input kell egy függőségtől</span></td></tr>
+      <tr><td><span lang="en">Spy</span><span lang="hu">Spy</span></td><td><span lang="en">records how it was called</span><span lang="hu">rögzíti, hogyan hívták</span></td><td><span lang="en">the call itself is the outcome</span><span lang="hu">a hívás maga az eredmény</span></td></tr>
+      <tr><td><span lang="en">Mock</span><span lang="hu">Mock</span></td><td><span lang="en">pre-programmed with expectations</span><span lang="hu">előre beprogramozott elvárásokkal</span></td><td><span lang="en">verifying an interaction</span><span lang="hu">interakció ellenőrzése</span></td></tr>
+      <tr><td><span lang="en">Fake</span><span lang="hu">Fake</span></td><td><span lang="en">a working lightweight implementation</span><span lang="hu">működő könnyűsúlyú implementáció</span></td><td><span lang="en">in-memory DB, test server</span><span lang="hu">memóriabeli DB, teszt-szerver</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">What should you mock — and what shouldn't you?</span><span lang="hu">Mit mockolj — és mit ne?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Mock</strong> things that are slow, non-deterministic or have side effects you don't want: network calls, time, randomness, payment providers. <strong>Don't mock</strong> the thing you're testing, pure functions, or your own data structures — mocking those tests nothing.</span><span lang="hu"><strong>Mockold</strong> azt, ami lassú, nemdeterminisztikus, vagy nem kívánt mellékhatása van: hálózati hívások, idő, véletlen, fizetési szolgáltatók. <strong>Ne mockold</strong> a tesztelt dolgot, a tiszta függvényeket, vagy a saját adatszerkezeteidet — ezek mockolása semmit nem tesztel.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why prefer a fake over a mock where possible?</span><span lang="hu">Miért jobb a fake a mocknál, ahol lehet?</span></p>
+      <ul class="a">
+        <li><span lang="en">A fake behaves like the real thing, so the test exercises real logic and survives refactoring. A mock encodes your assumption about how the dependency behaves — and if that assumption is wrong, the test passes while production breaks.</span><span lang="hu">Egy fake úgy viselkedik, mint a valódi, így a teszt valódi logikát futtat és túléli a refaktorálást. Egy mock a te feltételezésedet kódolja arról, hogyan viselkedik a függőség — és ha ez a feltételezés hibás, a teszt átmegy, miközben a production eltörik.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">Controlling time and network</span><span lang="hu">Idő és hálózat kontrollálása</span><span class="code__cx">deterministic, no real I/O</span></div><pre>// deterministic time
+jest.useFakeTimers().setSystemTime(new Date('2026-01-01'));
+
+// stub a module's network call
+jest.mock('./api');
+api.fetchUser.mockResolvedValue({ id: '1', name: 'Ann' });
+
+// spy: the call IS the behaviour under test
+const send = jest.fn();
+await notifyUser({ send }, 'welcome');
+expect(send).toHaveBeenCalledWith(
+  expect.objectContaining({ template: 'welcome' })
+);</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Over-mocking produces tests that pass against a fantasy version of your dependencies. If a test mocks everything the unit touches, it verifies only that your code calls the functions you told it to call — a tautology. Prefer real objects, then fakes, then mocks.</span><span lang="hu">A túl-mockolás olyan teszteket szül, amelyek a függőségeid képzeletbeli verziója ellen mennek át. Ha egy teszt mindent mockol, amit az egység érint, csak azt ellenőrzi, hogy a kódod azokat a függvényeket hívja, amiket mondtál neki — tautológia. Előbb valódi objektumok, aztán fake-ek, aztán mockok.</span></p>
+  </section>
+  <section class="concept" id="c04">
+    <div class="concept__head"><span class="num">04</span><h2><span lang="en">Integration Testing</span><span lang="hu">Integrációs tesztelés</span></h2></div>
+    <p class="def"><span lang="en"><strong>Testing several units together, including real collaborators</strong> — a route with its service and database, or a component with its store. Where most real bugs are actually caught.</span><span lang="hu"><strong>Több egység együttes tesztelése, valódi közreműködőkkel</strong> — egy route a szolgáltatásával és adatbázisával, vagy egy komponens a store-jával. Itt fogódik meg a legtöbb valódi bug.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Why do integration tests catch what unit tests miss?</span><span lang="hu">Miért fogják meg az integrációs tesztek azt, amit a unit tesztek nem?</span></p>
+      <ul class="a">
+        <li><span lang="en">Because most bugs live in the seams — wrong assumptions about a dependency's contract, serialization mismatches, incorrect SQL, missing middleware. Each unit can be individually correct while the composition is broken.</span><span lang="hu">Mert a legtöbb bug az illesztéseknél él — hibás feltételezések egy függőség szerződéséről, szerializációs eltérések, hibás SQL, hiányzó middleware. Minden egység lehet külön-külön helyes, miközben az összeállítás hibás.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you handle the database?</span><span lang="hu">Hogyan kezeled az adatbázist?</span></p>
+      <ul class="a">
+        <li><span lang="en">Use a real database of the same engine (Testcontainers or a dedicated test DB) rather than mocking the driver — mocked SQL proves nothing. Isolate tests by wrapping each in a transaction that rolls back, or by truncating between tests.</span><span lang="hu">Használj valódi, azonos motorú adatbázist (Testcontainers vagy dedikált teszt-DB) a driver mockolása helyett — a mockolt SQL semmit nem bizonyít. Izoláld a teszteket úgy, hogy mindegyiket tranzakcióba csomagolod, amely visszagördül, vagy truncate-elsz a tesztek között.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you test an Express API?</span><span lang="hu">Hogyan tesztelsz egy Express API-t?</span></p>
+      <ul class="a">
+        <li><span lang="en">With <code>supertest</code> against the app instance — no need to bind a port. You exercise the real router, middleware, validation and error handling, asserting on status codes and response bodies.</span><span lang="hu"><code>supertest</code>-tel az app instance ellen — nem kell portot foglalni. A valódi routert, middleware-t, validációt és hibakezelést futtatod, státuszkódokra és válasz-törzsekre állítva.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">API integration test with supertest</span><span lang="hu">API integrációs teszt supertesttel</span><span class="code__cx">real router + real DB</span></div><pre>import request from 'supertest';
+import { app } from '../app.js';
+
+describe('POST /api/orders', () =&gt; {
+  it('rejects an unauthenticated request', async () =&gt; {
+    await request(app)
+      .post('/api/orders')
+      .send({ item: 'book' })
+      .expect(401);
+  });
+
+  it('creates an order for an authenticated user', async () =&gt; {
+    const res = await request(app)
+      .post('/api/orders')
+      .set('Authorization', `Bearer ${testToken}`)
+      .send({ item: 'book' })
+      .expect(201);
+
+    expect(res.body).toMatchObject({ item: 'book', status: 'pending' });
+    // verify it actually persisted
+    const saved = await db.orders.findById(res.body.id);
+    expect(saved).not.toBeNull();
+  });
+});</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Tests that share mutable state (a seeded row, a global counter) pass alone and fail when run together or in a different order. Each test must set up and tear down its own data — and never depend on execution order.</span><span lang="hu">Azok a tesztek, amelyek mutálható állapoton osztoznak (egy beszúrt sor, egy globális számláló), egyedül átmennek, és együtt vagy más sorrendben futtatva elbuknak. Minden tesztnek a saját adatát kell felépítenie és lebontania — és sosem függhet a végrehajtási sorrendtől.</span></p>
+  </section>
+  <section class="concept" id="c05">
+    <div class="concept__head"><span class="num">05</span><h2><span lang="en">End-to-End Testing</span><span lang="hu">End-to-end tesztelés</span></h2></div>
+    <p class="def"><span lang="en"><strong>Driving the real application through the UI as a user would</strong> — a browser against a running stack. The highest confidence and the highest cost.</span><span lang="hu"><strong>A valódi alkalmazás vezérlése a UI-on át, ahogy egy user tenné</strong> — egy böngésző egy futó stack ellen. A legmagasabb bizalom és a legmagasabb költség.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">What should E2E tests cover?</span><span lang="hu">Mit fedjenek le az E2E tesztek?</span></p>
+      <ul class="a">
+        <li><span lang="en">Only the critical user journeys — signup, login, checkout, the core workflow. A handful of paths that must never break. Everything else belongs lower in the pyramid where it runs faster and fails more precisely.</span><span lang="hu">Csak a kritikus felhasználói utakat — regisztráció, bejelentkezés, fizetés, az alapvető workflow. Néhány út, amely sosem törhet el. Minden más lejjebb tartozik a piramisban, ahol gyorsabban fut és pontosabban bukik.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why are E2E tests flaky, and how do you fix it?</span><span lang="hu">Miért flaky-k az E2E tesztek, és hogyan javítod?</span></p>
+      <ul class="a">
+        <li><span lang="en">Mostly timing: the test acts before the app is ready. The fix is <strong>never</strong> a fixed sleep — wait for a condition (an element to be visible, a request to settle). Modern tools (Playwright, Cypress) auto-wait on assertions, which removes most flakiness.</span><span lang="hu">Főleg időzítés: a teszt cselekszik, mielőtt az app kész lenne. A javítás <strong>sosem</strong> fix sleep — várj egy feltételre (elem láthatóvá válása, kérés befejeződése). A modern eszközök (Playwright, Cypress) automatikusan várnak az állításoknál, ami a flakiness nagy részét megszünteti.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How should you select elements?</span><span lang="hu">Hogyan válaszd ki az elemeket?</span></p>
+      <ul class="a">
+        <li><span lang="en">By role or accessible name where possible, or a dedicated <code>data-testid</code>. Selecting by CSS class or DOM position couples the test to styling, so a purely visual change breaks the suite.</span><span lang="hu">Szerep vagy akadálymentes név szerint, ahol lehet, vagy dedikált <code>data-testid</code>-vel. A CSS osztály vagy DOM-pozíció szerinti kiválasztás a stílushoz köti a tesztet, így egy tisztán vizuális változás eltöri a suite-ot.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">A flaky test is worse than no test — the team learns to re-run until green, and real failures get ignored. Quarantine or fix flaky tests immediately; never let “just retry it” become the norm.</span><span lang="hu">Egy flaky teszt rosszabb, mint a semmilyen — a csapat megtanulja újrafuttatni, amíg zöld nem lesz, és a valódi hibák elsikkadnak. Karanténozd vagy javítsd azonnal a flaky teszteket; sose engedd, hogy a „futtasd újra” legyen a norma.</span></p>
+  </section>
+  <section class="concept" id="c06">
+    <div class="concept__head"><span class="num">06</span><h2><span lang="en">Testing React Components</span><span lang="hu">React komponensek tesztelése</span></h2></div>
+    <p class="def"><span lang="en"><strong>Testing components the way a user interacts with them</strong> — querying by visible text and roles, firing real events, asserting on what's rendered rather than on internal state.</span><span lang="hu"><strong>Komponensek tesztelése úgy, ahogy egy user használja őket</strong> — látható szöveg és szerepek szerint keresve, valódi eseményeket kiváltva, a renderelt dologra állítva, nem a belső állapotra.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">What's the guiding principle of React Testing Library?</span><span lang="hu">Mi a React Testing Library vezérelve?</span></p>
+      <ul class="a">
+        <li><span lang="en">The more your tests resemble how the software is used, the more confidence they give. So you query what the user perceives (text, labels, roles) and never reach into component internals, props or state.</span><span lang="hu">Minél jobban hasonlítanak a tesztjeid arra, ahogyan a szoftvert használják, annál nagyobb bizalmat adnak. Ezért azt keresed, amit a user érzékel (szöveg, címkék, szerepek), és sosem nyúlsz a komponens belsőségeibe, propjaiba vagy állapotába.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Which query should you reach for?</span><span lang="hu">Melyik query-t használd?</span></p>
+      <ul class="a">
+        <li><span lang="en">Prefer <code>getByRole</code> (which also checks accessibility), then <code>getByLabelText</code> for form fields, then <code>getByText</code>. Use <code>getByTestId</code> only as a last resort. <code>findBy*</code> is the async variant; <code>queryBy*</code> returns null instead of throwing, for asserting absence.</span><span lang="hu">Előnyben a <code>getByRole</code> (amely az akadálymentességet is ellenőrzi), aztán <code>getByLabelText</code> űrlapmezőkhöz, aztán <code>getByText</code>. A <code>getByTestId</code>-t csak végső esetben. A <code>findBy*</code> az aszinkron változat; a <code>queryBy*</code> null-t ad dobás helyett, hiány ellenőrzéséhez.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you test asynchronous UI?</span><span lang="hu">Hogyan tesztelsz aszinkron UI-t?</span></p>
+      <ul class="a">
+        <li><span lang="en">Use <code>findBy*</code> or <code>waitFor</code>, which retry until the assertion passes or times out. Mock the network at the boundary (MSW intercepts requests) rather than mocking your fetch wrapper — the component then exercises its real data flow.</span><span lang="hu">Használj <code>findBy*</code>-ot vagy <code>waitFor</code>-t, amelyek újrapróbálnak, amíg az állítás átmegy vagy lejár. A hálózatot a határon mockold (az MSW elfogja a kéréseket), ne a fetch wrapperedet — a komponens így a valódi adatfolyamát futtatja.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">Component test with RTL</span><span lang="hu">Komponens-teszt RTL-lel</span><span class="code__cx">queries by role/label, not by class</span></div><pre>import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+it('shows an error when the email is invalid', async () =&gt; {
+  const user = userEvent.setup();
+  render(&lt;SignupForm onSubmit={jest.fn()} /&gt;);
+
+  await user.type(screen.getByLabelText(/email/i), 'not-an-email');
+  await user.click(screen.getByRole('button', { name: /sign up/i }));
+
+  // findBy* waits for the async validation to render
+  expect(await screen.findByText(/enter a valid email/i))
+    .toBeInTheDocument();
+});</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Asserting on internal state or calling a component's methods directly means the test breaks whenever you refactor, even if the UI is identical. And <code>userEvent</code> is preferable to <code>fireEvent</code>: it simulates the full interaction (focus, keydown, input) rather than dispatching a single synthetic event.</span><span lang="hu">A belső állapotra állítás vagy egy komponens metódusainak közvetlen hívása azt jelenti, a teszt minden refaktornál eltörik, akkor is, ha a UI azonos. És a <code>userEvent</code> jobb a <code>fireEvent</code>-nél: a teljes interakciót szimulálja (fókusz, keydown, input), nem egyetlen szintetikus eseményt küld.</span></p>
+  </section>
+  <div class="sec"><span class="sec__l"><span lang="en">Process</span><span lang="hu">Folyamat</span></span><span class="sec__r"></span></div>
+  <section class="concept" id="c07">
+    <div class="concept__head"><span class="num">07</span><h2><span lang="en">Test-Driven Development</span><span lang="hu">Test-Driven Development</span></h2></div>
+    <p class="def"><span lang="en"><strong>Write a failing test, make it pass, then refactor</strong> — red, green, refactor. The tests drive the design rather than being written after the fact.</span><span lang="hu"><strong>Írj egy bukó tesztet, hozd zöldre, aztán refaktorálj</strong> — piros, zöld, refaktor. A tesztek vezérlik a tervezést, nem utólag íródnak.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">What does TDD actually buy you?</span><span lang="hu">Mit ad valójában a TDD?</span></p>
+      <ul class="a">
+        <li><span lang="en">Testable design (code written test-first tends to have fewer hidden dependencies), a guaranteed-meaningful test suite (every test failed at least once), and a tight feedback loop. The tests are a by-product; the design pressure is the point.</span><span lang="hu">Tesztelhető tervezést (a teszt-először írt kódnak jellemzően kevesebb rejtett függősége van), garantáltan értelmes teszt-suite-ot (minden teszt legalább egyszer elbukott), és szoros visszacsatolási kört. A tesztek melléktermékek; a tervezési nyomás a lényeg.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why must the test fail first?</span><span lang="hu">Miért kell a tesztnek először elbuknia?</span></p>
+      <ul class="a">
+        <li><span lang="en">A test that has never failed might be asserting nothing, testing the wrong thing, or not running at all. Seeing red first proves the test can detect the absence of the behaviour.</span><span lang="hu">Egy teszt, amely sosem bukott el, lehet, hogy semmit nem állít, rossz dolgot tesztel, vagy egyáltalán nem fut. A piros látása először bizonyítja, hogy a teszt képes észlelni a viselkedés hiányát.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Is TDD always appropriate?</span><span lang="hu">Mindig helyénvaló a TDD?</span></p>
+      <ul class="a">
+        <li><span lang="en">It fits well when the requirements are clear and the logic is meaningful. It fits poorly for exploratory work, UI layout experiments, or spikes where you don't yet know the shape of the solution — there, write tests once the design settles.</span><span lang="hu">Jól illik, ha a követelmények tisztázottak és a logika érdemi. Rosszul illik felderítő munkához, UI-elrendezési kísérletekhez, vagy spike-okhoz, ahol még nem tudod a megoldás formáját — ott írj teszteket, ha a terv letisztult.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">TDD isn't “write all the tests first.” It's one small test at a time, in a tight loop. Writing thirty tests up front against an unbuilt design produces the same brittle, coupled suite as writing them afterwards.</span><span lang="hu">A TDD nem azt jelenti, hogy „írd meg előbb az összes tesztet”. Egy kis teszt egyszerre, szoros körben. Harminc teszt előre megírása egy meg nem épített terv ellen ugyanolyan törékeny, összecsatolt suite-ot ad, mint az utólagos írás.</span></p>
+  </section>
+  <section class="concept" id="c08">
+    <div class="concept__head"><span class="num">08</span><h2><span lang="en">CI & Quality Gates</span><span lang="hu">CI & quality gate-ek</span></h2></div>
+    <p class="def"><span lang="en"><strong>Running the suite automatically on every change</strong>, with rules about what may merge — the mechanism that keeps a test suite meaningful over time.</span><span lang="hu"><strong>A suite automatikus futtatása minden változtatásnál</strong>, szabályokkal arról, mi mergelhető — ez a mechanizmus tartja értelmesen a teszt-suite-ot hosszú távon.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">What belongs in a CI pipeline?</span><span lang="hu">Mi tartozik egy CI pipeline-ba?</span></p>
+      <ul class="a">
+        <li><span lang="en">Install with a lockfile (<code>npm ci</code>), lint, typecheck, unit and integration tests, a build, then E2E against the built artifact. Order matters — run the fast, cheap checks first so failures surface in seconds, not minutes.</span><span lang="hu">Telepítés lockfile-lal (<code>npm ci</code>), lint, típusellenőrzés, unit és integrációs tesztek, build, majd E2E az elkészült artifact ellen. A sorrend számít — előbb a gyors, olcsó ellenőrzések fussanak, hogy a hibák másodpercek alatt kiderüljenek, ne percek alatt.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you keep the pipeline fast?</span><span lang="hu">Hogyan tartod gyorsan a pipeline-t?</span></p>
+      <ul class="a">
+        <li><span lang="en">Cache dependencies, run test files in parallel, shard the E2E suite across machines, and run only affected tests on a PR where the tooling supports it. A suite people wait ten minutes for is a suite people work around.</span><span lang="hu">Cache-eld a függőségeket, futtasd párhuzamosan a teszt-fájlokat, oszd szét az E2E suite-ot gépek között, és futtasd csak az érintett teszteket egy PR-en, ahol az eszköz támogatja. Egy suite, amire tíz percet várnak, olyan suite, amit megkerülnek.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What is a useful quality gate?</span><span lang="hu">Mi egy hasznos quality gate?</span></p>
+      <ul class="a">
+        <li><span lang="en">A green suite as a merge requirement, plus type checks and lint. Coverage thresholds are better as a “don't decrease” rule on changed files than as a global percentage, which incentivizes empty tests.</span><span lang="hu">Zöld suite merge-feltételként, plusz típusellenőrzés és lint. A lefedettségi küszöbök jobbak „ne csökkenjen” szabályként a változtatott fájlokon, mint globális százalékként, amely üres tesztekre ösztönöz.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">If tests only run locally, they will eventually stop being run. And a suite that's allowed to stay red — “that one always fails” — has already stopped providing signal; fix or delete it.</span><span lang="hu">Ha a tesztek csak lokálisan futnak, előbb-utóbb abbamarad a futtatásuk. És egy suite, amely pirosan maradhat — „az mindig elbukik” —, már megszűnt jelzést adni; javítsd vagy töröld.</span></p>
+  </section>
+  <p class="foot"><span lang="en">Testing · technical interview prep · <b>Q&amp;A knowledge base</b></span><span lang="hu">Tesztelés · technikai interjú-felkészítő · <b>Q&amp;A tudásbázis</b></span></p>
+
+</div>
+
+<script>
+(function () {
+  var SUPPORTED = ['en', 'hu'];
+  var root = document.documentElement;
+
+  // The smallest block element at the top-centre of the viewport (where the
+  // text is) that exists in both languages — used to hold the reading position
+  // steady across a switch. Sampling the centre, not the edge, lands on a
+  // paragraph rather than a large container, so the visible line stays put.
+  function anchor() {
+    var el = document.elementFromPoint(window.innerWidth / 2, 8);
+    while (el && el !== document.body &&
+           (el.hasAttribute('lang') || getComputedStyle(el).display === 'inline')) {
+      el = el.parentElement;
+    }
+    return el && el !== document.body ? el : null;
+  }
+
+  function applyLang(lang) {
+    if (SUPPORTED.indexOf(lang) === -1) lang = 'en';
+    if (root.dataset.lang === lang) return;
+    var a = window.scrollY > 0 ? anchor() : null;
+    var before = a ? a.getBoundingClientRect().top : 0;
+    // Toggle via data-lang only. Deliberately NOT setting root.lang: some pages
+    // hide the other language with a bare [lang="…"]{display:none} rule, which
+    // would then match <html lang="…"> and hide the whole page. Visible spans
+    // still carry their own lang attribute for assistive tech.
+    root.dataset.lang = lang;
+    if (a) window.scrollBy(0, a.getBoundingClientRect().top - before);
+  }
+
+  // In-place switch for the shell (synchronous, same-origin).
+  window.interviewBrowser = {
+    setParams: function (params) { applyLang(params && params.lang); }
+  };
+
+  applyLang(new URLSearchParams(location.search).get('lang') || 'en');
+})();
+</script>
+</body>
+</html>

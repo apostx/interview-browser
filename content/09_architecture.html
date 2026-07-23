@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Software Architecture — Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111827; --muted:#6B7280; --line:#E5E7EB; --paper:#EDF0F3; --card:#FFFFFF;
+  --accent:#7C3AED;
+  --get:#16A34A; --post:#2563EB; --put:#D97706; --patch:#0D9488; --del:#DC2626;
+  --node:#FFFFFF; --nodeline:#94A3B8; --slate:#334155;
+  --safe:#16A34A; --vuln:#DC2626;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+a{color:inherit}
+code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+code{background:#EEF2F7;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:.86em}
+
+/* ── language toggling ───────────────────────────────────────── */
+[lang="hu"]{display:none}
+html[data-lang="hu"] [lang="en"]{display:none}
+html[data-lang="hu"] [lang="hu"]{display:inline}
+html[data-lang="hu"] li[lang="hu"]{display:list-item}
+html[data-lang="hu"] p[lang="hu"],
+html[data-lang="hu"] div[lang="hu"]{display:block}
+svg text[lang="hu"]{display:none}
+html[data-lang="hu"] svg text[lang="en"]{display:none}
+html[data-lang="hu"] svg text[lang="hu"]{display:inline}
+
+.bar{position:sticky;top:0;z-index:20;background:rgba(237,240,243,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar__in{max-width:900px;margin:0 auto;padding:10px 20px;display:flex;
+  align-items:center;justify-content:space-between;gap:12px}
+.bar__t{font-family:'Space Grotesk';font-weight:600;font-size:14px;letter-spacing:-.01em;
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.bar__t b{color:var(--accent)}
+.bar__r{display:flex;align-items:center;gap:10px}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+.lang button{font-family:'JetBrains Mono';font-size:12px;padding:4px 11px;border:0;background:#fff;
+  color:var(--muted);cursor:pointer;line-height:1.4}
+.lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.lang button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.bar a.up{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);
+  text-decoration:none;border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:#fff}
+.bar a.up:hover{color:var(--ink);border-color:var(--accent)}
+
+.hero{padding:44px 0 8px}
+.eyebrow{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,6vw,50px);
+  line-height:1.02;letter-spacing:-.025em;margin:0 0 12px}
+.lede{color:var(--muted);max-width:64ch;margin:0}
+.depth-note{margin:16px 0 0;font-size:13px;color:var(--muted);background:#fff;border:1px solid var(--line);
+  border-radius:10px;padding:11px 14px}
+.depth-note b{color:var(--ink);font-weight:600}
+
+.sec{display:flex;align-items:center;gap:14px;margin:40px 4px 2px}
+.sec__l{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--accent);white-space:nowrap}
+.sec__r{height:1px;background:var(--line);flex:1}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:24px 0 2px}
+.legend .lbl{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-right:2px}
+.chip{font-family:'JetBrains Mono';font-size:12px;padding:3px 8px;border-radius:6px;
+  border:1px solid var(--line);background:#fff}
+.chip--2{color:var(--safe);border-color:#BBF7D0;background:#F0FDF4}
+.chip--4{color:var(--put);border-color:#FDE68A;background:#FFFBEB}
+.chip--5{color:var(--vuln);border-color:#FECACA;background:#FEF2F2}
+
+.index{margin:30px 0 8px}
+.index h3{font-family:'Space Grotesk';font-size:13px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+a.idx{display:flex;align-items:baseline;gap:10px;text-decoration:none;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  transition:border-color .15s,transform .15s}
+a.idx:hover{border-color:var(--accent);transform:translateY(-1px)}
+.idx__n{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);font-weight:500}
+.idx__t{font-size:13.5px;font-weight:500}
+
+.concept{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:26px 26px 22px;margin-top:16px;scroll-margin-top:64px}
+.concept__head{display:flex;align-items:center;gap:14px;margin:0 0 12px}
+.concept__head .num{font-family:'JetBrains Mono';font-weight:500;font-size:15px;color:#fff;
+  background:var(--ink);width:38px;height:38px;border-radius:10px;display:grid;
+  place-items:center;flex:0 0 auto}
+.concept__head .num.pr{background:var(--accent)}
+.concept__head h2{font-family:'Space Grotesk';font-weight:600;font-size:22px;
+  letter-spacing:-.015em;margin:0}
+.def{margin:0 0 16px}
+.def strong{font-weight:600}
+.qa{border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
+.q{font-weight:600;margin:14px 0 6px}
+.q:first-child{margin-top:0}
+.q::before{content:"Q";font-family:'JetBrains Mono';color:var(--accent);font-weight:600;
+  margin-right:9px;font-size:13px}
+ul.a,p.a{margin:0 0 2px}
+ul.a{padding-left:20px}
+ul.a li{margin:3px 0}
+.step{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--slate);margin:18px 0 6px;display:flex;align-items:center;gap:8px}
+.step::before{content:"";width:16px;height:2px;background:var(--accent);display:inline-block}
+.watch{margin:18px 0 0;background:#FFFBEB;border:1px solid #FDE68A;
+  border-left:3px solid var(--put);border-radius:8px;padding:10px 14px;font-size:14px}
+.watch__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--put);font-weight:600;display:block;margin-bottom:3px}
+.note{margin:14px 0 0;background:#EFF6FF;border:1px solid #BFDBFE;border-left:3px solid var(--post);
+  border-radius:8px;padding:10px 14px;font-size:14px}
+.note__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--post);font-weight:600;display:block;margin-bottom:3px}
+
+/* vulnerable vs fixed code pair */
+.codepair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 2px}
+.cbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}
+.cbox__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600}
+.cbox--bad .cbox__h{background:#FEF2F2;color:var(--vuln);border-bottom:1px solid #FECACA}
+.cbox--good .cbox__h{background:#F0FDF4;color:var(--safe);border-bottom:1px solid #BBF7D0}
+.cbox pre{margin:0;padding:10px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.55;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+@media (max-width:620px){.codepair{grid-template-columns:1fr}}
+
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 2px}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+table.t th{background:#F8FAFC;font-weight:600;font-family:'Space Grotesk';font-size:12px}
+table.t td:first-child{font-family:'JetBrains Mono';white-space:nowrap}
+
+.dia{margin:16px 0 4px;background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px}
+.dia svg{width:100%;height:auto;display:block}
+.dia__cap{font-family:'JetBrains Mono';font-size:11.5px;color:var(--muted);margin:8px 2px 0}
+svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
+
+.foot{margin-top:44px;text-align:center;color:var(--muted);font-size:12.5px}
+.foot b{font-family:'Space Grotesk';color:var(--ink)}
+
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+}
+@media print{
+  .bar{display:none} body{background:#fff}
+  .concept{break-inside:avoid;border-color:#ccc} a.idx{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+/* ── complexity badges ───────────────────────────────────────── */
+.cx{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.cx span{font-family:'JetBrains Mono';font-size:11.5px;padding:3px 9px;border-radius:6px;
+  border:1px solid var(--line);background:#fff;white-space:nowrap}
+.cx .k{color:var(--muted)}
+.cx .t{color:var(--post);border-color:#BFDBFE;background:#EFF6FF}
+.cx .s{color:var(--patch);border-color:#99F6E4;background:#F0FDFA}
+.cx .good{color:var(--safe);border-color:#BBF7D0;background:#F0FDF4}
+.cx .bad{color:var(--vuln);border-color:#FECACA;background:#FEF2F2}
+
+/* ── single code block ───────────────────────────────────────── */
+.code{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;margin:12px 0 2px}
+.code__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600;background:#F8FAFC;color:var(--slate);border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.code__cx{font-size:10px;color:var(--post);text-transform:none;letter-spacing:0}
+.code pre{margin:0;padding:11px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.6;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+  </marker>
+  <marker id="arrowg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#16A34A"/>
+  </marker>
+  <marker id="arrowr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#DC2626"/>
+  </marker>
+  <marker id="arrowb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#2563EB"/>
+  </marker>
+</defs></svg>
+
+<div class="wrap" id="top">
+
+  <div class="hero">
+    <p class="eyebrow"><span lang="en">Technical Q&amp;A Knowledge Base</span><span lang="hu">Technikai Q&amp;A tudásbázis</span></p>
+    <h1><span lang="en">Software Architecture</span><span lang="hu">Szoftverarchitektúra</span></h1>
+    <p class="lede"><span lang="en">How to structure a codebase and justify the structure — coupling, layering, dependency injection, and the monolith-versus-services decision, with the trade-offs stated rather than the patterns recited.</span><span lang="hu">Hogyan strukturálj egy kódbázist és hogyan indokold a szerkezetet — csatolás, rétegzés, dependency injection, és a monolit-vs-szolgáltatások döntés, kimondott trade-offökkel, nem felmondott mintákkal.</span></p>
+    <p class="depth-note"><span lang="en">Pairs with the <b>Testing</b> deck, and with <b>Distributed Systems</b> for the failure modes of the microservices path.</span><span lang="hu">Párja a <b>Tesztelés</b> deck, és a <b>Distributed Systems</b> a microservices út hibamódjaihoz.</span></p>
+  </div>
+  <div class="legend"><span class="lbl"><span lang="en">Code</span><span lang="hu">Kód</span></span><span class="chip chip--5"><span lang="en">red · problematic</span><span lang="hu">piros · problémás</span></span><span class="chip chip--2"><span lang="en">green · preferred</span><span lang="hu">zöld · ajánlott</span></span><span class="chip chip--4"><span lang="en">amber · watch out</span><span lang="hu">sárga · buktató</span></span></div>
+  <div class="index">
+    <h3><span lang="en">Jump to</span><span lang="hu">Ugrás</span></h3>
+    <div class="grid">
+      <a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t"><span lang="en">Coupling & Cohesion</span><span lang="hu">Csatolás & kohézió</span></span></a>
+      <a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t"><span lang="en">SOLID Principles</span><span lang="hu">SOLID elvek</span></span></a>
+      <a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t"><span lang="en">Layered Architecture</span><span lang="hu">Rétegzett architektúra</span></span></a>
+      <a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t"><span lang="en">Dependency Injection</span><span lang="hu">Dependency injection</span></span></a>
+      <a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t"><span lang="en">Hexagonal & Clean Architecture</span><span lang="hu">Hexagonális & clean architecture</span></span></a>
+      <a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t"><span lang="en">Monolith vs Microservices</span><span lang="hu">Monolit vs microservices</span></span></a>
+      <a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t"><span lang="en">Domain-Driven Design</span><span lang="hu">Domain-Driven Design</span></span></a>
+      <a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t"><span lang="en">Design Patterns</span><span lang="hu">Tervezési minták</span></span></a>
+      <a class="idx" href="#c09"><span class="idx__n">09</span><span class="idx__t"><span lang="en">Trade-offs & Communicating Design</span><span lang="hu">Trade-offök & a terv kommunikálása</span></span></a>
+    </div>
+  </div>
+  <div class="sec"><span class="sec__l"><span lang="en">Principles</span><span lang="hu">Elvek</span></span><span class="sec__r"></span></div>
+  <section class="concept" id="c01">
+    <div class="concept__head"><span class="num">01</span><h2><span lang="en">Coupling & Cohesion</span><span lang="hu">Csatolás & kohézió</span></h2></div>
+    <p class="def"><span lang="en"><strong>The two forces behind every structural decision:</strong> cohesion is how related the things inside a module are; coupling is how dependent modules are on each other. Aim for high cohesion, low coupling.</span><span lang="hu"><strong>A két erő minden szerkezeti döntés mögött:</strong> a kohézió az, mennyire összetartozók egy modulon belüli dolgok; a csatolás az, mennyire függenek a modulok egymástól. Cél: magas kohézió, alacsony csatolás.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">Why does coupling matter so much?</span><span lang="hu">Miért számít ennyire a csatolás?</span></p>
+      <ul class="a">
+        <li><span lang="en">It determines the blast radius of a change. In a tightly coupled system, a change to one module forces changes in many others, and you can't test, deploy or reason about a piece in isolation. Nearly every principle below is a technique for reducing coupling.</span><span lang="hu">Meghatározza egy változtatás hatósugarát. Egy szorosan csatolt rendszerben egy modul változtatása sok másikban kényszerít változtatást, és nem tudsz egy darabot izoláltan tesztelni, deployolni vagy átgondolni. Szinte minden alábbi elv a csatolás csökkentésének technikája.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What does low cohesion look like in practice?</span><span lang="hu">Hogy néz ki gyakorlatban az alacsony kohézió?</span></p>
+      <ul class="a">
+        <li><span lang="en">A <code>utils.js</code> holding date formatting, an HTTP client and a password hasher — things grouped by “miscellaneous” rather than by purpose. Nothing can be understood or reused as a unit.</span><span lang="hu">Egy <code>utils.js</code>, amely dátumformázást, HTTP klienst és jelszó-hashelőt tart — „egyéb” szerint csoportosított dolgok, nem cél szerint. Semmi nem érthető meg vagy használható újra egységként.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Reducing coupling has a cost: every abstraction layer you add to decouple is indirection someone must read through. Loose coupling is a means, not a goal — a codebase with an interface for everything is as hard to follow as one with none.</span><span lang="hu">A csatolás csökkentésének ára van: minden absztrakciós réteg, amit a leválasztásért adsz hozzá, közvetettség, amin valakinek át kell olvasnia. A laza csatolás eszköz, nem cél — egy kódbázis, amelyben mindenre van interface, ugyanolyan nehezen követhető, mint amelyikben semmire.</span></p>
+  </section>
+  <section class="concept" id="c02">
+    <div class="concept__head"><span class="num">02</span><h2><span lang="en">SOLID Principles</span><span lang="hu">SOLID elvek</span></h2></div>
+    <p class="def"><span lang="en"><strong>Five object-oriented design principles</strong> that mostly reduce to: separate responsibilities, depend on abstractions, and keep interfaces small.</span><span lang="hu"><strong>Öt objektumorientált tervezési elv</strong>, amelyek nagyrészt erre vezethetők vissza: válaszd szét a felelősségeket, absztrakciókra támaszkodj, és tartsd kicsinek az interface-eket.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Principle</span><span lang="hu">Elv</span></th><th><span lang="en">Means</span><span lang="hu">Jelentése</span></th></tr>
+      <tr><td><span lang="en">S — Single Responsibility</span><span lang="hu">S — Single Responsibility</span></td><td><span lang="en">a module should have one reason to change</span><span lang="hu">egy modulnak egy oka legyen a változásra</span></td></tr>
+      <tr><td><span lang="en">O — Open/Closed</span><span lang="hu">O — Open/Closed</span></td><td><span lang="en">open to extension, closed to modification</span><span lang="hu">bővítésre nyitott, módosításra zárt</span></td></tr>
+      <tr><td><span lang="en">L — Liskov Substitution</span><span lang="hu">L — Liskov Substitution</span></td><td><span lang="en">a subtype must work anywhere its parent does</span><span lang="hu">az altípus működjön ott, ahol a szülő</span></td></tr>
+      <tr><td><span lang="en">I — Interface Segregation</span><span lang="hu">I — Interface Segregation</span></td><td><span lang="en">many small interfaces beat one large one</span><span lang="hu">sok kis interface jobb egy nagynál</span></td></tr>
+      <tr><td><span lang="en">D — Dependency Inversion</span><span lang="hu">D — Dependency Inversion</span></td><td><span lang="en">depend on abstractions, not concretions</span><span lang="hu">absztrakciókra támaszkodj, ne konkrét megvalósításra</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">Which matters most in a JavaScript codebase?</span><span lang="hu">Melyik számít legjobban egy JavaScript kódbázisban?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Single Responsibility</strong> and <strong>Dependency Inversion</strong>. The first keeps modules understandable; the second is what makes code testable — injecting a dependency lets you substitute it in a test. The others are more class-hierarchy-oriented and matter less in a language that favours composition.</span><span lang="hu">A <strong>Single Responsibility</strong> és a <strong>Dependency Inversion</strong>. Az első érthetően tartja a modulokat; a második az, ami tesztelhetővé teszi a kódot — egy injektált függőséget le tudsz cserélni a tesztben. A többi inkább osztályhierarchia-orientált, és kevésbé számít egy kompozíciót előnyben részesítő nyelvben.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What does “one reason to change” really mean?</span><span lang="hu">Mit jelent valójában az „egy ok a változásra”?</span></p>
+      <ul class="a">
+        <li><span lang="en">Responsibility to one stakeholder or concern. A module that formats a report <em>and</em> emails it changes both when the layout changes and when the mail provider changes — two unrelated pressures on one file.</span><span lang="hu">Felelősség egy érdekelt fél vagy szempont felé. Egy modul, amely formáz egy riportot <em>és</em> el is emailezi, akkor is változik, ha az elrendezés változik, és akkor is, ha a mail-szolgáltató — két összefüggéstelen nyomás egy fájlon.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">SOLID is a set of heuristics from class-based OO, not laws. Applied dogmatically in JS it produces interface-per-class ceremony and needless indirection. Reach for the principle when you feel the pain it addresses, not pre-emptively.</span><span lang="hu">A SOLID heurisztikák halmaza az osztály-alapú OO-ból, nem törvény. Dogmatikusan alkalmazva JS-ben osztályonkénti-interface ceremóniát és felesleges közvetettséget szül. Akkor nyúlj egy elvhez, amikor érzed a fájdalmat, amit orvosol, ne megelőzően.</span></p>
+  </section>
+  <div class="sec"><span class="sec__l"><span lang="en">Structure</span><span lang="hu">Szerkezet</span></span><span class="sec__r"></span></div>
+  <section class="concept" id="c03">
+    <div class="concept__head"><span class="num">03</span><h2><span lang="en">Layered Architecture</span><span lang="hu">Rétegzett architektúra</span></h2></div>
+    <p class="def"><span lang="en"><strong>Organizing code into horizontal layers</strong> — typically routes/controllers, services (business logic), and repositories (data access) — with dependencies pointing in one direction only.</span><span lang="hu"><strong>A kód vízszintes rétegekbe szervezése</strong> — tipikusan route-ok/controllerek, szolgáltatások (üzleti logika), és repository-k (adathozzáférés) — a függőségek csak egy irányba mutatnak.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 220" role="img" aria-label="Layered architecture">
+        <rect x="120" y="30" width="440" height="48" rx="10" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.6"/>
+        <text lang="en" x="340" y="51" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">Route / Controller</text><text lang="hu" x="340" y="51" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">Route / Controller</text>
+        <text lang="en" x="340" y="67" text-anchor="middle" font-size="8.5" fill="var(--muted)">HTTP only — parse, validate, respond</text><text lang="hu" x="340" y="67" text-anchor="middle" font-size="8.5" fill="var(--muted)">csak HTTP — parse, validál, válaszol</text>
+        <rect x="120" y="95" width="440" height="48" rx="10" fill="#F0FDF4" stroke="var(--safe)" stroke-width="1.6"/>
+        <text lang="en" x="340" y="116" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">Service</text><text lang="hu" x="340" y="116" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">Szolgáltatás</text>
+        <text lang="en" x="340" y="132" text-anchor="middle" font-size="8.5" fill="var(--muted)">business rules, orchestration</text><text lang="hu" x="340" y="132" text-anchor="middle" font-size="8.5" fill="var(--muted)">üzleti szabályok, orchestráció</text>
+        <rect x="120" y="160" width="440" height="48" rx="10" fill="#FFFBEB" stroke="var(--put)" stroke-width="1.6"/>
+        <text lang="en" x="340" y="181" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">Repository</text><text lang="hu" x="340" y="181" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">Repository</text>
+        <text lang="en" x="340" y="197" text-anchor="middle" font-size="8.5" fill="var(--muted)">data access, queries</text><text lang="hu" x="340" y="197" text-anchor="middle" font-size="8.5" fill="var(--muted)">adathozzáférés, query-k</text>
+        <line x1="340" y1="78" x2="340" y2="93" stroke="#334155" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <line x1="340" y1="143" x2="340" y2="158" stroke="#334155" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <text lang="en" x="600" y="120" text-anchor="middle" font-size="9" fill="var(--vuln)">never upward</text><text lang="hu" x="600" y="120" text-anchor="middle" font-size="9" fill="var(--vuln)">sosem felfelé</text>
+        <line x1="575" y1="150" x2="575" y2="95" stroke="#DC2626" stroke-width="1.2" stroke-dasharray="4 3"/>
+        <line x1="568" y1="103" x2="582" y2="103" stroke="#DC2626" stroke-width="1.6"/>
+        <line x1="568" y1="97" x2="582" y2="109" stroke="#DC2626" stroke-width="1.6"/>
+      </svg>
+      <p class="dia__cap"><span lang="en">Each layer depends only on the one beneath; business logic never imports the web framework.</span><span lang="hu">Minden réteg csak az alatta lévőtől függ; az üzleti logika sosem importálja a webes keretrendszert.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">What belongs in each layer?</span><span lang="hu">Mi tartozik az egyes rétegekbe?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Controller/route:</strong> HTTP concerns only — parse, validate, call a service, map the result to a status code. <strong>Service:</strong> business rules, orchestration, transactions — no <code>req</code>/<code>res</code>. <strong>Repository:</strong> data access and queries — no business rules.</span><span lang="hu"><strong>Controller/route:</strong> csak HTTP-szempontok — parse-olás, validáció, szolgáltatás hívása, az eredmény leképezése státuszkódra. <strong>Szolgáltatás:</strong> üzleti szabályok, orchestráció, tranzakciók — nincs <code>req</code>/<code>res</code>. <strong>Repository:</strong> adathozzáférés és query-k — nincs üzleti szabály.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why keep the service layer free of HTTP?</span><span lang="hu">Miért tartsd HTTP-mentesen a szolgáltatás-réteget?</span></p>
+      <ul class="a">
+        <li><span lang="en">So the same logic can be called from a route, a queue consumer, a cron job or a test, without faking a request object. If your business rules take <code>req</code>, they're welded to the transport.</span><span lang="hu">Hogy ugyanaz a logika hívható legyen egy route-ból, egy queue-consumerből, egy cron jobból vagy egy tesztből, request-objektum hamisítása nélkül. Ha az üzleti szabályaid <code>req</code>-et vesznek át, hozzá vannak hegesztve a transporthoz.</span></li>
+      </ul>
+    </div>
+    <div class="codepair">
+      <div class="cbox cbox--bad"><div class="cbox__h"><span lang="en">Logic in the route</span><span lang="hu">Logika a route-ban</span></div><pre>app.post('/orders', async (req, res) =&gt; {
+  const { items } = req.body;
+  if (!items?.length)
+    return res.status(400).json({e:'empty'});
+  let total = 0;
+  for (const i of items) {
+    const p = await db.query(
+      'SELECT price FROM products WHERE id=$1',
+      [i.id]);
+    total += p.rows[0].price * i.qty;
+  }
+  if (total &gt; 1000) total *= 0.9;
+  await db.query('INSERT INTO orders ...');
+  res.json({ total });
+});</pre></div>
+      <div class="cbox cbox--good"><div class="cbox__h"><span lang="en">Separated layers</span><span lang="hu">Szétválasztott rétegek</span></div><pre>// route — HTTP only
+app.post('/orders', async (req, res, next) =&gt; {
+  try {
+    const order = await orderService
+      .create(req.user.id, req.body.items);
+    res.status(201).json(order);
+  } catch (e) { next(e); }
+});
+
+// service — business rules, testable alone
+async create(userId, items) {
+  if (!items?.length)
+    throw new ValidationError('empty');
+  const products =
+    await this.products.findByIds(items);
+  const total = applyDiscount(
+    calculateTotal(products, items));
+  return this.orders.insert({ userId, total });
+}</pre></div>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Layers only help if the dependency direction is enforced. A repository that imports a service, or a service that reads <code>req.headers</code>, collapses the structure back into a tangle while keeping the folder names that suggest otherwise.</span><span lang="hu">A rétegek csak akkor segítenek, ha a függőségi irány kikényszerített. Egy repository, amely szolgáltatást importál, vagy egy szolgáltatás, amely <code>req.headers</code>-t olvas, visszaomlasztja a szerkezetet kuszasággá, miközben megtartja a mást sugalló mappaneveket.</span></p>
+  </section>
+  <section class="concept" id="c04">
+    <div class="concept__head"><span class="num">04</span><h2><span lang="en">Dependency Injection</span><span lang="hu">Dependency injection</span></h2></div>
+    <p class="def"><span lang="en"><strong>Passing a module its dependencies instead of letting it construct or import them</strong> — the single most practical technique for testable, swappable code.</span><span lang="hu"><strong>A függőségek átadása egy modulnak ahelyett, hogy maga építené vagy importálná őket</strong> — a legpraktikusabb technika tesztelhető, cserélhető kódhoz.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">What problem does it solve?</span><span lang="hu">Milyen problémát old meg?</span></p>
+      <ul class="a">
+        <li><span lang="en">A module that imports its database client directly can't be tested without a database, and can't be reused with a different one. Injecting the dependency lets the caller decide — real in production, a fake in tests.</span><span lang="hu">Egy modul, amely közvetlenül importálja az adatbázis-kliensét, nem tesztelhető adatbázis nélkül, és nem használható újra másikkal. A függőség injektálása a hívóra bízza a döntést — valódi a productionben, fake a tesztekben.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you do it in JavaScript without a framework?</span><span lang="hu">Hogyan csinálod JavaScriptben keretrendszer nélkül?</span></p>
+      <ul class="a">
+        <li><span lang="en">A factory function that takes dependencies and returns the module, or constructor parameters for a class. You don't need a DI container — composing the object graph once at startup is usually clearer.</span><span lang="hu">Egy factory függvénnyel, amely függőségeket vesz át és visszaadja a modult, vagy konstruktor-paraméterekkel egy osztálynál. Nem kell DI konténer — az objektumgráf egyszeri összeállítása induláskor általában átláthatóbb.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">DI via a factory function</span><span lang="hu">DI factory függvénnyel</span><span class="code__cx">same logic, swappable edges</span></div><pre>// service knows nothing about the concrete DB
+export function makeOrderService({ orders, products, clock }) {
+  return {
+    async create(userId, items) {
+      const found = await products.findByIds(items.map(i =&gt; i.id));
+      return orders.insert({ userId, createdAt: clock.now(), ... });
+    }
+  };
+}
+
+// production wiring — once, at startup
+const orderService = makeOrderService({
+  orders: postgresOrders(pool),
+  products: postgresProducts(pool),
+  clock: { now: () =&gt; new Date() }
+});
+
+// test wiring — no DB, deterministic time
+const svc = makeOrderService({
+  orders: inMemoryOrders(),
+  products: inMemoryProducts([{ id: '1', price: 100 }]),
+  clock: { now: () =&gt; new Date('2026-01-01') }
+});</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Injecting everything makes wiring noisy — you don't need to inject a pure utility like <code>lodash</code> or a date formatter. Inject the things that touch the outside world (I/O, time, randomness) or that you'd want to swap; import the rest directly.</span><span lang="hu">Ha mindent injektálsz, zajos lesz a bekötés — nem kell injektálnod egy tiszta segédeszközt, mint a <code>lodash</code> vagy egy dátumformázó. Azt injektáld, ami a külvilághoz nyúl (I/O, idő, véletlen), vagy amit cserélni akarnál; a többit importáld közvetlenül.</span></p>
+  </section>
+  <section class="concept" id="c05">
+    <div class="concept__head"><span class="num">05</span><h2><span lang="en">Hexagonal & Clean Architecture</span><span lang="hu">Hexagonális & clean architecture</span></h2></div>
+    <p class="def"><span lang="en"><strong>Business logic at the centre, with the outside world reached only through ports (interfaces) and adapters (implementations)</strong> — also called ports-and-adapters or clean architecture.</span><span lang="hu"><strong>Üzleti logika a középpontban, a külvilág csak portokon (interface-ek) és adaptereken (implementációk) át elérve</strong> — ports-and-adapters vagy clean architecture néven is ismert.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 250" role="img" aria-label="Hexagonal architecture">
+        <polygon points="397.2,87.0 397.2,153.0 340.0,186.0 282.8,153.0 282.8,87.0 340.0,54.0" fill="#F0FDF4" stroke="var(--safe)" stroke-width="1.8"/>
+        <text lang="en" x="340" y="114" text-anchor="middle" font-size="12.5" fill="var(--safe)" font-weight="600">Domain</text><text lang="hu" x="340" y="114" text-anchor="middle" font-size="12.5" fill="var(--safe)" font-weight="600">Domain</text>
+        <text lang="en" x="340" y="132" text-anchor="middle" font-size="8.5" fill="var(--muted)">business rules</text><text lang="hu" x="340" y="132" text-anchor="middle" font-size="8.5" fill="var(--muted)">üzleti szabályok</text>
+        <text lang="en" x="340" y="146" text-anchor="middle" font-size="8" fill="var(--muted)">defines the ports</text><text lang="hu" x="340" y="146" text-anchor="middle" font-size="8" fill="var(--muted)">definiálja a portokat</text>
+        <rect x="60" y="40" width="120" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.4"/><text lang="en" x="120" y="64" text-anchor="middle" font-size="10" fill="var(--ink)">HTTP route</text><text lang="hu" x="120" y="64" text-anchor="middle" font-size="10" fill="var(--ink)">HTTP route</text>
+        <rect x="60" y="180" width="120" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.4"/><text lang="en" x="120" y="204" text-anchor="middle" font-size="10" fill="var(--ink)">CLI</text><text lang="hu" x="120" y="204" text-anchor="middle" font-size="10" fill="var(--ink)">CLI</text>
+        <rect x="500" y="40" width="120" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.4"/><text lang="en" x="560" y="64" text-anchor="middle" font-size="10" fill="var(--ink)">Postgres</text><text lang="hu" x="560" y="64" text-anchor="middle" font-size="10" fill="var(--ink)">Postgres</text>
+        <rect x="500" y="180" width="120" height="40" rx="9" fill="var(--node)" stroke="var(--nodeline)" stroke-width="1.4"/><text lang="en" x="560" y="204" text-anchor="middle" font-size="10" fill="var(--ink)">Email/SMS</text><text lang="hu" x="560" y="204" text-anchor="middle" font-size="10" fill="var(--ink)">Email/SMS</text>
+        <line x1="180" y1="60" x2="278" y2="98" stroke="#2563EB" stroke-width="1.4" marker-end="url(#arrowb)"/>
+        <line x1="180" y1="200" x2="278" y2="146" stroke="#2563EB" stroke-width="1.4" marker-end="url(#arrowb)"/>
+        <line x1="500" y1="60" x2="402" y2="98" stroke="#2563EB" stroke-width="1.4" marker-end="url(#arrowb)"/>
+        <line x1="500" y1="200" x2="402" y2="146" stroke="#2563EB" stroke-width="1.4" marker-end="url(#arrowb)"/>
+        <text lang="en" x="340" y="30" text-anchor="middle" font-size="10.5" fill="var(--post)" font-weight="600">all dependencies point INWARD</text><text lang="hu" x="340" y="30" text-anchor="middle" font-size="10.5" fill="var(--post)" font-weight="600">minden függőség BEFELÉ mutat</text>
+        <text lang="en" x="340" y="238" text-anchor="middle" font-size="9" fill="var(--muted)">adapters implement the interfaces the domain declares</text><text lang="hu" x="340" y="238" text-anchor="middle" font-size="9" fill="var(--muted)">az adapterek implementálják a domain által deklarált interface-eket</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">The domain defines the interfaces it needs; adapters implement them, so dependencies point inward.</span><span lang="hu">A domain definiálja a szükséges interface-eket; az adapterek implementálják, így a függőségek befelé mutatnak.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">What's the key rule?</span><span lang="hu">Mi a kulcsszabály?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Dependencies point inward.</strong> The domain never imports the database, HTTP framework or message broker. It declares an interface (“I need something that can save an order”), and an adapter on the outside implements it.</span><span lang="hu"><strong>A függőségek befelé mutatnak.</strong> A domain sosem importálja az adatbázist, HTTP keretrendszert vagy message brokert. Deklarál egy interface-t („kell valami, ami el tud menteni egy rendelést”), és egy adapter kívül implementálja.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What does it actually buy you?</span><span lang="hu">Mit ad valójában?</span></p>
+      <ul class="a">
+        <li><span lang="en">The core logic is testable without any infrastructure, and you can replace Postgres with something else, or add a CLI alongside the HTTP API, without touching business rules. The cost is more files and indirection.</span><span lang="hu">Az alaplogika tesztelhető bármilyen infrastruktúra nélkül, és lecserélheted a Postgrest másra, vagy adhatsz CLI-t a HTTP API mellé, az üzleti szabályok érintése nélkül. Az ára több fájl és közvetettség.</span></li>
+      </ul>
+      <p class="q"><span lang="en">When is it overkill?</span><span lang="hu">Mikor túlzás?</span></p>
+      <ul class="a">
+        <li><span lang="en">For a CRUD app with little business logic, the ceremony outweighs the benefit — you end up with an interface and adapter per table that only ever has one implementation. It pays off when the domain logic is genuinely complex or long-lived.</span><span lang="hu">Egy kevés üzleti logikájú CRUD appnál a ceremónia felülmúlja az előnyt — táblánként egy interface-t és adaptert kapsz, amelynek sosem lesz több implementációja. Akkor térül meg, ha a domain-logika valóban komplex vagy hosszú életű.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">The common failure is applying the folder structure without the dependency rule — a <code>domain/</code> directory whose files import the ORM is hexagonal in name only, and carries all the ceremony with none of the benefit.</span><span lang="hu">A gyakori bukás a mappaszerkezet alkalmazása a függőségi szabály nélkül — egy <code>domain/</code> könyvtár, amelynek fájljai importálják az ORM-et, csak névben hexagonális, és minden ceremóniát hordoz, előny nélkül.</span></p>
+  </section>
+  <div class="sec"><span class="sec__l"><span lang="en">System Shape</span><span lang="hu">Rendszer-forma</span></span><span class="sec__r"></span></div>
+  <section class="concept" id="c06">
+    <div class="concept__head"><span class="num">06</span><h2><span lang="en">Monolith vs Microservices</span><span lang="hu">Monolit vs microservices</span></h2></div>
+    <p class="def"><span lang="en"><strong>One deployable unit versus many independently deployable services.</strong> The decision is organizational as much as technical — it's about team autonomy and failure isolation, not code elegance.</span><span lang="hu"><strong>Egy deployolható egység vs sok, egymástól függetlenül deployolható szolgáltatás.</strong> A döntés legalább annyira szervezeti, mint technikai — a csapat-autonómiáról és hiba-izolációról szól, nem kód-eleganciáról.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Dimension</span><span lang="hu">Dimenzió</span></th><th><span lang="en">Monolith</span><span lang="hu">Monolit</span></th><th><span lang="en">Microservices</span><span lang="hu">Microservices</span></th></tr>
+      <tr><td><span lang="en">Deployment</span><span lang="hu">Deploy</span></td><td><span lang="en">one unit, simple</span><span lang="hu">egy egység, egyszerű</span></td><td><span lang="en">independent per service</span><span lang="hu">szolgáltatásonként független</span></td></tr>
+      <tr><td><span lang="en">Scaling</span><span lang="hu">Skálázás</span></td><td><span lang="en">whole app together</span><span lang="hu">az egész app együtt</span></td><td><span lang="en">per service</span><span lang="hu">szolgáltatásonként</span></td></tr>
+      <tr><td><span lang="en">Data</span><span lang="hu">Adat</span></td><td><span lang="en">one DB, real transactions</span><span lang="hu">egy DB, valódi tranzakciók</span></td><td><span lang="en">DB per service, eventual consistency</span><span lang="hu">DB szolgáltatásonként, eventual consistency</span></td></tr>
+      <tr><td><span lang="en">Debugging</span><span lang="hu">Debug</span></td><td><span lang="en">stack trace, one process</span><span lang="hu">stack trace, egy folyamat</span></td><td><span lang="en">distributed tracing needed</span><span lang="hu">distributed tracing kell</span></td></tr>
+      <tr><td><span lang="en">Team fit</span><span lang="hu">Csapat</span></td><td><span lang="en">small teams</span><span lang="hu">kis csapatok</span></td><td><span lang="en">many autonomous teams</span><span lang="hu">sok autonóm csapat</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">Which should you start with?</span><span lang="hu">Melyikkel kezdj?</span></p>
+      <ul class="a">
+        <li><span lang="en">A well-structured monolith, nearly always. It gives you real transactions, simple debugging and one deploy while requirements are still moving. Extract services when a specific pressure appears — a component needing separate scaling, or a team needing independent release cadence.</span><span lang="hu">Jól strukturált monolittal, szinte mindig. Valódi tranzakciókat, egyszerű debugot és egy deployt ad, amíg a követelmények még mozognak. Akkor emelj ki szolgáltatásokat, ha konkrét nyomás jelentkezik — egy komponens külön skálázást igényel, vagy egy csapat független kiadási ütemet.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What is a “modular monolith”?</span><span lang="hu">Mi a „moduláris monolit”?</span></p>
+      <ul class="a">
+        <li><span lang="en">One deployable, but internally split into modules with enforced boundaries — each owning its data and exposing an explicit interface. You get most of the structural benefit without the distributed-systems cost, and clean seams if you later extract a service.</span><span lang="hu">Egy deployolható egység, de belül modulokra osztva, kikényszerített határokkal — mindegyik birtokolja a saját adatát és explicit interface-t nyújt. A szerkezeti előny nagy részét megkapod az elosztott rendszerek költsége nélkül, és tiszta illesztéseket, ha később kiemelsz egy szolgáltatást.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What do microservices actually cost?</span><span lang="hu">Mibe kerülnek valójában a microservices?</span></p>
+      <ul class="a">
+        <li><span lang="en">Network calls that fail, distributed transactions you must replace with sagas, eventual consistency, distributed tracing, service discovery, versioned contracts between teams, and a much heavier deployment platform. All of the Distributed Systems deck becomes your problem.</span><span lang="hu">Hálózati hívások, amelyek elbuknak, elosztott tranzakciók, amiket sagákra kell cserélni, eventual consistency, distributed tracing, service discovery, verziózott szerződések csapatok között, és egy sokkal nehezebb deploy-platform. A teljes Distributed Systems deck a te problémáddá válik.</span></li>
+      </ul>
+    </div>
+    <p class="note"><span class="note__tag"><span lang="en">Note</span><span lang="hu">Megjegyzés</span></span><span lang="en">The failure modes of the microservices side are covered in the Distributed Systems deck — sagas, idempotency, circuit breakers and the rest.</span><span lang="hu">A microservices oldal hibamódjait a Distributed Systems deck fedi le — sagák, idempotency, circuit breakerek és a többi.</span></p>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Splitting a system you don't yet understand produces a distributed monolith: services that must be deployed together, share a database, and chat constantly over the network. That's strictly worse than the monolith it replaced.</span><span lang="hu">Egy még nem értett rendszer szétbontása elosztott monolitot szül: szolgáltatásokat, amiket együtt kell deployolni, közös adatbázison osztoznak, és folyamatosan csevegnek a hálózaton. Ez szigorúan rosszabb, mint a monolit, amit leváltott.</span></p>
+  </section>
+  <section class="concept" id="c07">
+    <div class="concept__head"><span class="num">07</span><h2><span lang="en">Domain-Driven Design</span><span lang="hu">Domain-Driven Design</span></h2></div>
+    <p class="def"><span lang="en"><strong>Modelling software around the business domain</strong>, using the language the domain experts use, and drawing module boundaries where the language changes meaning.</span><span lang="hu"><strong>A szoftver modellezése az üzleti domain köré</strong>, a domain-szakértők nyelvét használva, és ott húzva a modul-határokat, ahol a nyelv jelentése megváltozik.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">What is a bounded context?</span><span lang="hu">Mi a bounded context?</span></p>
+      <ul class="a">
+        <li><span lang="en">A boundary within which a term has one precise meaning. “Customer” means something different to billing than to support — rather than building one giant shared Customer model, each context keeps its own, and they translate at the edges.</span><span lang="hu">Egy határ, amelyen belül egy fogalom egy pontos jelentéssel bír. A „Customer” mást jelent a számlázásnak, mint a supportnak — egyetlen óriási közös Customer modell építése helyett minden kontextus a sajátját tartja, és a széleken fordítanak.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Entity vs value object vs aggregate?</span><span lang="hu">Entity vs value object vs aggregate?</span></p>
+      <ul class="a">
+        <li><span lang="en">An <strong>entity</strong> has identity that persists through change (a User). A <strong>value object</strong> is defined entirely by its values and is immutable (Money, an address). An <strong>aggregate</strong> is a cluster treated as one unit for consistency, with a single root through which all changes flow.</span><span lang="hu">Egy <strong>entity</strong>-nek identitása van, amely a változáson át megmarad (egy User). Egy <strong>value object</strong>-et teljesen az értékei határoznak meg és immutábilis (Money, egy cím). Egy <strong>aggregate</strong> egy klaszter, amelyet egy egységként kezelünk a konzisztencia miatt, egyetlen gyökérrel, amelyen minden változás átfolyik.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What's the practical takeaway if you're not doing full DDD?</span><span lang="hu">Mi a gyakorlati tanulság, ha nem csinálsz teljes DDD-t?</span></p>
+      <ul class="a">
+        <li><span lang="en">Name things as the business does, keep invariants in the model rather than scattered across services, and draw module boundaries around business capabilities rather than technical layers. That alone captures most of the value.</span><span lang="hu">Nevezd a dolgokat úgy, ahogy az üzlet, tartsd az invariánsokat a modellben, ne szórd szét szolgáltatásokban, és üzleti képességek köré húzd a modul-határokat, ne technikai rétegek köré. Már ez is megfogja az érték nagy részét.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Full DDD tactical patterns (aggregates, repositories, domain events, factories) are heavy machinery justified by complex domains. On a CRUD app they add layers without adding clarity — take the language and boundary ideas, leave the ceremony.</span><span lang="hu">A teljes DDD taktikai minták (aggregate-ek, repository-k, domain event-ek, factory-k) nehéz gépezet, amit komplex domainek indokolnak. Egy CRUD appon rétegeket adnak világosság nélkül — vidd el a nyelvi és határ-ötleteket, hagyd a ceremóniát.</span></p>
+  </section>
+  <section class="concept" id="c08">
+    <div class="concept__head"><span class="num">08</span><h2><span lang="en">Design Patterns</span><span lang="hu">Tervezési minták</span></h2></div>
+    <p class="def"><span lang="en"><strong>Named, reusable solutions to recurring design problems</strong> — useful mainly as shared vocabulary. Interviewers ask less “list the patterns” and more “which would you use here, and why?”</span><span lang="hu"><strong>Elnevezett, újrafelhasználható megoldások visszatérő tervezési problémákra</strong> — főleg közös szókincsként hasznosak. Az interjúztatók kevésbé kérdezik, hogy „sorold fel a mintákat”, inkább hogy „melyiket használnád itt, és miért?”</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Pattern</span><span lang="hu">Minta</span></th><th><span lang="en">Solves</span><span lang="hu">Mit old meg</span></th><th><span lang="en">JS example</span><span lang="hu">JS példa</span></th></tr>
+      <tr><td><span lang="en">Factory</span><span lang="hu">Factory</span></td><td><span lang="en">creating objects without exposing construction</span><span lang="hu">objektum-létrehozás a konstrukció felfedése nélkül</span></td><td><span lang="en">makeService({deps})</span><span lang="hu">makeService({deps})</span></td></tr>
+      <tr><td><span lang="en">Strategy</span><span lang="hu">Strategy</span></td><td><span lang="en">swapping an algorithm at runtime</span><span lang="hu">algoritmus cseréje futásidőben</span></td><td><span lang="en">passing a comparator or handler</span><span lang="hu">komparátor vagy handler átadása</span></td></tr>
+      <tr><td><span lang="en">Observer</span><span lang="hu">Observer</span></td><td><span lang="en">notifying many listeners of a change</span><span lang="hu">sok figyelő értesítése változásról</span></td><td><span lang="en">EventEmitter, pub/sub</span><span lang="hu">EventEmitter, pub/sub</span></td></tr>
+      <tr><td><span lang="en">Adapter</span><span lang="hu">Adapter</span></td><td><span lang="en">making an incompatible interface fit</span><span lang="hu">inkompatibilis interface illesztése</span></td><td><span lang="en">wrapping a third-party SDK</span><span lang="hu">harmadik féltől való SDK becsomagolása</span></td></tr>
+      <tr><td><span lang="en">Repository</span><span lang="hu">Repository</span></td><td><span lang="en">abstracting data access</span><span lang="hu">adathozzáférés absztrahálása</span></td><td><span lang="en">orders.findById()</span><span lang="hu">orders.findById()</span></td></tr>
+      <tr><td><span lang="en">Singleton</span><span lang="hu">Singleton</span></td><td><span lang="en">one shared instance</span><span lang="hu">egy közös példány</span></td><td><span lang="en">a DB pool (use sparingly)</span><span lang="hu">egy DB pool (ritkán használd)</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">How do patterns differ in JavaScript?</span><span lang="hu">Miben mások a minták JavaScriptben?</span></p>
+      <ul class="a">
+        <li><span lang="en">Several exist natively. Functions are first-class, so Strategy is just passing a function; modules are singletons by default; closures replace many class-based patterns. Reaching for the Java-shaped version of a pattern in JS usually adds ceremony for nothing.</span><span lang="hu">Több natívan létezik. A függvények elsőosztályúak, szóval a Strategy csak függvény-átadás; a modulok alapból singletonok; a closure-ök sok osztály-alapú mintát helyettesítenek. Egy minta Java-formájú verziójáért nyúlni JS-ben általában ceremóniát ad a semmiért.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why is Singleton often called an anti-pattern?</span><span lang="hu">Miért nevezik gyakran anti-mintának a Singletont?</span></p>
+      <ul class="a">
+        <li><span lang="en">It's global mutable state by another name: it hides dependencies, makes tests order-dependent, and can't easily be substituted. A module-level connection pool is fine; a singleton holding application state usually isn't.</span><span lang="hu">Ez globális mutálható állapot más néven: elrejti a függőségeket, sorrendfüggővé teszi a teszteket, és nehezen helyettesíthető. Egy modul-szintű connection pool rendben van; egy alkalmazás-állapotot tartó singleton általában nem.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Choosing a pattern before you have the problem is how codebases acquire abstract factories that produce one thing. Patterns are a response to observed pain — apply them when duplication or rigidity actually appears.</span><span lang="hu">Ha a probléma előtt választasz mintát, így szereznek a kódbázisok absztrakt factory-kat, amelyek egyetlen dolgot gyártanak. A minták a megfigyelt fájdalomra adott válaszok — akkor alkalmazd őket, amikor a duplikáció vagy merevség ténylegesen megjelenik.</span></p>
+  </section>
+  <div class="sec"><span class="sec__l"><span lang="en">Judgement</span><span lang="hu">Ítélőképesség</span></span><span class="sec__r"></span></div>
+  <section class="concept" id="c09">
+    <div class="concept__head"><span class="num">09</span><h2><span lang="en">Trade-offs & Communicating Design</span><span lang="hu">Trade-offök & a terv kommunikálása</span></h2></div>
+    <p class="def"><span lang="en"><strong>How to justify an architectural decision</strong> — the actual interview skill. There's rarely a correct answer; there's a defensible one with its costs acknowledged.</span><span lang="hu"><strong>Hogyan indokolj egy architekturális döntést</strong> — ez a tényleges interjú-készség. Ritkán van helyes válasz; van védhető, a költségeit felvállalva.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">How should you answer “how would you structure this?”</span><span lang="hu">Hogyan válaszolj arra, hogy „hogyan strukturálnád ezt?”</span></p>
+      <ul class="a">
+        <li><span lang="en">State the constraints you're optimizing for (team size, expected change, scale), propose a structure, then name what it costs and when you'd revisit it. “A modular monolith, because the team is four people and the domain is still shifting — I'd extract services once a component needs separate scaling.”</span><span lang="hu">Mondd ki, mely megkötésekre optimalizálsz (csapatméret, várható változás, skála), javasolj egy szerkezetet, majd nevezd meg, mibe kerül és mikor gondolnád újra. „Moduláris monolit, mert a csapat négy fő és a domain még mozog — akkor emelnék ki szolgáltatásokat, ha egy komponens külön skálázást igényel.”</span></li>
+      </ul>
+      <p class="q"><span lang="en">What signals seniority here?</span><span lang="hu">Mi jelez szenioritást itt?</span></p>
+      <ul class="a">
+        <li><span lang="en">Naming the trade-off rather than the pattern. Junior answers list technologies; senior answers say what they're trading away and under what conditions the decision would flip. Acknowledging that your choice has a cost is a strength, not a weakness.</span><span lang="hu">A trade-off megnevezése a minta helyett. A junior válaszok technológiákat sorolnak; a szenior válaszok kimondják, mit adnak fel cserébe, és milyen feltételek mellett fordulna meg a döntés. Annak elismerése, hogy a választásodnak ára van, erősség, nem gyengeség.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What is an ADR?</span><span lang="hu">Mi az ADR?</span></p>
+      <ul class="a">
+        <li><span lang="en">An Architecture Decision Record: a short document capturing the context, the decision, the alternatives considered and the consequences. It answers the question future maintainers actually ask — “why is it like this?”</span><span lang="hu">Architecture Decision Record: egy rövid dokumentum, amely rögzíti a kontextust, a döntést, a mérlegelt alternatívákat és a következményeket. Arra a kérdésre válaszol, amit a jövőbeli karbantartók ténylegesen feltesznek — „miért így van?”</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Answering with an unconditional “microservices” or “clean architecture” signals pattern-matching rather than judgement. Every structure is right for some context and wrong for others — say which context you're assuming.</span><span lang="hu">A feltétel nélküli „microservices” vagy „clean architecture” válasz minta-illesztést jelez, nem ítélőképességet. Minden szerkezet helyes valamely kontextusban és helytelen másokban — mondd ki, melyik kontextust feltételezed.</span></p>
+  </section>
+  <p class="foot"><span lang="en">Software architecture · technical interview prep · <b>Q&amp;A knowledge base</b></span><span lang="hu">Szoftverarchitektúra · technikai interjú-felkészítő · <b>Q&amp;A tudásbázis</b></span></p>
+
+</div>
+
+<script>
+(function () {
+  var SUPPORTED = ['en', 'hu'];
+  var root = document.documentElement;
+
+  // The smallest block element at the top-centre of the viewport (where the
+  // text is) that exists in both languages — used to hold the reading position
+  // steady across a switch. Sampling the centre, not the edge, lands on a
+  // paragraph rather than a large container, so the visible line stays put.
+  function anchor() {
+    var el = document.elementFromPoint(window.innerWidth / 2, 8);
+    while (el && el !== document.body &&
+           (el.hasAttribute('lang') || getComputedStyle(el).display === 'inline')) {
+      el = el.parentElement;
+    }
+    return el && el !== document.body ? el : null;
+  }
+
+  function applyLang(lang) {
+    if (SUPPORTED.indexOf(lang) === -1) lang = 'en';
+    if (root.dataset.lang === lang) return;
+    var a = window.scrollY > 0 ? anchor() : null;
+    var before = a ? a.getBoundingClientRect().top : 0;
+    // Toggle via data-lang only. Deliberately NOT setting root.lang: some pages
+    // hide the other language with a bare [lang="…"]{display:none} rule, which
+    // would then match <html lang="…"> and hide the whole page. Visible spans
+    // still carry their own lang attribute for assistive tech.
+    root.dataset.lang = lang;
+    if (a) window.scrollBy(0, a.getBoundingClientRect().top - before);
+  }
+
+  // In-place switch for the shell (synchronous, same-origin).
+  window.interviewBrowser = {
+    setParams: function (params) { applyLang(params && params.lang); }
+  };
+
+  applyLang(new URLSearchParams(location.search).get('lang') || 'en');
+})();
+</script>
+</body>
+</html>

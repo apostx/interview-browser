@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSA & Coding Round — Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111827; --muted:#6B7280; --line:#E5E7EB; --paper:#EDF0F3; --card:#FFFFFF;
+  --accent:#0D9488;
+  --get:#16A34A; --post:#2563EB; --put:#D97706; --patch:#0D9488; --del:#DC2626;
+  --node:#FFFFFF; --nodeline:#94A3B8; --slate:#334155;
+  --safe:#16A34A; --vuln:#DC2626;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+a{color:inherit}
+code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+code{background:#EEF2F7;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:.86em}
+
+/* ── language toggling ───────────────────────────────────────── */
+[lang="hu"]{display:none}
+html[data-lang="hu"] [lang="en"]{display:none}
+html[data-lang="hu"] [lang="hu"]{display:inline}
+html[data-lang="hu"] li[lang="hu"]{display:list-item}
+html[data-lang="hu"] p[lang="hu"],
+html[data-lang="hu"] div[lang="hu"]{display:block}
+svg text[lang="hu"]{display:none}
+html[data-lang="hu"] svg text[lang="en"]{display:none}
+html[data-lang="hu"] svg text[lang="hu"]{display:inline}
+
+.bar{position:sticky;top:0;z-index:20;background:rgba(237,240,243,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar__in{max-width:900px;margin:0 auto;padding:10px 20px;display:flex;
+  align-items:center;justify-content:space-between;gap:12px}
+.bar__t{font-family:'Space Grotesk';font-weight:600;font-size:14px;letter-spacing:-.01em;
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.bar__t b{color:var(--accent)}
+.bar__r{display:flex;align-items:center;gap:10px}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+.lang button{font-family:'JetBrains Mono';font-size:12px;padding:4px 11px;border:0;background:#fff;
+  color:var(--muted);cursor:pointer;line-height:1.4}
+.lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.lang button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.bar a.up{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);
+  text-decoration:none;border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:#fff}
+.bar a.up:hover{color:var(--ink);border-color:var(--accent)}
+
+.hero{padding:44px 0 8px}
+.eyebrow{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,6vw,50px);
+  line-height:1.02;letter-spacing:-.025em;margin:0 0 12px}
+.lede{color:var(--muted);max-width:64ch;margin:0}
+.depth-note{margin:16px 0 0;font-size:13px;color:var(--muted);background:#fff;border:1px solid var(--line);
+  border-radius:10px;padding:11px 14px}
+.depth-note b{color:var(--ink);font-weight:600}
+
+.sec{display:flex;align-items:center;gap:14px;margin:40px 4px 2px}
+.sec__l{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--accent);white-space:nowrap}
+.sec__r{height:1px;background:var(--line);flex:1}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:24px 0 2px}
+.legend .lbl{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-right:2px}
+.chip{font-family:'JetBrains Mono';font-size:12px;padding:3px 8px;border-radius:6px;
+  border:1px solid var(--line);background:#fff}
+.chip--2{color:var(--safe);border-color:#BBF7D0;background:#F0FDF4}
+.chip--4{color:var(--put);border-color:#FDE68A;background:#FFFBEB}
+.chip--5{color:var(--vuln);border-color:#FECACA;background:#FEF2F2}
+
+.index{margin:30px 0 8px}
+.index h3{font-family:'Space Grotesk';font-size:13px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+a.idx{display:flex;align-items:baseline;gap:10px;text-decoration:none;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  transition:border-color .15s,transform .15s}
+a.idx:hover{border-color:var(--accent);transform:translateY(-1px)}
+.idx__n{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);font-weight:500}
+.idx__t{font-size:13.5px;font-weight:500}
+
+.concept{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:26px 26px 22px;margin-top:16px;scroll-margin-top:64px}
+.concept__head{display:flex;align-items:center;gap:14px;margin:0 0 12px}
+.concept__head .num{font-family:'JetBrains Mono';font-weight:500;font-size:15px;color:#fff;
+  background:var(--ink);width:38px;height:38px;border-radius:10px;display:grid;
+  place-items:center;flex:0 0 auto}
+.concept__head .num.pr{background:var(--accent)}
+.concept__head h2{font-family:'Space Grotesk';font-weight:600;font-size:22px;
+  letter-spacing:-.015em;margin:0}
+.def{margin:0 0 16px}
+.def strong{font-weight:600}
+.qa{border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
+.q{font-weight:600;margin:14px 0 6px}
+.q:first-child{margin-top:0}
+.q::before{content:"Q";font-family:'JetBrains Mono';color:var(--accent);font-weight:600;
+  margin-right:9px;font-size:13px}
+ul.a,p.a{margin:0 0 2px}
+ul.a{padding-left:20px}
+ul.a li{margin:3px 0}
+.step{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--slate);margin:18px 0 6px;display:flex;align-items:center;gap:8px}
+.step::before{content:"";width:16px;height:2px;background:var(--accent);display:inline-block}
+.watch{margin:18px 0 0;background:#FFFBEB;border:1px solid #FDE68A;
+  border-left:3px solid var(--put);border-radius:8px;padding:10px 14px;font-size:14px}
+.watch__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--put);font-weight:600;display:block;margin-bottom:3px}
+.note{margin:14px 0 0;background:#EFF6FF;border:1px solid #BFDBFE;border-left:3px solid var(--post);
+  border-radius:8px;padding:10px 14px;font-size:14px}
+.note__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--post);font-weight:600;display:block;margin-bottom:3px}
+
+/* vulnerable vs fixed code pair */
+.codepair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 2px}
+.cbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}
+.cbox__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600}
+.cbox--bad .cbox__h{background:#FEF2F2;color:var(--vuln);border-bottom:1px solid #FECACA}
+.cbox--good .cbox__h{background:#F0FDF4;color:var(--safe);border-bottom:1px solid #BBF7D0}
+.cbox pre{margin:0;padding:10px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.55;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+@media (max-width:620px){.codepair{grid-template-columns:1fr}}
+
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 2px}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+table.t th{background:#F8FAFC;font-weight:600;font-family:'Space Grotesk';font-size:12px}
+table.t td:first-child{font-family:'JetBrains Mono';white-space:nowrap}
+
+.dia{margin:16px 0 4px;background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px}
+.dia svg{width:100%;height:auto;display:block}
+.dia__cap{font-family:'JetBrains Mono';font-size:11.5px;color:var(--muted);margin:8px 2px 0}
+svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
+
+.foot{margin-top:44px;text-align:center;color:var(--muted);font-size:12.5px}
+.foot b{font-family:'Space Grotesk';color:var(--ink)}
+
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+}
+@media print{
+  .bar{display:none} body{background:#fff}
+  .concept{break-inside:avoid;border-color:#ccc} a.idx{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+/* ── complexity badges ───────────────────────────────────────── */
+.cx{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.cx span{font-family:'JetBrains Mono';font-size:11.5px;padding:3px 9px;border-radius:6px;
+  border:1px solid var(--line);background:#fff;white-space:nowrap}
+.cx .k{color:var(--muted)}
+.cx .t{color:var(--post);border-color:#BFDBFE;background:#EFF6FF}
+.cx .s{color:var(--patch);border-color:#99F6E4;background:#F0FDFA}
+.cx .good{color:var(--safe);border-color:#BBF7D0;background:#F0FDF4}
+.cx .bad{color:var(--vuln);border-color:#FECACA;background:#FEF2F2}
+
+/* ── single code block ───────────────────────────────────────── */
+.code{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;margin:12px 0 2px}
+.code__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600;background:#F8FAFC;color:var(--slate);border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.code__cx{font-size:10px;color:var(--post);text-transform:none;letter-spacing:0}
+.code pre{margin:0;padding:11px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.6;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+  </marker>
+  <marker id="arrowg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#16A34A"/>
+  </marker>
+  <marker id="arrowr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#DC2626"/>
+  </marker>
+  <marker id="arrowb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#2563EB"/>
+  </marker>
+</defs></svg>
+
+<div class="wrap" id="top">
+
+  <div class="hero">
+    <p class="eyebrow"><span lang="en">Technical Q&amp;A Knowledge Base</span><span lang="hu">Technikai Q&amp;A tudásbázis</span></p>
+    <h1><span lang="en">DSA &amp; Coding Round</span><span lang="hu">DSA &amp; coding round</span></h1>
+    <p class="lede"><span lang="en">The data structures and their costs first, then the patterns that solve most interview problems — each with JavaScript code and its complexity stated. Ends with how to actually run the 45 minutes.</span><span lang="hu">Előbb az adatszerkezetek és a költségeik, aztán a minták, amelyek a legtöbb interjúfeladatot megoldják — mindegyik JavaScript kóddal és kimondott komplexitással. A végén hogyan vezesd le ténylegesen a 45 percet.</span></p>
+    <p class="depth-note"><span lang="en">Complexity is annotated on every structure and technique. The table below maps problem wording to the pattern that usually solves it.</span><span lang="hu">A komplexitás minden szerkezetnél és technikánál jelölve. Az alábbi tábla a feladat megfogalmazását képezi le arra a mintára, amely általában megoldja.</span></p>
+  </div>
+  <div class="legend"><span class="lbl"><span lang="en">Badges</span><span lang="hu">Jelölések</span></span><span class="chip chip--2"><span lang="en">green · cheap</span><span lang="hu">zöld · olcsó</span></span><span class="chip chip--5"><span lang="en">red · costly</span><span lang="hu">piros · drága</span></span><span class="chip chip--4"><span lang="en">amber · watch out</span><span lang="hu">sárga · buktató</span></span></div>
+  <div class="index">
+    <h3><span lang="en">Pattern recognition</span><span lang="hu">Minta-felismerés</span></h3>
+    <table class="t">
+      <tr><th><span lang="en">If the problem says…</span><span lang="hu">Ha a feladat azt mondja…</span></th><th><span lang="en">Reach for</span><span lang="hu">Nyúlj ehhez</span></th><th><span lang="en">Typical cost</span><span lang="hu">Tipikus költség</span></th></tr>
+      <tr><td><span lang="en">sorted array, find a pair</span><span lang="hu">rendezett tömb, találj egy párt</span></td><td><span lang="en">two pointers</span><span lang="hu">two pointers</span></td><td><span lang="en">O(n)</span><span lang="hu">O(n)</span></td></tr>
+      <tr><td><span lang="en">contiguous subarray / substring</span><span lang="hu">összefüggő résztömb / részstring</span></td><td><span lang="en">sliding window</span><span lang="hu">sliding window</span></td><td><span lang="en">O(n)</span><span lang="hu">O(n)</span></td></tr>
+      <tr><td><span lang="en">“have I seen this before?”</span><span lang="hu">„láttam ezt már?”</span></td><td><span lang="en">hash map / set</span><span lang="hu">hash map / set</span></td><td><span lang="en">O(n)</span><span lang="hu">O(n)</span></td></tr>
+      <tr><td><span lang="en">sorted input, or “minimum such that…”</span><span lang="hu">rendezett input, vagy „minimális, amelyre…”</span></td><td><span lang="en">binary search</span><span lang="hu">bináris keresés</span></td><td><span lang="en">O(log n)</span><span lang="hu">O(log n)</span></td></tr>
+      <tr><td><span lang="en">top k / k-th largest</span><span lang="hu">top k / k-adik legnagyobb</span></td><td><span lang="en">heap of size k</span><span lang="hu">k méretű heap</span></td><td><span lang="en">O(n log k)</span><span lang="hu">O(n log k)</span></td></tr>
+      <tr><td><span lang="en">shortest path, unweighted</span><span lang="hu">legrövidebb út, súlyozatlan</span></td><td><span lang="en">BFS</span><span lang="hu">BFS</span></td><td><span lang="en">O(V+E)</span><span lang="hu">O(V+E)</span></td></tr>
+      <tr><td><span lang="en">shortest path, weighted</span><span lang="hu">legrövidebb út, súlyozott</span></td><td><span lang="en">Dijkstra</span><span lang="hu">Dijkstra</span></td><td><span lang="en">O((V+E) log V)</span><span lang="hu">O((V+E) log V)</span></td></tr>
+      <tr><td><span lang="en">“find all …” / “generate every …”</span><span lang="hu">„találd meg az összes…” / „generálj minden…”</span></td><td><span lang="en">backtracking</span><span lang="hu">backtracking</span></td><td><span lang="en">O(2ⁿ) / O(n!)</span><span lang="hu">O(2ⁿ) / O(n!)</span></td></tr>
+      <tr><td><span lang="en">count ways / min-max with choices</span><span lang="hu">hányféleképpen / min-max választásokkal</span></td><td><span lang="en">dynamic programming</span><span lang="hu">dinamikus programozás</span></td><td><span lang="en">O(states)</span><span lang="hu">O(állapotok)</span></td></tr>
+      <tr><td><span lang="en">intervals, scheduling</span><span lang="hu">intervallumok, ütemezés</span></td><td><span lang="en">sort + greedy</span><span lang="hu">rendezés + greedy</span></td><td><span lang="en">O(n log n)</span><span lang="hu">O(n log n)</span></td></tr>
+      <tr><td><span lang="en">matching / nesting / undo</span><span lang="hu">párosítás / egymásba ágyazás / undo</span></td><td><span lang="en">stack</span><span lang="hu">verem</span></td><td><span lang="en">O(n)</span><span lang="hu">O(n)</span></td></tr>
+    </table>
+  </div>
+  <div class="index">
+    <h3><span lang="en">Jump to</span><span lang="hu">Ugrás</span></h3>
+    <div class="grid">
+      <a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t"><span lang="en">Big-O & Complexity Analysis</span><span lang="hu">Big-O & komplexitás-elemzés</span></span></a>
+      <a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t"><span lang="en">Arrays & Strings</span><span lang="hu">Tömbök & stringek</span></span></a>
+      <a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t"><span lang="en">Hash Maps & Sets</span><span lang="hu">Hash map-ek & set-ek</span></span></a>
+      <a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t"><span lang="en">Stacks & Queues</span><span lang="hu">Veremek & sorok</span></span></a>
+      <a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t"><span lang="en">Linked Lists</span><span lang="hu">Láncolt listák</span></span></a>
+      <a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t"><span lang="en">Trees & Binary Search Trees</span><span lang="hu">Fák & bináris keresőfák</span></span></a>
+      <a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t"><span lang="en">Heaps & Priority Queues</span><span lang="hu">Heapek & prioritási sorok</span></span></a>
+      <a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t"><span lang="en">Graphs</span><span lang="hu">Gráfok</span></span></a>
+      <a class="idx" href="#c09"><span class="idx__n">09</span><span class="idx__t"><span lang="en">Two Pointers</span><span lang="hu">Two pointers</span></span></a>
+      <a class="idx" href="#c10"><span class="idx__n">10</span><span class="idx__t"><span lang="en">Sliding Window</span><span lang="hu">Sliding window</span></span></a>
+      <a class="idx" href="#c11"><span class="idx__n">11</span><span class="idx__t"><span lang="en">Binary Search</span><span lang="hu">Bináris keresés</span></span></a>
+      <a class="idx" href="#c12"><span class="idx__n">12</span><span class="idx__t"><span lang="en">Sorting</span><span lang="hu">Rendezés</span></span></a>
+      <a class="idx" href="#c13"><span class="idx__n">13</span><span class="idx__t"><span lang="en">Recursion & Backtracking</span><span lang="hu">Rekurzió & backtracking</span></span></a>
+      <a class="idx" href="#c14"><span class="idx__n">14</span><span class="idx__t"><span lang="en">Dynamic Programming</span><span lang="hu">Dinamikus programozás</span></span></a>
+      <a class="idx" href="#c15"><span class="idx__n">15</span><span class="idx__t"><span lang="en">Greedy Algorithms</span><span lang="hu">Mohó algoritmusok</span></span></a>
+      <a class="idx" href="#c16"><span class="idx__n">16</span><span class="idx__t"><span lang="en">Interview Strategy</span><span lang="hu">Interjú-stratégia</span></span></a>
+    </div>
+  </div>
+  <div class="sec"><span class="sec__l"><span lang="en">Complexity & Data Structures</span><span lang="hu">Komplexitás & adatszerkezetek</span></span><span class="sec__r"></span></div>
+  <section class="concept" id="c01">
+    <div class="concept__head"><span class="num">01</span><h2><span lang="en">Big-O & Complexity Analysis</span><span lang="hu">Big-O & komplexitás-elemzés</span></h2></div>
+    <p class="def"><span lang="en"><strong>How runtime and memory grow as input grows</strong> — the language interviewers use to compare solutions. You state it for every solution you propose, before and after optimizing.</span><span lang="hu"><strong>Hogyan nő a futásidő és a memória, ahogy az input nő</strong> — ez a nyelv, amin az interjúztatók összehasonlítják a megoldásokat. Minden javasolt megoldásodra kimondod, optimalizálás előtt és után.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Class</span><span lang="hu">Osztály</span></th><th><span lang="en">Name</span><span lang="hu">Név</span></th><th><span lang="en">Typical source</span><span lang="hu">Tipikus forrás</span></th></tr>
+      <tr><td><span lang="en">O(1)</span><span lang="hu">O(1)</span></td><td><span lang="en">constant</span><span lang="hu">konstans</span></td><td><span lang="en">hash lookup, array index</span><span lang="hu">hash lookup, tömb-index</span></td></tr>
+      <tr><td><span lang="en">O(log n)</span><span lang="hu">O(log n)</span></td><td><span lang="en">logarithmic</span><span lang="hu">logaritmikus</span></td><td><span lang="en">binary search, balanced tree</span><span lang="hu">bináris keresés, kiegyensúlyozott fa</span></td></tr>
+      <tr><td><span lang="en">O(n)</span><span lang="hu">O(n)</span></td><td><span lang="en">linear</span><span lang="hu">lineáris</span></td><td><span lang="en">single pass over the input</span><span lang="hu">egyszeri végigmenés az inputon</span></td></tr>
+      <tr><td><span lang="en">O(n log n)</span><span lang="hu">O(n log n)</span></td><td><span lang="en">linearithmic</span><span lang="hu">linearitmikus</span></td><td><span lang="en">efficient sorting</span><span lang="hu">hatékony rendezés</span></td></tr>
+      <tr><td><span lang="en">O(n²)</span><span lang="hu">O(n²)</span></td><td><span lang="en">quadratic</span><span lang="hu">négyzetes</span></td><td><span lang="en">nested loops over the input</span><span lang="hu">egymásba ágyazott ciklusok</span></td></tr>
+      <tr><td><span lang="en">O(2ⁿ)</span><span lang="hu">O(2ⁿ)</span></td><td><span lang="en">exponential</span><span lang="hu">exponenciális</span></td><td><span lang="en">naive recursion over subsets</span><span lang="hu">naiv rekurzió részhalmazokon</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">How do you analyze a loop quickly?</span><span lang="hu">Hogyan elemzel gyorsan egy ciklust?</span></p>
+      <ul class="a">
+        <li><span lang="en">Count how many times the work runs relative to n. Sequential loops add (O(n) + O(n) = O(n)); nested loops multiply (O(n) × O(n) = O(n²)). Drop constants and lower-order terms — O(2n + 5) is O(n).</span><span lang="hu">Számold meg, hányszor fut a munka n-hez képest. Az egymás utáni ciklusok összeadódnak (O(n) + O(n) = O(n)); az egymásba ágyazottak szorzódnak (O(n) × O(n) = O(n²)). Dobd el a konstansokat és alacsonyabb rendű tagokat — az O(2n + 5) az O(n).</span></li>
+      </ul>
+      <p class="q"><span lang="en">What is amortized complexity?</span><span lang="hu">Mi az amortizált komplexitás?</span></p>
+      <ul class="a">
+        <li><span lang="en">The average cost per operation across a sequence, when occasional operations are expensive. Pushing to a dynamic array is <strong>amortized O(1)</strong>: most pushes are constant, and the occasional resize that copies everything averages out.</span><span lang="hu">A műveletenkénti átlagos költség egy sorozaton át, amikor egyes műveletek drágák. Egy dinamikus tömbbe push-olás <strong>amortizált O(1)</strong>: a legtöbb push konstans, és az alkalmankénti átméretezés, amely mindent átmásol, kiátlagolódik.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why does space complexity matter separately?</span><span lang="hu">Miért számít külön a tárkomplexitás?</span></p>
+      <ul class="a">
+        <li><span lang="en">Interviewers often ask for an O(1)-space version after you give an O(n)-space one. Remember the recursion call stack counts as space — a recursive DFS on a tree is O(h) space, not O(1).</span><span lang="hu">Az interjúztatók gyakran kérnek O(1)-tárú verziót, miután adtál egy O(n)-tárút. Ne feledd, a rekurziós hívási verem is tár — egy rekurzív DFS egy fán O(h) tár, nem O(1).</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Don't say “O(n) because there's one loop” without checking what's inside it. A <code>.includes()</code> or <code>.indexOf()</code> inside a loop is a hidden O(n), making the whole thing O(n²) — this is the single most common accidental quadratic.</span><span lang="hu">Ne mondd, hogy „O(n), mert egy ciklus van”, anélkül hogy megnéznéd, mi van benne. Egy <code>.includes()</code> vagy <code>.indexOf()</code> a cikluson belül rejtett O(n), amitől az egész O(n²) lesz — ez a leggyakoribb véletlen négyzetes eset.</span></p>
+  </section>
+  <section class="concept" id="c02">
+    <div class="concept__head"><span class="num">02</span><h2><span lang="en">Arrays & Strings</span><span lang="hu">Tömbök & stringek</span></h2></div>
+    <p class="def"><span lang="en"><strong>Contiguous, index-addressable sequences</strong> — the default structure, and the one most interview problems are phrased over. Strings behave like immutable arrays in JavaScript.</span><span lang="hu"><strong>Folytonos, indexelhető sorozatok</strong> — az alapértelmezett szerkezet, és az, amire a legtöbb interjúfeladat épül. A stringek JavaScriptben immutábilis tömbként viselkednek.</span></p>
+    <div class="cx"><span class="good"><span lang="en">access O(1)</span><span lang="hu">elérés O(1)</span></span><span class="t"><span lang="en">search O(n)</span><span lang="hu">keresés O(n)</span></span><span class="bad"><span lang="en">insert/delete at front O(n)</span><span lang="hu">beszúrás/törlés elöl O(n)</span></span><span class="good"><span lang="en">push/pop O(1)*</span><span lang="hu">push/pop O(1)*</span></span></div>
+    <div class="qa">
+      <p class="q"><span lang="en">Why is shift/unshift O(n)?</span><span lang="hu">Miért O(n) a shift/unshift?</span></p>
+      <ul class="a">
+        <li><span lang="en">Removing or inserting at index 0 requires shifting every remaining element by one position. Use <code>push</code>/<code>pop</code> (the end) when order permits, or a deque-like approach with an index pointer instead of mutating the front.</span><span lang="hu">A 0. indexen való törlés vagy beszúrás minden maradék elem eggyel való eltolását igényli. Használj <code>push</code>/<code>pop</code>-ot (a végén), ha a sorrend engedi, vagy deque-szerű megközelítést index-mutatóval a front mutálása helyett.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What string operations hide a cost in JS?</span><span lang="hu">Mely string-műveletek rejtenek költséget JS-ben?</span></p>
+      <ul class="a">
+        <li><span lang="en">Strings are immutable, so <code>s += c</code> in a loop creates a new string each time — build an array and <code>join('')</code> at the end. <code>slice</code>/<code>substring</code> copy, so repeated slicing inside a loop is quietly O(n²).</span><span lang="hu">A stringek immutábilisak, szóval az <code>s += c</code> egy ciklusban minden alkalommal új stringet hoz létre — építs tömböt és <code>join('')</code> a végén. A <code>slice</code>/<code>substring</code> másol, szóval az ismételt szeletelés cikluson belül csendben O(n²).</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">Building a string — the two versions</span><span lang="hu">String építése — a két verzió</span><span class="code__cx">O(n²) → O(n)</span></div><pre>// ✗ O(n²) — new string every iteration
+let out = '';
+for (const c of chars) out += c;
+
+// ✓ O(n) — one join at the end
+const parts = [];
+for (const c of chars) parts.push(c);
+const out2 = parts.join('');</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">In JS, <code>array.splice</code>, <code>shift</code> and <code>unshift</code> are O(n) but look as cheap as <code>push</code>. Using <code>shift()</code> to dequeue in a BFS loop turns an O(V+E) traversal into O(V²) — use an index pointer instead.</span><span lang="hu">JS-ben az <code>array.splice</code>, <code>shift</code> és <code>unshift</code> O(n), de olyan olcsónak tűnnek, mint a <code>push</code>. A <code>shift()</code> használata dequeue-ra egy BFS ciklusban O(V+E) bejárást O(V²)-re változtat — használj helyette index-mutatót.</span></p>
+  </section>
+  <section class="concept" id="c03">
+    <div class="concept__head"><span class="num">03</span><h2><span lang="en">Hash Maps & Sets</span><span lang="hu">Hash map-ek & set-ek</span></h2></div>
+    <p class="def"><span lang="en"><strong>Key → value lookup in expected O(1)</strong> via hashing. The single highest-leverage structure in interviews: it converts a nested-loop search into a single pass.</span><span lang="hu"><strong>Kulcs → érték lookup várhatóan O(1)-ben</strong> hashelés útján. A legnagyobb hatású szerkezet interjúkon: egy egymásba ágyazott ciklusú keresést egyetlen végigmenéssé alakít.</span></p>
+    <div class="cx"><span class="good"><span lang="en">get/set/has O(1) avg</span><span lang="hu">get/set/has O(1) átl.</span></span><span class="bad"><span lang="en">O(n) worst case</span><span lang="hu">O(n) legrosszabb</span></span><span class="s"><span lang="en">space O(n)</span><span lang="hu">tár O(n)</span></span></div>
+    <div class="qa">
+      <p class="q"><span lang="en">Map vs plain object in JavaScript?</span><span lang="hu">Map vs sima objektum JavaScriptben?</span></p>
+      <ul class="a">
+        <li><span lang="en"><code>Map</code> accepts any key type (including objects), preserves insertion order, has a real <code>.size</code>, and is safe from prototype-key collisions. Prefer <code>Map</code> for algorithm work; objects are fine for fixed string keys.</span><span lang="hu">A <code>Map</code> bármilyen kulcstípust elfogad (objektumot is), megőrzi a beszúrási sorrendet, van valódi <code>.size</code>-a, és védett a prototípus-kulcs ütközésektől. Algoritmusokhoz a <code>Map</code>-et részesítsd előnyben; objektumok rendben vannak fix string kulcsokhoz.</span></li>
+      </ul>
+      <p class="q"><span lang="en">When does O(1) degrade?</span><span lang="hu">Mikor romlik el az O(1)?</span></p>
+      <ul class="a">
+        <li><span lang="en">On heavy hash collisions all keys land in one bucket, degrading to O(n). In practice with built-in hashing this is a theoretical concern — but it's the right answer when asked for the worst case.</span><span lang="hu">Erős hash-ütközéseknél minden kulcs egy bucketbe kerül, O(n)-re romolva. A gyakorlatban a beépített hasheléssel ez elméleti aggály — de ez a helyes válasz, ha a legrosszabb esetet kérdezik.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">Two Sum — the canonical hash-map win</span><span lang="hu">Two Sum — a kanonikus hash-map nyereség</span><span class="code__cx">O(n) time / O(n) space</span></div><pre>function twoSum(nums, target) {
+  const seen = new Map();          // value → index
+  for (let i = 0; i &lt; nums.length; i++) {
+    const need = target - nums[i];
+    if (seen.has(need)) return [seen.get(need), i];
+    seen.set(nums[i], i);
+  }
+  return [];
+}</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">The trade is always space for time — say so out loud. Also, objects/arrays as Map keys compare by <em>reference</em>, not value: two identical arrays are different keys. Serialize (e.g. <code>JSON.stringify</code> or a delimiter-joined string) when you need value equality.</span><span lang="hu">A csere mindig tár időért — mondd ki hangosan. És az objektumok/tömbök mint Map-kulcsok <em>referencia</em> szerint hasonlítódnak, nem érték szerint: két azonos tömb két különböző kulcs. Szerializálj (pl. <code>JSON.stringify</code> vagy elválasztóval összefűzött string), ha érték-egyenlőség kell.</span></p>
+  </section>
+  <section class="concept" id="c04">
+    <div class="concept__head"><span class="num">04</span><h2><span lang="en">Stacks & Queues</span><span lang="hu">Veremek & sorok</span></h2></div>
+    <p class="def"><span lang="en"><strong>Order-restricted collections:</strong> a stack is last-in-first-out (LIFO), a queue is first-in-first-out (FIFO). Both give O(1) insert and remove at their designated end.</span><span lang="hu"><strong>Sorrend-korlátozott gyűjtemények:</strong> a verem last-in-first-out (LIFO), a sor first-in-first-out (FIFO). Mindkettő O(1) beszúrást és eltávolítást ad a kijelölt végén.</span></p>
+    <div class="cx"><span class="good"><span lang="en">push/pop O(1)</span><span lang="hu">push/pop O(1)</span></span><span class="good"><span lang="en">peek O(1)</span><span lang="hu">peek O(1)</span></span><span class="s"><span lang="en">space O(n)</span><span lang="hu">tár O(n)</span></span></div>
+    <div class="qa">
+      <p class="q"><span lang="en">What signals a stack problem?</span><span lang="hu">Mi jelez verem-feladatot?</span></p>
+      <ul class="a">
+        <li><span lang="en">Matching or nesting (brackets, tags), undo/backtracking, evaluating expressions, and “most recent unresolved thing” — including the monotonic-stack family (next greater element, largest rectangle).</span><span lang="hu">Párosítás vagy egymásba ágyazás (zárójelek, tagek), undo/backtracking, kifejezés-kiértékelés, és a „legutóbbi megoldatlan dolog” — beleértve a monoton verem családot (next greater element, legnagyobb téglalap).</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you implement an efficient queue in JS?</span><span lang="hu">Hogyan implementálsz hatékony sort JS-ben?</span></p>
+      <ul class="a">
+        <li><span lang="en">Not with <code>shift()</code> (O(n)). Keep an array plus a head index and advance the index on dequeue — O(1) per operation, at the cost of not reclaiming memory until you compact.</span><span lang="hu">Nem <code>shift()</code>-tel (O(n)). Tarts egy tömböt plusz egy head indexet, és léptesd az indexet dequeue-nál — O(1) műveletenként, azon az áron, hogy nem szabadítasz fel memóriát, amíg nem tömörítesz.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">O(1) queue via head pointer</span><span lang="hu">O(1) sor head-mutatóval</span><span class="code__cx">enqueue/dequeue O(1) amortized</span></div><pre>class Queue {
+  #items = []; #head = 0;
+  enqueue(x) { this.#items.push(x); }
+  dequeue() {
+    if (this.#head &gt;= this.#items.length) return undefined;
+    const x = this.#items[this.#head++];
+    // compact occasionally to free memory
+    if (this.#head &gt; 50 &amp;&amp; this.#head * 2 &gt; this.#items.length) {
+      this.#items = this.#items.slice(this.#head);
+      this.#head = 0;
+    }
+    return x;
+  }
+  get size() { return this.#items.length - this.#head; }
+}</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Using <code>array.shift()</code> as a queue is the most common hidden-quadratic bug in interview code — it looks like the obvious dequeue but copies the whole array each call.</span><span lang="hu">Az <code>array.shift()</code> sorként használata a leggyakoribb rejtett-négyzetes bug az interjúkódban — a kézenfekvő dequeue-nak tűnik, de minden hívásnál lemásolja az egész tömböt.</span></p>
+  </section>
+  <section class="concept" id="c05">
+    <div class="concept__head"><span class="num">05</span><h2><span lang="en">Linked Lists</span><span lang="hu">Láncolt listák</span></h2></div>
+    <p class="def"><span lang="en"><strong>Nodes connected by pointers</strong> — O(1) insert/delete given a node reference, but no random access. Interview-relevant mainly for pointer manipulation problems.</span><span lang="hu"><strong>Mutatókkal összekötött node-ok</strong> — O(1) beszúrás/törlés egy node-referencia birtokában, de nincs véletlen elérés. Interjú-szempontból főleg mutató-manipulációs feladatokhoz releváns.</span></p>
+    <div class="cx"><span class="good"><span lang="en">insert/delete at node O(1)</span><span lang="hu">beszúrás/törlés node-nál O(1)</span></span><span class="bad"><span lang="en">access/search O(n)</span><span lang="hu">elérés/keresés O(n)</span></span><span class="s"><span lang="en">space O(n)</span><span lang="hu">tár O(n)</span></span></div>
+    <div class="qa">
+      <p class="q"><span lang="en">What are the two essential techniques?</span><span lang="hu">Mi a két alapvető technika?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Fast/slow pointers</strong> (Floyd): detect a cycle, find the middle, find the k-th from the end. <strong>Dummy head node</strong>: removes the special case of modifying the first element, simplifying insert/delete code substantially.</span><span lang="hu"><strong>Gyors/lassú mutatók</strong> (Floyd): ciklus észlelése, a közép megtalálása, a k-adik a végétől. <strong>Dummy head node</strong>: megszünteti az első elem módosításának speciális esetét, jelentősen egyszerűsítve a beszúró/törlő kódot.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">Reverse a linked list — iterative</span><span lang="hu">Láncolt lista megfordítása — iteratív</span><span class="code__cx">O(n) time / O(1) space</span></div><pre>function reverse(head) {
+  let prev = null, cur = head;
+  while (cur) {
+    const next = cur.next;   // save before overwriting
+    cur.next = prev;         // flip the pointer
+    prev = cur;              // advance
+    cur = next;
+  }
+  return prev;               // new head
+}</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Always save <code>cur.next</code> before you overwrite it, or you lose the rest of the list. And check for <code>null</code> at every dereference — most linked-list bugs are missing null guards at the head or tail.</span><span lang="hu">Mindig mentsd el a <code>cur.next</code>-et, mielőtt felülírod, különben elveszted a lista többi részét. És ellenőrizd a <code>null</code>-t minden dereferálásnál — a legtöbb láncolt lista bug hiányzó null-őr a fejnél vagy a végénél.</span></p>
+  </section>
+  <section class="concept" id="c06">
+    <div class="concept__head"><span class="num">06</span><h2><span lang="en">Trees & Binary Search Trees</span><span lang="hu">Fák & bináris keresőfák</span></h2></div>
+    <p class="def"><span lang="en"><strong>Hierarchical nodes with a single root and no cycles.</strong> A binary search tree keeps left &lt; node &lt; right, giving O(log n) search when balanced.</span><span lang="hu"><strong>Hierarchikus node-ok egyetlen gyökérrel, ciklusok nélkül.</strong> Egy bináris keresőfa fenntartja a bal &lt; node &lt; jobb rendet, ami kiegyensúlyozott állapotban O(log n) keresést ad.</span></p>
+    <div class="cx"><span class="good"><span lang="en">BST search O(log n) balanced</span><span lang="hu">BST keresés O(log n) kiegyensúlyozva</span></span><span class="bad"><span lang="en">O(n) if degenerate</span><span lang="hu">O(n), ha elfajult</span></span><span class="s"><span lang="en">space O(h) recursion</span><span lang="hu">tár O(h) rekurzió</span></span></div>
+    <div class="qa">
+      <p class="q"><span lang="en">The traversal orders and when to use each?</span><span lang="hu">A bejárási sorrendek és mikor melyik?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>In-order</strong> (left, node, right) — yields a BST's values in sorted order. <strong>Pre-order</strong> (node, left, right) — copying/serializing a tree. <strong>Post-order</strong> (left, right, node) — deleting, or computing a value from children first. <strong>Level-order</strong> (BFS) — anything depth- or layer-related.</span><span lang="hu"><strong>In-order</strong> (bal, node, jobb) — egy BST értékeit rendezett sorrendben adja. <strong>Pre-order</strong> (node, bal, jobb) — fa másolása/szerializálása. <strong>Post-order</strong> (bal, jobb, node) — törlés, vagy érték számítása a gyerekekből előbb. <strong>Level-order</strong> (BFS) — bármi mélység- vagy szint-vonatkozású.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What makes a tree balanced, and why care?</span><span lang="hu">Mitől kiegyensúlyozott egy fa, és miért érdekes?</span></p>
+      <ul class="a">
+        <li><span lang="en">Subtree heights differ by at most a constant, keeping height O(log n). An unbalanced BST built from sorted input degenerates into a linked list — search becomes O(n). Self-balancing trees (AVL, red-black) maintain the guarantee on insert/delete.</span><span lang="hu">A részfák magassága legfeljebb konstanssal tér el, így a magasság O(log n) marad. Egy rendezett inputból épített kiegyensúlyozatlan BST láncolt listává fajul — a keresés O(n) lesz. Az önkiegyensúlyozó fák (AVL, piros-fekete) fenntartják a garanciát beszúráskor/törléskor.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">DFS (recursive) and BFS (level-order)</span><span lang="hu">DFS (rekurzív) és BFS (szintenkénti)</span><span class="code__cx">DFS O(n)/O(h) · BFS O(n)/O(w)</span></div><pre>// DFS in-order — O(n) time, O(h) space
+function inorder(node, out = []) {
+  if (!node) return out;
+  inorder(node.left, out);
+  out.push(node.val);
+  inorder(node.right, out);
+  return out;
+}
+
+// BFS level-order — O(n) time, O(w) space (w = max width)
+function levels(root) {
+  if (!root) return [];
+  const res = [], q = [root];
+  let head = 0;
+  while (head &lt; q.length) {
+    const size = q.length - head, level = [];
+    for (let i = 0; i &lt; size; i++) {
+      const n = q[head++];
+      level.push(n.val);
+      if (n.left) q.push(n.left);
+      if (n.right) q.push(n.right);
+    }
+    res.push(level);
+  }
+  return res;
+}</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Recursive DFS on a deep tree can blow the call stack (~10k frames in Node) — mention an explicit-stack iterative version if the input could be large. And O(h) space is O(n) in the worst case, not O(log n), unless balance is guaranteed.</span><span lang="hu">A rekurzív DFS egy mély fán szétvetheti a hívási vermet (~10k keret Node-ban) — említs explicit-vermes iteratív verziót, ha az input nagy lehet. És az O(h) tár a legrosszabb esetben O(n), nem O(log n), hacsak nem garantált a kiegyensúlyozottság.</span></p>
+  </section>
+  <section class="concept" id="c07">
+    <div class="concept__head"><span class="num">07</span><h2><span lang="en">Heaps & Priority Queues</span><span lang="hu">Heapek & prioritási sorok</span></h2></div>
+    <p class="def"><span lang="en"><strong>A complete binary tree keeping the min (or max) at the root</strong> — O(log n) insert and extract, O(1) peek. The structure behind “top k” and “next smallest” problems.</span><span lang="hu"><strong>Egy teljes bináris fa, amely a minimumot (vagy maximumot) tartja a gyökérben</strong> — O(log n) beszúrás és kivétel, O(1) peek. A „top k” és „következő legkisebb” feladatok mögötti szerkezet.</span></p>
+    <div class="cx"><span class="good"><span lang="en">peek O(1)</span><span lang="hu">peek O(1)</span></span><span class="t"><span lang="en">insert/extract O(log n)</span><span lang="hu">beszúrás/kivétel O(log n)</span></span><span class="t"><span lang="en">heapify O(n)</span><span lang="hu">heapify O(n)</span></span><span class="s"><span lang="en">space O(n)</span><span lang="hu">tár O(n)</span></span></div>
+    <div class="qa">
+      <p class="q"><span lang="en">When is a heap the right answer?</span><span lang="hu">Mikor a heap a helyes válasz?</span></p>
+      <ul class="a">
+        <li><span lang="en">“Top k” / “k-th largest” (keep a size-k heap → O(n log k), better than sorting's O(n log n)), merging k sorted lists, running median (two heaps), and any scheduler picking the next-smallest item.</span><span lang="hu">„Top k” / „k-adik legnagyobb” (tarts k méretű heapet → O(n log k), jobb, mint a rendezés O(n log n)-je), k rendezett lista összefésülése, futó medián (két heap), és bármely ütemező, amely a következő legkisebb elemet választja.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why does a size-k heap beat sorting?</span><span lang="hu">Miért veri a k méretű heap a rendezést?</span></p>
+      <ul class="a">
+        <li><span lang="en">Sorting does full work on all n elements: O(n log n). A heap capped at k only ever holds k items, so each of the n insertions costs O(log k): total O(n log k). When k ≪ n this is a large win, and space drops from O(n) to O(k).</span><span lang="hu">A rendezés teljes munkát végez mind az n elemen: O(n log n). Egy k-ra korlátozott heap sosem tart k-nál többet, így az n beszúrás mindegyike O(log k): összesen O(n log k). Ha k ≪ n, ez nagy nyereség, és a tár O(n)-ről O(k)-ra csökken.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">JavaScript has no built-in heap — say this out loud and either write a compact one or state that you'd use a library. Reaching for <code>sort()</code> on every insertion instead is O(n² log n) and a red flag.</span><span lang="hu">A JavaScriptben nincs beépített heap — mondd ki ezt hangosan, és vagy írj egy tömöret, vagy jelezd, hogy library-t használnál. Ha helyette minden beszúrásnál <code>sort()</code>-ot hívsz, az O(n² log n) és vörös zászló.</span></p>
+  </section>
+  <section class="concept" id="c08">
+    <div class="concept__head"><span class="num">08</span><h2><span lang="en">Graphs</span><span lang="hu">Gráfok</span></h2></div>
+    <p class="def"><span lang="en"><strong>Nodes connected by edges</strong>, directed or undirected, possibly weighted or cyclic. Many problems are graphs in disguise — grids, dependencies, state machines, social networks.</span><span lang="hu"><strong>Élekkel összekötött node-ok</strong>, irányított vagy irányítatlan, esetleg súlyozott vagy ciklikus. Sok feladat álcázott gráf — rácsok, függőségek, állapotgépek, közösségi hálók.</span></p>
+    <div class="cx"><span class="t"><span lang="en">BFS/DFS O(V+E)</span><span lang="hu">BFS/DFS O(V+E)</span></span><span class="s"><span lang="en">space O(V)</span><span lang="hu">tár O(V)</span></span><span class="k"><span lang="en">adjacency list preferred</span><span lang="hu">szomszédsági lista ajánlott</span></span></div>
+    <div class="qa">
+      <p class="q"><span lang="en">Adjacency list vs matrix?</span><span lang="hu">Szomszédsági lista vs mátrix?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>List</strong> (<code>Map&lt;node, node[]&gt;</code>): O(V+E) space, fast neighbor iteration — the default for sparse graphs, which most are. <strong>Matrix</strong>: O(V²) space but O(1) edge lookup — worth it only for dense graphs or constant-time edge queries.</span><span lang="hu"><strong>Lista</strong> (<code>Map&lt;node, node[]&gt;</code>): O(V+E) tár, gyors szomszéd-iteráció — az alapérték ritka gráfokhoz, amilyen a legtöbb. <strong>Mátrix</strong>: O(V²) tár, de O(1) él-lookup — csak sűrű gráfokhoz vagy konstans idejű él-lekérdezéshez éri meg.</span></li>
+      </ul>
+      <p class="q"><span lang="en">BFS or DFS — how do you choose?</span><span lang="hu">BFS vagy DFS — hogyan választasz?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>BFS</strong> explores by distance, so it finds the shortest path in an <em>unweighted</em> graph — use it whenever “fewest steps” appears. <strong>DFS</strong> goes deep first: cycle detection, topological sort, connected components, path existence, and backtracking.</span><span lang="hu">A <strong>BFS</strong> távolság szerint jár be, így megtalálja a legrövidebb utat <em>súlyozatlan</em> gráfban — használd, amikor a „legkevesebb lépés” felmerül. A <strong>DFS</strong> előbb mélyre megy: ciklus-észlelés, topologikus rendezés, összefüggő komponensek, út-létezés, és backtracking.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What about weighted shortest paths?</span><span lang="hu">Mi a helyzet a súlyozott legrövidebb utakkal?</span></p>
+      <ul class="a">
+        <li><span lang="en">BFS no longer works. <strong>Dijkstra</strong> (non-negative weights) with a priority queue is O((V+E) log V). <strong>Bellman-Ford</strong> handles negative weights in O(V·E) and detects negative cycles.</span><span lang="hu">A BFS már nem működik. A <strong>Dijkstra</strong> (nemnegatív súlyok) prioritási sorral O((V+E) log V). A <strong>Bellman-Ford</strong> kezeli a negatív súlyokat O(V·E)-ben és észleli a negatív ciklusokat.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">BFS on a graph — shortest path in unweighted</span><span lang="hu">BFS gráfon — legrövidebb út súlyozatlanban</span><span class="code__cx">O(V+E) time / O(V) space</span></div><pre>function bfs(graph, start, goal) {
+  const visited = new Set([start]);
+  const q = [[start, 0]];
+  let head = 0;
+  while (head &lt; q.length) {
+    const [node, dist] = q[head++];
+    if (node === goal) return dist;
+    for (const next of graph.get(node) ?? []) {
+      if (!visited.has(next)) {
+        visited.add(next);          // mark on ENQUEUE, not dequeue
+        q.push([next, dist + 1]);
+      }
+    }
+  }
+  return -1;
+}</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Mark nodes visited when you <em>enqueue</em>, not when you dequeue — otherwise the same node enters the queue many times and the complexity degrades badly. Forgetting the visited set entirely means infinite loops on any cyclic graph.</span><span lang="hu">A node-okat <em>enqueue</em>-kor jelöld látogatottnak, ne dequeue-kor — különben ugyanaz a node sokszor bekerül a sorba, és a komplexitás súlyosan romlik. A visited halmaz teljes elfelejtése végtelen ciklust jelent bármely ciklikus gráfon.</span></p>
+  </section>
+  <div class="sec"><span class="sec__l"><span lang="en">Patterns & Techniques</span><span lang="hu">Minták & technikák</span></span><span class="sec__r"></span></div>
+  <section class="concept" id="c09">
+    <div class="concept__head"><span class="num">09</span><h2><span lang="en">Two Pointers</span><span lang="hu">Two pointers</span></h2></div>
+    <p class="def"><span lang="en"><strong>Two indices moving through the data, usually from opposite ends or at different speeds</strong> — replacing a nested loop with a single pass. The first thing to try on a sorted array.</span><span lang="hu"><strong>Két index mozog az adaton át, általában ellentétes végekről vagy eltérő sebességgel</strong> — egy egymásba ágyazott ciklust egyetlen végigmenéssel helyettesítve. Rendezett tömbön ezt próbáld először.</span></p>
+    <div class="cx"><span class="good"><span lang="en">O(n) time</span><span lang="hu">O(n) idő</span></span><span class="good"><span lang="en">O(1) space</span><span lang="hu">O(1) tár</span></span><span class="k"><span lang="en">needs sorted input (often)</span><span lang="hu">rendezett input kell (gyakran)</span></span></div>
+    <div class="qa">
+      <p class="q"><span lang="en">When does it apply?</span><span lang="hu">Mikor alkalmazható?</span></p>
+      <ul class="a">
+        <li><span lang="en">A sorted array where you're looking for a pair/triplet matching a condition; palindrome checks; merging two sorted sequences; partitioning in place; and removing duplicates without extra space.</span><span lang="hu">Rendezett tömb, ahol feltételnek megfelelő párt/hármast keresel; palindróma-ellenőrzés; két rendezett sorozat összefésülése; helyben particionálás; és duplikátumok eltávolítása extra tár nélkül.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why does moving from both ends work on sorted data?</span><span lang="hu">Miért működik a két végről indulás rendezett adaton?</span></p>
+      <ul class="a">
+        <li><span lang="en">Because the sum tells you which pointer to move: too small means you need a bigger value, so advance the left pointer; too large means shrink from the right. Each step eliminates a whole set of candidates, which is what buys the O(n).</span><span lang="hu">Mert az összeg megmondja, melyik mutatót mozgasd: ha túl kicsi, nagyobb érték kell, szóval léptesd a bal mutatót; ha túl nagy, szűkíts jobbról. Minden lépés egy egész jelölt-halmazt zár ki — ez adja az O(n)-t.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">Two-sum on a sorted array</span><span lang="hu">Two-sum rendezett tömbön</span><span class="code__cx">O(n) time / O(1) space</span></div><pre>function twoSumSorted(nums, target) {
+  let l = 0, r = nums.length - 1;
+  while (l &lt; r) {
+    const sum = nums[l] + nums[r];
+    if (sum === target) return [l, r];
+    if (sum &lt; target) l++;      // need bigger
+    else r--;                   // need smaller
+  }
+  return [];
+}</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">If the input isn't sorted and you sort it yourself, the solution becomes O(n log n) and the original indices are lost — if the answer needs indices, a hash map in O(n) is the better trade.</span><span lang="hu">Ha az input nem rendezett és te rendezed, a megoldás O(n log n) lesz, és az eredeti indexek elvesznek — ha a válaszhoz indexek kellenek, egy hash map O(n)-ben jobb csere.</span></p>
+  </section>
+  <section class="concept" id="c10">
+    <div class="concept__head"><span class="num">10</span><h2><span lang="en">Sliding Window</span><span lang="hu">Sliding window</span></h2></div>
+    <p class="def"><span lang="en"><strong>A window over a contiguous range that expands and contracts</strong>, maintaining a running state instead of recomputing — turning O(n·k) or O(n²) into O(n).</span><span lang="hu"><strong>Egy ablak egy összefüggő tartomány felett, amely tágul és szűkül</strong>, futó állapotot tartva újraszámítás helyett — O(n·k)-t vagy O(n²)-t alakítva O(n)-né.</span></p>
+    <div class="cx"><span class="good"><span lang="en">O(n) time</span><span lang="hu">O(n) idő</span></span><span class="s"><span lang="en">O(k) space</span><span lang="hu">O(k) tár</span></span><span class="k"><span lang="en">contiguous subarray/substring</span><span lang="hu">összefüggő résztömb/részstring</span></span></div>
+    <div class="qa">
+      <p class="q"><span lang="en">Fixed vs variable window?</span><span lang="hu">Fix vs változó ablak?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Fixed:</strong> the size k is given — slide by adding the entering element and removing the leaving one. <strong>Variable:</strong> grow the right edge until the constraint breaks, then shrink from the left until it holds again, tracking the best window seen.</span><span lang="hu"><strong>Fix:</strong> a k méret adott — csúsztass a belépő elem hozzáadásával és a kilépő eltávolításával. <strong>Változó:</strong> növeld a jobb szélt, amíg a feltétel el nem törik, majd szűkíts balról, amíg újra teljesül, közben követve a legjobb látott ablakot.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What's the signal in a problem statement?</span><span lang="hu">Mi a jelzés a feladatszövegben?</span></p>
+      <ul class="a">
+        <li><span lang="en">The words <em>contiguous</em>, <em>subarray</em> or <em>substring</em> combined with longest/shortest/maximum under a constraint. If the elements needn't be adjacent, it's not a sliding window.</span><span lang="hu">Az <em>összefüggő</em>, <em>résztömb</em> vagy <em>részstring</em> szavak kombinálva a leghosszabb/legrövidebb/maximum feltétellel. Ha az elemeknek nem kell szomszédosnak lenniük, az nem sliding window.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">Longest substring without repeating characters</span><span lang="hu">Leghosszabb részstring ismétlődő karakter nélkül</span><span class="code__cx">O(n) time / O(min(n,alphabet)) space</span></div><pre>function longestUnique(s) {
+  const lastSeen = new Map();
+  let best = 0, start = 0;
+  for (let end = 0; end &lt; s.length; end++) {
+    const c = s[end];
+    // only jump forward — never move start backwards
+    if (lastSeen.has(c) &amp;&amp; lastSeen.get(c) &gt;= start) {
+      start = lastSeen.get(c) + 1;
+    }
+    lastSeen.set(c, end);
+    best = Math.max(best, end - start + 1);
+  }
+  return best;
+}</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">The left pointer must only ever move forward — resetting or moving it backwards breaks the O(n) guarantee and usually the correctness too. Note the <code>&gt;= start</code> guard above: a stale index from before the window must be ignored.</span><span lang="hu">A bal mutató csak előre mozoghat — visszaállítása vagy visszaléptetése megtöri az O(n) garanciát, és általában a helyességet is. Figyeld a fenti <code>&gt;= start</code> őrt: egy elavult, ablak előtti indexet figyelmen kívül kell hagyni.</span></p>
+  </section>
+  <section class="concept" id="c11">
+    <div class="concept__head"><span class="num">11</span><h2><span lang="en">Binary Search</span><span lang="hu">Bináris keresés</span></h2></div>
+    <p class="def"><span lang="en"><strong>Halving the search space each step</strong> — O(log n). Applies to sorted arrays, but more powerfully to <em>any</em> monotonic predicate, including searching over an answer range.</span><span lang="hu"><strong>A keresési tér felezése minden lépésben</strong> — O(log n). Rendezett tömbökre alkalmazható, de erősebben <em>bármely</em> monoton predikátumra, beleértve a válasz-tartomány feletti keresést.</span></p>
+    <div class="cx"><span class="good"><span lang="en">O(log n) time</span><span lang="hu">O(log n) idő</span></span><span class="good"><span lang="en">O(1) space</span><span lang="hu">O(1) tár</span></span><span class="k"><span lang="en">needs monotonicity</span><span lang="hu">monotonitás kell</span></span></div>
+    <div class="qa">
+      <p class="q"><span lang="en">What is “binary search on the answer”?</span><span lang="hu">Mi a „bináris keresés a válaszon”?</span></p>
+      <ul class="a">
+        <li><span lang="en">When the answer is a number in a range and you can cheaply test “is x feasible?”, and feasibility is monotonic (once true, always true above), binary search the range instead of the array. Classic uses: minimum capacity, minimum days, minimum speed.</span><span lang="hu">Amikor a válasz egy szám egy tartományban, és olcsón tesztelhető, hogy „megvalósítható-e x?”, és a megvalósíthatóság monoton (ha egyszer igaz, felette mindig igaz), a tömb helyett a tartományon keress binárisan. Klasszikus használat: minimális kapacitás, minimális napok, minimális sebesség.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you avoid the classic off-by-one and infinite loops?</span><span lang="hu">Hogyan kerülöd el a klasszikus off-by-one-t és a végtelen ciklust?</span></p>
+      <ul class="a">
+        <li><span lang="en">Pick one template and keep it. With <code>while (l &lt; r)</code> and <code>mid = (l+r)&gt;&gt;1</code>, always move at least one pointer past mid (<code>l = mid+1</code>), or the loop can stall when <code>l</code> and <code>r</code> are adjacent.</span><span lang="hu">Válassz egy sablont és tartsd magad hozzá. A <code>while (l &lt; r)</code> és <code>mid = (l+r)&gt;&gt;1</code> mellett mindig mozgass legalább egy mutatót mid-en túlra (<code>l = mid+1</code>), különben a ciklus megakadhat, amikor az <code>l</code> és <code>r</code> szomszédos.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">Leftmost insertion point (lower bound)</span><span lang="hu">Bal szélső beszúrási pont (lower bound)</span><span class="code__cx">O(log n) time / O(1) space</span></div><pre>function lowerBound(nums, target) {
+  let l = 0, r = nums.length;          // r is exclusive
+  while (l &lt; r) {
+    const mid = (l + r) &gt;&gt; 1;
+    if (nums[mid] &lt; target) l = mid + 1;
+    else r = mid;                      // keep mid as a candidate
+  }
+  return l;   // first index with nums[i] &gt;= target
+}</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">In other languages <code>(l+r)/2</code> can overflow; in JS the real trap is different — <code>(l+r)&gt;&gt;1</code> uses 32-bit ints, so it breaks above ~2³¹. Use <code>Math.floor((l+r)/2)</code> or <code>l + ((r-l)&gt;&gt;1)</code> for very large ranges (common in binary-search-on-answer problems).</span><span lang="hu">Más nyelvekben az <code>(l+r)/2</code> túlcsordulhat; JS-ben a valódi csapda más — az <code>(l+r)&gt;&gt;1</code> 32 bites egészeket használ, szóval ~2³¹ felett elromlik. Nagyon nagy tartományokhoz (gyakori a válaszon-bináris-keresés feladatoknál) használj <code>Math.floor((l+r)/2)</code>-t vagy <code>l + ((r-l)&gt;&gt;1)</code>-et.</span></p>
+  </section>
+  <section class="concept" id="c12">
+    <div class="concept__head"><span class="num">12</span><h2><span lang="en">Sorting</span><span lang="hu">Rendezés</span></h2></div>
+    <p class="def"><span lang="en"><strong>Ordering data as a preprocessing step</strong> — often the move that makes a hard problem easy. You rarely implement a sort in an interview, but you must know the costs and when sorting pays for itself.</span><span lang="hu"><strong>Az adat rendezése előfeldolgozási lépésként</strong> — gyakran ez a lépés teszi könnyűvé a nehéz feladatot. Interjún ritkán implementálsz rendezést, de ismerned kell a költségeket és hogy mikor térül meg.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Algorithm</span><span lang="hu">Algoritmus</span></th><th><span lang="en">Time</span><span lang="hu">Idő</span></th><th><span lang="en">Space</span><span lang="hu">Tár</span></th><th><span lang="en">Stable</span><span lang="hu">Stabil</span></th></tr>
+      <tr><td><span lang="en">Merge sort</span><span lang="hu">Merge sort</span></td><td><span lang="en">O(n log n)</span><span lang="hu">O(n log n)</span></td><td><span lang="en">O(n)</span><span lang="hu">O(n)</span></td><td><span lang="en">yes</span><span lang="hu">igen</span></td></tr>
+      <tr><td><span lang="en">Quick sort</span><span lang="hu">Quick sort</span></td><td><span lang="en">O(n log n) avg, O(n²) worst</span><span lang="hu">O(n log n) átl., O(n²) legrosszabb</span></td><td><span lang="en">O(log n)</span><span lang="hu">O(log n)</span></td><td><span lang="en">no</span><span lang="hu">nem</span></td></tr>
+      <tr><td><span lang="en">Heap sort</span><span lang="hu">Heap sort</span></td><td><span lang="en">O(n log n)</span><span lang="hu">O(n log n)</span></td><td><span lang="en">O(1)</span><span lang="hu">O(1)</span></td><td><span lang="en">no</span><span lang="hu">nem</span></td></tr>
+      <tr><td><span lang="en">Counting/radix</span><span lang="hu">Counting/radix</span></td><td><span lang="en">O(n + k)</span><span lang="hu">O(n + k)</span></td><td><span lang="en">O(n + k)</span><span lang="hu">O(n + k)</span></td><td><span lang="en">yes</span><span lang="hu">igen</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">What does “stable” mean and when does it matter?</span><span lang="hu">Mit jelent a „stabil” és mikor számít?</span></p>
+      <ul class="a">
+        <li><span lang="en">Equal elements keep their relative order. It matters when sorting by multiple keys in sequence — sort by secondary key first, then by primary, and stability preserves the secondary ordering within ties.</span><span lang="hu">Az egyenlő elemek megtartják a relatív sorrendjüket. Akkor számít, amikor több kulcs szerint rendezel egymás után — előbb a másodlagos kulcs szerint, aztán az elsődleges szerint, és a stabilitás megőrzi a másodlagos sorrendet a holtversenyeken belül.</span></li>
+      </ul>
+      <p class="q"><span lang="en">When can you beat O(n log n)?</span><span lang="hu">Mikor lehet az O(n log n)-nél jobb?</span></p>
+      <ul class="a">
+        <li><span lang="en">Comparison-based sorting can't beat O(n log n) in general. But if the values are bounded integers, counting/radix sort runs in O(n + k) — worth mentioning when the problem states a small range (e.g. ages, or values 0–100).</span><span lang="hu">Az összehasonlítás-alapú rendezés általánosságban nem verheti az O(n log n)-t. De ha az értékek korlátos egészek, a counting/radix sort O(n + k)-ban fut — érdemes megemlíteni, amikor a feladat kis tartományt ad meg (pl. életkorok, vagy 0–100 értékek).</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">JavaScript's <code>.sort()</code> converts to strings by default — <code>[10,9,1].sort()</code> gives <code>[1,10,9]</code>. Always pass a comparator for numbers: <code>.sort((a,b) =&gt; a-b)</code>. It also sorts in place, mutating the input.</span><span lang="hu">A JavaScript <code>.sort()</code>-ja alapból stringgé alakít — a <code>[10,9,1].sort()</code> eredménye <code>[1,10,9]</code>. Számokhoz mindig adj komparátort: <code>.sort((a,b) =&gt; a-b)</code>. És helyben rendez, mutálva az inputot.</span></p>
+  </section>
+  <section class="concept" id="c13">
+    <div class="concept__head"><span class="num">13</span><h2><span lang="en">Recursion & Backtracking</span><span lang="hu">Rekurzió & backtracking</span></h2></div>
+    <p class="def"><span lang="en"><strong>Solving a problem by solving smaller instances of itself</strong>; backtracking adds “try a choice, recurse, undo it” to explore a search space systematically.</span><span lang="hu"><strong>Egy feladat megoldása önmaga kisebb példányainak megoldásával</strong>; a backtracking hozzáadja a „próbálj egy választást, rekurzálj, vond vissza” mintát, hogy szisztematikusan bejárj egy keresési teret.</span></p>
+    <div class="cx"><span class="bad"><span lang="en">often O(2ⁿ) or O(n!)</span><span lang="hu">gyakran O(2ⁿ) vagy O(n!)</span></span><span class="s"><span lang="en">O(depth) call stack</span><span lang="hu">O(mélység) hívási verem</span></span><span class="k"><span lang="en">prune to survive</span><span lang="hu">vágj, hogy túléld</span></span></div>
+    <div class="qa">
+      <p class="q"><span lang="en">What are the parts of a correct recursion?</span><span lang="hu">Mik egy helyes rekurzió részei?</span></p>
+      <ul class="a">
+        <li><span lang="en">A <strong>base case</strong> that returns without recursing, a <strong>recursive case</strong> that moves strictly toward the base case, and correct <strong>state handling</strong> — either pass copies or mutate and undo.</span><span lang="hu">Egy <strong>báziseset</strong>, amely rekurzió nélkül tér vissza, egy <strong>rekurzív eset</strong>, amely szigorúan a báziseset felé halad, és helyes <strong>állapotkezelés</strong> — vagy másolatokat adsz át, vagy mutálsz és visszavonsz.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What problems are backtracking?</span><span lang="hu">Mely feladatok backtrackingek?</span></p>
+      <ul class="a">
+        <li><span lang="en">Generating permutations, combinations and subsets; N-queens; sudoku; word search on a grid; partitioning. The giveaway is “find all …” or “generate every valid …”.</span><span lang="hu">Permutációk, kombinációk és részhalmazok generálása; N-királynő; sudoku; szókeresés rácson; particionálás. Az árulkodó jel a „találd meg az összes…” vagy „generáld minden érvényes…”.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">Subsets via backtracking</span><span lang="hu">Részhalmazok backtrackinggel</span><span class="code__cx">O(n·2ⁿ) time / O(n) space (excl. output)</span></div><pre>function subsets(nums) {
+  const res = [], path = [];
+  function backtrack(start) {
+    res.push([...path]);              // copy — path keeps mutating
+    for (let i = start; i &lt; nums.length; i++) {
+      path.push(nums[i]);             // choose
+      backtrack(i + 1);               // explore
+      path.pop();                     // un-choose
+    }
+  }
+  backtrack(0);
+  return res;
+}</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Pushing <code>path</code> instead of <code>[...path]</code> stores a reference to an array that keeps mutating — every entry in the result ends up identical (usually empty). And forgetting the <code>pop()</code> leaks state into sibling branches.</span><span lang="hu">Ha a <code>path</code>-t pusholod a <code>[...path]</code> helyett, egy folyamatosan mutálódó tömbre való referenciát tárolsz — az eredmény minden eleme azonos lesz (általában üres). És a <code>pop()</code> elfelejtése átszivárogtatja az állapotot a testvér-ágakba.</span></p>
+  </section>
+  <section class="concept" id="c14">
+    <div class="concept__head"><span class="num">14</span><h2><span lang="en">Dynamic Programming</span><span lang="hu">Dinamikus programozás</span></h2></div>
+    <p class="def"><span lang="en"><strong>Solving overlapping subproblems once and reusing the results</strong> — either top-down with memoization or bottom-up with a table. It turns exponential recursion into polynomial time.</span><span lang="hu"><strong>Átfedő részfeladatok egyszeri megoldása és az eredmények újrafelhasználása</strong> — vagy top-down memoizációval, vagy bottom-up táblával. Exponenciális rekurziót alakít polinomiális idejűvé.</span></p>
+    <div class="cx"><span class="t"><span lang="en">typically O(states × transition)</span><span lang="hu">tipikusan O(állapotok × átmenet)</span></span><span class="s"><span lang="en">O(states), often reducible</span><span lang="hu">O(állapotok), gyakran csökkenthető</span></span></div>
+    <div class="qa">
+      <p class="q"><span lang="en">When is DP applicable?</span><span lang="hu">Mikor alkalmazható a DP?</span></p>
+      <ul class="a">
+        <li><span lang="en">Two conditions: <strong>optimal substructure</strong> (the optimal answer is built from optimal answers to subproblems) and <strong>overlapping subproblems</strong> (the same subproblem recurs). Without overlap, plain recursion or greedy is enough.</span><span lang="hu">Két feltétel: <strong>optimális részszerkezet</strong> (az optimális válasz részfeladatok optimális válaszaiból épül) és <strong>átfedő részfeladatok</strong> (ugyanaz a részfeladat ismétlődik). Átfedés nélkül elég a sima rekurzió vagy a mohó megoldás.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Memoization vs tabulation?</span><span lang="hu">Memoizáció vs tabuláció?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Memoization</strong> (top-down): write the natural recursion, cache results — easier to derive, but uses the call stack. <strong>Tabulation</strong> (bottom-up): fill a table iteratively — no stack risk and often allows space optimization.</span><span lang="hu"><strong>Memoizáció</strong> (top-down): írd meg a természetes rekurziót, cache-eld az eredményeket — könnyebb levezetni, de a hívási vermet használja. <strong>Tabuláció</strong> (bottom-up): töltsd a táblát iteratívan — nincs verem-kockázat és gyakran engedi a tár-optimalizálást.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you approach a DP problem in an interview?</span><span lang="hu">Hogyan állsz neki egy DP feladatnak interjún?</span></p>
+      <ul class="a">
+        <li><span lang="en">Define the state in words first (“dp[i] = the best answer using the first i items”), write the recurrence, identify the base cases, then decide the iteration order. Start with brute-force recursion and add memoization — deriving the table directly is harder and error-prone.</span><span lang="hu">Előbb definiáld az állapotot szavakban („dp[i] = a legjobb válasz az első i elemmel”), írd fel a rekurziót, azonosítsd a báziseseteket, majd döntsd el az iterációs sorrendet. Indulj nyers erejű rekurzióval és add hozzá a memoizációt — a tábla közvetlen levezetése nehezebb és hibalehetőség.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">Climbing stairs — three stages of the same idea</span><span lang="hu">Lépcsőzés — ugyanaz az ötlet három szakaszban</span><span class="code__cx">O(2ⁿ) → O(n)/O(n) → O(n)/O(1)</span></div><pre>// 1. naive recursion — O(2ⁿ)
+const naive = n =&gt; n &lt;= 2 ? n : naive(n-1) + naive(n-2);
+
+// 2. memoized — O(n) time, O(n) space
+function memo(n, cache = new Map()) {
+  if (n &lt;= 2) return n;
+  if (cache.has(n)) return cache.get(n);
+  const r = memo(n-1, cache) + memo(n-2, cache);
+  cache.set(n, r);
+  return r;
+}
+
+// 3. tabulated + space-optimized — O(n) time, O(1) space
+function best(n) {
+  if (n &lt;= 2) return n;
+  let a = 1, b = 2;
+  for (let i = 3; i &lt;= n; i++) [a, b] = [b, a + b];
+  return b;
+}</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Only the last row (or two) of a DP table is usually needed — say “I can reduce space from O(n·m) to O(m)” even if you don't implement it; interviewers listen for that. And a memo key must capture <em>every</em> varying parameter, or you'll return cached answers for different states.</span><span lang="hu">Egy DP-táblából általában csak az utolsó sor (vagy kettő) kell — mondd ki, hogy „a tárat O(n·m)-ről O(m)-re tudom csökkenteni”, akkor is, ha nem implementálod; az interjúztatók erre figyelnek. És a memo-kulcsnak <em>minden</em> változó paramétert meg kell fognia, különben eltérő állapotokra adsz vissza cache-elt válaszokat.</span></p>
+  </section>
+  <section class="concept" id="c15">
+    <div class="concept__head"><span class="num">15</span><h2><span lang="en">Greedy Algorithms</span><span lang="hu">Mohó algoritmusok</span></h2></div>
+    <p class="def"><span lang="en"><strong>Making the locally optimal choice at each step and never reconsidering</strong> — fast and simple when it works, but it needs proof that local optimality yields a global optimum.</span><span lang="hu"><strong>A lokálisan optimális választás minden lépésben, újragondolás nélkül</strong> — gyors és egyszerű, amikor működik, de bizonyítani kell, hogy a lokális optimalitás globális optimumot ad.</span></p>
+    <div class="cx"><span class="good"><span lang="en">often O(n log n) (sort + pass)</span><span lang="hu">gyakran O(n log n) (rendezés + végigmenés)</span></span><span class="bad"><span lang="en">wrong without the exchange argument</span><span lang="hu">hibás az exchange argument nélkül</span></span></div>
+    <div class="qa">
+      <p class="q"><span lang="en">Greedy vs DP — how do you tell?</span><span lang="hu">Greedy vs DP — hogyan döntöd el?</span></p>
+      <ul class="a">
+        <li><span lang="en">If a locally best choice can be proven never to hurt the final answer (an exchange argument), greedy works and is cheaper. If a choice's value depends on future choices, you need DP. Coin change with arbitrary denominations is the classic case where greedy fails and DP is required.</span><span lang="hu">Ha egy lokálisan legjobb választásról bizonyítható, hogy sosem ront a végső válaszon (exchange argument), a greedy működik és olcsóbb. Ha egy választás értéke a jövőbeli választásoktól függ, DP kell. A tetszőleges címletű pénzváltás a klasszikus eset, ahol a greedy elbukik és DP kell.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Typical greedy problems?</span><span lang="hu">Tipikus greedy feladatok?</span></p>
+      <ul class="a">
+        <li><span lang="en">Interval scheduling (sort by end time), merging intervals (sort by start), jump game, assigning tasks by deadline, and Huffman coding. Nearly all begin with a sort that establishes the greedy order.</span><span lang="hu">Intervallum-ütemezés (végidő szerint rendezve), intervallumok összevonása (kezdet szerint rendezve), jump game, taszkok kiosztása határidő szerint, és Huffman-kódolás. Szinte mind egy rendezéssel kezdődik, amely megállapítja a mohó sorrendet.</span></li>
+      </ul>
+    </div>
+    <div class="code"><div class="code__h"><span lang="en">Merge overlapping intervals</span><span lang="hu">Átfedő intervallumok összevonása</span><span class="code__cx">O(n log n) time / O(n) space</span></div><pre>function merge(intervals) {
+  if (!intervals.length) return [];
+  intervals.sort((a, b) =&gt; a[0] - b[0]);        // by start
+  const out = [intervals[0].slice()];
+  for (const [s, e] of intervals.slice(1)) {
+    const last = out[out.length - 1];
+    if (s &lt;= last[1]) last[1] = Math.max(last[1], e);  // overlap
+    else out.push([s, e]);
+  }
+  return out;
+}</pre></div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Never assert a greedy solution without justifying why the local choice is safe — “it seems to work on the examples” is exactly how greedy fails. If you can't argue it, reach for DP.</span><span lang="hu">Sose állíts mohó megoldást annak indoklása nélkül, hogy miért biztonságos a lokális választás — a „a példákon működni látszik” pontosan az, ahogy a greedy elbukik. Ha nem tudod megindokolni, nyúlj a DP-hez.</span></p>
+  </section>
+  <div class="sec"><span class="sec__l"><span lang="en">Process</span><span lang="hu">Folyamat</span></span><span class="sec__r"></span></div>
+  <section class="concept" id="c16">
+    <div class="concept__head"><span class="num">16</span><h2><span lang="en">Interview Strategy</span><span lang="hu">Interjú-stratégia</span></h2></div>
+    <p class="def"><span lang="en"><strong>How to run the 45 minutes</strong> — the process interviewers grade alongside the code. Silence and a sudden optimal solution score worse than a narrated brute-force that you improve.</span><span lang="hu"><strong>Hogyan vezesd a 45 percet</strong> — a folyamat, amit az interjúztatók a kód mellett értékelnek. A csend és egy hirtelen optimális megoldás rosszabb pontot ér, mint egy hangosan végigvezetett nyers erejű, amit aztán javítasz.</span></p>
+    <p class="step"><span lang="en">The sequence</span><span lang="hu">A sorrend</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>1.</strong> Restate the problem and confirm with an example. <strong>2.</strong> Ask about constraints — input size, value ranges, duplicates, empty input, sorted? <strong>3.</strong> State a brute-force approach with its complexity. <strong>4.</strong> Improve it, saying what the bottleneck is. <strong>5.</strong> Code it. <strong>6.</strong> Trace a small example by hand. <strong>7.</strong> Discuss edge cases and complexity.</span><span lang="hu"><strong>1.</strong> Fogalmazd újra a feladatot és erősítsd meg egy példával. <strong>2.</strong> Kérdezz a megkötésekről — input-méret, értéktartományok, duplikátumok, üres input, rendezett-e? <strong>3.</strong> Mondj egy nyers erejű megközelítést a komplexitásával. <strong>4.</strong> Javítsd, kimondva, mi a szűk keresztmetszet. <strong>5.</strong> Kódold le. <strong>6.</strong> Vezess végig kézzel egy kis példát. <strong>7.</strong> Beszéld át a peremeseteket és a komplexitást.</span></li>
+      </ul>
+    <div class="qa">
+      <p class="q"><span lang="en">Which constraints should you always ask about?</span><span lang="hu">Mely megkötésekről kérdezz mindig?</span></p>
+      <ul class="a">
+        <li><span lang="en">Input size (decides whether O(n²) is acceptable), value ranges (enables counting sort or bit tricks), duplicates, negative numbers, whether the input is sorted, and whether you may mutate it. Each answer eliminates or unlocks an approach.</span><span lang="hu">Input-méret (eldönti, elfogadható-e az O(n²)), értéktartományok (counting sortot vagy bit-trükköket tesz lehetővé), duplikátumok, negatív számok, hogy rendezett-e az input, és hogy mutálhatod-e. Minden válasz kizár vagy felszabadít egy megközelítést.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What edge cases apply to almost everything?</span><span lang="hu">Mely peremesetek vonatkoznak szinte mindenre?</span></p>
+      <ul class="a">
+        <li><span lang="en">Empty input, a single element, all elements identical, already-sorted and reverse-sorted input, negative numbers and zero, and integer overflow on large sums. Mentioning these unprompted is a strong signal.</span><span lang="hu">Üres input, egyetlen elem, minden elem azonos, már rendezett és fordítva rendezett input, negatív számok és nulla, és egész-túlcsordulás nagy összegeknél. Ezek kéretlen említése erős jelzés.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What if you're stuck?</span><span lang="hu">Mi van, ha elakadsz?</span></p>
+      <ul class="a">
+        <li><span lang="en">Say what you're considering out loud — the interviewer can only help if they know where you are. Try a smaller example by hand, ask whether a simpler variant would be acceptable, or name the pattern you suspect. Silence is the only unrecoverable move.</span><span lang="hu">Mondd ki hangosan, mit fontolgatsz — az interjúztató csak akkor tud segíteni, ha tudja, hol tartasz. Próbálj egy kisebb példát kézzel, kérdezd meg, elfogadható-e egy egyszerűbb változat, vagy nevezd meg a mintát, amire gyanakszol. A csend az egyetlen visszafordíthatatlan lépés.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Don't jump straight to the optimal solution in silence — the interviewer is evaluating your reasoning, and a correct answer with no explanation reads as memorized. State the brute force first, then improve it out loud.</span><span lang="hu">Ne ugorj csendben egyből az optimális megoldásra — az interjúztató a gondolkodásodat értékeli, és egy magyarázat nélküli helyes válasz bemagoltnak hat. Előbb mondd ki a nyers erejűt, aztán javítsd hangosan.</span></p>
+  </section>
+  <p class="foot"><span lang="en">DSA &amp; coding round · technical interview prep · <b>Q&amp;A knowledge base</b></span><span lang="hu">DSA &amp; coding round · technikai interjú-felkészítő · <b>Q&amp;A tudásbázis</b></span></p>
+
+</div>
+
+<script>
+(function () {
+  var SUPPORTED = ['en', 'hu'];
+  var root = document.documentElement;
+
+  // The smallest block element at the top-centre of the viewport (where the
+  // text is) that exists in both languages — used to hold the reading position
+  // steady across a switch. Sampling the centre, not the edge, lands on a
+  // paragraph rather than a large container, so the visible line stays put.
+  function anchor() {
+    var el = document.elementFromPoint(window.innerWidth / 2, 8);
+    while (el && el !== document.body &&
+           (el.hasAttribute('lang') || getComputedStyle(el).display === 'inline')) {
+      el = el.parentElement;
+    }
+    return el && el !== document.body ? el : null;
+  }
+
+  function applyLang(lang) {
+    if (SUPPORTED.indexOf(lang) === -1) lang = 'en';
+    if (root.dataset.lang === lang) return;
+    var a = window.scrollY > 0 ? anchor() : null;
+    var before = a ? a.getBoundingClientRect().top : 0;
+    // Toggle via data-lang only. Deliberately NOT setting root.lang: some pages
+    // hide the other language with a bare [lang="…"]{display:none} rule, which
+    // would then match <html lang="…"> and hide the whole page. Visible spans
+    // still carry their own lang attribute for assistive tech.
+    root.dataset.lang = lang;
+    if (a) window.scrollBy(0, a.getBoundingClientRect().top - before);
+  }
+
+  // In-place switch for the shell (synchronous, same-origin).
+  window.interviewBrowser = {
+    setParams: function (params) { applyLang(params && params.lang); }
+  };
+
+  applyLang(new URLSearchParams(location.search).get('lang') || 'en');
+})();
+</script>
+</body>
+</html>
