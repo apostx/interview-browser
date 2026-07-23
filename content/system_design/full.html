@@ -16,7 +16,7 @@
   --node:#FFFFFF; --nodeline:#94A3B8; --slate:#334155;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:auto}
 body{margin:0;background:var(--paper);color:var(--ink);
   font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
@@ -170,16 +170,6 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
     <path d="M0,0 L10,5 L0,10 z" fill="#2563EB"/>
   </marker>
 </defs></svg>
-<header class="bar"><div class="bar__in">
-  <span class="bar__t"><b>System Design</b> <span lang="en">Interview Prep</span><span lang="hu">Interjú-felkészítő</span>    <span class="badge badge--full"><span lang="en">Full</span><span lang="hu">Teljes</span></span></span>
-  <span class="bar__r">
-    <span class="lang" role="group" aria-label="Language / Nyelv">
-      <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
-      <button type="button" data-set-lang="hu" aria-pressed="false">HU</button>
-    </span>
-    <a class="up" href="#top">↑ <span lang="en">index</span><span lang="hu">tartalom</span></a>
-  </span>
-</div></header>
 
 <div class="wrap" id="top">
 
@@ -992,22 +982,39 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
 <script>
 (function () {
   var SUPPORTED = ['en', 'hu'];
+  var root = document.documentElement;
+
+  // The smallest block element at the top-centre of the viewport (where the
+  // text is) that exists in both languages — used to hold the reading position
+  // steady across a switch. Sampling the centre, not the edge, lands on a
+  // paragraph rather than a large container, so the visible line stays put.
+  function anchor() {
+    var el = document.elementFromPoint(window.innerWidth / 2, 8);
+    while (el && el !== document.body &&
+           (el.hasAttribute('lang') || getComputedStyle(el).display === 'inline')) {
+      el = el.parentElement;
+    }
+    return el && el !== document.body ? el : null;
+  }
+
   function applyLang(lang) {
     if (SUPPORTED.indexOf(lang) === -1) lang = 'en';
-    document.documentElement.dataset.lang = lang;
-    document.documentElement.lang = lang;
-    var buttons = document.querySelectorAll('[data-set-lang]');
-    for (var i = 0; i < buttons.length; i++) {
-      buttons[i].setAttribute('aria-pressed', String(buttons[i].dataset.setLang === lang));
-    }
+    if (root.dataset.lang === lang) return;
+    var a = window.scrollY > 0 ? anchor() : null;
+    var before = a ? a.getBoundingClientRect().top : 0;
+    // Toggle via data-lang only. Deliberately NOT setting root.lang: some pages
+    // hide the other language with a bare [lang="…"]{display:none} rule, which
+    // would then match <html lang="…"> and hide the whole page. Visible spans
+    // still carry their own lang attribute for assistive tech.
+    root.dataset.lang = lang;
+    if (a) window.scrollBy(0, a.getBoundingClientRect().top - before);
   }
+
+  // In-place switch for the shell (synchronous, same-origin).
   window.interviewBrowser = {
     setParams: function (params) { applyLang(params && params.lang); }
   };
-  var buttons = document.querySelectorAll('[data-set-lang]');
-  for (var i = 0; i < buttons.length; i++) {
-    buttons[i].addEventListener('click', function () { applyLang(this.dataset.setLang); });
-  }
+
   applyLang(new URLSearchParams(location.search).get('lang') || 'en');
 })();
 </script>

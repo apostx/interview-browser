@@ -823,8 +823,11 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
     if (root.dataset.lang === lang) return;
     var a = window.scrollY > 0 ? anchor() : null;
     var before = a ? a.getBoundingClientRect().top : 0;
+    // Toggle via data-lang only. Deliberately NOT setting root.lang: some pages
+    // hide the other language with a bare [lang="…"]{display:none} rule, which
+    // would then match <html lang="…"> and hide the whole page. Visible spans
+    // still carry their own lang attribute for assistive tech.
     root.dataset.lang = lang;
-    root.lang = lang;
     if (a) window.scrollBy(0, a.getBoundingClientRect().top - before);
   }
 
