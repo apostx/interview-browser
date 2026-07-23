@@ -260,8 +260,9 @@
     renderViewer(mat, version.name, false, scrollTop);
   }
 
-  // One axis control: a dropdown, or side-by-side pills when the axis config
-  // sets display:inline. `options` is [{ value, selected, available }].
+  // One axis control: a dropdown, or side-by-side pills when display:inline is
+  // set. `options` is [{ value, selected, available, text? }] — `text` is the
+  // shown label (defaults to `value`).
   function axisControlHtml(dataAttr, label, inline, options) {
     let inner;
     if (inline) {
@@ -270,7 +271,7 @@
         options
           .map((o) =>
             `<button type="button" class="pill${o.available === false ? ' na' : ''}" ` +
-            `data-val="${escapeHtml(o.value)}" aria-pressed="${o.selected ? 'true' : 'false'}">${escapeHtml(o.value)}</button>`
+            `data-val="${escapeHtml(o.value)}" aria-pressed="${o.selected ? 'true' : 'false'}">${escapeHtml(o.text != null ? o.text : o.value)}</button>`
           )
           .join('') +
         `</div>`;
@@ -279,7 +280,8 @@
         `<select ${dataAttr} aria-label="${escapeHtml(label)}">` +
         options
           .map((o) => {
-            const text = o.available === false ? `${o.value} (n/a)` : o.value;
+            const base = o.text != null ? o.text : o.value;
+            const text = o.available === false ? `${base} (n/a)` : base;
             return `<option value="${escapeHtml(o.value)}"${o.selected ? ' selected' : ''}>${escapeHtml(text)}</option>`;
           })
           .join('') +
@@ -288,16 +290,17 @@
     return `<div class="facet"><label>${escapeHtml(label)}</label>${inner}</div>`;
   }
 
-  // Build the inner controls: the version dropdown(s)/facets plus any param axes.
+  // Build the inner controls: the version picker/facets plus any param axes.
   function versionControlsHtml(mat, version, fallback, paramValues, paramAxes) {
     let html = '';
     if (!mat.facets && mat.versions.length > 1) {
-      html +=
-        `<select class="version-select" aria-label="Version">` +
-        mat.versions
-          .map((v) => `<option value="${escapeHtml(v.name)}"${v === version ? ' selected' : ''}>${escapeHtml(prettyName(v.name))}</option>`)
-          .join('') +
-        `</select>`;
+      const options = mat.versions.map((v) => ({
+        value: v.name,
+        text: prettyName(v.name),
+        selected: v === version,
+        available: true,
+      }));
+      html += axisControlHtml('data-version', 'Version', mat.versionDisplay === 'inline', options);
     }
     if (mat.facets) {
       const values = version.values;
@@ -381,6 +384,7 @@
         if (!btn) return;
         if (group.dataset.param !== undefined) changeParamValue(mat, version, group.dataset.param, btn.dataset.val);
         else if (group.dataset.dim !== undefined) changeFacetValue(mat, version, Number(group.dataset.dim), btn.dataset.val);
+        else selectVersion(mat, btn.dataset.val);
       });
     });
   }

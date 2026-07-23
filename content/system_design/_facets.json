@@ -1,0 +1,4 @@
+[
+  { "version": true, "display": "inline" },
+  { "label": "Language", "param": "lang", "values": ["en", "hu"], "keepPosition": true, "display": "inline" }
+]

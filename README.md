@@ -52,7 +52,7 @@ content/
 - **Opt-in / fallback:** faceting applies only if a config is in effect *and* every version folder name splits into exactly as many segments as there are labels. Otherwise (no config, or a name that doesn't match) the material falls back to the plain flat version list — so simple date-named or single-file materials are unaffected.
 - **Sparse matrices are fine:** not every combination has to exist. In each dropdown, options that don't combine with the current selection are marked `(n/a)`. Picking one isn't blocked — the app resolves to the closest existing version (keeping the axis you just changed, then matching as many other axes as possible, earlier axes first) and shows a *closest match* hint.
 - **`keepPosition`:** for a PDF version, switching a `keepPosition` axis preserves the current scroll position instead of jumping back to page 1 — useful when the variants share the same layout (e.g. the same document in two languages). Position is only kept when *every* axis that changed is `keepPosition`; otherwise the view resets to the top.
-- **`display`:** `"inline"` renders the axis as side-by-side buttons (pills) instead of a dropdown — handy for short value lists like a language toggle. The default is a dropdown.
+- **`display`:** `"inline"` renders the axis as side-by-side buttons (pills) instead of a dropdown — handy for short value lists like a language toggle. The default is a dropdown. The built-in version picker (for materials with several file/folder versions) can be made inline too, with a `{ "version": true, "display": "inline" }` entry in the config.
 
 #### Param axes (URL parameters for HTML content)
 

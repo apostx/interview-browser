@@ -60,7 +60,12 @@ function readFacetsConfig(dir) {
     if (Array.isArray(parsed) && parsed.length > 0) {
       const facets = parsed.map((entry) => {
         if (typeof entry === 'string') return { label: entry, keepPosition: false };
-        if (!entry || typeof entry.label !== 'string') return null;
+        if (!entry || typeof entry !== 'object') return null;
+        // Configures the built-in version picker rather than adding an axis.
+        if (entry.version === true) {
+          return { version: true, display: entry.display === 'inline' ? 'inline' : undefined };
+        }
+        if (typeof entry.label !== 'string') return null;
         const axis = { label: entry.label, keepPosition: entry.keepPosition === true };
         if (entry.display === 'inline') axis.display = 'inline';
         if (entry.param === undefined && entry.values === undefined) return axis;
@@ -87,7 +92,10 @@ function readFacetsConfig(dir) {
 function splitAxes(config) {
   const folder = [];
   const param = [];
-  for (const axis of config || []) (axis.param ? param : folder).push(axis);
+  for (const axis of config || []) {
+    if (axis.version) continue; // version-picker config, handled separately
+    (axis.param ? param : folder).push(axis);
+  }
   return { folder, param };
 }
 
@@ -179,6 +187,8 @@ function scanMaterial(dir, relPath, inheritedConfig) {
   // The nearest config wins: a material's own file overrides what it inherits.
   const config = readFacetsConfig(dir) || inheritedConfig;
   const { folder: folderAxes, param: paramAxes } = splitAxes(config);
+  const versionCfg = (config || []).find((a) => a && a.version);
+  if (versionCfg && versionCfg.display === 'inline') material.versionDisplay = 'inline';
   const facetable =
     folderAxes.length > 0 &&
     !hasDirect &&
