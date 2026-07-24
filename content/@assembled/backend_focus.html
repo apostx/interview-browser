@@ -1714,12 +1714,15 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
   overflow-x:auto;white-space:pre;color:var(--ink)}
 
 /* --- pager --- */
-.pager{display:flex;align-items:center;justify-content:center;gap:14px;margin:20px 0;
+.pager{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px 14px;margin:20px 0;
   font-family:'Space Grotesk',system-ui,sans-serif}
 .pager button{font:inherit;font-size:15px;font-weight:600;line-height:1;padding:8px 16px;
   border:1px solid var(--line);border-radius:999px;background:var(--card,#fff);color:var(--ink);cursor:pointer}
 .pager button:disabled{opacity:.35;cursor:default}
 .pager__info{font-size:13px;color:var(--muted);min-width:56px;text-align:center}
+.pager__per{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:500}
+.pager__per select{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line);
+  border-radius:8px;background:var(--card,#fff);color:var(--ink)}
 </style>
 </head>
 <body>
@@ -2134,52 +2137,88 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
 </script>
 <script>
 (function () {
-  var SIZE = 6;
+  var DEFAULT = 6;
   var concepts = [].slice.call(document.querySelectorAll('.concept'));
-  if (!SIZE || concepts.length <= SIZE) return;
-  var pages = Math.ceil(concepts.length / SIZE);
+  var total = concepts.length;
+  if (total <= 3) return;
+
+  function readPref() { try { var v = localStorage.getItem('ib_pageSize'); return v == null ? null : Number(v); } catch (e) { return null; } }
+  function writePref(v) { try { localStorage.setItem('ib_pageSize', String(v)); } catch (e) {} }
+
+  var size = readPref();
+  if (size == null || isNaN(size)) size = DEFAULT;
+
+  var options = [3, 6, 10, 20].filter(function (n) { return n < total; });
+  if (DEFAULT > 0 && DEFAULT < total && options.indexOf(DEFAULT) === -1) options.push(DEFAULT);
+  options.sort(function (a, b) { return a - b; });
+  options.push(0); // 0 = All
+
   var current = 0;
-  function makeBar() {
+  function eff() { return size > 0 && size < total ? size : total; }
+  function pageCount() { return Math.max(1, Math.ceil(total / eff())); }
+
+  function makeSelect() {
+    var lbl = document.createElement('label'); lbl.className = 'pager__per';
+    lbl.innerHTML = '<span lang="en">per page</span><span lang="hu">oldalanként</span>';
+    var sel = document.createElement('select');
+    sel.setAttribute('aria-label', 'Concepts per page');
+    var isAll = !(size > 0 && size < total);
+    options.forEach(function (n) {
+      var o = document.createElement('option');
+      o.value = String(n); o.textContent = n === 0 ? 'All' : String(n);
+      if ((n === 0 && isAll) || (n !== 0 && n === size)) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.onchange = function () { size = Number(sel.value); writePref(size); current = 0; render(true); };
+    lbl.appendChild(sel);
+    return lbl;
+  }
+
+  function makeBar(withSelect) {
     var bar = document.createElement('div'); bar.className = 'pager';
-    var prev = document.createElement('button'); prev.type = 'button'; prev.textContent = '\u2039';
-    prev.setAttribute('aria-label', 'Previous');
+    if (withSelect) bar.appendChild(makeSelect());
+    var prev = document.createElement('button'); prev.type = 'button'; prev.textContent = '\u2039'; prev.setAttribute('aria-label', 'Previous');
     var info = document.createElement('span'); info.className = 'pager__info';
-    var next = document.createElement('button'); next.type = 'button'; next.textContent = '\u203A';
-    next.setAttribute('aria-label', 'Next');
-    prev.onclick = function () { go(current - 1, true); };
-    next.onclick = function () { go(current + 1, true); };
+    var next = document.createElement('button'); next.type = 'button'; next.textContent = '\u203A'; next.setAttribute('aria-label', 'Next');
+    prev.onclick = function () { current--; render(true); };
+    next.onclick = function () { current++; render(true); };
     bar.appendChild(prev); bar.appendChild(info); bar.appendChild(next);
-    bar._prev = prev; bar._next = next; bar._info = info;
+    bar._prev = prev; bar._next = next; bar._info = info; bar._nav = [prev, info, next];
     return bar;
   }
-  var bars = [makeBar(), makeBar()];
+
+  var top = makeBar(true), bottom = makeBar(false);
   var index = document.querySelector('.index');
-  if (index && index.parentNode) index.parentNode.insertBefore(bars[0], index.nextSibling);
-  var wrap = document.querySelector('.wrap') || document.body;
-  wrap.appendChild(bars[1]);
-  function go(p, scroll) {
-    current = Math.max(0, Math.min(pages - 1, p));
-    for (var i = 0; i < concepts.length; i++) {
-      concepts[i].style.display = (Math.floor(i / SIZE) === current) ? '' : 'none';
-    }
-    for (var b = 0; b < bars.length; b++) {
-      bars[b]._info.textContent = (current + 1) + ' / ' + pages;
-      bars[b]._prev.disabled = current === 0;
-      bars[b]._next.disabled = current === pages - 1;
-    }
+  if (index && index.parentNode) index.parentNode.insertBefore(top, index); // above the index, right under the hero
+  (document.querySelector('.wrap') || document.body).appendChild(bottom);
+
+  function render(scroll) {
+    var pages = pageCount();
+    current = Math.max(0, Math.min(pages - 1, current));
+    var e = eff();
+    for (var i = 0; i < total; i++) concepts[i].style.display = (Math.floor(i / e) === current) ? '' : 'none';
+    [top, bottom].forEach(function (b) {
+      b._info.textContent = (current + 1) + ' / ' + pages;
+      b._prev.disabled = current === 0;
+      b._next.disabled = current >= pages - 1;
+      b._nav.forEach(function (el) { el.style.display = pages <= 1 ? 'none' : ''; }); // hide prev/next when it all fits
+    });
+    bottom.style.display = pages <= 1 ? 'none' : '';
     if (scroll) window.scrollTo(0, 0);
   }
+
   var links = document.querySelectorAll('a.idx');
   for (var i = 0; i < links.length; i++) {
     (function (n) {
-      links[n].addEventListener('click', function (e) {
-        e.preventDefault();
-        go(Math.floor(n / SIZE), false);
+      links[n].addEventListener('click', function (ev) {
+        ev.preventDefault();
+        current = Math.floor(n / eff());
+        render(false);
         if (concepts[n]) concepts[n].scrollIntoView();
       });
     })(i);
   }
-  go(0, false);
+  render(false);
 })();
 </script>
 </body>
