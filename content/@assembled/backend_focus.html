@@ -1716,18 +1716,33 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
 /* --- pager --- */
 .pager{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px 14px;margin:20px 0;
   font-family:'Space Grotesk',system-ui,sans-serif}
-.pager button{font:inherit;font-size:15px;font-weight:600;line-height:1;padding:8px 16px;
+.pager > button{font:inherit;font-size:15px;font-weight:600;line-height:1;padding:8px 16px;
   border:1px solid var(--line);border-radius:999px;background:var(--card,#fff);color:var(--ink);cursor:pointer}
-.pager button:disabled{opacity:.35;cursor:default}
+.pager > button:disabled{opacity:.35;cursor:default}
 .pager__info{font-size:13px;color:var(--muted);min-width:56px;text-align:center}
 .pager__per{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:500}
-.pager__per input{font:inherit;font-size:13px;width:58px;padding:5px 8px;border:1px solid var(--line);
-  border-radius:8px;background:var(--card,#fff);color:var(--ink)}
-/* collapsible index */
-.index h3.index__toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;
-  cursor:pointer;user-select:none}
-.index__caret{transition:transform .15s;color:var(--muted);font-size:.7em;font-weight:400}
-.index h3.index__toggle[aria-expanded="false"] .index__caret{transform:rotate(-90deg)}
+/* editable dropdown (type a number, or open the preset menu) */
+.pager__combo{position:relative;display:inline-flex;align-items:stretch}
+.pager__combo input{width:44px;font:inherit;font-size:13px;text-align:center;padding:5px 4px;
+  border:1px solid var(--line);border-right:0;border-radius:8px 0 0 8px;background:var(--card,#fff);color:var(--ink)}
+.pager__toggle{font:inherit;font-size:10px;line-height:1;padding:0 9px;border:1px solid var(--line);
+  border-radius:0 8px 8px 0;background:var(--card,#fff);color:var(--muted);cursor:pointer}
+.pager__menu{position:absolute;top:calc(100% + 5px);right:0;z-index:5;min-width:100%;background:var(--card,#fff);
+  border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.16);padding:4px;
+  display:flex;flex-direction:column}
+.pager__menu[hidden]{display:none}
+.pager__menu button{font:inherit;font-size:13px;text-align:center;padding:7px 16px;border:0;border-radius:6px;
+  background:none;color:var(--ink);cursor:pointer}
+.pager__menu button:hover,.pager__menu button.on{background:var(--paper,#eef0f3);font-weight:600}
+/* collapsible index (native disclosure) */
+.index summary{display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;
+  list-style:none;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card,#fff);
+  font-family:'Space Grotesk',system-ui,sans-serif;font-weight:600;font-size:12px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted)}
+.index summary::-webkit-details-marker{display:none}
+.index summary::after{content:'\25BE';font-size:1em;transition:transform .15s}
+.index:not([open]) summary::after{transform:rotate(-90deg)}
+.index[open] summary{margin-bottom:10px}
 </style>
 </head>
 <body>
@@ -1739,8 +1754,8 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
     <p class="lede"><span lang="en">A cross-topic selection for a senior backend interview — API design, Node.js internals, auth, distributed systems and testing.</span><span lang="hu">Több témából összeállított válogatás egy senior backend interjúhoz — API-tervezés, Node.js belsők, auth, elosztott rendszerek és tesztelés.</span></p>
   </div>
 
-  <nav class="index">
-    <h3><span lang="en">Jump to</span><span lang="hu">Ugrás</span></h3>
+  <details class="index" open>
+    <summary><span><span lang="en">Jump to</span><span lang="hu">Ugrás</span> · 11</span></summary>
     <div class="grid">
       <a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t">Endpoint</span></a>
       <a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t">HTTP <span lang="en">Methods</span><span lang="hu">metódusok</span></span></a>
@@ -1754,7 +1769,7 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
       <a class="idx" href="#c10"><span class="idx__n">10</span><span class="idx__t">Consistency Models</span></a>
       <a class="idx" href="#c11"><span class="idx__n">11</span><span class="idx__t"><span lang="en">The Test Pyramid</span><span lang="hu">A teszt-piramis</span></span></a>
     </div>
-  </nav>
+  </details>
 
   <section class="concept" id="c01">
     <div class="concept__head"><span class="num">01</span><h2>Endpoint</h2></div>
@@ -2142,24 +2157,10 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
 </script>
 <script>
 (function () {
-  var nav = document.querySelector('.index');
-  if (!nav) return;
-  var head = nav.querySelector('h3'), grid = nav.querySelector('.grid');
-  if (!head || !grid) return;
-  var count = grid.querySelectorAll('a.idx').length;
-  function readPref() { try { return localStorage.getItem('ib_indexOpen'); } catch (e) { return null; } }
-  function writePref(v) { try { localStorage.setItem('ib_indexOpen', v ? '1' : '0'); } catch (e) {} }
-  var pref = readPref();
-  var open = pref == null ? count <= 20 : pref === '1';
-  head.className = (head.className ? head.className + ' ' : '') + 'index__toggle';
-  head.setAttribute('role', 'button');
-  head.setAttribute('tabindex', '0');
-  var caret = document.createElement('span'); caret.className = 'index__caret'; caret.textContent = '\u25BE';
-  head.appendChild(caret);
-  function apply() { grid.style.display = open ? '' : 'none'; head.setAttribute('aria-expanded', open ? 'true' : 'false'); }
-  head.addEventListener('click', function () { open = !open; writePref(open); apply(); });
-  head.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open = !open; writePref(open); apply(); } });
-  apply();
+  var d = document.querySelector('details.index');
+  if (!d) return;
+  try { var pref = localStorage.getItem('ib_indexOpen'); if (pref != null) d.open = pref === '1'; } catch (e) {}
+  d.addEventListener('toggle', function () { try { localStorage.setItem('ib_indexOpen', d.open ? '1' : '0'); } catch (e) {} });
 })();
 </script>
 <script>
@@ -2184,37 +2185,49 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
   function eff() { return size > 0 && size < total ? size : total; }
   function pageCount() { return Math.max(1, Math.ceil(total / eff())); }
 
-  // An editable dropdown: pick a preset from the list, or type any number
-  // (or "All"). datalist gives the dropdown; the input allows free entry.
+  // An editable dropdown built by hand (a native datalist competes with the
+  // browser's input history and won't open reliably). An input for typing a
+  // number, plus a caret button that opens a small preset menu.
   function label(v) { return v > 0 && v < total ? String(v) : 'All'; }
-  function makeSelect() {
+  var perInput;
+  function setSize(n) { size = n; writePref(size); current = 0; render(true); if (perInput) perInput.value = label(size); }
+  function makePer() {
     var lbl = document.createElement('label'); lbl.className = 'pager__per';
     lbl.innerHTML = '<span lang="en">per page</span><span lang="hu">oldalanként</span>';
-    if (!document.getElementById('ib_pp_opts')) {
-      var dl = document.createElement('datalist'); dl.id = 'ib_pp_opts';
-      options.forEach(function (n) { var o = document.createElement('option'); o.value = n === 0 ? 'All' : String(n); dl.appendChild(o); });
-      document.body.appendChild(dl);
-    }
-    var input = document.createElement('input');
-    input.type = 'text'; input.setAttribute('list', 'ib_pp_opts');
-    input.setAttribute('aria-label', 'Concepts per page');
-    input.value = label(size);
+    var combo = document.createElement('span'); combo.className = 'pager__combo';
+    perInput = document.createElement('input');
+    perInput.type = 'text'; perInput.autocomplete = 'off'; perInput.inputMode = 'numeric';
+    perInput.setAttribute('aria-label', 'Concepts per page'); perInput.value = label(size);
+    var toggle = document.createElement('button');
+    toggle.type = 'button'; toggle.className = 'pager__toggle'; toggle.textContent = '\u25BE';
+    toggle.setAttribute('aria-label', 'Choose per page');
+    var menu = document.createElement('div'); menu.className = 'pager__menu'; menu.hidden = true;
+    options.forEach(function (n) {
+      var o = document.createElement('button'); o.type = 'button'; o.textContent = n === 0 ? 'All' : String(n);
+      if (n === size || (n === 0 && !(size > 0 && size < total))) o.className = 'on';
+      o.onclick = function () { setSize(n); close(); };
+      menu.appendChild(o);
+    });
+    function open() { menu.hidden = false; }
+    function close() { menu.hidden = true; }
     function commit() {
-      var v = input.value.trim().toLowerCase(), ns;
+      var v = perInput.value.trim().toLowerCase(), ns;
       if (v === 'all' || v === '0' || v === '') ns = 0;
-      else { ns = parseInt(v, 10); if (isNaN(ns)) { input.value = label(size); return; } ns = Math.max(1, Math.min(total, ns)); }
-      size = ns; writePref(size); current = 0; render(true);
-      input.value = label(size);
+      else { ns = parseInt(v, 10); if (isNaN(ns)) { perInput.value = label(size); return; } ns = Math.max(1, Math.min(total, ns)); }
+      setSize(ns);
     }
-    input.addEventListener('change', commit);
-    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); commit(); input.blur(); } });
-    lbl.appendChild(input);
+    toggle.onclick = function () { menu.hidden ? open() : close(); };
+    perInput.addEventListener('change', commit);
+    perInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); commit(); perInput.blur(); } else if (e.key === 'Escape') { close(); } });
+    document.addEventListener('click', function (e) { if (!combo.contains(e.target)) close(); });
+    combo.appendChild(perInput); combo.appendChild(toggle); combo.appendChild(menu);
+    lbl.appendChild(combo);
     return lbl;
   }
 
   function makeBar(withSelect) {
     var bar = document.createElement('div'); bar.className = 'pager';
-    if (withSelect) bar.appendChild(makeSelect());
+    if (withSelect) bar.appendChild(makePer());
     var prev = document.createElement('button'); prev.type = 'button'; prev.textContent = '\u2039'; prev.setAttribute('aria-label', 'Previous');
     var info = document.createElement('span'); info.className = 'pager__info';
     var next = document.createElement('button'); next.type = 'button'; next.textContent = '\u203A'; next.setAttribute('aria-label', 'Next');
