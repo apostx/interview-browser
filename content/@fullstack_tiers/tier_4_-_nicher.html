@@ -136,6 +136,15 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
 .chip--3{color:var(--s3);border-color:#DDD6FE;background:#F5F3FF}
 .yes{color:var(--get);font-weight:600}
 .no{color:var(--muted)}
+/* borrowed for the SQL comparison blocks */
+.codepair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 2px}
+.cbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}
+.cbox__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600}
+.cbox pre{margin:0;padding:10px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.55;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+.cbox--bad .cbox__h{background:#FEF2F2;color:var(--vuln);border-bottom:1px solid #FECACA}
+.cbox--good .cbox__h{background:#F0FDF4;color:var(--safe);border-bottom:1px solid #BBF7D0}
 /* ── language toggling ─────────────────────────────────────────
    Both languages live in the DOM; only the [data-lang] attribute on
    <html> changes. No network requests, no re-render — switching can't fail. */
@@ -170,13 +179,6 @@ svg text[lang="hu"]{display:none}
   color:var(--post);font-weight:600;display:block;margin-bottom:3px}
 /* vulnerable vs fixed code pair */
 .codepair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 2px}
-.cbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}
-.cbox__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
-  padding:5px 10px;font-weight:600}
-.cbox--bad .cbox__h{background:#FEF2F2;color:var(--vuln);border-bottom:1px solid #FECACA}
-.cbox--good .cbox__h{background:#F0FDF4;color:var(--safe);border-bottom:1px solid #BBF7D0}
-.cbox pre{margin:0;padding:10px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.55;
-  overflow-x:auto;white-space:pre;color:var(--ink)}
 /* ── complexity badges ───────────────────────────────────────── */
 .cx{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
 .cx span{font-family:'JetBrains Mono';font-size:11.5px;padding:3px 9px;border-radius:6px;
@@ -265,14 +267,18 @@ svg text[lang="hu"]{display:none}
     <div class="grid"><a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t">List Virtualization</span></a></div>
     <p class="idxgrp"><span lang="en">Node.js & Backend</span><span lang="hu">Node.js &amp; backend</span></p>
     <div class="grid"><a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t">gRPC</span></a></div>
+    <p class="idxgrp"><span lang="en">Data & Persistence</span><span lang="hu">Adat &amp; perzisztencia</span></p>
+    <div class="grid"><a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t"><span lang="en">PostgreSQL vs Oracle</span><span lang="hu">PostgreSQL vs Oracle</span></span></a></div>
+    <p class="idxgrp"><span lang="en">Realtime & Messaging</span><span lang="hu">Realtime &amp; üzenetkezelés</span></p>
+    <div class="grid"><a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t"><span lang="en">Broker Comparison</span><span lang="hu">Brokerek összehasonlítása</span></span></a></div>
     <p class="idxgrp"><span lang="en">APIs & HTTP</span><span lang="hu">API-k &amp; HTTP</span></p>
-    <div class="grid"><a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t">OpenAPI</span></a></div>
+    <div class="grid"><a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t">OpenAPI</span></a></div>
     <p class="idxgrp"><span lang="en">Distributed Systems</span><span lang="hu">Elosztott rendszerek</span></p>
-    <div class="grid"><a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t">PACELC</span></a><a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t">Consistent Hashing</span></a><a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t">Quorums (R + W &gt; N)</span></a><a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t">Consensus &amp; Raft</span></a><a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t">Leader Election</span></a><a class="idx" href="#c09"><span class="idx__n">09</span><span class="idx__t">Clocks &amp; Ordering</span></a><a class="idx" href="#c10"><span class="idx__n">10</span><span class="idx__t">Two-Phase Commit</span></a><a class="idx" href="#c11"><span class="idx__n">11</span><span class="idx__t">Failure Detection &amp; Heartbeats</span></a></div>
+    <div class="grid"><a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t">PACELC</span></a><a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t">Consistent Hashing</span></a><a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t">Quorums (R + W &gt; N)</span></a><a class="idx" href="#c09"><span class="idx__n">09</span><span class="idx__t">Consensus &amp; Raft</span></a><a class="idx" href="#c10"><span class="idx__n">10</span><span class="idx__t">Leader Election</span></a><a class="idx" href="#c11"><span class="idx__n">11</span><span class="idx__t">Clocks &amp; Ordering</span></a><a class="idx" href="#c12"><span class="idx__n">12</span><span class="idx__t">Two-Phase Commit</span></a><a class="idx" href="#c13"><span class="idx__n">13</span><span class="idx__t">Failure Detection &amp; Heartbeats</span></a></div>
     <p class="idxgrp"><span lang="en">DevOps & Cloud</span><span lang="hu">DevOps &amp; felhő</span></p>
-    <div class="grid"><a class="idx" href="#c12"><span class="idx__n">12</span><span class="idx__t"><span lang="en">Infrastructure as Code</span><span lang="hu">Infrastructure as Code</span></span></a><a class="idx" href="#c13"><span class="idx__n">13</span><span class="idx__t"><span lang="en">Pipeline & Runtime Security</span><span lang="hu">Pipeline- & futásidő-biztonság</span></span></a></div>
+    <div class="grid"><a class="idx" href="#c14"><span class="idx__n">14</span><span class="idx__t"><span lang="en">Infrastructure as Code</span><span lang="hu">Infrastructure as Code</span></span></a><a class="idx" href="#c15"><span class="idx__n">15</span><span class="idx__t"><span lang="en">Pipeline & Runtime Security</span><span lang="hu">Pipeline- & futásidő-biztonság</span></span></a></div>
     <p class="idxgrp"><span lang="en">Data Structures & Algorithms</span><span lang="hu">Adatszerkezetek &amp; algoritmusok</span></p>
-    <div class="grid"><a class="idx" href="#c14"><span class="idx__n">14</span><span class="idx__t"><span lang="en">Heaps & Priority Queues</span><span lang="hu">Heapek & prioritási sorok</span></span></a><a class="idx" href="#c15"><span class="idx__n">15</span><span class="idx__t"><span lang="en">Dynamic Programming</span><span lang="hu">Dinamikus programozás</span></span></a><a class="idx" href="#c16"><span class="idx__n">16</span><span class="idx__t"><span lang="en">Greedy Algorithms</span><span lang="hu">Mohó algoritmusok</span></span></a></div>
+    <div class="grid"><a class="idx" href="#c16"><span class="idx__n">16</span><span class="idx__t"><span lang="en">Heaps & Priority Queues</span><span lang="hu">Heapek & prioritási sorok</span></span></a><a class="idx" href="#c17"><span class="idx__n">17</span><span class="idx__t"><span lang="en">Dynamic Programming</span><span lang="hu">Dinamikus programozás</span></span></a><a class="idx" href="#c18"><span class="idx__n">18</span><span class="idx__t"><span lang="en">Greedy Algorithms</span><span lang="hu">Mohó algoritmusok</span></span></a></div>
   </nav>
 
   <div class="areahead">
@@ -341,11 +347,76 @@ svg text[lang="hu"]{display:none}
   </section>
 
   <div class="areahead">
-    <h2><span lang="en">APIs & HTTP</span><span lang="hu">API-k &amp; HTTP</span></h2>
+    <h2><span lang="en">Data & Persistence</span><span lang="hu">Adat &amp; perzisztencia</span></h2>
     <span class="cnt">1</span>
   </div>
 <section class="concept" id="c03">
-    <div class="concept__head"><span class="num">03</span><h2>OpenAPI</h2><span class="src">API</span></div>
+    <div class="concept__head"><span class="num">03</span><h2><span lang="en">PostgreSQL vs Oracle</span><span lang="hu">PostgreSQL vs Oracle</span></h2><span class="src">Node</span></div>
+    <p class="def"><span lang="en"><strong>Both are mature relational databases with MVCC, but they differ in defaults and dialect in ways that bite during a migration</strong> — and those differences, not licensing, are what an interview asks about.</span><span lang="hu"><strong>Mindkettő érett, MVCC-alapú relációs adatbázis, de az alapértelmezéseik és a dialektusuk úgy térnek el, ami migráció közben visszaüt</strong> — és interjún ezek a különbségek jönnek elő, nem a licencelés.</span></p>
+    <table class="t">
+      <tr><th></th><th>PostgreSQL</th><th>Oracle</th></tr>
+      <tr><td><span lang="en">Empty string</span><span lang="hu">Üres string</span></td><td><span lang="en">distinct from NULL</span><span lang="hu">különbözik a NULL-tól</span></td><td><span lang="en">treated as NULL</span><span lang="hu">NULL-ként kezelve</span></td></tr>
+      <tr><td><span lang="en">Auto ids</span><span lang="hu">Automatikus id-k</span></td><td><code>GENERATED … IDENTITY</code>, <code>serial</code></td><td><span lang="en">sequence (+ IDENTITY since 12c)</span><span lang="hu">sequence (+ IDENTITY 12c óta)</span></td></tr>
+      <tr><td><span lang="en">Upsert</span><span lang="hu">Upsert</span></td><td><code>ON CONFLICT</code></td><td><code>MERGE</code></td></tr>
+      <tr><td><span lang="en">Row limit</span><span lang="hu">Sorkorlát</span></td><td><code>LIMIT / OFFSET</code></td><td><code>FETCH FIRST</code>, <code>ROWNUM</code></td></tr>
+      <tr><td><span lang="en">Procedural</span><span lang="hu">Procedurális</span></td><td>PL/pgSQL</td><td>PL/SQL</td></tr>
+      <tr><td><span lang="en">DDL in transactions</span><span lang="hu">DDL tranzakcióban</span></td><td><span lang="en">transactional</span><span lang="hu">tranzakcionális</span></td><td><span lang="en">implicit commit</span><span lang="hu">implicit commit</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">Which difference causes the most damage in practice?</span><span lang="hu">Melyik különbség okozza a legtöbb kárt a gyakorlatban?</span></p>
+      <ul class="a">
+        <li><span lang="en">Oracle treating <code>''</code> as <code>NULL</code>. Logic that distinguishes "not provided" from "provided but blank" silently changes meaning on migration, and <code>WHERE col = ''</code> matches nothing in Oracle. It's a data-semantics difference, not a syntax one, so it survives a mechanical dialect translation and surfaces later as wrong results rather than errors.</span><span lang="hu">Az, hogy az Oracle <code>NULL</code>-ként kezeli a <code>''</code>-t. Az a logika, ami megkülönbözteti a „nincs megadva"-t a „megadva, de üres"-től, csendben jelentést vált migrációkor, és a <code>WHERE col = ''</code> semmire nem illeszkedik Oracle-ben. Ez adatszemantikai különbség, nem szintaktikai, így túléli a gépies dialektus-fordítást, és később rossz eredményként bukkan fel, nem hibaként.</span></li>
+      </ul>
+      <p class="q"><span lang="en">And the transaction defaults?</span><span lang="hu">És a tranzakciós alapértelmezések?</span></p>
+      <ul class="a">
+        <li><span lang="en">Oracle opens a transaction implicitly and requires an explicit <code>COMMIT</code>; Postgres autocommits each statement unless you open a block. DDL is the sharper edge: Postgres can roll back a <code>CREATE TABLE</code> inside a transaction, Oracle commits implicitly around DDL — so a migration script that assumes all-or-nothing behaves very differently on each.</span><span lang="hu">Az Oracle implicit nyit tranzakciót, és explicit <code>COMMIT</code>-ot vár; a Postgres minden utasítást autocommitál, hacsak nem nyitsz blokkot. A DDL az élesebb különbség: a Postgres vissza tud görgetni egy tranzakción belüli <code>CREATE TABLE</code>-t, az Oracle implicit commitál a DDL körül — így egy mindent-vagy-semmit feltételező migrációs script nagyon eltérően viselkedik a kettőn.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Do you need to rewrite application code, or just SQL?</span><span lang="hu">Az alkalmazáskódot is át kell írni, vagy csak az SQL-t?</span></p>
+      <ul class="a">
+        <li><span lang="en">Usually more than SQL. Identifier case folding differs (Postgres folds to lower, Oracle to upper, both fold unless quoted), so a driver returning <code>ID</code> instead of <code>id</code> breaks object mapping across the whole codebase. Date and <code>NUMBER</code> handling differ. And anything in PL/SQL — packages, triggers, stored logic — has no automatic equivalent; that's typically the largest and least visible part of the estimate.</span><span lang="hu">Általában többet az SQL-nél. Az azonosítók kis/nagybetű-kezelése eltér (a Postgres kisbetűre, az Oracle nagybetűre hajt, idézőjel nélkül mindkettő hajt), így egy <code>id</code> helyett <code>ID</code>-t visszaadó driver az egész kódbázisban töri az objektum-leképezést. A dátum- és <code>NUMBER</code>-kezelés eltér. És bármi, ami PL/SQL-ben van — csomagok, triggerek, tárolt logika — nem rendelkezik automatikus megfelelővel; jellemzően ez a becslés legnagyobb és legkevésbé látható része.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Both use MVCC, but Oracle's default isolation is Read Committed with statement-level consistency and no reader-blocks-writer, while Postgres implements Repeatable Read as snapshot isolation — so a workload tuned against one may see different anomalies on the other even at a nominally identical isolation level.</span><span lang="hu">Mindkettő MVCC-t használ, de az Oracle alapértelmezett izolációja Read Committed utasítás-szintű konzisztenciával és olvasó-nem-blokkol-írót viselkedéssel, míg a Postgres a Repeatable Read-et snapshot izolációként valósítja meg — így egy az egyikre hangolt terhelés a másikon névlegesen azonos izolációs szinten is más anomáliákat láthat.</span></p>
+  </section>
+
+  <div class="areahead">
+    <h2><span lang="en">Realtime & Messaging</span><span lang="hu">Realtime &amp; üzenetkezelés</span></h2>
+    <span class="cnt">1</span>
+  </div>
+<section class="concept" id="c04">
+    <div class="concept__head"><span class="num">04</span><h2><span lang="en">Broker Comparison</span><span lang="hu">Brokerek összehasonlítása</span></h2><span class="src">Realtime</span></div>
+    <p class="def"><span lang="en"><strong>The choice is mostly about retention and routing:</strong> whether messages disappear once consumed, and how much the broker does to decide who gets what.</span><span lang="hu"><strong>A választás főként a megőrzésről és az útválasztásról szól:</strong> eltűnnek-e az üzenetek fogyasztás után, és mennyit tesz a broker azért, hogy eldöntse, ki mit kap.</span></p>
+    <table class="t">
+      <tr><th></th><th>RabbitMQ</th><th>Kafka</th><th>SQS / SNS</th></tr>
+      <tr><td><span lang="en">Model</span><span lang="hu">Modell</span></td><td><span lang="en">smart broker, queues</span><span lang="hu">okos broker, sorok</span></td><td><span lang="en">durable log</span><span lang="hu">tartós log</span></td><td><span lang="en">managed queue / topic</span><span lang="hu">menedzselt sor / topic</span></td></tr>
+      <tr><td><span lang="en">After consuming</span><span lang="hu">Fogyasztás után</span></td><td><span lang="en">deleted</span><span lang="hu">törlődik</span></td><td><span lang="en">retained — replayable</span><span lang="hu">megmarad — visszajátszható</span></td><td><span lang="en">deleted</span><span lang="hu">törlődik</span></td></tr>
+      <tr><td><span lang="en">Routing</span><span lang="hu">Útválasztás</span></td><td><span lang="en">rich (exchanges, bindings)</span><span lang="hu">gazdag (exchange-ek, bindingok)</span></td><td><span lang="en">topic + partition key</span><span lang="hu">topic + partíciókulcs</span></td><td><span lang="en">SNS fan-out to queues</span><span lang="hu">SNS fan-out sorokba</span></td></tr>
+      <tr><td><span lang="en">Ordering</span><span lang="hu">Sorrend</span></td><td><span lang="en">per queue</span><span lang="hu">soronként</span></td><td><span lang="en">per partition</span><span lang="hu">partíciónként</span></td><td><span lang="en">FIFO queues only</span><span lang="hu">csak FIFO sorok</span></td></tr>
+      <tr><td><span lang="en">Ops burden</span><span lang="hu">Üzemeltetési teher</span></td><td><span lang="en">moderate</span><span lang="hu">közepes</span></td><td><span lang="en">high (or managed)</span><span lang="hu">magas (vagy menedzselt)</span></td><td><span lang="en">none</span><span lang="hu">nincs</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">When does the log model actually matter?</span><span lang="hu">Mikor számít valójában a log-modell?</span></p>
+      <ul class="a">
+        <li><span lang="en">When you need <em>replay</em> — adding a new consumer that must process history, rebuilding a projection after a bug, or feeding several independent pipelines from one stream. With a queue, a message consumed by the wrong service is simply gone; with a retained log, each group has its own offset and history is still there. If you never replay and have one consumer per message, the log's operational cost buys you nothing.</span><span lang="hu">Amikor <em>visszajátszásra</em> van szükséged — új fogyasztó hozzáadása, aminek a történetet is fel kell dolgoznia, projekció újraépítése egy hiba után, vagy több független pipeline táplálása egy streamből. Sornál egy rossz szolgáltatás által fogyasztott üzenet egyszerűen odavan; megőrzött lognál minden csoportnak saját offsetje van, és a történet még megvan. Ha sosem játszol vissza, és üzenetenként egy fogyasztód van, a log üzemeltetési költsége semmit nem vesz neked.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What does RabbitMQ's routing buy you?</span><span lang="hu">Mit ad neked a RabbitMQ útválasztása?</span></p>
+      <ul class="a">
+        <li><span lang="en">The broker decides delivery, not the consumer. Topic exchanges with patterns like <code>order.*.eu</code>, priority queues, per-message TTL and delayed delivery all live in the broker, so consumers stay simple. Kafka pushes that logic to the consumer — it reads a partition and filters — which is more work but scales differently. Broker-side routing is the better fit for complex enterprise integration; consumer-side is better for high-volume streaming.</span><span lang="hu">A broker dönt a kézbesítésről, nem a fogyasztó. A topic exchange-ek olyan mintákkal, mint az <code>order.*.eu</code>, a prioritásos sorok, az üzenetenkénti TTL és a késleltetett kézbesítés mind a brokerben laknak, így a fogyasztók egyszerűek maradnak. A Kafka ezt a logikát a fogyasztóra tolja — olvas egy partíciót és szűr —, ami több munka, de másképp skálázódik. A broker-oldali útválasztás komplex vállalati integrációhoz illik jobban; a fogyasztó-oldali nagy volumenű streaminghez.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How would you justify the choice in an interview?</span><span lang="hu">Hogyan indokolnád a választást egy interjún?</span></p>
+      <ul class="a">
+        <li><span lang="en">Lead with the requirement, not the product. "We need replay and multiple independent consumers of the same stream" points at a log. "We need complex routing and per-message priority" points at RabbitMQ. "We need a queue and have no platform team" points at SQS. Naming the trade-off you're accepting — Kafka's operational weight, SQS's limited ordering, RabbitMQ's lack of replay — is what makes the answer credible.</span><span lang="hu">A követelménnyel kezdj, ne a termékkel. „Visszajátszás kell, és ugyanannak a streamnek több független fogyasztója" — ez logra mutat. „Komplex útválasztás és üzenetenkénti prioritás kell" — ez RabbitMQ-ra. „Sor kell, és nincs platformcsapat" — ez SQS-re. Az teszi hitelessé a választ, ha megnevezed az elfogadott trade-offot is — a Kafka üzemeltetési súlyát, az SQS korlátozott sorrendjét, a RabbitMQ visszajátszás-hiányát.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Kafka is frequently chosen for problems a queue would solve, and then run by a team with no capacity to operate it. Managed offerings remove much of that, but partition planning, retention sizing and consumer-lag monitoring remain yours regardless of who runs the brokers.</span><span lang="hu">A Kafkát gyakran választják olyan problémákra, amiket egy sor is megoldana, majd olyan csapat üzemelteti, amelynek nincs rá kapacitása. A menedzselt szolgáltatások ebből sokat levesznek, de a partíciótervezés, a megőrzés méretezése és a fogyasztói lag figyelése attól függetlenül a tiéd marad, hogy ki üzemelteti a brokereket.</span></p>
+  </section>
+
+  <div class="areahead">
+    <h2><span lang="en">APIs & HTTP</span><span lang="hu">API-k &amp; HTTP</span></h2>
+    <span class="cnt">1</span>
+  </div>
+<section class="concept" id="c05">
+    <div class="concept__head"><span class="num">05</span><h2>OpenAPI</h2><span class="src">API</span></div>
     <p class="def"><span lang="en"><strong>A standard, language-agnostic spec (YAML/JSON) that describes a REST API</strong> — its endpoints, params, schemas and auth. Formerly Swagger.</span><span lang="hu"><strong>Szabványos, nyelvfüggetlen specifikáció (YAML/JSON), ami leír egy REST API-t</strong> — endpointok, paraméterek, sémák és auth. Korábbi neve: Swagger.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">What do you get from it?</span><span lang="hu">Mit nyersz vele?</span></p>
@@ -363,8 +434,8 @@ svg text[lang="hu"]{display:none}
     <h2><span lang="en">Distributed Systems</span><span lang="hu">Elosztott rendszerek</span></h2>
     <span class="cnt">8</span>
   </div>
-<section class="concept" id="c04">
-    <div class="concept__head"><span class="num">04</span><h2>PACELC</h2><span class="src">Distributed</span></div>
+<section class="concept" id="c06">
+    <div class="concept__head"><span class="num">06</span><h2>PACELC</h2><span class="src">Distributed</span></div>
     <p class="def"><span lang="en"><strong>An extension of CAP:</strong> if there's a <strong>P</strong>artition, choose <strong>A</strong>vailability or <strong>C</strong>onsistency; <strong>E</strong>lse (normal operation), choose <strong>L</strong>atency or <strong>C</strong>onsistency.</span><span lang="hu"><strong>A CAP kiterjesztése:</strong> ha van <strong>P</strong>artíció, válassz <strong>A</strong>vailability vagy <strong>C</strong>onsistency; <strong>E</strong>lse (normál működés), válassz <strong>L</strong>atency vagy <strong>C</strong>onsistency.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">Why does PACELC matter?</span><span lang="hu">Miért számít a PACELC?</span></p>
@@ -375,8 +446,8 @@ svg text[lang="hu"]{display:none}
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">For most systems the interesting trade-off is the “else” branch — latency vs consistency in normal operation — not the rare partition case.</span><span lang="hu">A legtöbb rendszernél az érdekes trade-off az „else" ág — latencia vs konzisztencia normál működésben —, nem a ritka partíció-eset.</span></p>
   </section>
-<section class="concept" id="c05">
-    <div class="concept__head"><span class="num">05</span><h2>Consistent Hashing</h2><span class="src">Distributed</span></div>
+<section class="concept" id="c07">
+    <div class="concept__head"><span class="num">07</span><h2>Consistent Hashing</h2><span class="src">Distributed</span></div>
     <p class="def"><span lang="en"><strong>Maps both keys and nodes onto a ring; a key belongs to the next node clockwise.</strong> Adding/removing a node moves only the keys in its arc — not everything.</span><span lang="hu"><strong>A kulcsokat és a node-okat is egy gyűrűre képezi; egy kulcs az óramutató szerinti következő node-hoz tartozik.</strong> Egy node hozzáadása/eltávolítása csak az ívében lévő kulcsokat mozgatja — nem az összeset.</span></p>
     <div class="dia">
       <svg viewBox="0 0 680 320" role="img" aria-label="Consistent hashing ring">
@@ -413,8 +484,8 @@ svg text[lang="hu"]{display:none}
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Plain consistent hashing still has variance — virtual nodes (or rendezvous hashing) are what make it practical.</span><span lang="hu">A sima consistent hashingnek is van szórása — a virtual node-ok (vagy a rendezvous hashing) teszik praktikussá.</span></p>
   </section>
-<section class="concept" id="c06">
-    <div class="concept__head"><span class="num">06</span><h2>Quorums (R + W &gt; N)</h2><span class="src">Distributed</span></div>
+<section class="concept" id="c08">
+    <div class="concept__head"><span class="num">08</span><h2>Quorums (R + W &gt; N)</h2><span class="src">Distributed</span></div>
     <p class="def"><span lang="en"><strong>With N replicas, require W nodes to ack a write and R for a read.</strong> If R + W &gt; N, the read and write sets overlap on ≥1 node → the read sees the latest write.</span><span lang="hu"><strong>N replikánál egy íráshoz W node visszaigazolása kell, egy olvasáshoz R.</strong> Ha R + W &gt; N, az olvasási és írási halmaz ≥1 node-on átfed → az olvasás a legfrissebb írást látja.</span></p>
     <div class="dia">
       <svg viewBox="0 0 680 230" role="img" aria-label="Quorum with N=3, W=2, R=2 overlapping on one node">
@@ -441,8 +512,8 @@ svg text[lang="hu"]{display:none}
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">R + W &gt; N guarantees overlap, not conflict resolution — concurrent writes still need last-write-wins or version vectors to reconcile.</span><span lang="hu">Az R + W &gt; N az átfedést garantálja, nem a konfliktusfeloldást — a párhuzamos írásokhoz továbbra is last-write-wins vagy version vector kell az összefésüléshez.</span></p>
   </section>
-<section class="concept" id="c07">
-    <div class="concept__head"><span class="num">07</span><h2>Consensus &amp; Raft</h2><span class="src">Distributed</span></div>
+<section class="concept" id="c09">
+    <div class="concept__head"><span class="num">09</span><h2>Consensus &amp; Raft</h2><span class="src">Distributed</span></div>
     <p class="def"><span lang="en"><strong>Getting a group of nodes to agree on a value or order despite failures.</strong> Raft (and Paxos) provide this — for leader election, replicated logs and config.</span><span lang="hu"><strong>Egy node-csoport rábírása, hogy hibák ellenére megegyezzen egy értékben vagy sorrendben.</strong> A Raft (és a Paxos) ezt biztosítja — leader electionhöz, replikált loghoz és konfighoz.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">How does Raft work at a high level?</span><span lang="hu">Hogyan működik a Raft magas szinten?</span></p>
@@ -456,8 +527,8 @@ svg text[lang="hu"]{display:none}
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Consensus is expensive (round trips + majority). Use it for metadata/coordination (etcd, ZooKeeper), not the hot data path.</span><span lang="hu">A consensus drága (körök + többség). Metaadathoz/koordinációhoz használd (etcd, ZooKeeper), ne a forró adatútra.</span></p>
   </section>
-<section class="concept" id="c08">
-    <div class="concept__head"><span class="num">08</span><h2>Leader Election</h2><span class="src">Distributed</span></div>
+<section class="concept" id="c10">
+    <div class="concept__head"><span class="num">10</span><h2>Leader Election</h2><span class="src">Distributed</span></div>
     <p class="def"><span lang="en"><strong>Choosing a single coordinator among nodes, and re-choosing when it fails.</strong></span><span lang="hu"><strong>Egyetlen koordinátor kiválasztása a node-ok közül, és újraválasztása, ha kiesik.</strong></span></p>
     <div class="qa">
       <p class="q"><span lang="en">How is it done safely?</span><span lang="hu">Hogyan csinálják biztonságosan?</span></p>
@@ -471,8 +542,8 @@ svg text[lang="hu"]{display:none}
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">A paused leader (GC/partition) may still think it's leader — always use fencing tokens so downstream systems reject its late writes.</span><span lang="hu">Egy megállt leader (GC/partíció) még mindig leadernek hiheti magát — mindig használj fencing tokent, hogy a downstream rendszerek elutasítsák a késői írásait.</span></p>
   </section>
-<section class="concept" id="c09">
-    <div class="concept__head"><span class="num">09</span><h2>Clocks &amp; Ordering</h2><span class="src">Distributed</span></div>
+<section class="concept" id="c11">
+    <div class="concept__head"><span class="num">11</span><h2>Clocks &amp; Ordering</h2><span class="src">Distributed</span></div>
     <p class="def"><span lang="en"><strong>There's no single global clock,</strong> so ordering events across nodes needs logical clocks.</span><span lang="hu"><strong>Nincs egyetlen globális óra,</strong> így a node-ok közti események rendezéséhez logikai órák kellenek.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">Why not just use wall-clock timestamps?</span><span lang="hu">Miért ne csak wall-clock időbélyeget használjunk?</span></p>
@@ -487,8 +558,8 @@ svg text[lang="hu"]{display:none}
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Using server wall-clock time for ordering or conflict resolution is a classic bug — clock skew makes it non-deterministic. Use logical clocks or a sequencer.</span><span lang="hu">A szerver wall-clock idejének használata rendezésre vagy konfliktusfeloldásra klasszikus bug — az óraeltérés nemdeterminisztikussá teszi. Használj logikai órát vagy sequencert.</span></p>
   </section>
-<section class="concept" id="c10">
-    <div class="concept__head"><span class="num">10</span><h2>Two-Phase Commit</h2><span class="src">Distributed</span></div>
+<section class="concept" id="c12">
+    <div class="concept__head"><span class="num">12</span><h2>Two-Phase Commit</h2><span class="src">Distributed</span></div>
     <p class="def"><span lang="en"><strong>An atomic-commit protocol across nodes:</strong> a coordinator asks all participants to <em>prepare</em> (phase 1); if all vote yes, it tells them to <em>commit</em> (phase 2), else abort.</span><span lang="hu"><strong>Egy atomi-commit protokoll node-ok között:</strong> egy koordinátor megkéri az összes résztvevőt, hogy <em>prepare</em> (1. fázis); ha mind igennel szavaz, szól, hogy <em>commit</em> (2. fázis), különben abort.</span></p>
     <div class="dia">
       <svg viewBox="0 0 680 240" role="img" aria-label="Two-phase commit coordinator and participants">
@@ -521,8 +592,8 @@ svg text[lang="hu"]{display:none}
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">2PC is largely avoided in microservices because of its blocking failure mode and lock-holding — Sagas + idempotency are the usual answer.</span><span lang="hu">A 2PC-t microservicesben többnyire kerülik a blokkoló hibamódja és a lock-tartás miatt — a Saga + idempotency a szokásos válasz.</span></p>
   </section>
-<section class="concept" id="c11">
-    <div class="concept__head"><span class="num">11</span><h2>Failure Detection &amp; Heartbeats</h2><span class="src">Distributed</span></div>
+<section class="concept" id="c13">
+    <div class="concept__head"><span class="num">13</span><h2>Failure Detection &amp; Heartbeats</h2><span class="src">Distributed</span></div>
     <p class="def"><span lang="en"><strong>Detecting that a node has failed so the system can react</strong> (failover, rebalance). Nodes send periodic heartbeats; a missed one suggests failure.</span><span lang="hu"><strong>Egy node kiesésének észlelése, hogy a rendszer reagálhasson</strong> (failover, rebalance). A node-ok periodikus heartbeatet küldenek; egy kimaradó hibát jelez.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">Why is failure detection fundamentally hard?</span><span lang="hu">Miért alapvetően nehéz a failure detection?</span></p>
@@ -541,8 +612,8 @@ svg text[lang="hu"]{display:none}
     <h2><span lang="en">DevOps & Cloud</span><span lang="hu">DevOps &amp; felhő</span></h2>
     <span class="cnt">2</span>
   </div>
-<section class="concept" id="c12">
-    <div class="concept__head"><span class="num">12</span><h2><span lang="en">Infrastructure as Code</span><span lang="hu">Infrastructure as Code</span></h2><span class="src">DevOps</span></div>
+<section class="concept" id="c14">
+    <div class="concept__head"><span class="num">14</span><h2><span lang="en">Infrastructure as Code</span><span lang="hu">Infrastructure as Code</span></h2><span class="src">DevOps</span></div>
     <p class="def"><span lang="en"><strong>Defining infrastructure in version-controlled code</strong> rather than clicking through a console — making environments reproducible, reviewable and diffable.</span><span lang="hu"><strong>Az infrastruktúra definiálása verziókövetett kódban</strong> ahelyett, hogy egy konzolon kattintgatnál — reprodukálhatóvá, átnézhetővé és összehasonlíthatóvá téve a környezeteket.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">Declarative vs imperative IaC?</span><span lang="hu">Deklaratív vs imperatív IaC?</span></p>
@@ -560,8 +631,8 @@ svg text[lang="hu"]{display:none}
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Never run a destructive apply without reading the plan — Terraform will happily replace a database if a change forces recreation. Review the plan output, and protect stateful resources with lifecycle rules that prevent destruction.</span><span lang="hu">Sose futtass destruktív apply-t a plan elolvasása nélkül — a Terraform készséggel lecserél egy adatbázist, ha egy változtatás újralétrehozást kényszerít. Nézd át a plan kimenetét, és védd a stateful erőforrásokat lifecycle szabályokkal, amelyek megakadályozzák a megsemmisítést.</span></p>
   </section>
-<section class="concept" id="c13">
-    <div class="concept__head"><span class="num">13</span><h2><span lang="en">Pipeline & Runtime Security</span><span lang="hu">Pipeline- & futásidő-biztonság</span></h2><span class="src">DevOps</span></div>
+<section class="concept" id="c15">
+    <div class="concept__head"><span class="num">15</span><h2><span lang="en">Pipeline & Runtime Security</span><span lang="hu">Pipeline- & futásidő-biztonság</span></h2><span class="src">DevOps</span></div>
     <p class="def"><span lang="en"><strong>Securing the pipeline and the runtime</strong> — secrets, image provenance, least privilege, and keeping credentials out of the places they habitually leak.</span><span lang="hu"><strong>A pipeline és a futásidő biztonsága</strong> — titkok, image-eredet, legkisebb jogosultság, és a hitelesítő adatok távoltartása azoktól a helyektől, ahonnan rendszeresen kiszivárognak.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">Where do secrets belong in a deployment?</span><span lang="hu">Hol a helyük a titkoknak egy deployban?</span></p>
@@ -585,8 +656,8 @@ svg text[lang="hu"]{display:none}
     <h2><span lang="en">Data Structures & Algorithms</span><span lang="hu">Adatszerkezetek &amp; algoritmusok</span></h2>
     <span class="cnt">3</span>
   </div>
-<section class="concept" id="c14">
-    <div class="concept__head"><span class="num">14</span><h2><span lang="en">Heaps & Priority Queues</span><span lang="hu">Heapek & prioritási sorok</span></h2><span class="src">DS&amp;A</span></div>
+<section class="concept" id="c16">
+    <div class="concept__head"><span class="num">16</span><h2><span lang="en">Heaps & Priority Queues</span><span lang="hu">Heapek & prioritási sorok</span></h2><span class="src">DS&amp;A</span></div>
     <p class="def"><span lang="en"><strong>A complete binary tree keeping the min (or max) at the root</strong> — O(log n) insert and extract, O(1) peek. The structure behind “top k” and “next smallest” problems.</span><span lang="hu"><strong>Egy teljes bináris fa, amely a minimumot (vagy maximumot) tartja a gyökérben</strong> — O(log n) beszúrás és kivétel, O(1) peek. A „top k” és „következő legkisebb” feladatok mögötti szerkezet.</span></p>
     <div class="cx"><span class="good"><span lang="en">peek O(1)</span><span lang="hu">peek O(1)</span></span><span class="t"><span lang="en">insert/extract O(log n)</span><span lang="hu">beszúrás/kivétel O(log n)</span></span><span class="t"><span lang="en">heapify O(n)</span><span lang="hu">heapify O(n)</span></span><span class="s"><span lang="en">space O(n)</span><span lang="hu">tár O(n)</span></span></div>
     <div class="qa">
@@ -601,8 +672,8 @@ svg text[lang="hu"]{display:none}
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">JavaScript has no built-in heap — say this out loud and either write a compact one or state that you'd use a library. Reaching for <code>sort()</code> on every insertion instead is O(n² log n) and a red flag.</span><span lang="hu">A JavaScriptben nincs beépített heap — mondd ki ezt hangosan, és vagy írj egy tömöret, vagy jelezd, hogy library-t használnál. Ha helyette minden beszúrásnál <code>sort()</code>-ot hívsz, az O(n² log n) és vörös zászló.</span></p>
   </section>
-<section class="concept" id="c15">
-    <div class="concept__head"><span class="num">15</span><h2><span lang="en">Dynamic Programming</span><span lang="hu">Dinamikus programozás</span></h2><span class="src">DS&amp;A</span></div>
+<section class="concept" id="c17">
+    <div class="concept__head"><span class="num">17</span><h2><span lang="en">Dynamic Programming</span><span lang="hu">Dinamikus programozás</span></h2><span class="src">DS&amp;A</span></div>
     <p class="def"><span lang="en"><strong>Solving overlapping subproblems once and reusing the results</strong> — either top-down with memoization or bottom-up with a table. It turns exponential recursion into polynomial time.</span><span lang="hu"><strong>Átfedő részfeladatok egyszeri megoldása és az eredmények újrafelhasználása</strong> — vagy top-down memoizációval, vagy bottom-up táblával. Exponenciális rekurziót alakít polinomiális idejűvé.</span></p>
     <div class="cx"><span class="t"><span lang="en">typically O(states × transition)</span><span lang="hu">tipikusan O(állapotok × átmenet)</span></span><span class="s"><span lang="en">O(states), often reducible</span><span lang="hu">O(állapotok), gyakran csökkenthető</span></span></div>
     <div class="qa">
@@ -640,8 +711,8 @@ function best(n) {
 }</pre></div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Only the last row (or two) of a DP table is usually needed — say “I can reduce space from O(n·m) to O(m)” even if you don't implement it; interviewers listen for that. And a memo key must capture <em>every</em> varying parameter, or you'll return cached answers for different states.</span><span lang="hu">Egy DP-táblából általában csak az utolsó sor (vagy kettő) kell — mondd ki, hogy „a tárat O(n·m)-ről O(m)-re tudom csökkenteni”, akkor is, ha nem implementálod; az interjúztatók erre figyelnek. És a memo-kulcsnak <em>minden</em> változó paramétert meg kell fognia, különben eltérő állapotokra adsz vissza cache-elt válaszokat.</span></p>
   </section>
-<section class="concept" id="c16">
-    <div class="concept__head"><span class="num">16</span><h2><span lang="en">Greedy Algorithms</span><span lang="hu">Mohó algoritmusok</span></h2><span class="src">DS&amp;A</span></div>
+<section class="concept" id="c18">
+    <div class="concept__head"><span class="num">18</span><h2><span lang="en">Greedy Algorithms</span><span lang="hu">Mohó algoritmusok</span></h2><span class="src">DS&amp;A</span></div>
     <p class="def"><span lang="en"><strong>Making the locally optimal choice at each step and never reconsidering</strong> — fast and simple when it works, but it needs proof that local optimality yields a global optimum.</span><span lang="hu"><strong>A lokálisan optimális választás minden lépésben, újragondolás nélkül</strong> — gyors és egyszerű, amikor működik, de bizonyítani kell, hogy a lokális optimalitás globális optimumot ad.</span></p>
     <div class="cx"><span class="good"><span lang="en">often O(n log n) (sort + pass)</span><span lang="hu">gyakran O(n log n) (rendezés + végigmenés)</span></span><span class="bad"><span lang="en">wrong without the exchange argument</span><span lang="hu">hibás az exchange argument nélkül</span></span></div>
     <div class="qa">
@@ -668,7 +739,7 @@ function best(n) {
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Never assert a greedy solution without justifying why the local choice is safe — “it seems to work on the examples” is exactly how greedy fails. If you can't argue it, reach for DP.</span><span lang="hu">Sose állíts mohó megoldást annak indoklása nélkül, hogy miért biztonságos a lokális választás — a „a példákon működni látszik” pontosan az, ahogy a greedy elbukik. Ha nem tudod megindokolni, nyúlj a DP-hez.</span></p>
   </section>
 
-  <p class="foot"><span lang="en">Tier 4 · 16 concepts · <b>Q&amp;A knowledge base</b></span><span lang="hu">4. tier · 16 fogalom · <b>Q&amp;A tudásbázis</b></span></p>
+  <p class="foot"><span lang="en">Tier 4 · 18 concepts · <b>Q&amp;A knowledge base</b></span><span lang="hu">4. tier · 18 fogalom · <b>Q&amp;A tudásbázis</b></span></p>
 
 </div>
 

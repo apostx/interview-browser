@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSS &amp; Layout — Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111827;
+  --muted:#6B7280;
+  --line:#E5E7EB;
+  --paper:#EDF0F3;
+  --card:#FFFFFF;
+  --accent:#2563EB;
+  --get:#16A34A;
+  --post:#2563EB;
+  --put:#D97706;
+  --patch:#0D9488;
+  --del:#DC2626;
+  --s2:#16A34A;
+  --s3:#7C3AED;
+  --s4:#D97706;
+  --s5:#DC2626;
+  --node:#FFFFFF;
+  --nodeline:#94A3B8;
+  --slate:#334155;
+  --safe:#16A34A;
+  --vuln:#DC2626;
+}
+:root[data-lang="hu"] [lang="en"]{display:none}
+:root[data-lang="en"] [lang="hu"]{display:none}
+:root[data-lang="hu"] svg text[lang="en"]{display:none}
+:root[data-lang="en"] svg text[lang="hu"]{display:none}
+/* ── language toggling ─────────────────────────────────────────
+   Both languages live in the DOM; only the attribute changes.
+   No network requests, no re-render, so switching cannot fail.  */
+:root[data-lang="hu"] [lang="en"]{display:none}
+/* SVG text nodes need the rule stated on the element itself */
+:root[data-lang="hu"] svg text[lang="en"]{display:none}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+a{color:inherit}
+code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+code{background:#EEF2F7;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:.86em}
+.bar{position:sticky;top:0;z-index:20;background:rgba(237,240,243,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar__in{max-width:900px;margin:0 auto;padding:10px 20px;display:flex;
+  align-items:center;justify-content:space-between;gap:12px}
+.bar__t{font-family:'Space Grotesk';font-weight:600;font-size:14px;letter-spacing:-.01em}
+.bar__t b{color:var(--accent)}
+.bar__r{display:flex;align-items:center;gap:8px}
+.bar a.up{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);
+  text-decoration:none;border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:#fff}
+.bar a.up:hover{color:var(--ink);border-color:var(--accent)}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;background:#fff;overflow:hidden}
+.lang button{font-family:'JetBrains Mono';font-size:12px;padding:4px 11px;border:0;
+  background:transparent;color:var(--muted);cursor:pointer;line-height:1.5;
+  transition:background .15s,color .15s}
+.lang button:hover{color:var(--ink)}
+.lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.hero{padding:44px 0 8px}
+.eyebrow{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,6vw,50px);
+  line-height:1.02;letter-spacing:-.025em;margin:0 0 12px}
+.lede{color:var(--muted);max-width:62ch;margin:0}
+.sec{display:flex;align-items:center;gap:14px;margin:36px 4px 2px}
+.sec__l{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--accent);white-space:nowrap}
+.sec__r{height:1px;background:var(--line);flex:1}
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:24px 0 2px}
+.legend .lbl{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-right:2px}
+.chip{font-family:'JetBrains Mono';font-size:12px;padding:3px 8px;border-radius:6px;
+  border:1px solid var(--line);background:#fff}
+.chip--2{color:var(--s2);border-color:#BBF7D0;background:#F0FDF4}
+.chip--4{color:var(--s4);border-color:#FDE68A;background:#FFFBEB}
+.chip--5{color:var(--s5);border-color:#FECACA;background:#FEF2F2}
+.index{margin:30px 0 8px}
+.index h3{font-family:'Space Grotesk';font-size:13px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+a.idx{display:flex;align-items:baseline;gap:10px;text-decoration:none;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  transition:border-color .15s,transform .15s}
+a.idx:hover{border-color:var(--accent);transform:translateY(-1px)}
+.idx__n{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);font-weight:500}
+.idx__t{font-size:13.5px;font-weight:500}
+.concept{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:26px 26px 22px;margin-top:16px;scroll-margin-top:64px}
+.concept__head{display:flex;align-items:center;gap:14px;margin:0 0 12px}
+.concept__head .num{font-family:'JetBrains Mono';font-weight:500;font-size:15px;color:#fff;
+  background:var(--ink);width:38px;height:38px;border-radius:10px;display:grid;
+  place-items:center;flex:0 0 auto}
+.concept__head h2{font-family:'Space Grotesk';font-weight:600;font-size:22px;
+  letter-spacing:-.015em;margin:0}
+.def{margin:0 0 16px}
+.def strong{font-weight:600}
+.qa{border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
+.q{font-weight:600;margin:0 0 6px}
+.q::before{content:"Q";font-family:'JetBrains Mono';color:var(--accent);font-weight:600;
+  margin-right:9px;font-size:13px}
+ul.a,p.a{margin:0 0 2px}
+ul.a{padding-left:20px}
+ul.a li{margin:3px 0}
+.watch{margin:18px 0 0;background:#FFFBEB;border:1px solid #FDE68A;
+  border-left:3px solid var(--put);border-radius:8px;padding:10px 14px;font-size:14px}
+.watch__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--put);font-weight:600;display:block;margin-bottom:3px}
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 2px}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+table.t th{background:#F8FAFC;font-weight:600;font-family:'Space Grotesk';font-size:12px}
+table.t td:first-child{font-family:'JetBrains Mono';white-space:nowrap}
+.dia{margin:16px 0 4px;background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px}
+.dia svg{width:100%;height:auto;display:block}
+.dia__cap{font-family:'JetBrains Mono';font-size:11.5px;color:var(--muted);margin:8px 2px 0}
+svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
+.foot{margin-top:44px;text-align:center;color:var(--muted);font-size:12.5px}
+.foot b{font-family:'Space Grotesk';color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.src{margin-top:14px;font-size:12.5px;color:var(--muted)}
+.m{font-family:'JetBrains Mono';font-weight:500;font-size:12px;padding:3px 8px;
+  border-radius:6px;color:#fff;letter-spacing:.02em;white-space:nowrap}
+.m--get{background:var(--get)}
+.m--post{background:var(--post)}
+.m--put{background:var(--put)}
+.m--patch{background:var(--patch)}
+.m--del{background:var(--del)}
+.chip--3{color:var(--s3);border-color:#DDD6FE;background:#F5F3FF}
+.yes{color:var(--get);font-weight:600}
+.no{color:var(--muted)}
+/* ── language toggling ─────────────────────────────────────────
+   Both languages live in the DOM; only the [data-lang] attribute on
+   <html> changes. No network requests, no re-render — switching can't fail. */
+[lang="hu"]{display:none}
+html[data-lang="hu"] [lang="en"]{display:none}
+html[data-lang="hu"] [lang="hu"]{display:inline}
+html[data-lang="hu"] li[lang="hu"]{display:list-item}
+html[data-lang="hu"] p[lang="hu"],
+html[data-lang="hu"] div[lang="hu"]{display:block}
+/* SVG <text>: display:none inheritance is unreliable across browsers with
+   a generic selector, so target text nodes explicitly. */
+svg text[lang="hu"]{display:none}
+html[data-lang="hu"] svg text[lang="en"]{display:none}
+html[data-lang="hu"] svg text[lang="hu"]{display:inline}
+/* header language switch */
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+.lang button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+/* ── language toggling ───────────────────────────────────────── */
+[lang="hu"]{display:none}
+svg text[lang="hu"]{display:none}
+.depth-note{margin:16px 0 0;font-size:13px;color:var(--muted);background:#fff;border:1px solid var(--line);
+  border-radius:10px;padding:11px 14px}
+.depth-note b{color:var(--ink);font-weight:600}
+.concept__head .num.pr{background:var(--accent)}
+.q:first-child{margin-top:0}
+.step{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--slate);margin:18px 0 6px;display:flex;align-items:center;gap:8px}
+.step::before{content:"";width:16px;height:2px;background:var(--accent);display:inline-block}
+.note{margin:14px 0 0;background:#EFF6FF;border:1px solid #BFDBFE;border-left:3px solid var(--post);
+  border-radius:8px;padding:10px 14px;font-size:14px}
+.note__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--post);font-weight:600;display:block;margin-bottom:3px}
+/* vulnerable vs fixed code pair */
+.codepair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 2px}
+.cbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}
+.cbox__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600}
+.cbox--bad .cbox__h{background:#FEF2F2;color:var(--vuln);border-bottom:1px solid #FECACA}
+.cbox--good .cbox__h{background:#F0FDF4;color:var(--safe);border-bottom:1px solid #BBF7D0}
+.cbox pre{margin:0;padding:10px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.55;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+/* ── complexity badges ───────────────────────────────────────── */
+.cx{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.cx span{font-family:'JetBrains Mono';font-size:11.5px;padding:3px 9px;border-radius:6px;
+  border:1px solid var(--line);background:#fff;white-space:nowrap}
+.cx .k{color:var(--muted)}
+.cx .t{color:var(--post);border-color:#BFDBFE;background:#EFF6FF}
+.cx .s{color:var(--patch);border-color:#99F6E4;background:#F0FDFA}
+.cx .good{color:var(--safe);border-color:#BBF7D0;background:#F0FDF4}
+.cx .bad{color:var(--vuln);border-color:#FECACA;background:#FEF2F2}
+/* ── single code block ───────────────────────────────────────── */
+.code{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;margin:12px 0 2px}
+.code__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600;background:#F8FAFC;color:var(--slate);border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.code__cx{font-size:10px;color:var(--post);text-transform:none;letter-spacing:0}
+.code pre{margin:0;padding:11px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.6;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+  .bar__t{font-size:12.5px}
+}
+@media print{
+  .bar{display:none} body{background:#fff}
+  .concept{break-inside:avoid;border-color:#ccc} a.idx{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr 1fr}
+  .concept__head h2{font-size:19px}
+  .bar__t{font-size:12.5px}
+}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+}
+@media (max-width:620px){.codepair{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+  </marker>
+</defs></svg>
+
+<div class="wrap" id="top">
+
+  <div class="hero">
+    <p class="eyebrow"><span lang="en">Technical Q&amp;A Knowledge Base</span><span lang="hu">Technikai Q&amp;A tudásbázis</span></p>
+    <h1>CSS &amp; Layout</h1>
+    <p class="lede"><span lang="en">The layout mechanisms that are easy to half-remember — what actually creates a stacking context, why a flex item refuses to shrink, when grid beats flexbox. Written as a refresher rather than a tutorial: each concept pairs the classic mistake with the version that works.</span><span lang="hu">Azok az elrendezési mechanizmusok, amiket könnyű félig megjegyezni — mi hoz létre valójában stacking contextet, miért nem hajlandó zsugorodni egy flex elem, mikor jobb a grid a flexboxnál. Refresherként írva, nem tankönyvként: minden fogalom a klasszikus hibát párosítja a működő verzióval.</span></p>
+    <div class="legend">
+      <span class="lbl"><span lang="en">Diagrams</span><span lang="hu">Diagramok</span></span>
+      <span class="chip chip--2"><span lang="en">green · preferred</span><span lang="hu">zöld · ajánlott</span></span>
+      <span class="chip chip--5"><span lang="en">red · pitfall</span><span lang="hu">piros · hibalehetőség</span></span>
+      <span class="chip chip--4"><span lang="en">amber · watch out</span><span lang="hu">sárga · buktató</span></span>
+    </div>
+  </div>
+
+  <nav class="index">
+    <h3><span lang="en">Jump to</span><span lang="hu">Ugrás</span></h3>
+    <div class="grid"><a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t"><span lang="en">Box Model &amp; Sizing</span><span lang="hu">Doboz-modell &amp; méretezés</span></span></a><a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t"><span lang="en">Specificity &amp; the Cascade</span><span lang="hu">Specificitás &amp; a kaszkád</span></span></a><a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t"><span lang="en">Flexbox</span><span lang="hu">Flexbox</span></span></a><a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t"><span lang="en">CSS Grid</span><span lang="hu">CSS Grid</span></span></a><a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t"><span lang="en">Positioning</span><span lang="hu">Pozicionálás</span></span></a><a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t"><span lang="en">Stacking Context &amp; z-index</span><span lang="hu">Stacking context &amp; z-index</span></span></a><a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t"><span lang="en">Responsive Design</span><span lang="hu">Reszponzív design</span></span></a><a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t"><span lang="en">CSS Performance</span><span lang="hu">CSS teljesítmény</span></span></a><a class="idx" href="#c09"><span class="idx__n">09</span><span class="idx__t"><span lang="en">Semantic HTML &amp; Accessibility</span><span lang="hu">Szemantikus HTML &amp; akadálymentesítés</span></span></a></div>
+  </nav>
+
+  <div class="sec"><span class="sec__l"><span lang="en">Fundamentals</span><span lang="hu">Alapok</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c01">
+    <div class="concept__head"><span class="num">01</span><h2><span lang="en">Box Model &amp; Sizing</span><span lang="hu">Doboz-modell &amp; méretezés</span></h2></div>
+    <p class="def"><span lang="en"><strong>Every element is a box: content, padding, border, margin.</strong> The only question that matters in practice is what <code>width</code> actually measures — and the answer depends on <code>box-sizing</code>.</span><span lang="hu"><strong>Minden elem egy doboz: tartalom, padding, border, margó.</strong> A gyakorlatban az egyetlen fontos kérdés az, hogy a <code>width</code> valójában mit mér — és a válasz a <code>box-sizing</code>-tól függ.</span></p>
+    <div class="codepair">
+      <div class="cbox cbox--bad"><div class="cbox__h">content-box <span lang="en">(default)</span><span lang="hu">(alapértelmezett)</span></div><pre>.card {
+  width: 300px;
+  padding: 20px;
+  border: 1px solid;
+}
+/* actual rendered width: 342px
+   300 + 20*2 + 1*2 */</pre></div>
+      <div class="cbox cbox--good"><div class="cbox__h">border-box</div><pre>*, *::before, *::after {
+  box-sizing: border-box;
+}
+.card { width: 300px; padding: 20px; }
+/* actual rendered width: 300px
+   padding eats into the content */</pre></div>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Why does nearly every codebase set <code>border-box</code> globally?</span><span lang="hu">Miért állít szinte minden kódbázis globális <code>border-box</code>-ot?</span></p>
+      <ul class="a">
+        <li><span lang="en">Because with <code>content-box</code>, adding padding changes an element's outer size, so any layout built from percentages breaks the moment you add breathing room. <code>border-box</code> makes <code>width</code> mean "the space this occupies", which is what you almost always intend.</span><span lang="hu">Mert <code>content-box</code> esetén a padding hozzáadása megváltoztatja az elem külső méretét, így minden százalékra épülő elrendezés eltörik abban a pillanatban, amikor levegőt adsz neki. A <code>border-box</code> révén a <code>width</code> azt jelenti, „ennyi helyet foglal el" — ez szinte mindig a szándék.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What is margin collapsing?</span><span lang="hu">Mi a margó-összeomlás?</span></p>
+      <ul class="a">
+        <li><span lang="en">Adjacent vertical margins merge into one — the larger wins, rather than summing. It also happens between a parent and its first/last child, which is why a child's <code>margin-top</code> can mysteriously push the <em>parent</em> down. Padding, a border, <code>overflow: hidden</code>, or a flex/grid container all stop it. Horizontal margins never collapse.</span><span lang="hu">A szomszédos függőleges margók egyetlenné olvadnak — a nagyobb nyer, nem adódnak össze. Szülő és első/utolsó gyermeke között is megtörténik, ezért tolhatja rejtélyes módon a gyermek <code>margin-top</code>-ja a <em>szülőt</em> lefelé. Padding, border, <code>overflow: hidden</code> vagy egy flex/grid konténer mind megállítja. A vízszintes margók sosem omlanak össze.</span></li>
+      </ul>
+      <p class="q"><span lang="en">When do you reach for <code>min-width</code> / <code>max-width</code> instead?</span><span lang="hu">Mikor nyúlsz inkább a <code>min-width</code> / <code>max-width</code> után?</span></p>
+      <ul class="a">
+        <li><span lang="en">Whenever the element must adapt. <code>max-width: 60ch</code> on body text caps line length for readability while staying fluid on narrow screens; <code>width: 60ch</code> would overflow. The general rule: set constraints, not fixed sizes, and let the layout resolve the actual number.</span><span lang="hu">Amikor az elemnek alkalmazkodnia kell. A <code>max-width: 60ch</code> a szövegtörzsön olvashatósági okból korlátozza a sorhosszt, miközben keskeny képernyőn folyékony marad; a <code>width: 60ch</code> túlcsordulna. Az általános szabály: megkötéseket állíts, ne fix méreteket, és hagyd, hogy az elrendezés kiszámolja a tényleges számot.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Percentage <em>padding and margin</em> resolve against the container's <strong>width</strong> — including <code>padding-top</code>. That's the old aspect-ratio hack, and it's a surprise if you meant height. Use <code>aspect-ratio</code> now.</span><span lang="hu">A százalékos <em>padding és margó</em> a konténer <strong>szélességéhez</strong> viszonyul — a <code>padding-top</code> is. Ez a régi képarány-trükk alapja, és meglepetés, ha magasságra gondoltál. Ma használj <code>aspect-ratio</code>-t.</span></p>
+  </section>
+
+  <section class="concept" id="c02">
+    <div class="concept__head"><span class="num">02</span><h2><span lang="en">Specificity &amp; the Cascade</span><span lang="hu">Specificitás &amp; a kaszkád</span></h2></div>
+    <p class="def"><span lang="en"><strong>When several rules target the same element, the winner is decided by origin, then specificity, then source order.</strong> Specificity is a three-part score — ids, classes, elements — compared left to right.</span><span lang="hu"><strong>Ha több szabály céloz ugyanarra az elemre, a győztest az eredet, majd a specificitás, majd a forrássorrend dönti el.</strong> A specificitás háromrészes pontszám — id-k, osztályok, elemek —, balról jobbra összehasonlítva.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Selector</span><span lang="hu">Szelektor</span></th><th>id</th><th><span lang="en">class</span><span lang="hu">osztály</span></th><th><span lang="en">element</span><span lang="hu">elem</span></th></tr>
+      <tr><td><code>div</code></td><td>0</td><td>0</td><td>1</td></tr>
+      <tr><td><code>.btn</code></td><td>0</td><td>1</td><td>0</td></tr>
+      <tr><td><code>.card .btn:hover</code></td><td>0</td><td>3</td><td>0</td></tr>
+      <tr><td><code>#nav .btn</code></td><td>1</td><td>1</td><td>0</td></tr>
+      <tr><td><code>:where(.a, .b)</code></td><td>0</td><td>0</td><td>0</td></tr>
+      <tr><td><span lang="en">inline <code>style=""</code></span><span lang="hu">inline <code>style=""</code></span></td><td colspan="3"><span lang="en">beats all selectors</span><span lang="hu">minden szelektort ver</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">Why is a higher class count not always the winner?</span><span lang="hu">Miért nem mindig a több osztály nyer?</span></p>
+      <ul class="a">
+        <li><span lang="en">Because the comparison is lexicographic, not additive. A single id (1,0,0) beats any number of classes — <code>#nav a</code> wins over a selector with ten classes. This is the core argument against ids in CSS: they create a specificity ceiling that later rules can only clear with another id or <code>!important</code>.</span><span lang="hu">Mert az összehasonlítás lexikografikus, nem összeadó. Egyetlen id (1,0,0) bármennyi osztályt ver — a <code>#nav a</code> nyer egy tízosztályos szelektorral szemben. Ez a fő érv az id-k CSS-beli használata ellen: specificitási plafont hoznak létre, amit a későbbi szabályok csak egy másik id-vel vagy <code>!important</code>-tal tudnak átlépni.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What do <code>:is()</code> and <code>:where()</code> change?</span><span lang="hu">Min változtat az <code>:is()</code> és a <code>:where()</code>?</span></p>
+      <ul class="a">
+        <li><span lang="en">Both group selectors, but <code>:is()</code> takes the specificity of its most specific argument, while <code>:where()</code> is always zero. That makes <code>:where()</code> the right tool for defaults and resets — a base style anyone can override with a single class, no specificity war.</span><span lang="hu">Mindkettő szelektorokat csoportosít, de az <code>:is()</code> a legspecifikusabb argumentumának specificitását veszi fel, míg a <code>:where()</code> mindig nulla. Ettől lesz a <code>:where()</code> a helyes eszköz alapértelmezésekhez és resetekhez — olyan alapstílus, amit bárki felülírhat egyetlen osztállyal, specificitási háború nélkül.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Which properties inherit?</span><span lang="hu">Mely tulajdonságok öröklődnek?</span></p>
+      <ul class="a">
+        <li><span lang="en">Typography-related ones mostly do — <code>color</code>, <code>font-*</code>, <code>line-height</code>, <code>text-align</code>, <code>visibility</code>. Box and layout properties don't: <code>margin</code>, <code>padding</code>, <code>border</code>, <code>display</code>, <code>background</code>. You can force either with the <code>inherit</code> and <code>initial</code> keywords.</span><span lang="hu">A tipográfiához kapcsolódók többnyire igen — <code>color</code>, <code>font-*</code>, <code>line-height</code>, <code>text-align</code>, <code>visibility</code>. A doboz- és elrendezési tulajdonságok nem: <code>margin</code>, <code>padding</code>, <code>border</code>, <code>display</code>, <code>background</code>. Bármelyik kikényszeríthető az <code>inherit</code> és <code>initial</code> kulcsszóval.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>!important</code> wins over specificity entirely, and the only thing that beats it is another <code>!important</code> with higher specificity — which is how stylesheets end up with escalating chains of them. Treat one as a bug report about the architecture, not a fix.</span><span lang="hu">Az <code>!important</code> teljesen felülírja a specificitást, és csak egy magasabb specificitású másik <code>!important</code> veri — így alakulnak ki az egyre eszkalálódó láncok a stíluslapokban. Tekints rá hibajelentésként az architektúráról, ne javításként.</span></p>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Layout</span><span lang="hu">Elrendezés</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c03">
+    <div class="concept__head"><span class="num">03</span><h2><span lang="en">Flexbox</span><span lang="hu">Flexbox</span></h2></div>
+    <p class="def"><span lang="en"><strong>One-dimensional layout: items are distributed along a single axis</strong> — a row or a column — with control over how leftover space is shared and how items shrink when there isn't enough.</span><span lang="hu"><strong>Egydimenziós elrendezés: az elemek egyetlen tengely mentén oszlanak el</strong> — sor vagy oszlop —, szabályozva, hogyan osztozik a maradék helyen, és hogyan zsugorodnak, ha nincs elég.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 200" role="img" aria-label="Flex axes">
+        <rect x="40" y="30" width="600" height="64" rx="8" fill="#F8FAFC" stroke="var(--line)" stroke-width="1.4"/>
+        <rect x="56" y="44" width="90" height="36" rx="5" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.4"/>
+        <rect x="156" y="44" width="90" height="36" rx="5" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.4"/>
+        <rect x="256" y="44" width="90" height="36" rx="5" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.4"/>
+        <line x1="56" y1="112" x2="624" y2="112" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <text lang="en" x="340" y="130" text-anchor="middle" font-size="11" fill="var(--accent)" font-weight="600">main axis — justify-content</text><text lang="hu" x="340" y="130" text-anchor="middle" font-size="11" fill="var(--accent)" font-weight="600">fő tengely — justify-content</text>
+        <line x1="24" y1="30" x2="24" y2="94" stroke="var(--muted)" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <text lang="en" x="14" y="150" font-size="11" fill="var(--muted)" font-weight="600">cross axis — align-items</text><text lang="hu" x="14" y="150" font-size="11" fill="var(--muted)" font-weight="600">kereszt tengely — align-items</text>
+        <text lang="en" x="340" y="176" text-anchor="middle" font-size="10" fill="var(--slate)">flex-direction swaps which is which</text><text lang="hu" x="340" y="176" text-anchor="middle" font-size="10" fill="var(--slate)">a flex-direction felcseréli, melyik melyik</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">The single most common confusion: <code>justify-content</code> and <code>align-items</code> swap meaning when <code>flex-direction</code> becomes <code>column</code>.</span><span lang="hu">A leggyakoribb félreértés: a <code>justify-content</code> és az <code>align-items</code> jelentése felcserélődik, amikor a <code>flex-direction</code> <code>column</code> lesz.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">What does the <code>flex</code> shorthand actually mean?</span><span lang="hu">Mit jelent valójában a <code>flex</code> rövidítés?</span></p>
+      <ul class="a">
+        <li><span lang="en"><code>flex: grow shrink basis</code>. <code>flex: 1</code> expands to <code>1 1 0%</code> — grow to fill, shrink if needed, and <em>ignore the content width</em> when distributing. That last part matters: <code>flex: 1</code> gives equal-width items, while <code>flex: auto</code> (<code>1 1 auto</code>) sizes them by content first and only shares the leftover. Reaching for the wrong one is why "equal columns" sometimes aren't.</span><span lang="hu"><code>flex: grow shrink basis</code>. A <code>flex: 1</code> kibontva <code>1 1 0%</code> — növekedj a kitöltésig, zsugorodj, ha kell, és <em>hagyd figyelmen kívül a tartalom szélességét</em> az elosztásnál. Ez az utolsó rész számít: a <code>flex: 1</code> egyenlő szélességű elemeket ad, míg a <code>flex: auto</code> (<code>1 1 auto</code>) előbb tartalom szerint méretez, és csak a maradékon osztozik. A rossz választás miatt nem egyenlők néha az „egyenlő oszlopok".</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why won't a flex item shrink below its content?</span><span lang="hu">Miért nem zsugorodik egy flex elem a tartalma alá?</span></p>
+      <ul class="a">
+        <li><span lang="en">Because <code>min-width</code> defaults to <code>auto</code> on flex items, which means "at least the content's minimum size". A long unbroken string or a wide child then forces overflow that no <code>width</code> fixes. The remedy is <code>min-width: 0</code> (or <code>overflow: hidden</code>) on the item — probably the single most-searched flexbox problem.</span><span lang="hu">Mert a flex elemeken a <code>min-width</code> alapértéke <code>auto</code>, ami azt jelenti, „legalább a tartalom minimális mérete". Egy hosszú, töretlen string vagy széles gyermek olyan túlcsordulást kényszerít ki, amit semmilyen <code>width</code> nem javít. A megoldás <code>min-width: 0</code> (vagy <code>overflow: hidden</code>) az elemen — valószínűleg ez a legtöbbet keresett flexbox-probléma.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What are the everyday patterns worth knowing cold?</span><span lang="hu">Mely hétköznapi minták érdemesek arra, hogy vakon tudd?</span></p>
+      <ul class="a">
+        <li><span lang="en">Centering: <code>display:flex; align-items:center; justify-content:center</code>. Push one item away from the rest: <code>margin-left: auto</code> on it — auto margins absorb all free space, which is cleaner than <code>space-between</code> when only one item should move. Sticky footer: <code>flex-direction: column</code> on a full-height parent, <code>flex: 1</code> on the main region.</span><span lang="hu">Középre igazítás: <code>display:flex; align-items:center; justify-content:center</code>. Egy elem eltolása a többitől: <code>margin-left: auto</code> rajta — az auto margók felszívják az összes szabad helyet, ami tisztább, mint a <code>space-between</code>, ha csak egy elemnek kell elmozdulnia. Ragadós lábléc: <code>flex-direction: column</code> a teljes magasságú szülőn, <code>flex: 1</code> a fő területen.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>flex-wrap</code> defaults to <code>nowrap</code>, so items squeeze instead of wrapping — a frequent cause of "why is my text one pixel tall". And <code>gap</code> works in flexbox now, so the old negative-margin technique is obsolete.</span><span lang="hu">A <code>flex-wrap</code> alapértéke <code>nowrap</code>, így az elemek összenyomódnak tördelés helyett — gyakori oka a „miért egy pixel magas a szövegem" jelenségnek. A <code>gap</code> ma már működik flexboxban is, tehát a régi negatív margós technika elavult.</span></p>
+  </section>
+
+  <section class="concept" id="c04">
+    <div class="concept__head"><span class="num">04</span><h2><span lang="en">CSS Grid</span><span lang="hu">CSS Grid</span></h2></div>
+    <p class="def"><span lang="en"><strong>Two-dimensional layout: you define rows and columns, then place items into them.</strong> Where flexbox distributes along one axis, grid controls both at once.</span><span lang="hu"><strong>Kétdimenziós elrendezés: sorokat és oszlopokat definiálsz, majd elemeket helyezel beléjük.</strong> Míg a flexbox egy tengely mentén oszt el, a grid egyszerre szabályozza mindkettőt.</span></p>
+    <div class="codepair">
+      <div class="cbox cbox--good"><div class="cbox__h"><span lang="en">Responsive with no media query</span><span lang="hu">Reszponzív media query nélkül</span></div><pre>.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns:
+    repeat(auto-fit, minmax(240px, 1fr));
+}
+/* as many columns as fit at ≥240px,
+   sharing leftover space equally */</pre></div>
+      <div class="cbox cbox--good"><div class="cbox__h"><span lang="en">Named areas</span><span lang="hu">Elnevezett területek</span></div><pre>.page {
+  display: grid;
+  grid-template-areas:
+    "head head"
+    "side main"
+    "foot foot";
+  grid-template-columns: 200px 1fr;
+}
+.sidebar { grid-area: side; }</pre></div>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Grid or flexbox — how do you decide?</span><span lang="hu">Grid vagy flexbox — hogyan döntesz?</span></p>
+      <ul class="a">
+        <li><span lang="en">Ask where the structure lives. If the <em>container</em> defines the shape and content fills it, that's grid — page scaffolding, card galleries, anything aligned in both directions. If the <em>content</em> determines the arrangement and you just need it distributed, that's flexbox — toolbars, button rows, nav items. They compose: a grid page whose cells are flex containers is the common shape.</span><span lang="hu">Kérdezd meg, hol lakik a szerkezet. Ha a <em>konténer</em> definiálja az alakot, és a tartalom kitölti, az grid — oldalváz, kártyagalériák, minden, ami mindkét irányban igazodik. Ha a <em>tartalom</em> határozza meg az elrendezést, és csak elosztásra van szükség, az flexbox — eszköztárak, gombsorok, navigációs elemek. Kombinálhatók: egy grid-oldal, amelynek cellái flex konténerek, a bevett forma.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What are <code>fr</code>, <code>minmax()</code> and <code>auto-fit</code> doing?</span><span lang="hu">Mit csinál az <code>fr</code>, a <code>minmax()</code> és az <code>auto-fit</code>?</span></p>
+      <ul class="a">
+        <li><span lang="en"><code>fr</code> is a share of the <em>leftover</em> space after fixed tracks and gaps are subtracted. <code>minmax(240px, 1fr)</code> means "never below 240, otherwise take a share". <code>auto-fit</code> creates as many tracks as fit and collapses the empty ones — which is what makes that one-line responsive grid work without any breakpoints. Use <code>auto-fill</code> instead when you want empty tracks preserved.</span><span lang="hu">Az <code>fr</code> a <em>maradék</em> hely egy hányada, miután a fix sávokat és a réseket levontuk. A <code>minmax(240px, 1fr)</code> azt jelenti, „soha 240 alá, egyébként vegyél egy részt". Az <code>auto-fit</code> annyi sávot hoz létre, amennyi elfér, és összecsukja az üreseket — ettől működik az az egysoros reszponzív grid töréspontok nélkül. Ha meg akarod tartani az üres sávokat, használj <code>auto-fill</code>-t.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you place an item explicitly?</span><span lang="hu">Hogyan helyezel el egy elemet explicit módon?</span></p>
+      <ul class="a">
+        <li><span lang="en">By line number — <code>grid-column: 1 / 3</code> spans from line 1 to line 3 (two columns). <code>span 2</code> is the relative form, and <code>-1</code> means the last line, so <code>grid-column: 1 / -1</code> is "full width" regardless of column count. Named areas are usually more readable for page-level structure.</span><span lang="hu">Vonalszám szerint — a <code>grid-column: 1 / 3</code> az 1. vonaltól a 3.-ig tart (két oszlop). A <code>span 2</code> a relatív forma, a <code>-1</code> pedig az utolsó vonalat jelenti, így a <code>grid-column: 1 / -1</code> „teljes szélesség" az oszlopszámtól függetlenül. Oldalszintű szerkezethez az elnevezett területek általában olvashatóbbak.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Grid items inherit the same <code>min-width: auto</code> trap as flex items — a wide child overflows its track until you set <code>min-width: 0</code>. And percentage-based columns plus <code>gap</code> overflow, because the gap is added on top; <code>fr</code> accounts for gaps automatically, which is one more reason to prefer it.</span><span lang="hu">A grid elemek ugyanazt a <code>min-width: auto</code> csapdát öröklik, mint a flex elemek — egy széles gyermek túlcsordul a sávján, amíg nem állítasz <code>min-width: 0</code>-t. A százalékalapú oszlopok pedig a <code>gap</code>-pel együtt túlcsordulnak, mert a rés hozzáadódik; az <code>fr</code> automatikusan számol a résekkel, ami újabb ok a használatára.</span></p>
+  </section>
+
+  <section class="concept" id="c05">
+    <div class="concept__head"><span class="num">05</span><h2><span lang="en">Positioning</span><span lang="hu">Pozicionálás</span></h2></div>
+    <p class="def"><span lang="en"><strong><code>position</code> decides what an element is offset from — and whether it still occupies space in the flow.</strong> Most positioning bugs are really about which ancestor is acting as the reference.</span><span lang="hu"><strong>A <code>position</code> dönti el, mihez képest tolódik el az elem — és hogy továbbra is helyet foglal-e a folyamban.</strong> A legtöbb pozicionálási hiba valójában arról szól, melyik ős szolgál referenciaként.</span></p>
+    <table class="t">
+      <tr><th>position</th><th><span lang="en">Offset from</span><span lang="hu">Mihez képest</span></th><th><span lang="en">In flow?</span><span lang="hu">Folyamban?</span></th></tr>
+      <tr><td><code>static</code></td><td><span lang="en">— (default)</span><span lang="hu">— (alapértelmezett)</span></td><td><span lang="en">yes</span><span lang="hu">igen</span></td></tr>
+      <tr><td><code>relative</code></td><td><span lang="en">its own normal position</span><span lang="hu">a saját normál pozíciója</span></td><td><span lang="en">yes — space kept</span><span lang="hu">igen — a hely megmarad</span></td></tr>
+      <tr><td><code>absolute</code></td><td><span lang="en">nearest positioned ancestor</span><span lang="hu">a legközelebbi pozicionált ős</span></td><td><span lang="en">no</span><span lang="hu">nem</span></td></tr>
+      <tr><td><code>fixed</code></td><td><span lang="en">the viewport</span><span lang="hu">a viewport</span></td><td><span lang="en">no</span><span lang="hu">nem</span></td></tr>
+      <tr><td><code>sticky</code></td><td><span lang="en">scroll position, within its parent</span><span lang="hu">görgetési pozíció, a szülőjén belül</span></td><td><span lang="en">yes</span><span lang="hu">igen</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">What does "nearest positioned ancestor" mean exactly?</span><span lang="hu">Mit jelent pontosan a „legközelebbi pozicionált ős"?</span></p>
+      <ul class="a">
+        <li><span lang="en">The closest ancestor whose <code>position</code> is anything other than <code>static</code>. If none exists, the element positions against the initial containing block — effectively the page. This is why the fix for a stray absolute element is almost always adding <code>position: relative</code> to the intended parent, with no offsets: it establishes the reference without moving anything.</span><span lang="hu">A legközelebbi ős, amelynek a <code>position</code>-je nem <code>static</code>. Ha nincs ilyen, az elem a kezdeti tartalmazó blokkhoz igazodik — gyakorlatilag az oldalhoz. Ezért az elkóborolt abszolút elem javítása szinte mindig az, hogy <code>position: relative</code>-t adsz a szánt szülőnek, eltolás nélkül: ez létrehozza a referenciát anélkül, hogy bármit elmozdítana.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why does <code>position: sticky</code> so often do nothing?</span><span lang="hu">Miért nem csinál semmit gyakran a <code>position: sticky</code>?</span></p>
+      <ul class="a">
+        <li><span lang="en">Three usual causes: no threshold was set (it needs at least one of <code>top</code>/<code>bottom</code>/<code>left</code>/<code>right</code>); an ancestor has <code>overflow: hidden</code>, <code>auto</code> or <code>scroll</code>, which makes that the scroll container instead of the page; or the parent is exactly as tall as the sticky element, leaving no distance to travel. The second is the one that wastes the most time.</span><span lang="hu">Három szokásos ok: nincs küszöb beállítva (kell legalább egy <code>top</code>/<code>bottom</code>/<code>left</code>/<code>right</code>); valamelyik ősön <code>overflow: hidden</code>, <code>auto</code> vagy <code>scroll</code> van, amitől az lesz a görgetési konténer az oldal helyett; vagy a szülő pontosan olyan magas, mint a sticky elem, így nincs bejárható táv. A második viszi el a legtöbb időt.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you center an absolutely positioned element?</span><span lang="hu">Hogyan igazítasz középre egy abszolút pozicionált elemet?</span></p>
+      <ul class="a">
+        <li><span lang="en">Classic: <code>top: 50%; left: 50%; transform: translate(-50%, -50%)</code> — the percentages resolve against the parent, the transform against the element's own size, so it works without knowing dimensions. Modern alternative: <code>inset: 0; margin: auto</code>, which needs a defined size but avoids the transform (and its stacking-context side effect).</span><span lang="hu">Klasszikus: <code>top: 50%; left: 50%; transform: translate(-50%, -50%)</code> — a százalékok a szülőhöz, a transform az elem saját méretéhez viszonyul, így méretek ismerete nélkül működik. Modern alternatíva: <code>inset: 0; margin: auto</code>, ami definiált méretet igényel, de elkerüli a transformot (és annak stacking context mellékhatását).</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>position: fixed</code> stops being fixed to the viewport if any ancestor has <code>transform</code>, <code>filter</code>, <code>backdrop-filter</code> or <code>will-change</code> — that ancestor becomes the containing block instead. A CSS animation on a wrapper can therefore break a modal that worked yesterday.</span><span lang="hu">A <code>position: fixed</code> megszűnik a viewporthoz rögzülni, ha bármely ősön <code>transform</code>, <code>filter</code>, <code>backdrop-filter</code> vagy <code>will-change</code> van — helyette az az ős lesz a tartalmazó blokk. Egy wrapperre tett CSS-animáció így eltörhet egy tegnap még működő modált.</span></p>
+  </section>
+
+  <section class="concept" id="c06">
+    <div class="concept__head"><span class="num">06</span><h2><span lang="en">Stacking Context &amp; z-index</span><span lang="hu">Stacking context &amp; z-index</span></h2></div>
+    <p class="def"><span lang="en"><strong><code>z-index</code> only compares siblings inside the same stacking context.</strong> A high value can't lift an element above something in a different context — which is why <code>z-index: 9999</code> so often does nothing.</span><span lang="hu"><strong>A <code>z-index</code> csak az azonos stacking contexten belüli testvéreket hasonlítja össze.</strong> Egy magas érték nem tud elemet más contextben lévő dolog fölé emelni — ezért nem csinál gyakran semmit a <code>z-index: 9999</code>.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 220" role="img" aria-label="Stacking context nesting">
+        <rect x="40" y="24" width="280" height="170" rx="10" fill="#F8FAFC" stroke="var(--line)" stroke-width="1.5"/>
+        <text lang="en" x="180" y="46" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">.header — z-index: 1</text><text lang="hu" x="180" y="46" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">.header — z-index: 1</text>
+        <rect x="66" y="60" width="228" height="52" rx="7" fill="#FEF2F2" stroke="var(--vuln,#DC2626)" stroke-width="1.5"/>
+        <text lang="en" x="180" y="82" text-anchor="middle" font-size="11" fill="var(--ink)">.dropdown</text><text lang="hu" x="180" y="82" text-anchor="middle" font-size="11" fill="var(--ink)">.dropdown</text>
+        <text x="180" y="99" text-anchor="middle" font-size="11" fill="var(--vuln,#DC2626)" font-weight="600">z-index: 9999</text>
+        <text lang="en" x="180" y="140" text-anchor="middle" font-size="10" fill="var(--muted)">trapped — cannot escape</text><text lang="hu" x="180" y="140" text-anchor="middle" font-size="10" fill="var(--muted)">csapdában — nem tud kitörni</text>
+        <text lang="en" x="180" y="158" text-anchor="middle" font-size="10" fill="var(--muted)">its parent's context</text><text lang="hu" x="180" y="158" text-anchor="middle" font-size="10" fill="var(--muted)">a szülője contextjéből</text>
+        <rect x="380" y="24" width="260" height="170" rx="10" fill="#F0FDF4" stroke="var(--safe,#16A34A)" stroke-width="1.5"/>
+        <text lang="en" x="510" y="46" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">.modal — z-index: 2</text><text lang="hu" x="510" y="46" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">.modal — z-index: 2</text>
+        <text lang="en" x="510" y="112" text-anchor="middle" font-size="11" fill="var(--ink)">wins — sibling of .header</text><text lang="hu" x="510" y="112" text-anchor="middle" font-size="11" fill="var(--ink)">nyer — a .header testvére</text>
+        <text lang="en" x="510" y="132" text-anchor="middle" font-size="10" fill="var(--muted)">2 &gt; 1 at the same level</text><text lang="hu" x="510" y="132" text-anchor="middle" font-size="10" fill="var(--muted)">2 &gt; 1 ugyanazon a szinten</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">The dropdown's 9999 is compared only against its siblings. Against <code>.modal</code>, what counts is its parent's 1.</span><span lang="hu">A dropdown 9999-e csak a testvéreivel van összehasonlítva. A <code>.modal</code>-lal szemben a szülője 1-ese számít.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">What creates a stacking context?</span><span lang="hu">Mi hoz létre stacking contextet?</span></p>
+      <ul class="a">
+        <li><span lang="en">The root element; any positioned element with a <code>z-index</code> other than <code>auto</code>; <code>opacity</code> below 1; <code>transform</code>, <code>filter</code>, <code>backdrop-filter</code>, <code>will-change</code>, <code>isolation: isolate</code>; and flex/grid children with a <code>z-index</code>. The surprising ones are <code>opacity: 0.99</code> and <code>transform</code>, because they're usually added for visual reasons by someone not thinking about layering.</span><span lang="hu">A gyökérelem; bármely pozicionált elem <code>auto</code>-tól eltérő <code>z-index</code>-szel; az 1 alatti <code>opacity</code>; a <code>transform</code>, <code>filter</code>, <code>backdrop-filter</code>, <code>will-change</code>, <code>isolation: isolate</code>; és a <code>z-index</code>-szel rendelkező flex/grid gyermekek. A meglepők az <code>opacity: 0.99</code> és a <code>transform</code>, mert ezeket általában vizuális okból teszi be valaki, aki nem a rétegzésre gondol.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you debug a layering problem?</span><span lang="hu">Hogyan debuggolsz egy rétegzési problémát?</span></p>
+      <ul class="a">
+        <li><span lang="en">Walk up the DOM from the element that won't come forward and find the first ancestor that creates a context — that's your real competitor, not the element you're fighting with. DevTools shows this in the Layers panel. The fix is usually structural: move the element out (a portal), or remove the ancestor's context-creating property.</span><span lang="hu">Menj fel a DOM-ban attól az elemtől, amelyik nem jön előre, és keresd meg az első contextet létrehozó őst — az a valódi versenytárs, nem az az elem, amivel küzdesz. A DevTools ezt a Layers panelen mutatja. A javítás általában szerkezeti: vidd ki az elemet (portál), vagy távolítsd el az ős contextet létrehozó tulajdonságát.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why do modals get rendered through a portal?</span><span lang="hu">Miért portálon keresztül renderelődnek a modálok?</span></p>
+      <ul class="a">
+        <li><span lang="en">Precisely to escape this. Rendering into <code>document.body</code> puts the modal in the root stacking context, where it can actually sit above everything, and it also escapes any ancestor's <code>overflow: hidden</code>. That's why React's <code>createPortal</code> exists — it's a layout fix as much as a DOM-structure one.</span><span lang="hu">Pontosan azért, hogy elkerüljék ezt. A <code>document.body</code>-ba renderelés a gyökér stacking contextbe teszi a modált, ahol tényleg mindenek fölé kerülhet, és kikerül minden ős <code>overflow: hidden</code>-je alól is. Ezért létezik a React <code>createPortal</code>-ja — ez legalább annyira elrendezési javítás, mint DOM-szerkezeti.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>z-index</code> is ignored entirely on <code>position: static</code> elements — no context, no effect, and no error to tell you. If a <code>z-index</code> appears to do nothing, check <code>position</code> before adding zeros.</span><span lang="hu">A <code>z-index</code>-et teljesen figyelmen kívül hagyja a <code>position: static</code> elemeknél — nincs context, nincs hatás, és nincs hibaüzenet sem. Ha egy <code>z-index</code> nem csinál semmit, előbb a <code>position</code>-t nézd meg, ne nullákat adj hozzá.</span></p>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Responsive</span><span lang="hu">Reszponzivitás</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c07">
+    <div class="concept__head"><span class="num">07</span><h2><span lang="en">Responsive Design</span><span lang="hu">Reszponzív design</span></h2></div>
+    <p class="def"><span lang="en"><strong>Layouts that adapt to the space available</strong> — increasingly through intrinsically flexible sizing rather than a ladder of breakpoints.</span><span lang="hu"><strong>Az elérhető helyhez alkalmazkodó elrendezések</strong> — egyre inkább belsőleg rugalmas méretezéssel, nem töréspontok létrájával.</span></p>
+    <div class="codepair">
+      <div class="cbox cbox--bad"><div class="cbox__h"><span lang="en">Breakpoint ladder</span><span lang="hu">Töréspont-létra</span></div><pre>.grid { grid-template-columns: 1fr; }
+@media (min-width: 600px) {
+  .grid { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 900px) {
+  .grid { grid-template-columns: repeat(3,1fr); }
+}</pre></div>
+      <div class="cbox cbox--good"><div class="cbox__h"><span lang="en">Intrinsic — no breakpoints</span><span lang="hu">Belsőleg rugalmas — töréspont nélkül</span></div><pre>.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns:
+    repeat(auto-fit, minmax(240px, 1fr));
+}
+/* adapts at every width, not three */</pre></div>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Which units should you actually use?</span><span lang="hu">Milyen egységeket használj valójában?</span></p>
+      <ul class="a">
+        <li><span lang="en"><code>rem</code> for type and spacing, because it scales with the user's browser font size — <code>px</code> ignores that preference, which is an accessibility problem, not just a stylistic one. <code>ch</code> for text measure, <code>%</code> and <code>fr</code> for layout shares, <code>vw</code>/<code>vh</code> sparingly. <code>clamp(1rem, 2.5vw, 1.5rem)</code> gives fluid sizing with hard limits and removes a lot of breakpoints on its own.</span><span lang="hu"><code>rem</code> a betűkhöz és térközökhöz, mert a felhasználó böngésző-betűméretével skálázódik — a <code>px</code> figyelmen kívül hagyja ezt a beállítást, ami akadálymentesítési probléma, nem csak stiláris. <code>ch</code> a szövegszélességhez, <code>%</code> és <code>fr</code> az elrendezési arányokhoz, <code>vw</code>/<code>vh</code> mértékkel. A <code>clamp(1rem, 2.5vw, 1.5rem)</code> folyékony méretezést ad kemény határokkal, és önmagában sok töréspontot kivált.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why mobile-first?</span><span lang="hu">Miért mobile-first?</span></p>
+      <ul class="a">
+        <li><span lang="en">Writing base styles for the smallest screen and layering <code>min-width</code> queries on top means each query only <em>adds</em>. The reverse — <code>max-width</code> queries — requires each breakpoint to undo the previous one, and undoing is where the specificity fights and the forgotten resets come from.</span><span lang="hu">Ha az alapstílusokat a legkisebb képernyőre írod, és <code>min-width</code> query-ket rétegzel rá, minden query csak <em>hozzáad</em>. A fordítottja — <code>max-width</code> query-k — megköveteli, hogy minden töréspont visszavonja az előzőt, és a visszavonásból erednek a specificitási harcok és az elfelejtett resetek.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What do container queries change?</span><span lang="hu">Min változtatnak a container query-k?</span></p>
+      <ul class="a">
+        <li><span lang="en">They let a component respond to <em>its own</em> available width rather than the viewport's — <code>container-type: inline-size</code> on the parent, then <code>@container (min-width: 400px)</code>. This is what media queries could never do: the same card can lay out one way in a sidebar and another in a main column, with no knowledge of the page. For component libraries it's the more correct tool, and it's now broadly supported.</span><span lang="hu">Lehetővé teszik, hogy egy komponens a <em>saját</em> rendelkezésre álló szélességére reagáljon, ne a viewportéra — <code>container-type: inline-size</code> a szülőn, majd <code>@container (min-width: 400px)</code>. Ezt a media query-k sosem tudták: ugyanaz a kártya másképp rendeződik egy oldalsávban és másképp egy fő oszlopban, az oldal ismerete nélkül. Komponenskönyvtárakhoz ez a helyesebb eszköz, és mára széles körben támogatott.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>100vh</code> on mobile includes the area behind the browser's collapsing toolbar, so a "full height" section jumps as you scroll. Use <code>100dvh</code> (dynamic viewport height) instead. And missing <code>&lt;meta name="viewport"&gt;</code> makes every media query behave as if the phone were a desktop.</span><span lang="hu">A <code>100vh</code> mobilon beleszámítja a böngésző összecsukódó eszköztára mögötti területet, így egy „teljes magasságú" szakasz ugrál görgetés közben. Használj helyette <code>100dvh</code>-t (dinamikus viewport magasság). A hiányzó <code>&lt;meta name="viewport"&gt;</code> pedig minden media query-t úgy működtet, mintha a telefon asztali gép lenne.</span></p>
+  </section>
+
+  <section class="concept" id="c08">
+    <div class="concept__head"><span class="num">08</span><h2><span lang="en">CSS Performance</span><span lang="hu">CSS teljesítmény</span></h2></div>
+    <p class="def"><span lang="en"><strong>The browser turns style changes into work in three stages — layout, paint, composite.</strong> Which stage you trigger determines whether an animation runs at 60fps or stutters.</span><span lang="hu"><strong>A böngésző három szakaszban alakít munkává egy stílusváltozást — layout, paint, composite.</strong> Az, hogy melyik szakaszt váltod ki, dönti el, hogy 60fps-en fut-e az animáció, vagy akadozik.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Change</span><span lang="hu">Változás</span></th><th><span lang="en">Triggers</span><span lang="hu">Mit vált ki</span></th><th><span lang="en">Cost</span><span lang="hu">Költség</span></th></tr>
+      <tr><td><code>width</code>, <code>top</code>, <code>margin</code></td><td><span lang="en">layout → paint → composite</span><span lang="hu">layout → paint → composite</span></td><td><span lang="en">highest</span><span lang="hu">legmagasabb</span></td></tr>
+      <tr><td><code>background</code>, <code>color</code>, <code>box-shadow</code></td><td><span lang="en">paint → composite</span><span lang="hu">paint → composite</span></td><td><span lang="en">medium</span><span lang="hu">közepes</span></td></tr>
+      <tr><td><code>transform</code>, <code>opacity</code></td><td><span lang="en">composite only</span><span lang="hu">csak composite</span></td><td><span lang="en">lowest — GPU</span><span lang="hu">legalacsonyabb — GPU</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">So what do you animate?</span><span lang="hu">Akkor mit animálsz?</span></p>
+      <ul class="a">
+        <li><span lang="en"><code>transform</code> and <code>opacity</code>, essentially always. Moving something with <code>transform: translateX()</code> instead of <code>left</code> skips layout and paint entirely and runs on the compositor, off the main thread — so it keeps animating even while JavaScript is busy. Animating <code>width</code> or <code>top</code> forces a relayout every frame.</span><span lang="hu"><code>transform</code>-ot és <code>opacity</code>-t, gyakorlatilag mindig. Ha <code>transform: translateX()</code>-szel mozgatsz <code>left</code> helyett, teljesen kihagyod a layoutot és a paintet, és a compositoron fut, a fő szálon kívül — így akkor is animál, amikor a JavaScript dolgozik. A <code>width</code> vagy <code>top</code> animálása minden képkockánál újralayoutot kényszerít.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What is layout thrashing?</span><span lang="hu">Mi a layout thrashing?</span></p>
+      <ul class="a">
+        <li><span lang="en">Interleaving DOM reads and writes in a loop. Reading <code>offsetHeight</code> forces the browser to flush pending style changes and recalculate layout <em>synchronously</em>; doing that after every write means a full layout per iteration instead of one at the end. The fix is batching — read everything, then write everything.</span><span lang="hu">DOM-olvasások és -írások váltogatása ciklusban. Az <code>offsetHeight</code> olvasása arra kényszeríti a böngészőt, hogy <em>szinkron</em> módon kiürítse a függő stílusváltozásokat és újraszámolja a layoutot; ha ezt minden írás után megteszed, iterációnként teljes layout lesz egy helyett a végén. A megoldás a kötegelés — olvass be mindent, aztán írj mindent.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Does selector complexity matter?</span><span lang="hu">Számít a szelektorok bonyolultsága?</span></p>
+      <ul class="a">
+        <li><span lang="en">Far less than people assume — modern engines match selectors right-to-left and this is rarely the bottleneck. What does matter: unused CSS shipped to the client, render-blocking stylesheets in <code>&lt;head&gt;</code>, and layout-triggering animations. Optimising selectors is usually the wrong place to spend effort.</span><span lang="hu">Sokkal kevésbé, mint hinnék — a modern motorok jobbról balra illesztik a szelektorokat, és ez ritkán a szűk keresztmetszet. Ami viszont számít: a kliensnek kiküldött használatlan CSS, a <code>&lt;head&gt;</code>-ben lévő renderelést blokkoló stíluslapok, és a layoutot kiváltó animációk. A szelektorok optimalizálása általában rossz helyre fektetett energia.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>will-change</code> promotes an element to its own layer, but leaving it on permanently consumes memory and can slow things down — apply it just before the animation and remove it after. It also creates a stacking context, which can break <code>z-index</code> and <code>position: fixed</code> further up the tree.</span><span lang="hu">A <code>will-change</code> saját rétegbe emeli az elemet, de tartósan rajta hagyva memóriát fogyaszt, és lassíthat is — közvetlenül az animáció előtt tedd rá, és utána vedd le. Stacking contextet is létrehoz, ami eltörheti a <code>z-index</code>-et és a <code>position: fixed</code>-et feljebb a fában.</span></p>
+  </section>
+
+  <section class="concept" id="c09">
+    <div class="concept__head"><span class="num">09</span><h2><span lang="en">Semantic HTML &amp; Accessibility</span><span lang="hu">Szemantikus HTML &amp; akadálymentesítés</span></h2></div>
+    <p class="def"><span lang="en"><strong>Using the element that means what you intend</strong> — which gives you keyboard behaviour, focus handling and screen-reader semantics for free, instead of rebuilding them on a <code>div</code>.</span><span lang="hu"><strong>Azt az elemet használod, ami azt jelenti, amit szánsz</strong> — ezzel ingyen kapod a billentyűzetes viselkedést, a fókuszkezelést és a képernyőolvasó-szemantikát, ahelyett hogy egy <code>div</code>-en építenéd újra.</span></p>
+    <div class="codepair">
+      <div class="cbox cbox--bad"><div class="cbox__h"><span lang="en">Rebuilding what exists</span><span lang="hu">A meglévő újraépítése</span></div><pre>&lt;div class="btn"
+     onclick="submit()"&gt;
+  Save
+&lt;/div&gt;
+&lt;!-- no focus, no Enter/Space,
+     no role, not in tab order --&gt;</pre></div>
+      <div class="cbox cbox--good"><div class="cbox__h"><span lang="en">The element that means it</span><span lang="hu">Az elem, ami ezt jelenti</span></div><pre>&lt;button type="submit"&gt;
+  Save
+&lt;/button&gt;
+&lt;!-- focusable, keyboard-activated,
+     announced as a button --&gt;</pre></div>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Which semantics actually earn their keep?</span><span lang="hu">Mely szemantikai elemek térülnek meg valóban?</span></p>
+      <ul class="a">
+        <li><span lang="en">Landmarks (<code>header</code>, <code>nav</code>, <code>main</code>, <code>footer</code>, <code>aside</code>) give screen-reader users a way to jump around the page. A correct heading order (<code>h1</code>–<code>h6</code>, no skipping) is the document outline they navigate by. <code>button</code> versus <code>a</code> is the one people get wrong most: links navigate, buttons act — and swapping them breaks both keyboard behaviour and the user's expectations.</span><span lang="hu">A landmarkok (<code>header</code>, <code>nav</code>, <code>main</code>, <code>footer</code>, <code>aside</code>) a képernyőolvasót használóknak adnak módot az oldalon való ugrálásra. A helyes fejléc-sorrend (<code>h1</code>–<code>h6</code>, kihagyás nélkül) az a dokumentum-vázlat, ami mentén navigálnak. A <code>button</code> és az <code>a</code> az, amit a legtöbben elrontanak: a link navigál, a gomb cselekszik — a felcserélésük mind a billentyűzetes viselkedést, mind a felhasználó elvárásait eltöri.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What are the first rules of ARIA?</span><span lang="hu">Mik az ARIA első szabályai?</span></p>
+      <ul class="a">
+        <li><span lang="en">Don't use it if a native element will do — <code>role="button"</code> on a <code>div</code> announces correctly but still has no keyboard behaviour, so it's half a solution that looks complete. And don't change native semantics. ARIA is for things HTML has no element for (tabs, comboboxes, live regions), where you must also implement the expected keyboard interaction yourself.</span><span lang="hu">Ne használd, ha natív elem is megteszi — egy <code>div</code>-en a <code>role="button"</code> helyesen mondja be, de billentyűzetes viselkedése továbbra sincs, tehát fél megoldás, ami késznek látszik. És ne írd felül a natív szemantikát. Az ARIA azokra való, amikre a HTML-ben nincs elem (tabok, comboboxok, élő régiók), ahol az elvárt billentyűzetes interakciót is neked kell megvalósítanod.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What breaks keyboard users most often?</span><span lang="hu">Mi töri el leggyakrabban a billentyűzetes használatot?</span></p>
+      <ul class="a">
+        <li><span lang="en">Removing focus outlines with <code>outline: none</code> and replacing them with nothing — use <code>:focus-visible</code> to style them instead of deleting them. Also: click handlers on non-interactive elements, modals that don't trap focus or return it on close, and positive <code>tabindex</code> values, which scramble the natural tab order. Tabbing through your own feature once catches most of this.</span><span lang="hu">A fókuszkeret eltávolítása <code>outline: none</code>-nal, pótlás nélkül — használj inkább <code>:focus-visible</code>-t a stílusozáshoz, ne töröld. Továbbá: kattintáskezelők nem interaktív elemeken, modálok, amelyek nem fogják meg a fókuszt vagy nem adják vissza záráskor, és a pozitív <code>tabindex</code> értékek, amelyek összekeverik a természetes tab-sorrendet. Ha egyszer végigtabbolod a saját funkciódat, ennek nagy részét elkapod.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>display: none</code> and <code>visibility: hidden</code> remove content from screen readers too — correct for genuinely hidden things, wrong for visually-hidden labels, which need a clip-based utility class instead. And placeholder text is not a label: it disappears on input and is often announced inconsistently.</span><span lang="hu">A <code>display: none</code> és a <code>visibility: hidden</code> a képernyőolvasók elől is elrejti a tartalmat — ez helyes a valóban rejtett dolgoknál, de hibás a csak vizuálisan rejtett címkéknél, amelyekhez clip-alapú segédosztály kell. A placeholder szöveg pedig nem címke: gépeléskor eltűnik, és gyakran következetlenül hangzik el.</span></p>
+  </section>
+
+
+  <p class="foot"><span lang="en">CSS &amp; Layout · technical interview prep · <b>Q&amp;A knowledge base</b></span><span lang="hu">CSS &amp; Layout · technikai interjú-felkészítő · <b>Q&amp;A tudásbázis</b></span></p>
+
+</div>
+
+<script>
+(function () {
+  var SUPPORTED = ['en', 'hu'];
+  var root = document.documentElement;
+
+  // The smallest block element at the top-centre of the viewport (where the
+  // text is) that exists in both languages — used to hold the reading position
+  // steady across a switch. Sampling the centre, not the edge, lands on a
+  // paragraph rather than a large container, so the visible line stays put.
+  function anchor() {
+    var el = document.elementFromPoint(window.innerWidth / 2, 8);
+    while (el && el !== document.body &&
+           (el.hasAttribute('lang') || getComputedStyle(el).display === 'inline')) {
+      el = el.parentElement;
+    }
+    return el && el !== document.body ? el : null;
+  }
+
+  function applyLang(lang) {
+    if (SUPPORTED.indexOf(lang) === -1) lang = 'en';
+    if (root.dataset.lang === lang) return;
+    var a = window.scrollY > 0 ? anchor() : null;
+    var before = a ? a.getBoundingClientRect().top : 0;
+    // Toggle via data-lang only. Deliberately NOT setting root.lang: some pages
+    // hide the other language with a bare [lang="…"]{display:none} rule, which
+    // would then match <html lang="…"> and hide the whole page. Visible spans
+    // still carry their own lang attribute for assistive tech.
+    root.dataset.lang = lang;
+    if (a) window.scrollBy(0, a.getBoundingClientRect().top - before);
+  }
+
+  // In-place switch for the shell (synchronous, same-origin).
+  window.interviewBrowser = {
+    setParams: function (params) { applyLang(params && params.lang); }
+  };
+
+  applyLang(new URLSearchParams(location.search).get('lang') || 'en');
+})();
+</script>
+</body>
+</html>

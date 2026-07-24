@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Design Method — Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111827;
+  --muted:#6B7280;
+  --line:#E5E7EB;
+  --paper:#EDF0F3;
+  --card:#FFFFFF;
+  --accent:#2563EB;
+  --get:#16A34A;
+  --post:#2563EB;
+  --put:#D97706;
+  --patch:#0D9488;
+  --del:#DC2626;
+  --s2:#16A34A;
+  --s3:#7C3AED;
+  --s4:#D97706;
+  --s5:#DC2626;
+  --node:#FFFFFF;
+  --nodeline:#94A3B8;
+  --slate:#334155;
+  --safe:#16A34A;
+  --vuln:#DC2626;
+}
+:root[data-lang="hu"] [lang="en"]{display:none}
+:root[data-lang="en"] [lang="hu"]{display:none}
+:root[data-lang="hu"] svg text[lang="en"]{display:none}
+:root[data-lang="en"] svg text[lang="hu"]{display:none}
+/* ── language toggling ─────────────────────────────────────────
+   Both languages live in the DOM; only the attribute changes.
+   No network requests, no re-render, so switching cannot fail.  */
+:root[data-lang="hu"] [lang="en"]{display:none}
+/* SVG text nodes need the rule stated on the element itself */
+:root[data-lang="hu"] svg text[lang="en"]{display:none}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+a{color:inherit}
+code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+code{background:#EEF2F7;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:.86em}
+.bar{position:sticky;top:0;z-index:20;background:rgba(237,240,243,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar__in{max-width:900px;margin:0 auto;padding:10px 20px;display:flex;
+  align-items:center;justify-content:space-between;gap:12px}
+.bar__t{font-family:'Space Grotesk';font-weight:600;font-size:14px;letter-spacing:-.01em}
+.bar__t b{color:var(--accent)}
+.bar__r{display:flex;align-items:center;gap:8px}
+.bar a.up{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);
+  text-decoration:none;border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:#fff}
+.bar a.up:hover{color:var(--ink);border-color:var(--accent)}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;background:#fff;overflow:hidden}
+.lang button{font-family:'JetBrains Mono';font-size:12px;padding:4px 11px;border:0;
+  background:transparent;color:var(--muted);cursor:pointer;line-height:1.5;
+  transition:background .15s,color .15s}
+.lang button:hover{color:var(--ink)}
+.lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.hero{padding:44px 0 8px}
+.eyebrow{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,6vw,50px);
+  line-height:1.02;letter-spacing:-.025em;margin:0 0 12px}
+.lede{color:var(--muted);max-width:62ch;margin:0}
+.sec{display:flex;align-items:center;gap:14px;margin:36px 4px 2px}
+.sec__l{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--accent);white-space:nowrap}
+.sec__r{height:1px;background:var(--line);flex:1}
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:24px 0 2px}
+.legend .lbl{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-right:2px}
+.chip{font-family:'JetBrains Mono';font-size:12px;padding:3px 8px;border-radius:6px;
+  border:1px solid var(--line);background:#fff}
+.chip--2{color:var(--s2);border-color:#BBF7D0;background:#F0FDF4}
+.chip--4{color:var(--s4);border-color:#FDE68A;background:#FFFBEB}
+.chip--5{color:var(--s5);border-color:#FECACA;background:#FEF2F2}
+.index{margin:30px 0 8px}
+.index h3{font-family:'Space Grotesk';font-size:13px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+a.idx{display:flex;align-items:baseline;gap:10px;text-decoration:none;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  transition:border-color .15s,transform .15s}
+a.idx:hover{border-color:var(--accent);transform:translateY(-1px)}
+.idx__n{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);font-weight:500}
+.idx__t{font-size:13.5px;font-weight:500}
+.concept{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:26px 26px 22px;margin-top:16px;scroll-margin-top:64px}
+.concept__head{display:flex;align-items:center;gap:14px;margin:0 0 12px}
+.concept__head .num{font-family:'JetBrains Mono';font-weight:500;font-size:15px;color:#fff;
+  background:var(--ink);width:38px;height:38px;border-radius:10px;display:grid;
+  place-items:center;flex:0 0 auto}
+.concept__head h2{font-family:'Space Grotesk';font-weight:600;font-size:22px;
+  letter-spacing:-.015em;margin:0}
+.def{margin:0 0 16px}
+.def strong{font-weight:600}
+.qa{border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
+.q{font-weight:600;margin:0 0 6px}
+.q::before{content:"Q";font-family:'JetBrains Mono';color:var(--accent);font-weight:600;
+  margin-right:9px;font-size:13px}
+ul.a,p.a{margin:0 0 2px}
+ul.a{padding-left:20px}
+ul.a li{margin:3px 0}
+.watch{margin:18px 0 0;background:#FFFBEB;border:1px solid #FDE68A;
+  border-left:3px solid var(--put);border-radius:8px;padding:10px 14px;font-size:14px}
+.watch__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--put);font-weight:600;display:block;margin-bottom:3px}
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 2px}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+table.t th{background:#F8FAFC;font-weight:600;font-family:'Space Grotesk';font-size:12px}
+table.t td:first-child{font-family:'JetBrains Mono';white-space:nowrap}
+.dia{margin:16px 0 4px;background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px}
+.dia svg{width:100%;height:auto;display:block}
+.dia__cap{font-family:'JetBrains Mono';font-size:11.5px;color:var(--muted);margin:8px 2px 0}
+svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
+.foot{margin-top:44px;text-align:center;color:var(--muted);font-size:12.5px}
+.foot b{font-family:'Space Grotesk';color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.src{margin-top:14px;font-size:12.5px;color:var(--muted)}
+.m{font-family:'JetBrains Mono';font-weight:500;font-size:12px;padding:3px 8px;
+  border-radius:6px;color:#fff;letter-spacing:.02em;white-space:nowrap}
+.m--get{background:var(--get)}
+.m--post{background:var(--post)}
+.m--put{background:var(--put)}
+.m--patch{background:var(--patch)}
+.m--del{background:var(--del)}
+.chip--3{color:var(--s3);border-color:#DDD6FE;background:#F5F3FF}
+.yes{color:var(--get);font-weight:600}
+.no{color:var(--muted)}
+/* ── language toggling ─────────────────────────────────────────
+   Both languages live in the DOM; only the [data-lang] attribute on
+   <html> changes. No network requests, no re-render — switching can't fail. */
+[lang="hu"]{display:none}
+html[data-lang="hu"] [lang="en"]{display:none}
+html[data-lang="hu"] [lang="hu"]{display:inline}
+html[data-lang="hu"] li[lang="hu"]{display:list-item}
+html[data-lang="hu"] p[lang="hu"],
+html[data-lang="hu"] div[lang="hu"]{display:block}
+/* SVG <text>: display:none inheritance is unreliable across browsers with
+   a generic selector, so target text nodes explicitly. */
+svg text[lang="hu"]{display:none}
+html[data-lang="hu"] svg text[lang="en"]{display:none}
+html[data-lang="hu"] svg text[lang="hu"]{display:inline}
+/* header language switch */
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+.lang button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+/* ── language toggling ───────────────────────────────────────── */
+[lang="hu"]{display:none}
+svg text[lang="hu"]{display:none}
+.depth-note{margin:16px 0 0;font-size:13px;color:var(--muted);background:#fff;border:1px solid var(--line);
+  border-radius:10px;padding:11px 14px}
+.depth-note b{color:var(--ink);font-weight:600}
+.concept__head .num.pr{background:var(--accent)}
+.q:first-child{margin-top:0}
+.step{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--slate);margin:18px 0 6px;display:flex;align-items:center;gap:8px}
+.step::before{content:"";width:16px;height:2px;background:var(--accent);display:inline-block}
+.note{margin:14px 0 0;background:#EFF6FF;border:1px solid #BFDBFE;border-left:3px solid var(--post);
+  border-radius:8px;padding:10px 14px;font-size:14px}
+.note__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--post);font-weight:600;display:block;margin-bottom:3px}
+/* vulnerable vs fixed code pair */
+.codepair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 2px}
+.cbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}
+.cbox__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600}
+.cbox--bad .cbox__h{background:#FEF2F2;color:var(--vuln);border-bottom:1px solid #FECACA}
+.cbox--good .cbox__h{background:#F0FDF4;color:var(--safe);border-bottom:1px solid #BBF7D0}
+.cbox pre{margin:0;padding:10px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.55;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+/* ── complexity badges ───────────────────────────────────────── */
+.cx{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.cx span{font-family:'JetBrains Mono';font-size:11.5px;padding:3px 9px;border-radius:6px;
+  border:1px solid var(--line);background:#fff;white-space:nowrap}
+.cx .k{color:var(--muted)}
+.cx .t{color:var(--post);border-color:#BFDBFE;background:#EFF6FF}
+.cx .s{color:var(--patch);border-color:#99F6E4;background:#F0FDFA}
+.cx .good{color:var(--safe);border-color:#BBF7D0;background:#F0FDF4}
+.cx .bad{color:var(--vuln);border-color:#FECACA;background:#FEF2F2}
+/* ── single code block ───────────────────────────────────────── */
+.code{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;margin:12px 0 2px}
+.code__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600;background:#F8FAFC;color:var(--slate);border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.code__cx{font-size:10px;color:var(--post);text-transform:none;letter-spacing:0}
+.code pre{margin:0;padding:11px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.6;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+  .bar__t{font-size:12.5px}
+}
+@media print{
+  .bar{display:none} body{background:#fff}
+  .concept{break-inside:avoid;border-color:#ccc} a.idx{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr 1fr}
+  .concept__head h2{font-size:19px}
+  .bar__t{font-size:12.5px}
+}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+}
+@media (max-width:620px){.codepair{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+  </marker>
+</defs></svg>
+
+<div class="wrap" id="top">
+
+  <div class="hero">
+    <p class="eyebrow"><span lang="en">Technical Q&amp;A Knowledge Base</span><span lang="hu">Technikai Q&amp;A tudásbázis</span></p>
+    <h1>System Design Method</h1>
+    <p class="lede"><span lang="en">Not more things to know — a way to run the 45 minutes. Most system design interviews are lost on process rather than knowledge: jumping to a diagram before the requirements are pinned down, or going silent while thinking. This is the sequence, the numbers worth memorising, and the failure modes.</span><span lang="hu">Nem újabb tudnivalók — hanem az, hogyan vezesd végig a 45 percet. A legtöbb system design interjú nem tudáson bukik el, hanem folyamaton: diagramot rajzolni, mielőtt a követelmények rögzülnének, vagy elhallgatni gondolkodás közben. Itt a sorrend, a megjegyzésre érdemes számok, és a hibamódok.</span></p>
+    <div class="legend">
+      <span class="lbl"><span lang="en">Diagrams</span><span lang="hu">Diagramok</span></span>
+      <span class="chip chip--2"><span lang="en">green · preferred</span><span lang="hu">zöld · ajánlott</span></span>
+      <span class="chip chip--5"><span lang="en">red · pitfall</span><span lang="hu">piros · hibalehetőség</span></span>
+      <span class="chip chip--4"><span lang="en">amber · watch out</span><span lang="hu">sárga · buktató</span></span>
+    </div>
+  </div>
+
+  <nav class="index">
+    <h3><span lang="en">Jump to</span><span lang="hu">Ugrás</span></h3>
+    <div class="grid"><a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t"><span lang="en">The Shape of the Hour</span><span lang="hu">Az óra felépítése</span></span></a><a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t"><span lang="en">Clarifying Requirements</span><span lang="hu">Követelmények tisztázása</span></span></a><a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t"><span lang="en">Estimation That Earns Its Time</span><span lang="hu">Becslés, ami megéri az idejét</span></span></a><a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t"><span lang="en">High-Level Design</span><span lang="hu">Magas szintű terv</span></span></a><a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t"><span lang="en">Deep Dive &amp; Bottlenecks</span><span lang="hu">Elmélyítés &amp; szűk keresztmetszetek</span></span></a><a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t"><span lang="en">Failure Scenarios</span><span lang="hu">Hibaforgatókönyvek</span></span></a><a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t"><span lang="en">Common Failure Modes</span><span lang="hu">Gyakori hibamódok</span></span></a><a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t"><span lang="en">Practice Prompts</span><span lang="hu">Gyakorló feladatok</span></span></a></div>
+  </nav>
+
+  <div class="sec"><span class="sec__l"><span lang="en">The Method</span><span lang="hu">A módszer</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c01">
+    <div class="concept__head"><span class="num">01</span><h2><span lang="en">The Shape of the Hour</span><span lang="hu">Az óra felépítése</span></h2></div>
+    <p class="def"><span lang="en"><strong>A system design interview is a structured conversation, not an exam.</strong> The interviewer is assessing how you approach an underspecified problem — so the sequence you follow is itself most of what's being scored.</span><span lang="hu"><strong>A system design interjú strukturált beszélgetés, nem vizsga.</strong> Az interjúztató azt méri, hogyan állsz neki egy alulspecifikált problémának — így a követett sorrend maga a pontozás nagy része.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 200" role="img" aria-label="Time allocation across the interview">
+        <rect x="30" y="40" width="112" height="52" rx="8" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.6"/>
+        <text lang="en" x="86" y="62" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">Clarify</text><text lang="hu" x="86" y="62" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">Tisztázás</text>
+        <text x="86" y="80" text-anchor="middle" font-size="11" fill="var(--accent)">5–10 min</text>
+        <rect x="152" y="40" width="112" height="52" rx="8" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.6"/>
+        <text lang="en" x="208" y="62" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">Estimate</text><text lang="hu" x="208" y="62" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">Becslés</text>
+        <text x="208" y="80" text-anchor="middle" font-size="11" fill="var(--accent)">5 min</text>
+        <rect x="274" y="40" width="132" height="52" rx="8" fill="#F0FDF4" stroke="var(--safe,#16A34A)" stroke-width="1.8"/>
+        <text lang="en" x="340" y="62" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">High-level design</text><text lang="hu" x="340" y="62" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">Magas szintű terv</text>
+        <text x="340" y="80" text-anchor="middle" font-size="11" fill="var(--accent)">10–15 min</text>
+        <rect x="416" y="40" width="122" height="52" rx="8" fill="#F0FDF4" stroke="var(--safe,#16A34A)" stroke-width="1.8"/>
+        <text lang="en" x="477" y="62" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">Deep dive</text><text lang="hu" x="477" y="62" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">Elmélyítés</text>
+        <text x="477" y="80" text-anchor="middle" font-size="11" fill="var(--accent)">10–15 min</text>
+        <rect x="548" y="40" width="102" height="52" rx="8" fill="#FFFBEB" stroke="var(--put)" stroke-width="1.6"/>
+        <text lang="en" x="599" y="62" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">Wrap up</text><text lang="hu" x="599" y="62" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">Lezárás</text>
+        <text x="599" y="80" text-anchor="middle" font-size="11" fill="var(--accent)">5 min</text>
+        <line x1="30" y1="112" x2="650" y2="112" stroke="var(--line)" stroke-width="1.4"/>
+        <text lang="en" x="340" y="136" text-anchor="middle" font-size="10" fill="var(--slate)">the two green boxes are where the signal is — protect their time</text><text lang="hu" x="340" y="136" text-anchor="middle" font-size="10" fill="var(--slate)">a két zöld doboz adja a jelzést — védd az idejüket</text>
+        <text lang="en" x="340" y="164" text-anchor="middle" font-size="10" fill="var(--vuln,#DC2626)">overrunning clarification is the most common way to run out of time</text><text lang="hu" x="340" y="164" text-anchor="middle" font-size="10" fill="var(--vuln,#DC2626)">a tisztázás túlnyújtása a leggyakoribb módja az idő kifutásának</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">Rough allocation for a 45-minute round. Say the plan out loud at the start — it signals structure and lets the interviewer redirect early.</span><span lang="hu">Hozzávetőleges beosztás egy 45 perces körre. Mondd ki a tervet az elején — ez struktúrát jelez, és lehetővé teszi, hogy az interjúztató korán átirányítson.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">What is actually being assessed?</span><span lang="hu">Mit mérnek valójában?</span></p>
+      <ul class="a">
+        <li><span lang="en">Whether you can take a vague problem and impose structure on it; whether you make reasoned trade-offs instead of reciting architectures; and whether you can be collaborated with. Notably <em>not</em> whether you produce the "right" design — there isn't one. A candidate who builds a simple system and defends it well outperforms one who names more technologies.</span><span lang="hu">Hogy tudsz-e egy homályos problémát fogni és struktúrát adni neki; hogy indokolt trade-offokat hozol-e, ahelyett hogy architektúrákat sorolnál; és hogy lehet-e veled együtt dolgozni. Kifejezetten <em>nem</em> az, hogy a „helyes" tervet állítod-e elő — olyan nincs. Az a jelölt, aki egyszerű rendszert épít és jól megvédi, felülmúlja azt, aki több technológiát nevez meg.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How much should you be talking?</span><span lang="hu">Mennyit beszélj?</span></p>
+      <ul class="a">
+        <li><span lang="en">Continuously, but not monologuing. Silence is the worst failure mode because it makes your thinking invisible — narrate even the uncertainty ("I'm weighing whether to shard here; let me come back to it"). Equally, check in after each stage rather than delivering a lecture: "does that structure look reasonable before I go deeper?" gives the interviewer a chance to steer, which is what they're there for.</span><span lang="hu">Folyamatosan, de ne monologizálj. A csend a legrosszabb hibamód, mert láthatatlanná teszi a gondolkodásodat — mondd ki a bizonytalanságot is („mérlegelem, hogy itt shardoljak-e; visszatérek rá"). Ugyanígy: minden szakasz után kérdezz vissza, ne előadást tarts — a „rendben néz ki ez a szerkezet, mielőtt mélyebbre megyek?" esélyt ad az interjúztatónak a kormányzásra, amiért ott van.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What if you don't know a component they ask about?</span><span lang="hu">Mi van, ha nem ismersz egy komponenst, amiről kérdeznek?</span></p>
+      <ul class="a">
+        <li><span lang="en">Say so, then reason from principles — "I haven't used that specific system, but the problem it solves is X, so I'd expect it to trade Y for Z". That is a far stronger signal than bluffing, which interviewers detect quickly and which ends the useful part of the conversation. Admitting a gap and reasoning around it demonstrates exactly the judgement being tested.</span><span lang="hu">Mondd ki, majd következtess alapelvekből — „ezt a konkrét rendszert nem használtam, de a probléma, amit megold, X, tehát azt várnám, hogy Y-t cserél Z-re". Ez sokkal erősebb jelzés a blöffölésnél, amit az interjúztatók gyorsan észlelnek, és ami véget vet a beszélgetés hasznos részének. Egy hiány beismerése és a körülötte való gondolkodás pont azt a képességet mutatja, amit mérnek.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Drawing boxes in the first two minutes is the single most common mistake. It looks decisive and it isn't — you're committing to a design before knowing what it must do, and every later requirement then forces an awkward retrofit.</span><span lang="hu">Az első két percben dobozokat rajzolni a leggyakoribb hiba. Határozottnak látszik, de nem az — olyan tervet vállalsz be, mielőtt tudnád, mit kell tennie, és minden később felmerülő követelmény kínos utólagos toldozást kényszerít ki.</span></p>
+  </section>
+
+  <section class="concept" id="c02">
+    <div class="concept__head"><span class="num">02</span><h2><span lang="en">Clarifying Requirements</span><span lang="hu">Követelmények tisztázása</span></h2></div>
+    <p class="def"><span lang="en"><strong>The prompt is deliberately vague, and narrowing it is the first thing being tested.</strong> "Design Twitter" is not a specification — it's an invitation to establish what you're actually building.</span><span lang="hu"><strong>A feladat szándékosan homályos, és a szűkítése az első, amit mérnek.</strong> A „tervezz Twittert" nem specifikáció — felkérés arra, hogy megállapítsd, mit is építesz valójában.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Ask</span><span lang="hu">Kérdezd</span></th><th><span lang="en">Because it changes</span><span lang="hu">Mert ez változtatja</span></th></tr>
+      <tr><td><span lang="en">Which features are in scope?</span><span lang="hu">Mely funkciók tartoznak bele?</span></td><td><span lang="en">everything downstream</span><span lang="hu">minden továbbit</span></td></tr>
+      <tr><td><span lang="en">How many users? Read/write ratio?</span><span lang="hu">Hány felhasználó? Olvasás/írás arány?</span></td><td><span lang="en">caching, replication, sharding</span><span lang="hu">cache, replikáció, shardolás</span></td></tr>
+      <tr><td><span lang="en">How fresh must data be?</span><span lang="hu">Mennyire friss legyen az adat?</span></td><td><span lang="en">consistency model</span><span lang="hu">konzisztencia-modell</span></td></tr>
+      <tr><td><span lang="en">What's the latency budget?</span><span lang="hu">Mennyi a késleltetési keret?</span></td><td><span lang="en">sync vs async, precompute</span><span lang="hu">szinkron vs aszinkron, előszámítás</span></td></tr>
+      <tr><td><span lang="en">What happens if it's briefly down?</span><span lang="hu">Mi történik, ha rövid ideig áll?</span></td><td><span lang="en">availability target, cost</span><span lang="hu">rendelkezésre állási cél, költség</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">Functional versus non-functional — why separate them?</span><span lang="hu">Funkcionális vs nem-funkcionális — miért válaszd szét őket?</span></p>
+      <ul class="a">
+        <li><span lang="en">Functional requirements say what it does ("users post, users follow, users see a feed"); non-functional say how well ("100ms feed load, 99.9% available, eventual consistency is fine"). The non-functional ones drive nearly every architectural decision — the same feature list at 1,000 users and 100 million users produces completely different systems, and only the second set tells you which one you're in.</span><span lang="hu">A funkcionális követelmények azt mondják meg, mit csinál („a felhasználók posztolnak, követnek, feedet látnak"); a nem-funkcionálisak azt, milyen jól („100ms feed-betöltés, 99,9% rendelkezésre állás, az eventual consistency rendben van"). Szinte minden architekturális döntést a nem-funkcionálisak hajtanak — ugyanaz a funkciólista 1 000 és 100 millió felhasználónál teljesen eltérő rendszert eredményez, és csak a második halmaz árulja el, melyikben vagy.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you avoid spending the whole interview here?</span><span lang="hu">Hogyan kerülöd el, hogy itt töltsd az egész interjút?</span></p>
+      <ul class="a">
+        <li><span lang="en">Timebox it and propose rather than interrogate. Instead of ten open questions, state assumptions and invite correction: "I'll assume read-heavy, roughly 100:1, and that a few seconds of staleness in the feed is acceptable — stop me if that's wrong." This moves faster, demonstrates judgement about what matters, and still surfaces the constraints the interviewer wanted you to find.</span><span lang="hu">Szabj rá időkeretet, és javasolj, ne vallass. Tíz nyitott kérdés helyett mondj ki feltevéseket, és hívd fel a javításra: „olvasás-nehéznek veszem, nagyjából 100:1 arányban, és feltételezem, hogy néhány másodperc elavultság a feedben elfogadható — szólj, ha nem így van." Ez gyorsabban halad, ítélőképességet mutat arról, mi számít, és mégis előhozza azokat a megkötéseket, amiket az interjúztató szeretett volna, hogy megtalálj.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Which single question is most worth asking?</span><span lang="hu">Melyik az egyetlen legérdemesebb kérdés?</span></p>
+      <ul class="a">
+        <li><span lang="en">"What scale are we designing for?" — because it's the fork in the road. At modest scale the honest answer is often a single database and a monolith, and saying so is a strength; at internet scale the same design is negligent. Without this number every subsequent decision is unanchored, and you end up defending choices against an unstated standard.</span><span lang="hu">„Milyen léptékre tervezünk?" — mert ez az elágazás. Szerény léptéknél az őszinte válasz gyakran egyetlen adatbázis és egy monolit, és ezt kimondani erősség; internetes léptéknél ugyanaz a terv hanyagság. E szám nélkül minden további döntés lehorgonyzatlan, és úgy védesz választásokat, hogy ki nem mondott mércéhez mérik őket.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Write the agreed requirements somewhere visible and refer back to them. Interviewers frequently add a constraint mid-interview to see whether you notice it invalidates an earlier decision — and you can only notice if the original decision is still on the board.</span><span lang="hu">Írd fel a megbeszélt követelményeket látható helyre, és hivatkozz vissza rájuk. Az interjúztatók gyakran adnak hozzá megkötést menet közben, hogy lássák, észreveszed-e, hogy érvénytelenít egy korábbi döntést — és csak akkor veheted észre, ha az eredeti döntés még kint van a táblán.</span></p>
+  </section>
+
+  <section class="concept" id="c03">
+    <div class="concept__head"><span class="num">03</span><h2><span lang="en">Estimation That Earns Its Time</span><span lang="hu">Becslés, ami megéri az idejét</span></h2></div>
+    <p class="def"><span lang="en"><strong>Back-of-the-envelope numbers exist to justify architectural choices, not to be precise.</strong> An estimate that doesn't change a decision was a waste of five minutes — so calculate toward a question you're about to answer.</span><span lang="hu"><strong>A hozzávetőleges számok azért vannak, hogy architekturális döntéseket indokoljanak, nem hogy pontosak legyenek.</strong> Az a becslés, ami nem változtat döntést, öt elpazarolt perc volt — tehát olyan kérdés felé számolj, amit mindjárt megválaszolsz.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Worth memorising</span><span lang="hu">Érdemes megjegyezni</span></th><th></th></tr>
+      <tr><td><span lang="en">Seconds in a day</span><span lang="hu">Másodperc egy napban</span></td><td>~86,400 ≈ 10<sup>5</sup></td></tr>
+      <tr><td><span lang="en">1M writes/day</span><span lang="hu">1M írás/nap</span></td><td>≈ 12 <span lang="en">per second</span><span lang="hu">per másodperc</span></td></tr>
+      <tr><td><span lang="en">Peak vs average</span><span lang="hu">Csúcs vs átlag</span></td><td>2–10× <span lang="en">average</span><span lang="hu">átlag</span></td></tr>
+      <tr><td><span lang="en">Memory read</span><span lang="hu">Memória-olvasás</span></td><td>~100 ns</td></tr>
+      <tr><td><span lang="en">SSD read</span><span lang="hu">SSD-olvasás</span></td><td>~100 µs <span lang="en">(1000× memory)</span><span lang="hu">(1000× memória)</span></td></tr>
+      <tr><td><span lang="en">Network round trip, same DC</span><span lang="hu">Hálózati körút, azonos DC</span></td><td>~0.5 ms</td></tr>
+      <tr><td><span lang="en">Cross-continent round trip</span><span lang="hu">Kontinensek közti körút</span></td><td>~100 ms</td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">What should you actually compute?</span><span lang="hu">Mit számolj ki valójában?</span></p>
+      <ul class="a">
+        <li><span lang="en">Three things, and only because each one decides something: <strong>requests per second</strong> at peak (tells you how many servers and whether a single database survives), <strong>storage per year</strong> (tells you whether it fits on one machine — the sharding question), and <strong>bandwidth</strong> where media is involved (tells you whether you need a CDN). Skip anything that doesn't feed a decision.</span><span lang="hu">Hármat, és csak azért, mert mindegyik eldönt valamit: <strong>kérés per másodperc</strong> csúcson (megmondja, hány szerver kell, és túlél-e egyetlen adatbázis), <strong>tárhely évente</strong> (megmondja, elfér-e egy gépen — a shardolási kérdés), és <strong>sávszélesség</strong>, ahol média is van (megmondja, kell-e CDN). Hagyj ki mindent, ami nem táplál döntést.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How precise does it need to be?</span><span lang="hu">Mennyire kell pontosnak lennie?</span></p>
+      <ul class="a">
+        <li><span lang="en">Order of magnitude. Round aggressively — 86,400 becomes 100,000, a tweet becomes 1KB — and say that you're rounding. The interviewer is watching whether you can tell 100 GB from 100 TB, because those need different architectures; they are not checking your arithmetic. Getting visibly stuck on long division is a worse outcome than a number that's 30% off.</span><span lang="hu">Nagyságrendileg. Kerekíts bátran — a 86 400-ból 100 000, egy tweetből 1KB —, és mondd ki, hogy kerekítesz. Az interjúztató azt figyeli, meg tudod-e különböztetni a 100 GB-ot a 100 TB-tól, mert azok eltérő architektúrát igényelnek; nem a számtanodat ellenőrzi. Ha láthatóan elakadsz egy osztáson, az rosszabb eredmény, mint egy 30%-kal melléfogó szám.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you turn a number into a decision?</span><span lang="hu">Hogyan alakítasz egy számot döntéssé?</span></p>
+      <ul class="a">
+        <li><span lang="en">Say the implication out loud immediately: "that's about 500 GB a year, so this fits comfortably on one machine for several years — I won't shard, and I'd revisit that past a few terabytes." The number on its own is arithmetic; the sentence after it is the engineering. Candidates routinely compute correctly and then fail to use the result, which reads as ritual rather than reasoning.</span><span lang="hu">Mondd ki azonnal a következtetést: „ez körülbelül évi 500 GB, tehát ez évekig kényelmesen elfér egy gépen — nem shardolok, és pár terabájt fölött térnék vissza rá." A szám önmagában számtan; az utána következő mondat a mérnöki munka. A jelöltek rendszeresen helyesen számolnak, aztán nem használják az eredményt — ez rituálénak hat, nem gondolkodásnak.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Design for peak, not average — a system sized for the daily mean falls over every evening. And ask whether traffic is globally distributed or concentrated in one timezone; the same daily total produces very different peaks.</span><span lang="hu">Csúcsra tervezz, ne átlagra — a napi átlagra méretezett rendszer minden este eldől. És kérdezd meg, hogy a forgalom globálisan oszlik-e el, vagy egy időzónára koncentrálódik; ugyanaz a napi összeg nagyon eltérő csúcsokat ad.</span></p>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Designing</span><span lang="hu">Tervezés</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c04">
+    <div class="concept__head"><span class="num">04</span><h2><span lang="en">High-Level Design</span><span lang="hu">Magas szintű terv</span></h2></div>
+    <p class="def"><span lang="en"><strong>The first diagram should be boring, small, and obviously correct.</strong> Start with the simplest thing that satisfies the requirements, then let the interviewer's pressure — or your own numbers — force each addition.</span><span lang="hu"><strong>Az első diagram legyen unalmas, kicsi és nyilvánvalóan helyes.</strong> Kezdd a legegyszerűbbel, ami kielégíti a követelményeket, majd hagyd, hogy az interjúztató nyomása — vagy a saját számaid — kényszerítsenek ki minden bővítést.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 210" role="img" aria-label="Baseline architecture, grown under pressure">
+        <rect x="24" y="80" width="86" height="40" rx="7" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/>
+        <text lang="en" x="67" y="105" text-anchor="middle" font-size="11" fill="var(--ink)">client</text><text lang="hu" x="67" y="105" text-anchor="middle" font-size="11" fill="var(--ink)">kliens</text>
+        <rect x="140" y="80" width="86" height="40" rx="7" fill="#F8FAFC" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="183" y="105" text-anchor="middle" font-size="10" fill="var(--ink)">LB / API</text>
+        <rect x="256" y="80" width="96" height="40" rx="7" fill="#F8FAFC" stroke="var(--line)" stroke-width="1.5"/>
+        <text lang="en" x="304" y="105" text-anchor="middle" font-size="11" fill="var(--ink)">app servers</text><text lang="hu" x="304" y="105" text-anchor="middle" font-size="11" fill="var(--ink)">app szerverek</text>
+        <rect x="382" y="80" width="86" height="40" rx="7" fill="#F0FDF4" stroke="var(--safe,#16A34A)" stroke-width="1.6"/>
+        <text x="425" y="105" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">database</text>
+        <line x1="112" y1="100" x2="136" y2="100" stroke="#94A3B8" stroke-width="1.3" marker-end="url(#arrow)"/>
+        <line x1="228" y1="100" x2="252" y2="100" stroke="#94A3B8" stroke-width="1.3" marker-end="url(#arrow)"/>
+        <line x1="354" y1="100" x2="378" y2="100" stroke="#94A3B8" stroke-width="1.3" marker-end="url(#arrow)"/>
+        <rect x="256" y="20" width="96" height="34" rx="7" fill="#FFFBEB" stroke="var(--put)" stroke-width="1.4" stroke-dasharray="4 3"/>
+        <text x="304" y="41" text-anchor="middle" font-size="10" fill="var(--ink)">cache</text>
+        <line x1="304" y1="76" x2="304" y2="58" stroke="var(--put)" stroke-width="1.3" stroke-dasharray="3 3"/>
+        <rect x="500" y="20" width="150" height="34" rx="7" fill="#FFFBEB" stroke="var(--put)" stroke-width="1.4" stroke-dasharray="4 3"/>
+        <text lang="en" x="575" y="41" text-anchor="middle" font-size="10" fill="var(--ink)">queue + workers</text><text lang="hu" x="575" y="41" text-anchor="middle" font-size="10" fill="var(--ink)">queue + workerek</text>
+        <rect x="500" y="146" width="150" height="34" rx="7" fill="#FFFBEB" stroke="var(--put)" stroke-width="1.4" stroke-dasharray="4 3"/>
+        <text lang="en" x="575" y="167" text-anchor="middle" font-size="10" fill="var(--ink)">replicas / shards</text><text lang="hu" x="575" y="167" text-anchor="middle" font-size="10" fill="var(--ink)">replikák / shardok</text>
+        <text lang="en" x="340" y="202" text-anchor="middle" font-size="10" fill="var(--slate)">solid = start here · dashed = add only when a number or a requirement demands it</text><text lang="hu" x="340" y="202" text-anchor="middle" font-size="10" fill="var(--slate)">folytonos = itt kezdd · szaggatott = csak akkor add hozzá, ha egy szám vagy követelmény megköveteli</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">Every dashed box needs a justification from the requirements or the estimates. Adding them upfront is the classic over-engineering signal.</span><span lang="hu">Minden szaggatott doboznak indoklás kell a követelményekből vagy a becslésekből. Előre behúzni őket a klasszikus túltervezési jel.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">What order do you build it in?</span><span lang="hu">Milyen sorrendben építed fel?</span></p>
+      <ul class="a">
+        <li><span lang="en">Follow the data. Take the primary use case and trace one request end to end — client, entry point, service, storage — then do the same for the second. Components appear because a request needs them, which keeps the design grounded and makes the diagram explain itself. Drawing a component inventory first and wiring it up afterwards produces designs with pieces nobody can justify.</span><span lang="hu">Kövesd az adatot. Vedd az elsődleges használati esetet, és kövess végig egy kérést végponttól végpontig — kliens, belépési pont, szolgáltatás, tároló —, majd tedd ugyanezt a másodikkal. A komponensek azért jelennek meg, mert egy kérésnek szüksége van rájuk, ami földön tartja a tervet, és a diagram önmagát magyarázza. Előbb komponens-leltárt rajzolni, majd utólag összekötni olyan terveket szül, amelyek darabjait senki nem tudja indokolni.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you decide the data model and API?</span><span lang="hu">Hogyan döntesz az adatmodellről és az API-ról?</span></p>
+      <ul class="a">
+        <li><span lang="en">Sketch both early and briefly — the main entities with their key fields, and three or four endpoints with their parameters. It takes two minutes and prevents a large class of vagueness, because a concrete schema forces questions the boxes hide: what's the access pattern, what's the primary key, what does the read query actually look like. Interviewers often probe here precisely because it's where hand-waving becomes visible.</span><span lang="hu">Vázold fel mindkettőt korán és röviden — a fő entitásokat a kulcsmezőikkel, és három-négy végpontot a paramétereikkel. Két percbe kerül, és a homályosság nagy osztályát előzi meg, mert egy konkrét séma olyan kérdéseket kényszerít elő, amiket a dobozok elrejtenek: mi a hozzáférési minta, mi az elsődleges kulcs, hogyan néz ki valójában az olvasó lekérdezés. Az interjúztatók gyakran pont itt kérdeznek rá, mert itt válik láthatóvá a mellébeszélés.</span></li>
+      </ul>
+      <p class="q"><span lang="en">When do you introduce a cache or a queue?</span><span lang="hu">Mikor vezetsz be cache-t vagy queue-t?</span></p>
+      <ul class="a">
+        <li><span lang="en">When you can name the pressure it relieves. A cache appears once the read estimate exceeds what the database comfortably serves, or a latency budget requires it — and with an answer ready about invalidation. A queue appears when work can be done asynchronously and the write path shouldn't wait for it. "I'd add Redis" with no such trigger invites the follow-up you don't want: "why?"</span><span lang="hu">Amikor meg tudod nevezni, milyen nyomást old fel. A cache akkor jelenik meg, amikor az olvasási becslés meghaladja, amit az adatbázis kényelmesen kiszolgál, vagy egy késleltetési keret megköveteli — és készen áll a válaszod az invalidálásra. A queue akkor, amikor a munka aszinkron elvégezhető, és az írási útnak nem kell megvárnia. Az „hozzáadnék egy Redist" ilyen kiváltó ok nélkül pont azt a rákérdezést hívja elő, amit nem szeretnél: „miért?"</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Naming technologies instead of describing responsibilities is a junior tell. "A datastore that supports range queries on the sort key" is stronger than "DynamoDB", because it says why — and it survives the interviewer preferring a different product.</span><span lang="hu">Technológiákat megnevezni felelősségek leírása helyett kezdő jel. Az „olyan adattár, ami tartományos lekérdezést támogat a rendezési kulcson" erősebb, mint a „DynamoDB", mert megmondja, miért — és túléli, ha az interjúztató más terméket kedvel.</span></p>
+  </section>
+
+  <section class="concept" id="c05">
+    <div class="concept__head"><span class="num">05</span><h2><span lang="en">Deep Dive &amp; Bottlenecks</span><span lang="hu">Elmélyítés &amp; szűk keresztmetszetek</span></h2></div>
+    <p class="def"><span lang="en"><strong>The second half is where seniority shows: pick the hard part and go deep.</strong> Usually the interviewer chooses, but volunteering the right area first is itself a strong signal.</span><span lang="hu"><strong>A második fél az, ahol a szenioritás megmutatkozik: válaszd ki a nehéz részt, és menj mélyre.</strong> Általában az interjúztató választ, de ha te ajánlod fel elsőként a helyes területet, az önmagában erős jelzés.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">How do you find the actual bottleneck?</span><span lang="hu">Hogyan találod meg a valódi szűk keresztmetszetet?</span></p>
+      <ul class="a">
+        <li><span lang="en">Ask which component sees the most traffic, holds the most state, or has the least room to scale horizontally. It is almost always the database — application servers are stateless and trivially replicated, while the storage layer is where writes serialise and state must stay coherent. Naming the bottleneck before addressing it demonstrates that the fix is reasoned rather than reflexive.</span><span lang="hu">Kérdezd meg, melyik komponens lát a legtöbb forgalmat, tartja a legtöbb állapotot, vagy van a legkevesebb tere a vízszintes skálázásra. Szinte mindig az adatbázis — az alkalmazásszerverek állapotmentesek és triviálisan replikálhatók, míg a tárolóréteg az, ahol az írások sorosodnak, és az állapotnak koherensnek kell maradnia. A szűk keresztmetszet megnevezése a kezelése előtt azt mutatja, hogy a javítás átgondolt, nem reflexszerű.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What's the order of escalation for a database under pressure?</span><span lang="hu">Mi az eszkaláció sorrendje egy nyomás alatti adatbázisnál?</span></p>
+      <ul class="a">
+        <li><span lang="en">Cheapest first: indexes and query fixes, then a cache for hot reads, then read replicas, then vertical scaling, and only then sharding. Sharding is last because it's the one that's hard to undo — it complicates joins, transactions and every future migration. Walking down that list out loud shows you know sharding is a cost, not an achievement.</span><span lang="hu">A legolcsóbbal kezdve: indexek és lekérdezés-javítások, majd cache a forró olvasásokra, majd olvasó replikák, majd függőleges skálázás, és csak azután shardolás. A shardolás azért utolsó, mert azt nehéz visszacsinálni — bonyolítja a joinokat, a tranzakciókat és minden jövőbeli migrációt. Ha hangosan végigmész ezen a listán, azt mutatod, hogy tudod: a shardolás költség, nem teljesítmény.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Which deep dives come up most often?</span><span lang="hu">Mely elmélyítések jönnek elő leggyakrabban?</span></p>
+      <ul class="a">
+        <li><span lang="en">How you'd shard (what's the key, and what breaks when it's skewed); how the cache is invalidated and what happens on a miss storm; how you'd handle a hot key or hot partition; what's consistent versus eventually consistent and what the user sees during the gap; and how a specific component's failure degrades the system. Having a prepared answer for each of these covers most of what gets asked.</span><span lang="hu">Hogyan shardolnál (mi a kulcs, és mi romlik el, ha ferde az eloszlás); hogyan invalidálódik a cache, és mi történik egy miss-viharnál; hogyan kezelnél forró kulcsot vagy forró partíciót; mi konzisztens és mi eventually consistent, és mit lát a felhasználó a rés alatt; és hogyan degradálja a rendszert egy adott komponens hibája. Ha mindegyikre van előkészített válaszod, azzal a kérdezettek nagy részét lefeded.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">When the interviewer raises an objection, resist defending the design reflexively. Restate their concern first — it's often a hint about where they want you to go, and treating it as an attack turns a collaborative signal into an adversarial one.</span><span lang="hu">Amikor az interjúztató kifogást emel, állj ellen a reflexszerű védekezésnek. Előbb fogalmazd újra az aggályát — gyakran utalás arra, hová szeretné, hogy menj, és ha támadásként kezeled, egy együttműködő jelzést ellenségessé alakítasz.</span></p>
+  </section>
+
+  <section class="concept" id="c06">
+    <div class="concept__head"><span class="num">06</span><h2><span lang="en">Failure Scenarios</span><span lang="hu">Hibaforgatókönyvek</span></h2></div>
+    <p class="def"><span lang="en"><strong>Asking "what happens when this fails?" about your own design is one of the clearest seniority signals available</strong> — and it's frequently the difference between a passing and a strong verdict.</span><span lang="hu"><strong>Ha a saját tervedről kérdezed meg, hogy „mi történik, ha ez elromlik?", az az egyik legtisztább szenioritási jelzés</strong> — és gyakran ez a különbség egy átmenő és egy erős értékelés között.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">If this dies</span><span lang="hu">Ha ez meghal</span></th><th><span lang="en">The question to answer</span><span lang="hu">A megválaszolandó kérdés</span></th></tr>
+      <tr><td><span lang="en">An app server</span><span lang="hu">Egy app szerver</span></td><td><span lang="en">is it stateless? does the LB detect it?</span><span lang="hu">állapotmentes? észleli a LB?</span></td></tr>
+      <tr><td><span lang="en">The database primary</span><span lang="hu">Az adatbázis primary</span></td><td><span lang="en">failover time, data loss window</span><span lang="hu">failover ideje, adatvesztési ablak</span></td></tr>
+      <tr><td><span lang="en">The cache</span><span lang="hu">A cache</span></td><td><span lang="en">does the DB survive the miss storm?</span><span lang="hu">túléli a DB a miss-vihart?</span></td></tr>
+      <tr><td><span lang="en">A downstream service</span><span lang="hu">Egy lejjebbi szolgáltatás</span></td><td><span lang="en">timeout, circuit breaker, degrade how?</span><span lang="hu">timeout, circuit breaker, hogyan degradál?</span></td></tr>
+      <tr><td><span lang="en">A whole region</span><span lang="hu">Egy teljes régió</span></td><td><span lang="en">is multi-region worth the cost here?</span><span lang="hu">megéri itt a multi-region ára?</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">What does graceful degradation look like?</span><span lang="hu">Hogyan néz ki a szabályos degradáció?</span></p>
+      <ul class="a">
+        <li><span lang="en">Deciding in advance which features are load-bearing and which can be shed. If recommendations are unavailable, serve the page without them rather than failing the request; if the cache is cold, rate-limit rather than collapse. The design decision is which parts of the product are allowed to disappear under stress — and that's a product conversation as much as a technical one, which is worth saying out loud.</span><span lang="hu">Előre eldöntöd, mely funkciók teherhordók, és melyek dobhatók el. Ha az ajánlások nem érhetők el, szolgáld ki az oldalt nélkülük, ne bukjon el a kérés; ha a cache hideg, inkább rate-limitelj, mint hogy összeomolj. A tervezési döntés az, hogy a termék mely részei tűnhetnek el terhelés alatt — és ez legalább annyira termékkérdés, mint technikai, amit érdemes kimondani.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you talk about consistency during a failure?</span><span lang="hu">Hogyan beszélsz a konzisztenciáról hiba közben?</span></p>
+      <ul class="a">
+        <li><span lang="en">In terms of what the user actually observes. "During failover, writes fail for about 30 seconds; reads continue from replicas but may be a few seconds stale" is a concrete answer. Citing CAP without connecting it to observable behaviour is the version that sounds informed and says nothing — the interviewer wants the consequence, not the theorem.</span><span lang="hu">Azzal, amit a felhasználó ténylegesen tapasztal. „Failover alatt az írások körülbelül 30 másodpercig hibáznak; az olvasások folytatódnak a replikákról, de pár másodperccel elavultak lehetnek" — ez konkrét válasz. A CAP emlegetése anélkül, hogy megfigyelhető viselkedéshez kötnéd, az a változat, ami tájékozottnak hangzik és semmit nem mond — az interjúztató a következményt akarja, nem a tételt.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What about the operational side?</span><span lang="hu">Mi a helyzet az üzemeltetési oldallal?</span></p>
+      <ul class="a">
+        <li><span lang="en">Mentioning it briefly sets you apart, because most candidates stop at the diagram. What would you monitor (the few metrics that indicate user pain, not a dashboard of everything), what would page someone, and how would you deploy this without downtime. Thirty seconds on this shows you've operated systems rather than only drawn them.</span><span lang="hu">Röviden megemlíteni megkülönböztet, mert a legtöbb jelölt megáll a diagramnál. Mit monitoroznál (azt a néhány metrikát, ami felhasználói fájdalmat jelez, nem egy mindent mutató dashboardot), mi riasztana valakit, és hogyan deployolnád ezt leállás nélkül. Harminc másodperc erről azt mutatja, hogy üzemeltettél rendszereket, nem csak rajzoltál.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Don't add redundancy everywhere by reflex. Multi-region active-active is expensive and complex; if the requirement is 99.9% rather than 99.999%, saying "single region with backups is sufficient here, and I'd revisit at a higher availability target" is the better-calibrated answer.</span><span lang="hu">Ne adj hozzá redundanciát reflexből mindenhová. A multi-region aktív-aktív drága és bonyolult; ha a követelmény 99,9% és nem 99,999%, akkor az „egy régió mentésekkel itt elegendő, és magasabb rendelkezésre állási célnál térnék vissza rá" a jobban kalibrált válasz.</span></p>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Delivery</span><span lang="hu">Előadásmód</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c07">
+    <div class="concept__head"><span class="num">07</span><h2><span lang="en">Common Failure Modes</span><span lang="hu">Gyakori hibamódok</span></h2></div>
+    <p class="def"><span lang="en"><strong>The ways candidates lose these interviews are consistent and mostly procedural</strong> — which means they're avoidable without learning anything new.</span><span lang="hu"><strong>Az a mód, ahogy a jelöltek elbuknak ezeken az interjúkon, következetes és jórészt eljárásbeli</strong> — ami azt jelenti, hogy elkerülhető anélkül, hogy bármi újat tanulnál.</span></p>
+    <div class="codepair">
+      <div class="cbox cbox--bad"><div class="cbox__h"><span lang="en">Loses points</span><span lang="hu">Pontot veszít</span></div><pre><span lang="en">"I'd use Kafka, Redis, Cassandra
+ and Kubernetes."
+ → tech list, no reasoning
+
+"It just scales horizontally."
+ → hand-waving past the hard part
+
+[long silence while thinking]
+ → thinking is invisible
+
+"Microservices, obviously."
+ → pattern-matching, no context</span><span lang="hu">„Kafkát, Redist, Cassandrát és
+ Kubernetest használnék."
+ → technológialista, indoklás nélkül
+
+„Egyszerűen vízszintesen skálázódik."
+ → átlebegés a nehéz rész felett
+
+[hosszú csend gondolkodás közben]
+ → a gondolkodás láthatatlan
+
+„Mikroszolgáltatások, nyilván."
+ → mintaillesztés, kontextus nélkül</span></pre></div>
+      <div class="cbox cbox--good"><div class="cbox__h"><span lang="en">Earns them</span><span lang="hu">Pontot szerez</span></div><pre><span lang="en">"Reads are 100:1, so a cache
+ in front of the DB — here's how
+ I'd invalidate it."
+
+"This shards on user_id; celebrity
+ accounts would skew it, so..."
+
+"I'm weighing two options here —
+ let me think aloud."
+
+"A monolith fits four engineers;
+ I'd split when scaling diverges."</span><span lang="hu">„Az olvasás 100:1, tehát cache
+ az adatbázis elé — így
+ invalidálnám."
+
+„Ez user_id-n shardol; a hírességek
+ fiókjai ferdítenék, ezért..."
+
+„Két lehetőséget mérlegelek —
+ hadd gondolkodjak hangosan."
+
+„Négy fejlesztőhöz monolit illik;
+ akkor bontanám, ha a skálázás elválik."</span></pre></div>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">What's the most damaging single mistake?</span><span lang="hu">Mi a legkárosabb egyetlen hiba?</span></p>
+      <ul class="a">
+        <li><span lang="en">Designing for a scale nobody asked for. Sharding, multi-region and event sourcing applied to a system with 10,000 users doesn't read as ambition — it reads as an inability to match solution to problem, which is the core judgement being assessed. The strongest candidates frequently propose something simpler than expected and articulate exactly when they'd outgrow it.</span><span lang="hu">Olyan léptékre tervezni, amit senki nem kért. Shardolás, multi-region és event sourcing egy 10 000 felhasználós rendszeren nem ambíciónak hat — hanem annak, hogy nem tudod a megoldást a problémához illeszteni, ami pont a mért alapkészség. A legerősebb jelöltek gyakran a vártnál egyszerűbbet javasolnak, és pontosan megfogalmazzák, mikor nőnék ki azt.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What do you do when you get stuck?</span><span lang="hu">Mit teszel, ha elakadsz?</span></p>
+      <ul class="a">
+        <li><span lang="en">Say it and narrow the problem: "I'm not sure how to keep this consistent across regions — let me start with single-region and note this as the thing to solve." That's a recovery, not a failure, and it keeps the collaboration alive. Interviewers routinely offer a hint at this point; sitting in silence prevents them from helping you.</span><span lang="hu">Mondd ki, és szűkítsd a problémát: „nem vagyok biztos benne, hogyan tartsam ezt konzisztensen régiók között — kezdjük egy régióval, és jegyezzük fel ezt megoldandóként." Ez helyreállás, nem kudarc, és életben tartja az együttműködést. Az interjúztatók ilyenkor rendszeresen felajánlanak egy tippet; a csendben ülés megakadályozza, hogy segítsenek.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you close well?</span><span lang="hu">Hogyan zárj jól?</span></p>
+      <ul class="a">
+        <li><span lang="en">Summarise in three sentences: what you built, the main trade-off you accepted, and what you'd do next with more time. Naming a known weakness is a strength here — "this design assumes the feed can be a few seconds stale; if that's unacceptable I'd revisit the fan-out" leaves the interviewer with evidence that you understand your own design's limits, which is the last thing they'll remember.</span><span lang="hu">Foglald össze három mondatban: mit építettél, a fő trade-offot, amit elfogadtál, és mit tennél tovább több idővel. Egy ismert gyengeség megnevezése itt erősség — „ez a terv feltételezi, hogy a feed lehet pár másodperccel elavult; ha ez elfogadhatatlan, újragondolnám a fan-outot" — ez azzal a bizonyítékkal hagyja ott az interjúztatót, hogy érted a saját terved korlátait, és ez lesz az utolsó, amire emlékezni fog.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Rehearsed answers are audible. Memorising "the Twitter design" produces a fluent recital that collapses on the first variation the interviewer introduces — and introducing one is exactly how they check. Practise the method on unfamiliar prompts instead.</span><span lang="hu">A betanult válaszok hallatszanak. A „Twitter-terv" bemagolása gördülékeny felmondást szül, ami az első variáción összeomlik, amit az interjúztató bevezet — és pont ezzel ellenőriznek. Inkább a módszert gyakorold ismeretlen feladatokon.</span></p>
+  </section>
+
+  <section class="concept" id="c08">
+    <div class="concept__head"><span class="num">08</span><h2><span lang="en">Practice Prompts</span><span lang="hu">Gyakorló feladatok</span></h2></div>
+    <p class="def"><span lang="en"><strong>A short set that covers most of the underlying patterns.</strong> Each one is a different core problem — running all six teaches more than running the same one repeatedly.</span><span lang="hu"><strong>Egy rövid készlet, ami lefedi a mögöttes minták nagy részét.</strong> Mindegyik más alapproblémáról szól — mind a hat végigfuttatása többet tanít, mint ugyanazt sokszor.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Prompt</span><span lang="hu">Feladat</span></th><th><span lang="en">The core problem</span><span lang="hu">Az alapprobléma</span></th></tr>
+      <tr><td><span lang="en">URL shortener</span><span lang="hu">URL-rövidítő</span></td><td><span lang="en">id generation, read-heavy caching</span><span lang="hu">azonosító-generálás, olvasás-nehéz cache</span></td></tr>
+      <tr><td><span lang="en">Rate limiter</span><span lang="hu">Rate limiter</span></td><td><span lang="en">distributed counters, shared state</span><span lang="hu">elosztott számlálók, megosztott állapot</span></td></tr>
+      <tr><td><span lang="en">News feed</span><span lang="hu">Hírfolyam</span></td><td><span lang="en">fan-out on read vs write</span><span lang="hu">fan-out olvasáskor vs íráskor</span></td></tr>
+      <tr><td><span lang="en">Chat system</span><span lang="hu">Chat rendszer</span></td><td><span lang="en">realtime delivery, ordering, presence</span><span lang="hu">realtime kézbesítés, sorrend, jelenlét</span></td></tr>
+      <tr><td><span lang="en">File storage</span><span lang="hu">Fájltárolás</span></td><td><span lang="en">large objects, metadata split, CDN</span><span lang="hu">nagy objektumok, metaadat-szétválasztás, CDN</span></td></tr>
+      <tr><td><span lang="en">Ticket booking</span><span lang="hu">Jegyfoglalás</span></td><td><span lang="en">contention, no double-selling</span><span lang="hu">versengés, nincs kétszeres eladás</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">Which one should you practise first?</span><span lang="hu">Melyiket gyakorold először?</span></p>
+      <ul class="a">
+        <li><span lang="en">The URL shortener, because it's small enough to complete in the full 45 minutes and still exercises the whole method — clarify, estimate, design, then a real deep dive on key generation and caching. Getting comfortable with the <em>sequence</em> on an easy problem is what lets you apply it under pressure on a hard one.</span><span lang="hu">Az URL-rövidítőt, mert elég kicsi ahhoz, hogy a teljes 45 percben befejezd, és mégis végiggyakoroltatja a teljes módszert — tisztázás, becslés, tervezés, majd valódi elmélyítés a kulcsgenerálásban és a cache-elésben. Ha a <em>sorrend</em> kényelmessé válik egy könnyű problémán, azzal tudod nyomás alatt alkalmazni egy nehezen.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What's the highest-value thing to rehearse?</span><span lang="hu">Mit érdemes leginkább gyakorolni?</span></p>
+      <ul class="a">
+        <li><span lang="en">The first five minutes and the last three. Openings and closings are the parts you can genuinely prepare — a reliable set of clarifying questions and a clean summary structure — while the middle has to stay responsive to the problem. Those two segments also disproportionately shape the interviewer's impression, since they frame everything in between.</span><span lang="hu">Az első öt percet és az utolsó hármat. A nyitás és a zárás az, amit valóban elő tudsz készíteni — egy megbízható tisztázó kérdéskészlet és egy tiszta összefoglaló szerkezet —, míg a közepének a problémára reagálónak kell maradnia. Ez a két szakasz aránytalanul alakítja az interjúztató benyomását is, mert keretbe foglalja a közte lévő mindent.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you practise without a partner?</span><span lang="hu">Hogyan gyakorolsz partner nélkül?</span></p>
+      <ul class="a">
+        <li><span lang="en">Set a timer, talk out loud, and draw on paper — silent thinking builds none of the verbalisation skill the interview actually measures. Then challenge your own design as an interviewer would: what if traffic is 100× higher, what if this component dies, why not the simpler option. Recording yourself once is unpleasant and unusually informative about pace and filler.</span><span lang="hu">Állíts időzítőt, beszélj hangosan, és rajzolj papírra — a néma gondolkodás semmit nem épít abból a verbalizációs készségből, amit az interjú ténylegesen mér. Aztán támadd a saját tervedet, ahogy egy interjúztató tenné: mi van, ha a forgalom 100×, mi van, ha ez a komponens meghal, miért nem az egyszerűbb megoldás. Egyszer felvenni magad kellemetlen, és szokatlanul sokat elárul a tempóról és a töltelékszavakról.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Reading solutions is not practice. The method is a performance skill — you can recognise a good design instantly and still be unable to produce one while talking, drawing and being interrupted. Run at least a few end to end before the interview.</span><span lang="hu">A megoldások olvasása nem gyakorlás. A módszer előadói készség — azonnal felismerhetsz egy jó tervet, és mégis képtelen lehetsz előállítani egyet beszéd, rajzolás és félbeszakítás közben. Futtass végig legalább néhányat az interjú előtt.</span></p>
+  </section>
+
+
+  <p class="foot"><span lang="en">System Design Method · technical interview prep · <b>Q&amp;A knowledge base</b></span><span lang="hu">System Design Method · technikai interjú-felkészítő · <b>Q&amp;A tudásbázis</b></span></p>
+
+</div>
+
+<script>
+(function () {
+  var SUPPORTED = ['en', 'hu'];
+  var root = document.documentElement;
+
+  // The smallest block element at the top-centre of the viewport (where the
+  // text is) that exists in both languages — used to hold the reading position
+  // steady across a switch. Sampling the centre, not the edge, lands on a
+  // paragraph rather than a large container, so the visible line stays put.
+  function anchor() {
+    var el = document.elementFromPoint(window.innerWidth / 2, 8);
+    while (el && el !== document.body &&
+           (el.hasAttribute('lang') || getComputedStyle(el).display === 'inline')) {
+      el = el.parentElement;
+    }
+    return el && el !== document.body ? el : null;
+  }
+
+  function applyLang(lang) {
+    if (SUPPORTED.indexOf(lang) === -1) lang = 'en';
+    if (root.dataset.lang === lang) return;
+    var a = window.scrollY > 0 ? anchor() : null;
+    var before = a ? a.getBoundingClientRect().top : 0;
+    // Toggle via data-lang only. Deliberately NOT setting root.lang: some pages
+    // hide the other language with a bare [lang="…"]{display:none} rule, which
+    // would then match <html lang="…"> and hide the whole page. Visible spans
+    // still carry their own lang attribute for assistive tech.
+    root.dataset.lang = lang;
+    if (a) window.scrollBy(0, a.getBoundingClientRect().top - before);
+  }
+
+  // In-place switch for the shell (synchronous, same-origin).
+  window.interviewBrowser = {
+    setParams: function (params) { applyLang(params && params.lang); }
+  };
+
+  applyLang(new URLSearchParams(location.search).get('lang') || 'en');
+})();
+</script>
+</body>
+</html>

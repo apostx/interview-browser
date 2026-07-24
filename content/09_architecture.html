@@ -211,8 +211,13 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
       <a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t"><span lang="en">Hexagonal & Clean Architecture</span><span lang="hu">Hexagonális & clean architecture</span></span></a>
       <a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t"><span lang="en">Monolith vs Microservices</span><span lang="hu">Monolit vs microservices</span></span></a>
       <a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t"><span lang="en">Domain-Driven Design</span><span lang="hu">Domain-Driven Design</span></span></a>
-      <a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t"><span lang="en">Design Patterns</span><span lang="hu">Tervezési minták</span></span></a>
-      <a class="idx" href="#c09"><span class="idx__n">09</span><span class="idx__t"><span lang="en">Trade-offs & Communicating Design</span><span lang="hu">Trade-offök & a terv kommunikálása</span></span></a>
+      <a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t"><span lang="en">Strangler Fig Migration</span><span lang="hu">Strangler fig migráció</span></span></a>
+      <a class="idx" href="#c09"><span class="idx__n">09</span><span class="idx__t"><span lang="en">Dual Writes &amp; Data Backfill</span><span lang="hu">Dual write &amp; adat-backfill</span></span></a>
+      <a class="idx" href="#c10"><span class="idx__n">10</span><span class="idx__t"><span lang="en">Zero-Downtime Schema Migration</span><span lang="hu">Leállás nélküli séma-migráció</span></span></a>
+      <a class="idx" href="#c11"><span class="idx__n">11</span><span class="idx__t"><span lang="en">Contract Evolution &amp; Consumer Tests</span><span lang="hu">Kontraktus-evolúció &amp; fogyasztói tesztek</span></span></a>
+      <a class="idx" href="#c12"><span class="idx__n">12</span><span class="idx__t"><span lang="en">Rollout, Flags &amp; Rollback</span><span lang="hu">Rollout, flagek &amp; visszagörgetés</span></span></a>
+      <a class="idx" href="#c13"><span class="idx__n">13</span><span class="idx__t"><span lang="en">Design Patterns</span><span lang="hu">Tervezési minták</span></span></a>
+      <a class="idx" href="#c14"><span class="idx__n">14</span><span class="idx__t"><span lang="en">Trade-offs & Communicating Design</span><span lang="hu">Trade-offök & a terv kommunikálása</span></span></a>
     </div>
   </div>
   <div class="sec"><span class="sec__l"><span lang="en">Principles</span><span lang="hu">Elvek</span></span><span class="sec__r"></span></div>
@@ -450,8 +455,169 @@ const svc = makeOrderService({
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Full DDD tactical patterns (aggregates, repositories, domain events, factories) are heavy machinery justified by complex domains. On a CRUD app they add layers without adding clarity — take the language and boundary ideas, leave the ceremony.</span><span lang="hu">A teljes DDD taktikai minták (aggregate-ek, repository-k, domain event-ek, factory-k) nehéz gépezet, amit komplex domainek indokolnak. Egy CRUD appon rétegeket adnak világosság nélkül — vidd el a nyelvi és határ-ötleteket, hagyd a ceremóniát.</span></p>
   </section>
+
+  <!-- 08 -->
   <section class="concept" id="c08">
-    <div class="concept__head"><span class="num">08</span><h2><span lang="en">Design Patterns</span><span lang="hu">Tervezési minták</span></h2></div>
+    <div class="concept__head"><span class="num">08</span><h2><span lang="en">Strangler Fig Migration</span><span lang="hu">Strangler fig migráció</span></h2></div>
+    <p class="def"><span lang="en"><strong>Replace a legacy system incrementally by routing traffic away from it, feature by feature, until nothing is left.</strong> The alternative — a rewrite that ships in one release — is the failure mode this pattern exists to avoid.</span><span lang="hu"><strong>A legacy rendszert fokozatosan váltod ki: funkcióról funkcióra tereled el róla a forgalmat, míg semmi nem marad belőle.</strong> Az alternatíva — egyetlen release-ben szállított újraírás — az a hibamód, aminek elkerülésére ez a minta létezik.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 200" role="img" aria-label="Strangler facade routing">
+        <rect x="30" y="72" width="110" height="44" rx="8" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/>
+        <text lang="en" x="85" y="99" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">clients</text><text lang="hu" x="85" y="99" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">kliensek</text>
+        <line x1="142" y1="94" x2="196" y2="94" stroke="#94A3B8" stroke-width="1.3" marker-end="url(#arrow)"/>
+        <rect x="200" y="60" width="130" height="68" rx="8" fill="#FFFBEB" stroke="var(--put)" stroke-width="1.6"/>
+        <text lang="en" x="265" y="88" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">facade</text><text lang="hu" x="265" y="88" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">homlokzat</text>
+        <text lang="en" x="265" y="106" text-anchor="middle" font-size="9" fill="var(--muted)">routes per feature</text><text lang="hu" x="265" y="106" text-anchor="middle" font-size="9" fill="var(--muted)">funkciónként útválaszt</text>
+        <line x1="332" y1="78" x2="446" y2="52" stroke="var(--safe,#16A34A)" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="332" y1="110" x2="446" y2="146" stroke="#94A3B8" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+        <rect x="450" y="30" width="200" height="44" rx="8" fill="#F0FDF4" stroke="var(--safe,#16A34A)" stroke-width="1.6"/>
+        <text lang="en" x="550" y="52" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">new service</text><text lang="hu" x="550" y="52" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">új szolgáltatás</text>
+        <text lang="en" x="550" y="66" text-anchor="middle" font-size="9" fill="var(--muted)">grows with each cutover</text><text lang="hu" x="550" y="66" text-anchor="middle" font-size="9" fill="var(--muted)">minden átállással nő</text>
+        <rect x="450" y="126" width="200" height="44" rx="8" fill="#F8FAFC" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text lang="en" x="550" y="148" text-anchor="middle" font-size="11" fill="var(--ink)">legacy monolith</text><text lang="hu" x="550" y="148" text-anchor="middle" font-size="11" fill="var(--ink)">legacy monolit</text>
+        <text lang="en" x="550" y="162" text-anchor="middle" font-size="9" fill="var(--muted)">shrinks, then retires</text><text lang="hu" x="550" y="162" text-anchor="middle" font-size="9" fill="var(--muted)">zsugorodik, majd nyugdíjba megy</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">The facade is the only thing clients see, so each feature can move independently — and move back if it misbehaves.</span><span lang="hu">A homlokzat az egyetlen, amit a kliensek látnak, így minden funkció önállóan költözhet — és vissza is, ha rosszul viselkedik.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Why not just rewrite it?</span><span lang="hu">Miért ne írjuk egyszerűen újra?</span></p>
+      <ul class="a">
+        <li><span lang="en">Because a big-bang rewrite delivers no value until the very end, while the legacy system keeps changing underneath you — so you're chasing a moving target with a growing divergence and a single, unrehearsed cutover at the end. The strangler approach ships value continuously, keeps rollback cheap because only one feature moved, and forces you to understand the legacy behaviour piece by piece rather than all at once.</span><span lang="hu">Mert a big-bang újraírás egészen a végéig nem szállít értéket, miközben a legacy rendszer közben folyamatosan változik alattad — így mozgó célpontot üldözöl növekvő eltéréssel, és a végén egyetlen, be nem gyakorolt átállással. A strangler megközelítés folyamatosan szállít értéket, olcsón tartja a visszagörgetést, mert csak egy funkció költözött, és arra kényszerít, hogy darabonként értsd meg a legacy viselkedést, ne egyszerre.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Where do you make the first cut?</span><span lang="hu">Hol vágsz először?</span></p>
+      <ul class="a">
+        <li><span lang="en">Somewhere with a clear boundary and low blast radius — ideally a read-mostly capability that owns little shared data. Starting with the hardest, most entangled core is a common mistake: you get no early wins, no proven cutover process, and the team's confidence in the migration erodes before it produces anything. The first slice's real job is to prove the routing, monitoring and rollback machinery works.</span><span lang="hu">Ott, ahol tiszta a határ és kicsi a robbanási sugár — ideálisan egy jórészt olvasó képesség, ami kevés megosztott adatot birtokol. Gyakori hiba a legnehezebb, legjobban összegabalyodott maggal kezdeni: nincs korai siker, nincs bizonyított átállási folyamat, és a csapat bizalma a migrációban elfogy, mielőtt bármit termelne. Az első szelet valódi dolga az, hogy bizonyítsa: az útválasztás, a monitorozás és a visszagörgetés gépezete működik.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What makes a strangler migration stall?</span><span lang="hu">Mitől akad el egy strangler migráció?</span></p>
+      <ul class="a">
+        <li><span lang="en">Running out of political will before the legacy system is switched off — leaving two systems to maintain forever, which is worse than either alone. The defences are: a named owner, a decommissioning date treated as a deliverable rather than an aspiration, and refusing to add new features to the legacy path. If everything easy has moved and the last 20% never does, you've paid the full cost and collected half the benefit.</span><span lang="hu">Ha a politikai akarat elfogy, mielőtt a legacy rendszert kikapcsolnák — így örökre két karbantartandó rendszer marad, ami rosszabb bármelyiknél önmagában. A védekezés: nevesített gazda, szállítandóként (nem vágyként) kezelt kivezetési dátum, és annak megtagadása, hogy új funkció kerüljön a legacy útra. Ha minden könnyű átköltözött, és az utolsó 20% soha, akkor a teljes költséget kifizetted, és a haszon felét szedted be.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">The facade becomes a single point of failure and a place where logic quietly accumulates. Keep it dumb — routing and nothing else. Once it contains business rules, it's a third system you now have to migrate too.</span><span lang="hu">A homlokzat egyetlen hibaponttá válik, és olyan hellyé, ahol csendben logika gyűlik fel. Tartsd butának — útválasztás és semmi más. Amint üzleti szabályokat tartalmaz, egy harmadik rendszer lesz, amit szintén migrálnod kell.</span></p>
+  </section>
+
+  <!-- 09 -->
+  <section class="concept" id="c09">
+    <div class="concept__head"><span class="num">09</span><h2><span lang="en">Dual Writes &amp; Data Backfill</span><span lang="hu">Dual write &amp; adat-backfill</span></h2></div>
+    <p class="def"><span lang="en"><strong>Moving data to a new store means writing to both for a while, then backfilling history.</strong> Both halves are more dangerous than they look — dual writes can't be made atomic, and backfills run against a system that is still changing.</span><span lang="hu"><strong>Az adat új tárolóba költöztetése azt jelenti, hogy egy ideig mindkettőbe írsz, majd feltöltöd a történetet.</strong> Mindkét fél veszélyesebb, mint amilyennek látszik — a dual write nem tehető atomivá, a backfill pedig egy még változó rendszeren fut.</span></p>
+    <div class="codepair">
+      <div class="cbox cbox--bad"><div class="cbox__h"><span lang="en">Dual write — silently diverges</span><span lang="hu">Dual write — csendben elcsúszik</span></div><pre>await oldDb.save(order);
+await newDb.save(order);  // fails here
+// old has it, new doesn't.
+// no transaction spans both.
+// nothing detects the gap.</pre></div>
+      <div class="cbox cbox--good"><div class="cbox__h"><span lang="en">One write + derived replication</span><span lang="hu">Egy írás + származtatott replikáció</span></div><pre>await oldDb.transaction(async tx =&gt; {
+  await tx.save(order);
+  await tx.saveOutboxEvent(order); // atomic
+});
+// a relay (or CDC) applies it to newDb
+// at-least-once → make it idempotent</pre></div>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Why can't dual writes be made safe with retries?</span><span lang="hu">Miért nem tehető biztonságossá a dual write újrapróbálkozással?</span></p>
+      <ul class="a">
+        <li><span lang="en">Because the process can die between the two writes, and a retry after restart doesn't know how far it got. You can narrow the window but not close it — there is no distributed transaction across two stores you'd actually want to run. The fix is structural: make one store authoritative, write there transactionally together with an event, and derive the second store from that event stream. That's the outbox pattern applied to migration.</span><span lang="hu">Mert a folyamat meghalhat a két írás között, és az újraindítás utáni újrapróbálkozás nem tudja, meddig jutott. Az ablakot szűkítheted, de bezárni nem tudod — nincs olyan elosztott tranzakció két tároló között, amit valóban futtatni akarnál. A javítás szerkezeti: legyen az egyik tároló a mérvadó, oda írj tranzakcionálisan egy eseménnyel együtt, és a második tárolót ebből az eseményfolyamból származtasd. Ez a migrációra alkalmazott outbox minta.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you run a backfill safely?</span><span lang="hu">Hogyan futtatsz biztonságosan egy backfillt?</span></p>
+      <ul class="a">
+        <li><span lang="en">In batches, idempotently, and resumably — a checkpoint per batch so a failure restarts where it stopped rather than at the beginning. Throttle it: a backfill that saturates the database is an outage you scheduled yourself. And it must interleave correctly with live traffic, which means the write path has to win — a backfill that overwrites a newer live value with older historical data is the classic way to lose data during a migration that "went fine".</span><span lang="hu">Kötegekben, idempotensen és folytathatóan — kötegenkénti checkpointtal, hogy egy hiba ott induljon újra, ahol megállt, ne az elejéről. Fojtsd le: az adatbázist telítő backfill egy magadnak ütemezett üzemszünet. És helyesen kell összefésülődnie az élő forgalommal, ami azt jelenti, hogy az írási útnak kell nyernie — az a backfill, ami egy újabb élő értéket ír felül régebbi történeti adattal, a klasszikus módja az adatvesztésnek egy „jól sikerült" migráció közben.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you know the two stores actually agree?</span><span lang="hu">Honnan tudod, hogy a két tároló tényleg egyezik?</span></p>
+      <ul class="a">
+        <li><span lang="en">You verify continuously rather than assuming. A reconciliation job samples or fully compares both sides and reports drift as a metric — with an alert, because drift that nobody sees is indistinguishable from correctness until the cutover. Verification is what earns the right to switch reads over; without it, the cutover is a guess dressed up as a plan.</span><span lang="hu">Folyamatosan ellenőrzöd, nem feltételezed. Egy egyeztető job mintavételez vagy teljesen összehasonlítja a két oldalt, és metrikaként jelenti az eltérést — riasztással, mert a senki által nem látott eltérés megkülönböztethetetlen a helyességtől egészen az átállásig. Az ellenőrzés az, ami feljogosít az olvasások átkapcsolására; nélküle az átállás tervnek öltöztetett találgatás.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Deletes are the case backfills forget. Copying rows brings across everything that exists, but a row deleted in the source after the backfill read it stays alive in the target forever unless deletions are replicated too — usually as tombstone events rather than absence.</span><span lang="hu">A törlések azok, amiket a backfillek elfelejtenek. A sorok másolása mindent áthoz, ami létezik, de egy a forrásban a backfill olvasása után törölt sor örökre életben marad a célban, hacsak a törléseket is nem replikálod — általában tombstone eseményként, nem hiányként.</span></p>
+  </section>
+
+  <!-- 10 -->
+  <section class="concept" id="c10">
+    <div class="concept__head"><span class="num">10</span><h2><span lang="en">Zero-Downtime Schema Migration</span><span lang="hu">Leállás nélküli séma-migráció</span></h2></div>
+    <p class="def"><span lang="en"><strong>Changing a schema while the old and new code are both running requires every intermediate state to be valid for both.</strong> The technique is expand–migrate–contract: add, backfill, switch, then remove — never in one step.</span><span lang="hu"><strong>Séma megváltoztatása úgy, hogy a régi és az új kód is fut, megköveteli, hogy minden köztes állapot érvényes legyen mindkettőnek.</strong> A technika: expand–migrate–contract — hozzáad, feltölt, átkapcsol, majd eltávolít — sosem egy lépésben.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Phase</span><span lang="hu">Fázis</span></th><th><span lang="en">Schema</span><span lang="hu">Séma</span></th><th><span lang="en">Code</span><span lang="hu">Kód</span></th></tr>
+      <tr><td>1 — expand</td><td><span lang="en">add new column, nullable</span><span lang="hu">új oszlop hozzáadása, nullable</span></td><td><span lang="en">old code unaffected</span><span lang="hu">a régi kódot nem érinti</span></td></tr>
+      <tr><td>2 — <span lang="en">dual write</span><span lang="hu">dual write</span></td><td><span lang="en">both columns exist</span><span lang="hu">mindkét oszlop létezik</span></td><td><span lang="en">writes both, reads old</span><span lang="hu">mindkettőbe ír, régit olvas</span></td></tr>
+      <tr><td>3 — <span lang="en">backfill</span><span lang="hu">backfill</span></td><td><span lang="en">unchanged</span><span lang="hu">változatlan</span></td><td><span lang="en">batch job fills history</span><span lang="hu">kötegelt job tölti a történetet</span></td></tr>
+      <tr><td>4 — <span lang="en">switch reads</span><span lang="hu">olvasás átkapcsolása</span></td><td><span lang="en">unchanged</span><span lang="hu">változatlan</span></td><td><span lang="en">reads new, still writes both</span><span lang="hu">újat olvas, még mindkettőbe ír</span></td></tr>
+      <tr><td>5 — contract</td><td><span lang="en">drop old column</span><span lang="hu">régi oszlop eldobása</span></td><td><span lang="en">writes new only</span><span lang="hu">csak újba ír</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">Why can't you just rename the column?</span><span lang="hu">Miért nem lehet egyszerűen átnevezni az oszlopot?</span></p>
+      <ul class="a">
+        <li><span lang="en">Because during a rolling deploy both versions of the code run simultaneously, and a rename is instantly breaking for whichever half hasn't updated. The same applies to changing a type, adding a <code>NOT NULL</code> constraint, or removing a field from an API response. Every one of those has an expand–contract equivalent that takes several deploys instead of one — the extra deploys are the price of not having downtime.</span><span lang="hu">Mert a rolling deploy alatt a kód mindkét verziója egyszerre fut, és az átnevezés azonnal töri azt a felet, amelyik még nem frissült. Ugyanez vonatkozik a típusváltoztatásra, a <code>NOT NULL</code> megkötés hozzáadására, vagy egy mező eltávolítására egy API-válaszból. Mindegyiknek van expand–contract megfelelője, ami több deployt igényel egy helyett — a plusz deployok a leállás elkerülésének ára.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Which migrations lock the table?</span><span lang="hu">Mely migrációk lockolják a táblát?</span></p>
+      <ul class="a">
+        <li><span lang="en">This is where the theory meets the specific database. In Postgres, adding a nullable column is instant, but adding one with a volatile default rewrites the table on older versions; creating an index locks writes unless you use <code>CREATE INDEX CONCURRENTLY</code>; adding a <code>NOT NULL</code> constraint scans the whole table. Knowing that a migration which passed in staging on 10,000 rows will lock production for minutes on 100 million is the difference between a planned change and an incident.</span><span lang="hu">Itt találkozik az elmélet a konkrét adatbázissal. Postgresben egy nullable oszlop hozzáadása azonnali, de volatilis alapértékkel régebbi verziókon újraírja a táblát; index létrehozása lockolja az írásokat, hacsak nem <code>CREATE INDEX CONCURRENTLY</code>-t használsz; a <code>NOT NULL</code> megkötés hozzáadása végigolvassa a teljes táblát. Annak ismerete, hogy egy stagingen 10 000 soron átment migráció produkcióban 100 millión percekre lockol, a különbség egy tervezett változtatás és egy incidens között.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How does this interact with rollback?</span><span lang="hu">Hogyan viszonyul ez a visszagörgetéshez?</span></p>
+      <ul class="a">
+        <li><span lang="en">It's the main reason for the sequence. Because each step leaves the schema compatible with the previous code version, you can roll back a deploy without rolling back the database — which matters, since restoring a database is slow and lossy. Only the final contract step is irreversible, which is why it happens last and only after the new path has been running successfully for a while.</span><span lang="hu">Ez a fő oka a sorrendnek. Mivel minden lépés a korábbi kódverzióval kompatibilis sémát hagy hátra, visszagörgethetsz egy deployt anélkül, hogy az adatbázist görgetnéd vissza — ami számít, mert egy adatbázis visszaállítása lassú és veszteséges. Csak az utolsó contract lépés visszafordíthatatlan, ezért történik utoljára, és csak azután, hogy az új út egy ideje sikeresen fut.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">A long-running migration inside one transaction holds locks for its entire duration and can block the application while appearing to be "just running". Batch it, commit per batch, and check whether your migration tool wraps everything in a single transaction by default — many do.</span><span lang="hu">Egy hosszan futó migráció egyetlen tranzakción belül a teljes időtartamra tartja a lockokat, és blokkolhatja az alkalmazást, miközben úgy tűnik, „csak fut". Kötegeld, kötegenként commitolj, és nézd meg, hogy a migrációs eszközöd alapból egyetlen tranzakcióba csomagol-e mindent — sok igen.</span></p>
+  </section>
+
+  <!-- 11 -->
+  <section class="concept" id="c11">
+    <div class="concept__head"><span class="num">11</span><h2><span lang="en">Contract Evolution &amp; Consumer Tests</span><span lang="hu">Kontraktus-evolúció &amp; fogyasztói tesztek</span></h2></div>
+    <p class="def"><span lang="en"><strong>Once another team depends on your interface, changing it is a coordination problem rather than a code change.</strong> Tolerant readers and consumer-driven contract tests are how you keep moving without breaking them.</span><span lang="hu"><strong>Amint egy másik csapat függ az interfészedtől, a megváltoztatása kódmódosítás helyett koordinációs problémává válik.</strong> A tolerant reader és a fogyasztóvezérelt kontraktus-tesztek azok, amikkel haladhatsz anélkül, hogy eltörnéd őket.</span></p>
+    <div class="codepair">
+      <div class="cbox cbox--bad"><div class="cbox__h"><span lang="en">Strict reader — breaks on addition</span><span lang="hu">Szigorú olvasó — bővítéskor törik</span></div><pre>const Schema = z.object({
+  id: z.string(),
+  status: z.enum(['new','paid'])
+}).strict();
+
+// producer adds status 'refunded'
+// → every consumer throws on parse</pre></div>
+      <div class="cbox cbox--good"><div class="cbox__h"><span lang="en">Tolerant reader</span><span lang="hu">Toleráns olvasó</span></div><pre>const Schema = z.object({
+  id: z.string(),
+  status: z.string()   // validate what you use
+}).passthrough();      // ignore the rest
+
+// unknown values handled explicitly,
+// unknown fields ignored, not fatal</pre></div>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">What is a tolerant reader, concretely?</span><span lang="hu">Mi a tolerant reader konkrétan?</span></p>
+      <ul class="a">
+        <li><span lang="en">A consumer that validates only the fields it actually uses and ignores everything else, so the producer can add fields freely. The discipline is asymmetric: producers should be conservative in what they emit (never remove or repurpose a field within a version), consumers liberal in what they accept. Without it, every additive change becomes a coordinated multi-team release.</span><span lang="hu">Olyan fogyasztó, amely csak a ténylegesen használt mezőket validálja, a többit figyelmen kívül hagyja, így a termelő szabadon adhat hozzá mezőket. A fegyelem aszimmetrikus: a termelők legyenek konzervatívak abban, amit kibocsátanak (soha ne távolíts el vagy használj újra egy mezőt egy verzión belül), a fogyasztók megengedők abban, amit elfogadnak. Enélkül minden bővítő változtatás összehangolt, több csapatot érintő release lesz.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why is adding an enum value a breaking change?</span><span lang="hu">Miért töréssel járó változtatás egy enum-érték hozzáadása?</span></p>
+      <ul class="a">
+        <li><span lang="en">Because it's additive for the producer and breaking for any consumer that exhaustively matches on it — a <code>switch</code> with no default, or a strict schema, throws on the first unknown value. It's the most commonly missed breaking change precisely because it doesn't look like one. Consumers should define default handling for unknown values from the start, and producers should treat new enum members as a versioned change unless they've confirmed everyone tolerates them.</span><span lang="hu">Mert a termelőnek bővítő, a rá kimerítően illesztő fogyasztónak viszont törő — egy default nélküli <code>switch</code> vagy egy szigorú séma az első ismeretlen értéken hibát dob. Ez a leggyakrabban elnézett törő változtatás, épp azért, mert nem néz ki annak. A fogyasztók kezdettől definiáljanak alapértelmezett kezelést az ismeretlen értékekre, a termelők pedig kezeljék verziózott változtatásként az új enum-tagokat, hacsak nem ellenőrizték, hogy mindenki tolerálja őket.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What do consumer-driven contract tests give you?</span><span lang="hu">Mit adnak a fogyasztóvezérelt kontraktus-tesztek?</span></p>
+      <ul class="a">
+        <li><span lang="en">Each consumer publishes the subset of the API it actually relies on; the producer runs all of those in its own pipeline, so a change that would break a real consumer fails the producer's build instead of their production. It's cheaper and faster than end-to-end integration environments, and unlike a shared spec it reflects genuine usage — including the fields nobody documented but everyone reads.</span><span lang="hu">Minden fogyasztó publikálja az API azon részhalmazát, amire ténylegesen támaszkodik; a termelő mindet lefuttatja a saját pipeline-jában, így egy valós fogyasztót törő változtatás a termelő buildjét bukttatja el, nem az ő produkciójukat. Olcsóbb és gyorsabb, mint a végponttól végpontig integrációs környezetek, és egy közös specifikációval ellentétben valódi használatot tükröz — beleértve azokat a mezőket is, amiket senki nem dokumentált, de mindenki olvas.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Event schemas need the same discipline as APIs, and get it less often — a stored event is read by consumers written years later, so its schema is effectively permanent. Use a registry with explicit compatibility rules (backward, forward, full) rather than relying on convention.</span><span lang="hu">Az esemény-sémáknak ugyanaz a fegyelem kell, mint az API-knak, és ritkábban kapják meg — egy tárolt eseményt évekkel később írt fogyasztók olvasnak, így a sémája gyakorlatilag végleges. Használj registryt explicit kompatibilitási szabályokkal (backward, forward, full), ne konvencióra hagyatkozz.</span></p>
+  </section>
+
+  <!-- 12 -->
+  <section class="concept" id="c12">
+    <div class="concept__head"><span class="num">12</span><h2><span lang="en">Rollout, Flags &amp; Rollback</span><span lang="hu">Rollout, flagek &amp; visszagörgetés</span></h2></div>
+    <p class="def"><span lang="en"><strong>Separating deployment from release: ship the code dark, then turn it on for a slice of traffic.</strong> The goal is to make every change reversible in seconds rather than requiring a redeploy.</span><span lang="hu"><strong>A deployment és a release szétválasztása: szállítsd a kódot sötéten, majd kapcsold be a forgalom egy szeletére.</strong> A cél az, hogy minden változtatás másodpercek alatt visszafordítható legyen, ne új deployt igényeljen.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">What is shadow traffic for?</span><span lang="hu">Mire való a shadow traffic?</span></p>
+      <ul class="a">
+        <li><span lang="en">Sending a copy of real production requests to the new implementation while still serving responses from the old one, then comparing outputs. It's the only way to test a migration against genuine traffic shape — the volume, the weird inputs, the long tail of cases nobody wrote a test for — with zero user risk. The catch is side effects: the shadow path must not write, send email or charge cards, so it usually needs a read-only mode built in rather than bolted on.</span><span lang="hu">Valós produkciós kérések másolatát küldöd az új implementációnak, miközben a válaszokat még a régi szolgáltatja, majd összehasonlítod a kimeneteket. Ez az egyetlen mód a migráció tesztelésére valódi forgalmi alakon — a volumenen, a fura inputokon, azon eseteken, amikre senki nem írt tesztet — nulla felhasználói kockázattal. A bökkenő a mellékhatás: az árnyék-út nem írhat, nem küldhet e-mailt, nem terhelhet kártyát, tehát általában beépített, nem utólag ráaggatott csak-olvasható módra van szüksége.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Canary or blue-green?</span><span lang="hu">Canary vagy blue-green?</span></p>
+      <ul class="a">
+        <li><span lang="en">Canary shifts a small percentage of traffic to the new version and increases it as metrics stay healthy — cheap, gradual, and it exposes problems that only appear under partial load. Blue-green runs two full environments and switches all at once, giving instant rollback but requiring double the capacity and offering no gradual signal. Canary is the usual default; blue-green suits changes that can't be partially applied.</span><span lang="hu">A canary a forgalom kis százalékát tereli az új verzióra, és növeli, amíg a metrikák egészségesek maradnak — olcsó, fokozatos, és olyan problémákat hoz elő, amelyek csak részleges terhelésnél jelentkeznek. A blue-green két teljes környezetet futtat, és egyszerre kapcsol át: azonnali visszagörgetést ad, de dupla kapacitást igényel, és nem ad fokozatos jelzést. A canary a szokásos alapértelmezés; a blue-green olyan változtatásokhoz illik, amiket nem lehet részlegesen alkalmazni.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What makes a rollback plan real rather than theoretical?</span><span lang="hu">Mitől valódi egy visszagörgetési terv, nem elméleti?</span></p>
+      <ul class="a">
+        <li><span lang="en">Having rehearsed it, and knowing what it can't undo. Code rolls back cleanly; data written by the new version does not, which is why schema changes are sequenced so the old code can still run. Define the trigger in advance — the specific metric and threshold that means abort — because deciding mid-incident, with people watching, reliably takes longer than it should.</span><span lang="hu">Az, hogy begyakoroltad, és tudod, mit nem tud visszacsinálni. A kód tisztán visszagörög; az új verzió által írt adat nem, ezért van úgy sorrendezve a séma-változtatás, hogy a régi kód még futhasson. Definiáld előre a kiváltó okot — azt a konkrét metrikát és küszöböt, ami leállítást jelent —, mert incidens közben, közönség előtt dönteni megbízhatóan tovább tart a kelleténél.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Feature flags are debt with an expiry date. Each one doubles the paths through the code, and a codebase with hundreds of stale flags has a combinatorial test surface nobody understands. Give every flag an owner and a removal date at creation, and delete it once the rollout is complete.</span><span lang="hu">A feature flag lejárati dátummal rendelkező adósság. Mindegyik megduplázza a kódon átvezető utakat, és egy több száz elavult flaget tartalmazó kódbázisnak olyan kombinatorikus tesztfelülete lesz, amit senki nem ért. Adj minden flagnek gazdát és eltávolítási dátumot már létrehozáskor, és töröld, amint a rollout lezárult.</span></p>
+  </section>
+  <section class="concept" id="c13">
+    <div class="concept__head"><span class="num">13</span><h2><span lang="en">Design Patterns</span><span lang="hu">Tervezési minták</span></h2></div>
     <p class="def"><span lang="en"><strong>Named, reusable solutions to recurring design problems</strong> — useful mainly as shared vocabulary. Interviewers ask less “list the patterns” and more “which would you use here, and why?”</span><span lang="hu"><strong>Elnevezett, újrafelhasználható megoldások visszatérő tervezési problémákra</strong> — főleg közös szókincsként hasznosak. Az interjúztatók kevésbé kérdezik, hogy „sorold fel a mintákat”, inkább hogy „melyiket használnád itt, és miért?”</span></p>
     <table class="t">
       <tr><th><span lang="en">Pattern</span><span lang="hu">Minta</span></th><th><span lang="en">Solves</span><span lang="hu">Mit old meg</span></th><th><span lang="en">JS example</span><span lang="hu">JS példa</span></th></tr>
@@ -475,8 +641,8 @@ const svc = makeOrderService({
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Choosing a pattern before you have the problem is how codebases acquire abstract factories that produce one thing. Patterns are a response to observed pain — apply them when duplication or rigidity actually appears.</span><span lang="hu">Ha a probléma előtt választasz mintát, így szereznek a kódbázisok absztrakt factory-kat, amelyek egyetlen dolgot gyártanak. A minták a megfigyelt fájdalomra adott válaszok — akkor alkalmazd őket, amikor a duplikáció vagy merevség ténylegesen megjelenik.</span></p>
   </section>
   <div class="sec"><span class="sec__l"><span lang="en">Judgement</span><span lang="hu">Ítélőképesség</span></span><span class="sec__r"></span></div>
-  <section class="concept" id="c09">
-    <div class="concept__head"><span class="num">09</span><h2><span lang="en">Trade-offs & Communicating Design</span><span lang="hu">Trade-offök & a terv kommunikálása</span></h2></div>
+  <section class="concept" id="c14">
+    <div class="concept__head"><span class="num">14</span><h2><span lang="en">Trade-offs & Communicating Design</span><span lang="hu">Trade-offök & a terv kommunikálása</span></h2></div>
     <p class="def"><span lang="en"><strong>How to justify an architectural decision</strong> — the actual interview skill. There's rarely a correct answer; there's a defensible one with its costs acknowledged.</span><span lang="hu"><strong>Hogyan indokolj egy architekturális döntést</strong> — ez a tényleges interjú-készség. Ritkán van helyes válasz; van védhető, a költségeit felvállalva.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">How should you answer “how would you structure this?”</span><span lang="hu">Hogyan válaszolj arra, hogy „hogyan strukturálnád ezt?”</span></p>

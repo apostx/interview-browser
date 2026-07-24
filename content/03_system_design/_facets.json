@@ -1,4 +1,0 @@
-[
-  { "version": true, "display": "inline", "order": ["quick", "core", "full"] },
-  { "label": "Language", "param": "lang", "values": ["en", "hu"], "keepPosition": true, "display": "inline" }
-]

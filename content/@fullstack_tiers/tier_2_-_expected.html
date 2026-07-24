@@ -136,6 +136,15 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
 .chip--3{color:var(--s3);border-color:#DDD6FE;background:#F5F3FF}
 .yes{color:var(--get);font-weight:600}
 .no{color:var(--muted)}
+/* borrowed for the SQL comparison blocks */
+.codepair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 2px}
+.cbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}
+.cbox__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600}
+.cbox pre{margin:0;padding:10px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.55;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+.cbox--bad .cbox__h{background:#FEF2F2;color:var(--vuln);border-bottom:1px solid #FECACA}
+.cbox--good .cbox__h{background:#F0FDF4;color:var(--safe);border-bottom:1px solid #BBF7D0}
 /* ── language toggling ─────────────────────────────────────────
    Both languages live in the DOM; only the [data-lang] attribute on
    <html> changes. No network requests, no re-render — switching can't fail. */
@@ -170,13 +179,6 @@ svg text[lang="hu"]{display:none}
   color:var(--post);font-weight:600;display:block;margin-bottom:3px}
 /* vulnerable vs fixed code pair */
 .codepair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 2px}
-.cbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}
-.cbox__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
-  padding:5px 10px;font-weight:600}
-.cbox--bad .cbox__h{background:#FEF2F2;color:var(--vuln);border-bottom:1px solid #FECACA}
-.cbox--good .cbox__h{background:#F0FDF4;color:var(--safe);border-bottom:1px solid #BBF7D0}
-.cbox pre{margin:0;padding:10px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.55;
-  overflow-x:auto;white-space:pre;color:var(--ink)}
 /* ── complexity badges ───────────────────────────────────────── */
 .cx{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
 .cx span{font-family:'JetBrains Mono';font-size:11.5px;padding:3px 9px;border-radius:6px;
@@ -264,23 +266,29 @@ svg text[lang="hu"]{display:none}
     <p class="idxgrp"><span lang="en">React & Frontend</span><span lang="hu">React &amp; frontend</span></p>
     <div class="grid"><a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t">Stale Closures</span></a><a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t">Context API</span></a><a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t">Custom Hooks</span></a><a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t">Client vs Server State</span></a><a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t">Data Fetching Patterns</span></a><a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t">Re-render Optimization</span></a><a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t">Browser Event Loop</span></a></div>
     <p class="idxgrp"><span lang="en">Node.js & Backend</span><span lang="hu">Node.js &amp; backend</span></p>
-    <div class="grid"><a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t">libuv &amp; Thread Pool</span></a><a class="idx" href="#c09"><span class="idx__n">09</span><span class="idx__t">nextTick / setImmediate / setTimeout</span></a><a class="idx" href="#c10"><span class="idx__n">10</span><span class="idx__t">Streams &amp; Backpressure</span></a><a class="idx" href="#c11"><span class="idx__n">11</span><span class="idx__t">Concurrency Control</span></a><a class="idx" href="#c12"><span class="idx__n">12</span><span class="idx__t">Connection Pooling</span></a><a class="idx" href="#c13"><span class="idx__n">13</span><span class="idx__t"><span lang="en">Caching Strategies</span><span lang="hu">Caching stratégiák</span></span></a></div>
+    <div class="grid"><a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t">libuv &amp; Thread Pool</span></a><a class="idx" href="#c09"><span class="idx__n">09</span><span class="idx__t">nextTick / setImmediate / setTimeout</span></a><a class="idx" href="#c10"><span class="idx__n">10</span><span class="idx__t">Streams &amp; Backpressure</span></a><a class="idx" href="#c11"><span class="idx__n">11</span><span class="idx__t">Concurrency Control</span></a><a class="idx" href="#c12"><span class="idx__n">12</span><span class="idx__t">Connection Pooling</span></a><a class="idx" href="#c13"><span class="idx__n">13</span><span class="idx__t"><span lang="en">Caching Strategies</span><span lang="hu">Caching stratégiák</span></span></a><a class="idx" href="#c14"><span class="idx__n">14</span><span class="idx__t"><span lang="en">Query Plans &amp; EXPLAIN</span><span lang="hu">Query planek &amp; EXPLAIN</span></span></a><a class="idx" href="#c15"><span class="idx__n">15</span><span class="idx__t"><span lang="en">Locking &amp; Deadlocks</span><span lang="hu">Lockolás &amp; deadlockok</span></span></a></div>
     <p class="idxgrp"><span lang="en">APIs & HTTP</span><span lang="hu">API-k &amp; HTTP</span></p>
-    <div class="grid"><a class="idx" href="#c14"><span class="idx__n">14</span><span class="idx__t">Caching</span></a><a class="idx" href="#c15"><span class="idx__n">15</span><span class="idx__t">Idempotency</span></a><a class="idx" href="#c16"><span class="idx__n">16</span><span class="idx__t">Pagination</span></a><a class="idx" href="#c17"><span class="idx__n">17</span><span class="idx__t">Rate-Limiting</span></a><a class="idx" href="#c18"><span class="idx__n">18</span><span class="idx__t">API Versioning</span></a><a class="idx" href="#c19"><span class="idx__n">19</span><span class="idx__t">REST vs GraphQL</span></a></div>
+    <div class="grid"><a class="idx" href="#c16"><span class="idx__n">16</span><span class="idx__t">Caching</span></a><a class="idx" href="#c17"><span class="idx__n">17</span><span class="idx__t">Idempotency</span></a><a class="idx" href="#c18"><span class="idx__n">18</span><span class="idx__t">Pagination</span></a><a class="idx" href="#c19"><span class="idx__n">19</span><span class="idx__t">Rate-Limiting</span></a><a class="idx" href="#c20"><span class="idx__n">20</span><span class="idx__t">API Versioning</span></a><a class="idx" href="#c21"><span class="idx__n">21</span><span class="idx__t">REST vs GraphQL</span></a></div>
     <p class="idxgrp"><span lang="en">Web Security</span><span lang="hu">Webbiztonság</span></p>
-    <div class="grid"><a class="idx" href="#c20"><span class="idx__n">20</span><span class="idx__t"><span lang="en">Broken Access Control & IDOR</span><span lang="hu">Hibás hozzáférés-vezérlés & IDOR</span></span></a><a class="idx" href="#c21"><span class="idx__n">21</span><span class="idx__t"><span lang="en">Security Headers & CSP</span><span lang="hu">Security headerek & CSP</span></span></a><a class="idx" href="#c22"><span class="idx__n">22</span><span class="idx__t"><span lang="en">Secrets Management</span><span lang="hu">Titkok kezelése</span></span></a></div>
+    <div class="grid"><a class="idx" href="#c22"><span class="idx__n">22</span><span class="idx__t"><span lang="en">Broken Access Control & IDOR</span><span lang="hu">Hibás hozzáférés-vezérlés & IDOR</span></span></a><a class="idx" href="#c23"><span class="idx__n">23</span><span class="idx__t"><span lang="en">Security Headers & CSP</span><span lang="hu">Security headerek & CSP</span></span></a><a class="idx" href="#c24"><span class="idx__n">24</span><span class="idx__t"><span lang="en">Secrets Management</span><span lang="hu">Titkok kezelése</span></span></a></div>
     <p class="idxgrp"><span lang="en">Authentication</span><span lang="hu">Autentikáció</span></p>
-    <div class="grid"><a class="idx" href="#c23"><span class="idx__n">23</span><span class="idx__t"><span lang="en">Cookie Security</span><span lang="hu">Cookie-biztonság</span></span></a><a class="idx" href="#c24"><span class="idx__n">24</span><span class="idx__t"><span lang="en">Access & Refresh Tokens</span><span lang="hu">Access & refresh tokenek</span></span></a><a class="idx" href="#c25"><span class="idx__n">25</span><span class="idx__t"><span lang="en">OAuth 2.0</span><span lang="hu">OAuth 2.0</span></span></a></div>
+    <div class="grid"><a class="idx" href="#c25"><span class="idx__n">25</span><span class="idx__t"><span lang="en">Cookie Security</span><span lang="hu">Cookie-biztonság</span></span></a><a class="idx" href="#c26"><span class="idx__n">26</span><span class="idx__t"><span lang="en">Access & Refresh Tokens</span><span lang="hu">Access & refresh tokenek</span></span></a><a class="idx" href="#c27"><span class="idx__n">27</span><span class="idx__t"><span lang="en">OAuth 2.0</span><span lang="hu">OAuth 2.0</span></span></a></div>
     <p class="idxgrp"><span lang="en">Distributed Systems</span><span lang="hu">Elosztott rendszerek</span></p>
-    <div class="grid"><a class="idx" href="#c26"><span class="idx__n">26</span><span class="idx__t">CAP Theorem</span></a><a class="idx" href="#c27"><span class="idx__n">27</span><span class="idx__t">Idempotency &amp; Exactly-Once</span></a><a class="idx" href="#c28"><span class="idx__n">28</span><span class="idx__t">Retries, Backoff &amp; Jitter</span></a><a class="idx" href="#c29"><span class="idx__n">29</span><span class="idx__t">Message Queues &amp; Pub/Sub</span></a><a class="idx" href="#c30"><span class="idx__n">30</span><span class="idx__t">Delivery Semantics</span></a></div>
+    <div class="grid"><a class="idx" href="#c28"><span class="idx__n">28</span><span class="idx__t">CAP Theorem</span></a><a class="idx" href="#c29"><span class="idx__n">29</span><span class="idx__t">Idempotency &amp; Exactly-Once</span></a><a class="idx" href="#c30"><span class="idx__n">30</span><span class="idx__t">Retries, Backoff &amp; Jitter</span></a><a class="idx" href="#c31"><span class="idx__n">31</span><span class="idx__t">Message Queues &amp; Pub/Sub</span></a><a class="idx" href="#c32"><span class="idx__n">32</span><span class="idx__t">Delivery Semantics</span></a></div>
+    <p class="idxgrp"><span lang="en">Realtime & Messaging</span><span lang="hu">Realtime &amp; üzenetkezelés</span></p>
+    <div class="grid"><a class="idx" href="#c33"><span class="idx__n">33</span><span class="idx__t"><span lang="en">WebSocket Handshake &amp; Lifecycle</span><span lang="hu">WebSocket handshake &amp; életciklus</span></span></a><a class="idx" href="#c34"><span class="idx__n">34</span><span class="idx__t"><span lang="en">Scaling WebSockets</span><span lang="hu">WebSocketek skálázása</span></span></a><a class="idx" href="#c35"><span class="idx__n">35</span><span class="idx__t"><span lang="en">Acks, Nacks &amp; Visibility Timeout</span><span lang="hu">Ack, nack &amp; visibility timeout</span></span></a><a class="idx" href="#c36"><span class="idx__n">36</span><span class="idx__t"><span lang="en">Dead-Letter Queues &amp; Poison Messages</span><span lang="hu">Dead-letter queue-k &amp; mérgezett üzenetek</span></span></a><a class="idx" href="#c37"><span class="idx__n">37</span><span class="idx__t"><span lang="en">Designing a Realtime Feature</span><span lang="hu">Realtime funkció tervezése</span></span></a></div>
     <p class="idxgrp"><span lang="en">Architecture</span><span lang="hu">Architektúra</span></p>
-    <div class="grid"><a class="idx" href="#c31"><span class="idx__n">31</span><span class="idx__t"><span lang="en">Layered Architecture</span><span lang="hu">Rétegzett architektúra</span></span></a><a class="idx" href="#c32"><span class="idx__n">32</span><span class="idx__t"><span lang="en">Dependency Injection</span><span lang="hu">Dependency injection</span></span></a><a class="idx" href="#c33"><span class="idx__n">33</span><span class="idx__t"><span lang="en">Monolith vs Microservices</span><span lang="hu">Monolit vs microservices</span></span></a><a class="idx" href="#c34"><span class="idx__n">34</span><span class="idx__t"><span lang="en">Trade-offs & Communicating Design</span><span lang="hu">Trade-offök & a terv kommunikálása</span></span></a></div>
+    <div class="grid"><a class="idx" href="#c38"><span class="idx__n">38</span><span class="idx__t"><span lang="en">Layered Architecture</span><span lang="hu">Rétegzett architektúra</span></span></a><a class="idx" href="#c39"><span class="idx__n">39</span><span class="idx__t"><span lang="en">Dependency Injection</span><span lang="hu">Dependency injection</span></span></a><a class="idx" href="#c40"><span class="idx__n">40</span><span class="idx__t"><span lang="en">Monolith vs Microservices</span><span lang="hu">Monolit vs microservices</span></span></a><a class="idx" href="#c41"><span class="idx__n">41</span><span class="idx__t"><span lang="en">Trade-offs & Communicating Design</span><span lang="hu">Trade-offök & a terv kommunikálása</span></span></a><a class="idx" href="#c42"><span class="idx__n">42</span><span class="idx__t"><span lang="en">Strangler Fig Migration</span><span lang="hu">Strangler fig migráció</span></span></a><a class="idx" href="#c43"><span class="idx__n">43</span><span class="idx__t"><span lang="en">Zero-Downtime Schema Migration</span><span lang="hu">Leállás nélküli séma-migráció</span></span></a><a class="idx" href="#c44"><span class="idx__n">44</span><span class="idx__t"><span lang="en">Rollout, Flags &amp; Rollback</span><span lang="hu">Rollout, flagek &amp; visszagörgetés</span></span></a></div>
     <p class="idxgrp"><span lang="en">Testing</span><span lang="hu">Tesztelés</span></p>
-    <div class="grid"><a class="idx" href="#c35"><span class="idx__n">35</span><span class="idx__t"><span lang="en">Integration Testing</span><span lang="hu">Integrációs tesztelés</span></span></a><a class="idx" href="#c36"><span class="idx__n">36</span><span class="idx__t"><span lang="en">Testing React Components</span><span lang="hu">React komponensek tesztelése</span></span></a><a class="idx" href="#c37"><span class="idx__n">37</span><span class="idx__t"><span lang="en">End-to-End Testing</span><span lang="hu">End-to-end tesztelés</span></span></a></div>
+    <div class="grid"><a class="idx" href="#c45"><span class="idx__n">45</span><span class="idx__t"><span lang="en">Integration Testing</span><span lang="hu">Integrációs tesztelés</span></span></a><a class="idx" href="#c46"><span class="idx__n">46</span><span class="idx__t"><span lang="en">Testing React Components</span><span lang="hu">React komponensek tesztelése</span></span></a><a class="idx" href="#c47"><span class="idx__n">47</span><span class="idx__t"><span lang="en">End-to-End Testing</span><span lang="hu">End-to-end tesztelés</span></span></a></div>
     <p class="idxgrp"><span lang="en">DevOps & Cloud</span><span lang="hu">DevOps &amp; felhő</span></p>
-    <div class="grid"><a class="idx" href="#c38"><span class="idx__n">38</span><span class="idx__t"><span lang="en">Containers & Docker</span><span lang="hu">Konténerek & Docker</span></span></a><a class="idx" href="#c39"><span class="idx__n">39</span><span class="idx__t"><span lang="en">CI/CD Pipelines</span><span lang="hu">CI/CD pipeline-ok</span></span></a><a class="idx" href="#c40"><span class="idx__n">40</span><span class="idx__t"><span lang="en">Scaling & Load Balancing</span><span lang="hu">Skálázás & load balancing</span></span></a><a class="idx" href="#c41"><span class="idx__n">41</span><span class="idx__t"><span lang="en">Monitoring & Observability</span><span lang="hu">Monitoring & observability</span></span></a></div>
+    <div class="grid"><a class="idx" href="#c48"><span class="idx__n">48</span><span class="idx__t"><span lang="en">Containers & Docker</span><span lang="hu">Konténerek & Docker</span></span></a><a class="idx" href="#c49"><span class="idx__n">49</span><span class="idx__t"><span lang="en">CI/CD Pipelines</span><span lang="hu">CI/CD pipeline-ok</span></span></a><a class="idx" href="#c50"><span class="idx__n">50</span><span class="idx__t"><span lang="en">Scaling & Load Balancing</span><span lang="hu">Skálázás & load balancing</span></span></a><a class="idx" href="#c51"><span class="idx__n">51</span><span class="idx__t"><span lang="en">Monitoring & Observability</span><span lang="hu">Monitoring & observability</span></span></a></div>
+    <p class="idxgrp"><span lang="en">TypeScript</span><span lang="hu">TypeScript</span></p>
+    <div class="grid"><a class="idx" href="#c52"><span class="idx__n">52</span><span class="idx__t"><span lang="en">Structural Typing</span><span lang="hu">Strukturális típusosság</span></span></a><a class="idx" href="#c53"><span class="idx__n">53</span><span class="idx__t"><span lang="en">Utility Types</span><span lang="hu">Utility típusok</span></span></a><a class="idx" href="#c54"><span class="idx__n">54</span><span class="idx__t"><span lang="en">Runtime vs Compile-time</span><span lang="hu">Futásidő vs fordítási idő</span></span></a><a class="idx" href="#c55"><span class="idx__n">55</span><span class="idx__t"><span lang="en">Typing Node &amp; Express</span><span lang="hu">Node &amp; Express típusozása</span></span></a><a class="idx" href="#c56"><span class="idx__n">56</span><span class="idx__t"><span lang="en">Typing React</span><span lang="hu">React típusozása</span></span></a></div>
+    <p class="idxgrp"><span lang="en">CSS & Layout</span><span lang="hu">CSS &amp; elrendezés</span></p>
+    <div class="grid"><a class="idx" href="#c57"><span class="idx__n">57</span><span class="idx__t"><span lang="en">Positioning</span><span lang="hu">Pozicionálás</span></span></a><a class="idx" href="#c58"><span class="idx__n">58</span><span class="idx__t"><span lang="en">Stacking Context &amp; z-index</span><span lang="hu">Stacking context &amp; z-index</span></span></a><a class="idx" href="#c59"><span class="idx__n">59</span><span class="idx__t"><span lang="en">Responsive Design</span><span lang="hu">Reszponzív design</span></span></a><a class="idx" href="#c60"><span class="idx__n">60</span><span class="idx__t"><span lang="en">Semantic HTML &amp; Accessibility</span><span lang="hu">Szemantikus HTML &amp; akadálymentesítés</span></span></a></div>
     <p class="idxgrp"><span lang="en">Data Structures & Algorithms</span><span lang="hu">Adatszerkezetek &amp; algoritmusok</span></p>
-    <div class="grid"><a class="idx" href="#c42"><span class="idx__n">42</span><span class="idx__t"><span lang="en">Interview Strategy</span><span lang="hu">Interjú-stratégia</span></span></a><a class="idx" href="#c43"><span class="idx__n">43</span><span class="idx__t"><span lang="en">Two Pointers</span><span lang="hu">Two pointers</span></span></a><a class="idx" href="#c44"><span class="idx__n">44</span><span class="idx__t"><span lang="en">Sliding Window</span><span lang="hu">Sliding window</span></span></a><a class="idx" href="#c45"><span class="idx__n">45</span><span class="idx__t"><span lang="en">Binary Search</span><span lang="hu">Bináris keresés</span></span></a><a class="idx" href="#c46"><span class="idx__n">46</span><span class="idx__t"><span lang="en">Stacks & Queues</span><span lang="hu">Veremek & sorok</span></span></a></div>
+    <div class="grid"><a class="idx" href="#c61"><span class="idx__n">61</span><span class="idx__t"><span lang="en">Interview Strategy</span><span lang="hu">Interjú-stratégia</span></span></a><a class="idx" href="#c62"><span class="idx__n">62</span><span class="idx__t"><span lang="en">Two Pointers</span><span lang="hu">Two pointers</span></span></a><a class="idx" href="#c63"><span class="idx__n">63</span><span class="idx__t"><span lang="en">Sliding Window</span><span lang="hu">Sliding window</span></span></a><a class="idx" href="#c64"><span class="idx__n">64</span><span class="idx__t"><span lang="en">Binary Search</span><span lang="hu">Bináris keresés</span></span></a><a class="idx" href="#c65"><span class="idx__n">65</span><span class="idx__t"><span lang="en">Stacks & Queues</span><span lang="hu">Veremek & sorok</span></span></a></div>
   </nav>
 
   <div class="areahead">
@@ -438,7 +446,7 @@ svg text[lang="hu"]{display:none}
 
   <div class="areahead">
     <h2><span lang="en">Node.js & Backend</span><span lang="hu">Node.js &amp; backend</span></h2>
-    <span class="cnt">6</span>
+    <span class="cnt">8</span>
   </div>
 <section class="concept" id="c08">
     <div class="concept__head"><span class="num">08</span><h2>libuv &amp; Thread Pool</h2><span class="src">Node</span></div>
@@ -635,13 +643,76 @@ svg text[lang="hu"]{display:none}
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Cache stampede: when a hot key expires, many misses hit the DB at once. Mitigate with a lock, staggered TTLs, or stale-while-revalidate.</span><span lang="hu">Cache stampede: amikor egy gyakran használt kulcs lejár, sok miss egyszerre zúdul az adatbázisra. Enyhítsd lockkal, eltolt TTL-ekkel vagy stale-while-revalidate-tel.</span></p>
   </section>
+<section class="concept" id="c14">
+    <div class="concept__head"><span class="num">14</span><h2><span lang="en">Query Plans &amp; EXPLAIN</span><span lang="hu">Query planek &amp; EXPLAIN</span></h2><span class="src">Node</span></div>
+    <p class="def"><span lang="en"><strong>The planner turns your SQL into an execution strategy, and <code>EXPLAIN</code> shows you which one it picked.</strong> SQL says <em>what</em> you want; the plan is <em>how</em> the database decided to get it — and that decision is cost-based, not fixed.</span><span lang="hu"><strong>A planner végrehajtási stratégiává alakítja az SQL-edet, az <code>EXPLAIN</code> pedig megmutatja, melyiket választotta.</strong> Az SQL azt mondja meg, <em>mit</em> akarsz; a plan azt, <em>hogyan</em> döntött az adatbázis — és ez a döntés költségalapú, nem rögzített.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Node</span><span lang="hu">Csomópont</span></th><th><span lang="en">Means</span><span lang="hu">Mit jelent</span></th><th><span lang="en">Usually fine when</span><span lang="hu">Általában rendben, ha</span></th></tr>
+      <tr><td>Seq Scan</td><td><span lang="en">reads every row</span><span lang="hu">minden sort beolvas</span></td><td><span lang="en">table is small, or you want most rows</span><span lang="hu">a tábla kicsi, vagy a sorok nagy részét kéred</span></td></tr>
+      <tr><td>Index Scan</td><td><span lang="en">walks the index, fetches rows</span><span lang="hu">végigmegy az indexen, majd sorokat olvas</span></td><td><span lang="en">selective filter</span><span lang="hu">szelektív szűrés</span></td></tr>
+      <tr><td>Index Only Scan</td><td><span lang="en">answers from the index alone</span><span lang="hu">csak az indexből válaszol</span></td><td><span lang="en">covering index — the ideal</span><span lang="hu">covering index — ez az ideális</span></td></tr>
+      <tr><td>Nested Loop</td><td><span lang="en">per outer row, probe inner</span><span lang="hu">külső soronként keresés a belsőben</span></td><td><span lang="en">outer side is small</span><span lang="hu">a külső oldal kicsi</span></td></tr>
+      <tr><td>Hash Join</td><td><span lang="en">builds a hash table, probes it</span><span lang="hu">hash táblát épít, majd abban keres</span></td><td><span lang="en">large unsorted joins</span><span lang="hu">nagy, rendezetlen joinok</span></td></tr>
+      <tr><td>Merge Join</td><td><span lang="en">both sides sorted, zipped</span><span lang="hu">mindkét oldal rendezve, összefésülve</span></td><td><span lang="en">inputs already ordered</span><span lang="hu">az inputok már rendezettek</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">Why <code>EXPLAIN ANALYZE</code> rather than plain <code>EXPLAIN</code>?</span><span lang="hu">Miért <code>EXPLAIN ANALYZE</code> a sima <code>EXPLAIN</code> helyett?</span></p>
+      <ul class="a">
+        <li><span lang="en">Plain <code>EXPLAIN</code> shows only the planner's <em>estimate</em>. <code>ANALYZE</code> actually runs the query and reports real timings and real row counts, so you can compare them. The single most useful signal is a large gap between estimated and actual rows — that means the statistics are stale or the planner misjudged selectivity, and every choice above that node is likely wrong too.</span><span lang="hu">A sima <code>EXPLAIN</code> csak a planner <em>becslését</em> mutatja. Az <code>ANALYZE</code> ténylegesen lefuttatja a lekérdezést, és valós időket és sorszámokat jelent, így összevetheted őket. A leghasznosabb jel a becsült és tényleges sorszám közti nagy eltérés — ez azt jelenti, hogy a statisztikák elavultak, vagy a planner félrebecsülte a szelektivitást, és akkor az adott csomópont feletti döntések is valószínűleg rosszak.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why would the database ignore an index you created?</span><span lang="hu">Miért hagyná figyelmen kívül az adatbázis az általad létrehozott indexet?</span></p>
+      <ul class="a">
+        <li><span lang="en">Common causes: the query returns a large fraction of the table (a scan is genuinely cheaper); a function or cast on the column (<code>WHERE lower(email) = …</code> can't use a plain index on <code>email</code>); a type mismatch between the parameter and the column; leading-wildcard <code>LIKE</code>; or stale statistics after a bulk load. The fix depends on which — an expression index for the first, <code>ANALYZE</code> for the last.</span><span lang="hu">Gyakori okok: a lekérdezés a tábla nagy hányadát adja vissza (a scan tényleg olcsóbb); függvény vagy cast az oszlopon (a <code>WHERE lower(email) = …</code> nem tud sima <code>email</code> indexet használni); típuseltérés a paraméter és az oszlop között; vezető joker karakteres <code>LIKE</code>; vagy elavult statisztikák tömeges betöltés után. A javítás az októl függ — az elsőre kifejezés-index, az utolsóra <code>ANALYZE</code>.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you read a plan without drowning in it?</span><span lang="hu">Hogyan olvasol planet anélkül, hogy belefulladnál?</span></p>
+      <ul class="a">
+        <li><span lang="en">Read innermost-outward — nodes execute bottom-up. Look for three things in order: the node with the largest actual time, any estimate-vs-actual mismatch above ~10×, and unexpected <code>Seq Scan</code> on a big table. Also check <code>loops</code> — a fast node run 50,000 times is the real cost, and that is often an N+1 in disguise.</span><span lang="hu">Belülről kifelé olvasd — a csomópontok alulról felfelé hajtódnak végre. Három dolgot keress ebben a sorrendben: a legnagyobb tényleges idejű csomópontot, a ~10× feletti becslés-tényleges eltérést, és a váratlan <code>Seq Scan</code>-t nagy táblán. Nézd a <code>loops</code> értéket is — egy gyors, de 50 000-szer lefutó csomópont a valódi költség, és ez gyakran álcázott N+1.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>EXPLAIN ANALYZE</code> executes the statement — on an <code>UPDATE</code> or <code>DELETE</code> it really writes. Wrap it in a transaction and roll back. Also, plans differ between dev and production because they depend on data volume and statistics: a plan that looks fine on 100 rows tells you almost nothing about 10 million.</span><span lang="hu">Az <code>EXPLAIN ANALYZE</code> végrehajtja az utasítást — egy <code>UPDATE</code>-nél vagy <code>DELETE</code>-nél ténylegesen ír. Csomagold tranzakcióba, és görgesd vissza. Továbbá a planek eltérnek dev és produkció között, mert az adatmennyiségtől és a statisztikáktól függenek: egy 100 soron jól kinéző plan szinte semmit nem mond 10 millióról.</span></p>
+  </section>
+<section class="concept" id="c15">
+    <div class="concept__head"><span class="num">15</span><h2><span lang="en">Locking &amp; Deadlocks</span><span lang="hu">Lockolás &amp; deadlockok</span></h2><span class="src">Node</span></div>
+    <p class="def"><span lang="en"><strong>Locks are how a database enforces isolation:</strong> a writer blocks other writers on the same row until it commits. A deadlock is two transactions each holding what the other needs — a cycle no amount of waiting resolves.</span><span lang="hu"><strong>A lockok révén kényszeríti ki az adatbázis az izolációt:</strong> egy író blokkolja a többi írót ugyanazon a soron, amíg nem commitol. A deadlock az, amikor két tranzakció mindegyike azt tartja, amire a másiknak szüksége van — olyan kör, amit semennyi várakozás nem old fel.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 200" role="img" aria-label="Deadlock cycle">
+        <rect x="60" y="30" width="200" height="60" rx="10" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.6"/>
+        <text lang="en" x="160" y="52" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">Txn A</text><text lang="hu" x="160" y="52" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">A tranzakció</text>
+        <text lang="en" x="160" y="72" text-anchor="middle" font-size="10" fill="var(--muted)">holds row 1, wants row 2</text><text lang="hu" x="160" y="72" text-anchor="middle" font-size="10" fill="var(--muted)">tartja az 1. sort, kell a 2.</text>
+        <rect x="420" y="30" width="200" height="60" rx="10" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.6"/>
+        <text lang="en" x="520" y="52" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">Txn B</text><text lang="hu" x="520" y="52" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">B tranzakció</text>
+        <text lang="en" x="520" y="72" text-anchor="middle" font-size="10" fill="var(--muted)">holds row 2, wants row 1</text><text lang="hu" x="520" y="72" text-anchor="middle" font-size="10" fill="var(--muted)">tartja a 2. sort, kell az 1.</text>
+        <path d="M262 48 L418 48" stroke="var(--vuln,#DC2626)" stroke-width="1.8" fill="none" marker-end="url(#arrow)"/>
+        <path d="M418 74 L262 74" stroke="var(--vuln,#DC2626)" stroke-width="1.8" fill="none" marker-end="url(#arrow)"/>
+        <rect x="230" y="120" width="220" height="52" rx="9" fill="#FEF2F2" stroke="var(--vuln,#DC2626)" stroke-width="1.6"/>
+        <text lang="en" x="340" y="141" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">DB detects the cycle</text><text lang="hu" x="340" y="141" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">A DB észleli a kört</text>
+        <text lang="en" x="340" y="159" text-anchor="middle" font-size="10" fill="var(--muted)">kills one — the app must retry</text><text lang="hu" x="340" y="159" text-anchor="middle" font-size="10" fill="var(--muted)">egyiket megöli — az appnak újra kell próbálnia</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">Deadlocks are detected, not prevented: the database picks a victim and aborts it. Handling that error is the application's job.</span><span lang="hu">A deadlockokat észlelik, nem előzik meg: az adatbázis kiválaszt egy áldozatot, és megszakítja. A hiba kezelése az alkalmazás dolga.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Optimistic or pessimistic locking — how do you choose?</span><span lang="hu">Optimista vagy pesszimista lockolás — hogyan választasz?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Pessimistic</strong> takes the lock up front (<code>SELECT … FOR UPDATE</code>) — correct under real contention, but holds the lock for the whole transaction and can queue everyone behind a slow request. <strong>Optimistic</strong> takes no lock and checks a <code>version</code> column on write (<code>WHERE id = ? AND version = ?</code>); if zero rows updated, someone beat you and you retry. Optimistic wins when conflicts are rare; pessimistic wins when they're common, because retry storms cost more than waiting.</span><span lang="hu">A <strong>pesszimista</strong> előre megszerzi a lockot (<code>SELECT … FOR UPDATE</code>) — valós versengésnél helyes, de a teljes tranzakció idejére tartja a lockot, és mindenkit besorolhat egy lassú kérés mögé. Az <strong>optimista</strong> nem lockol, hanem íráskor ellenőriz egy <code>version</code> oszlopot (<code>WHERE id = ? AND version = ?</code>); ha nulla sor frissült, valaki megelőzött, és újrapróbálsz. Az optimista akkor nyer, ha a konfliktus ritka; a pesszimista akkor, ha gyakori, mert az újrapróbálkozás-viharok többe kerülnek, mint a várakozás.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you actually avoid deadlocks?</span><span lang="hu">Hogyan kerülöd el ténylegesen a deadlockokat?</span></p>
+      <ul class="a">
+        <li><span lang="en">The one reliable rule: <strong>acquire locks in a consistent order everywhere</strong> — if every transaction touches accounts in ascending id order, the cycle can't form. Beyond that: keep transactions short, don't do network calls or user interaction inside one, and touch the fewest rows you can. Then still handle the deadlock error and retry, because you cannot eliminate them entirely.</span><span lang="hu">Az egyetlen megbízható szabály: <strong>mindenhol konzisztens sorrendben szerezd meg a lockokat</strong> — ha minden tranzakció növekvő id-sorrendben nyúl a számlákhoz, a kör nem alakulhat ki. Ezen túl: tartsd rövidre a tranzakciókat, ne legyen bennük hálózati hívás vagy felhasználói interakció, és a lehető legkevesebb sort érintsd. Aztán a deadlock-hibát így is kezeld és próbáld újra, mert teljesen kiiktatni nem lehet.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What are <code>FOR UPDATE</code> and <code>SKIP LOCKED</code> for?</span><span lang="hu">Mire való a <code>FOR UPDATE</code> és a <code>SKIP LOCKED</code>?</span></p>
+      <ul class="a">
+        <li><span lang="en"><code>SELECT … FOR UPDATE</code> locks the selected rows so a concurrent transaction can't change them before you write — the standard read-modify-write guard. <code>FOR UPDATE SKIP LOCKED</code> steps over rows someone else already locked, which turns a table into a work queue: many workers each grab different jobs with no coordination and no double-processing. It's the simplest correct job queue you can build without adding a broker.</span><span lang="hu">A <code>SELECT … FOR UPDATE</code> lockolja a kiválasztott sorokat, hogy egy párhuzamos tranzakció ne módosíthassa őket az írásod előtt — ez a bevett read-modify-write védelem. A <code>FOR UPDATE SKIP LOCKED</code> átlép a más által már lockolt sorokon, ami munkasorrá alakítja a táblát: sok worker mindegyike más feladatot ragad meg, koordináció és kettős feldolgozás nélkül. Ez a legegyszerűbb helyes job queue, amit broker hozzáadása nélkül építhetsz.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">An ORM can create lock ordering you never wrote — <code>saveAll</code> on a collection may update rows in hash order, differing per process. Also, a deadlock error is <em>retryable</em> and a lock <em>timeout</em> usually isn't; treating them identically either loses work or hammers the database. And an unindexed foreign key makes a delete on the parent lock far more of the child table than expected.</span><span lang="hu">Egy ORM olyan lock-sorrendet hozhat létre, amit sosem írtál — egy kollekción futó <code>saveAll</code> hash-sorrendben frissíthet, ami processzenként eltér. Továbbá a deadlock-hiba <em>újrapróbálható</em>, a lock <em>timeout</em> általában nem; ha azonosan kezeled őket, vagy munkát veszítesz, vagy az adatbázist ostromolod. Egy indexeletlen idegen kulcs pedig a szülőn futó törléskor a vártnál sokkal nagyobb részét lockolja a gyermektáblának.</span></p>
+  </section>
 
   <div class="areahead">
     <h2><span lang="en">APIs & HTTP</span><span lang="hu">API-k &amp; HTTP</span></h2>
     <span class="cnt">6</span>
   </div>
-<section class="concept" id="c14">
-    <div class="concept__head"><span class="num">14</span><h2>Caching</h2><span class="src">API</span></div>
+<section class="concept" id="c16">
+    <div class="concept__head"><span class="num">16</span><h2>Caching</h2><span class="src">API</span></div>
     <p class="def"><span lang="en"><strong>Storing responses so repeated reads skip the work.</strong> Layers: browser → CDN → reverse proxy → application → database.</span><span lang="hu"><strong>Válaszok tárolása, hogy az ismételt olvasások megspórolják a munkát.</strong> Rétegek: böngésző → CDN → reverse proxy → alkalmazás → adatbázis.</span></p>
     <div class="dia">
       <svg viewBox="0 0 660 250" role="img" aria-label="Conditional request with ETag returning 304">
@@ -673,8 +744,8 @@ svg text[lang="hu"]{display:none}
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Cache the right thing at the right layer — caching user-specific data in a shared/CDN cache leaks one user's data to another. Mark it <code>private</code>.</span><span lang="hu">A megfelelő dolgot cache-eld a megfelelő rétegben — felhasználó-specifikus adat közös/CDN cache-be tétele az egyik user adatát a másikhoz szivárogtatja. Jelöld <code>private</code>-nak.</span></p>
   </section>
-<section class="concept" id="c15">
-    <div class="concept__head"><span class="num">15</span><h2>Idempotency</h2><span class="src">API</span></div>
+<section class="concept" id="c17">
+    <div class="concept__head"><span class="num">17</span><h2>Idempotency</h2><span class="src">API</span></div>
     <p class="def"><span lang="en"><strong>A request that produces the same result no matter how many times it's sent.</strong> This is what makes safe retries possible.</span><span lang="hu"><strong>Olyan kérés, ami ugyanazt az eredményt adja, akárhányszor küldöd el.</strong> Ez teszi lehetővé a biztonságos retry-t.</span></p>
     <div class="dia">
       <svg viewBox="0 0 680 260" role="img" aria-label="Idempotency key deduplicating a retried charge">
@@ -714,8 +785,8 @@ svg text[lang="hu"]{display:none}
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">DELETE twice: first returns 204, second 404 — still idempotent, because the <em>state</em> (resource gone) is unchanged.</span><span lang="hu">Kétszeri DELETE: az első 204-et ad, a második 404-et — ettől még idempotens, mert az <em>állapot</em> (a resource nincs meg) változatlan.</span></p>
   </section>
-<section class="concept" id="c16">
-    <div class="concept__head"><span class="num">16</span><h2>Pagination</h2><span class="src">API</span></div>
+<section class="concept" id="c18">
+    <div class="concept__head"><span class="num">18</span><h2>Pagination</h2><span class="src">API</span></div>
     <p class="def"><span lang="en"><strong>Splitting a large result set into pages</strong> instead of returning everything at once.</span><span lang="hu"><strong>Egy nagy találati halmaz lapokra bontása</strong> ahelyett, hogy egyszerre adnánk vissza mindent.</span></p>
     <div class="dia">
       <svg viewBox="0 0 680 300" role="img" aria-label="Offset versus cursor pagination">
@@ -756,8 +827,8 @@ svg text[lang="hu"]{display:none}
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">For infinite scroll or high-write tables, prefer cursor pagination to avoid drift and slow deep-offset queries.</span><span lang="hu">Infinite scrollnál vagy sokat íródó tábláknál cursor pagination a jó választás — így elkerülöd az elcsúszást és a lassú, mély offsetes lekérdezéseket.</span></p>
   </section>
-<section class="concept" id="c17">
-    <div class="concept__head"><span class="num">17</span><h2>Rate-Limiting</h2><span class="src">API</span></div>
+<section class="concept" id="c19">
+    <div class="concept__head"><span class="num">19</span><h2>Rate-Limiting</h2><span class="src">API</span></div>
     <p class="def"><span lang="en"><strong>Capping how many requests a client can make per time window</strong> to protect capacity and keep usage fair.</span><span lang="hu"><strong>Annak korlátozása, hány kérést tehet egy kliens időablakonként</strong> — a kapacitás védelmére és a fair használatért.</span></p>
     <div class="dia">
       <svg viewBox="0 0 640 250" role="img" aria-label="Token bucket rate limiting">
@@ -799,8 +870,8 @@ svg text[lang="hu"]{display:none}
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Across multiple instances, counters must live in shared storage (e.g. Redis) — otherwise every node limits independently and the real cap is N×.</span><span lang="hu">Több instance esetén a számlálóknak közös tárban kell lenniük (pl. Redis) — különben minden node külön limitál, és a tényleges korlát N-szerese lesz.</span></p>
   </section>
-<section class="concept" id="c18">
-    <div class="concept__head"><span class="num">18</span><h2>API Versioning</h2><span class="src">API</span></div>
+<section class="concept" id="c20">
+    <div class="concept__head"><span class="num">20</span><h2>API Versioning</h2><span class="src">API</span></div>
     <p class="def"><span lang="en"><strong>Managing change so existing clients don't break as the API evolves.</strong></span><span lang="hu"><strong>A változás kezelése úgy, hogy a meglévő kliensek ne törjenek el az API fejlődése közben.</strong></span></p>
     <div class="qa">
       <p class="q"><span lang="en">Where can the version live?</span><span lang="hu">Hol lehet a verzió?</span></p>
@@ -817,8 +888,8 @@ svg text[lang="hu"]{display:none}
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Version only on breaking changes. Leaning on additive, backward-compatible evolution keeps you out of a version zoo.</span><span lang="hu">Csak breaking változásnál verziózz. Ha additív, visszafelé kompatibilis fejlődésre támaszkodsz, elkerülöd a verzió-dzsungelt.</span></p>
   </section>
-<section class="concept" id="c19">
-    <div class="concept__head"><span class="num">19</span><h2>REST vs GraphQL</h2><span class="src">API</span></div>
+<section class="concept" id="c21">
+    <div class="concept__head"><span class="num">21</span><h2>REST vs GraphQL</h2><span class="src">API</span></div>
     <p class="def"><span lang="en"><strong>Two API styles.</strong> REST exposes many resource endpoints; GraphQL exposes one endpoint where the client asks for exactly the fields it needs.</span><span lang="hu"><strong>Két API-stílus.</strong> A REST sok resource-endpointot tesz elérhetővé; a GraphQL egyetlen endpointot, ahol a kliens pontosan a szükséges mezőket kéri le.</span></p>
     <div class="dia">
       <svg viewBox="0 0 700 300" role="img" aria-label="REST over- and under-fetching versus a single GraphQL query">
@@ -871,8 +942,8 @@ svg text[lang="hu"]{display:none}
     <h2><span lang="en">Web Security</span><span lang="hu">Webbiztonság</span></h2>
     <span class="cnt">3</span>
   </div>
-<section class="concept" id="c20">
-    <div class="concept__head"><span class="num">20</span><h2><span lang="en">Broken Access Control & IDOR</span><span lang="hu">Hibás hozzáférés-vezérlés & IDOR</span></h2><span class="src">Security</span></div>
+<section class="concept" id="c22">
+    <div class="concept__head"><span class="num">22</span><h2><span lang="en">Broken Access Control & IDOR</span><span lang="hu">Hibás hozzáférés-vezérlés & IDOR</span></h2><span class="src">Security</span></div>
     <p class="def"><span lang="en"><strong>Failures where a user can act outside their intended permissions</strong> — accessing other users' records, escalating privileges, or reaching admin functions. Consistently the highest-ranked risk in the OWASP Top 10.</span><span lang="hu"><strong>Hibák, ahol egy user a szándékolt jogosultságain kívül tud cselekedni</strong> — más userek rekordjaihoz férve, jogosultságot emelve, vagy admin funkciókat elérve. Következetesen a legmagasabbra rangsorolt kockázat az OWASP Top 10-ben.</span></p>
     <div class="codepair">
       <div class="cbox cbox--bad"><div class="cbox__h"><span lang="en">Vulnerable</span><span lang="hu">Sebezhető</span></div><pre>// IDOR: no ownership check
@@ -910,8 +981,8 @@ app.get('/api/orders/:id',
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Access control can't be enforced in the frontend — anyone can call your API directly. Also beware mass assignment: blindly spreading <code>req.body</code> into a model update lets a user set <code>role: 'admin'</code>. Allowlist the fields you accept.</span><span lang="hu">A hozzáférés-vezérlés nem kényszeríthető ki a frontendben — bárki hívhatja közvetlenül az API-dat. És óvakodj a mass assignmenttől: a <code>req.body</code> vak szétterítése egy model-frissítésbe engedi a usernek a <code>role: 'admin'</code> beállítását. Allowlisteld a mezőket, amiket elfogadsz.</span></p>
   </section>
-<section class="concept" id="c21">
-    <div class="concept__head"><span class="num">21</span><h2><span lang="en">Security Headers & CSP</span><span lang="hu">Security headerek & CSP</span></h2><span class="src">Security</span></div>
+<section class="concept" id="c23">
+    <div class="concept__head"><span class="num">23</span><h2><span lang="en">Security Headers & CSP</span><span lang="hu">Security headerek & CSP</span></h2><span class="src">Security</span></div>
     <p class="def"><span lang="en"><strong>HTTP response headers that instruct the browser to enforce security restrictions</strong> — most importantly Content-Security-Policy, which limits where scripts and other resources may load from.</span><span lang="hu"><strong>HTTP válasz-headerek, amelyek utasítják a böngészőt biztonsági korlátozások betartatására</strong> — legfontosabb a Content-Security-Policy, amely korlátozza, honnan tölthetők scriptek és más erőforrások.</span></p>
     <table class="t">
       <tr><th><span lang="en">Header</span><span lang="hu">Header</span></th><th><span lang="en">What it does</span><span lang="hu">Mit csinál</span></th></tr>
@@ -933,8 +1004,8 @@ app.get('/api/orders/:id',
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">CSP is a second line of defense, not a substitute for output encoding. Roll it out with <code>Content-Security-Policy-Report-Only</code> first and watch the reports — a strict policy deployed blind will break your app.</span><span lang="hu">A CSP második védelmi vonal, nem az output-kódolás helyettesítője. Előbb <code>Content-Security-Policy-Report-Only</code>-val vezesd be és figyeld a jelentéseket — egy vakon deployolt szigorú policy eltöri az appod.</span></p>
   </section>
-<section class="concept" id="c22">
-    <div class="concept__head"><span class="num">22</span><h2><span lang="en">Secrets Management</span><span lang="hu">Titkok kezelése</span></h2><span class="src">Security</span></div>
+<section class="concept" id="c24">
+    <div class="concept__head"><span class="num">24</span><h2><span lang="en">Secrets Management</span><span lang="hu">Titkok kezelése</span></h2><span class="src">Security</span></div>
     <p class="def"><span lang="en"><strong>Keeping credentials out of code and limiting what a leak exposes</strong> — API keys, DB passwords, signing keys, and the configuration that governs them.</span><span lang="hu"><strong>A hitelesítő adatok kódon kívül tartása és a szivárgás hatásának korlátozása</strong> — API kulcsok, DB jelszavak, aláíró kulcsok, és a rájuk vonatkozó konfiguráció.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">Where should secrets live?</span><span lang="hu">Hol éljenek a titkok?</span></p>
@@ -953,8 +1024,8 @@ app.get('/api/orders/:id',
     <h2><span lang="en">Authentication</span><span lang="hu">Autentikáció</span></h2>
     <span class="cnt">3</span>
   </div>
-<section class="concept" id="c23">
-    <div class="concept__head"><span class="num">23</span><h2><span lang="en">Cookie Security</span><span lang="hu">Cookie-biztonság</span></h2><span class="src">Auth</span></div>
+<section class="concept" id="c25">
+    <div class="concept__head"><span class="num">25</span><h2><span lang="en">Cookie Security</span><span lang="hu">Cookie-biztonság</span></h2><span class="src">Auth</span></div>
     <p class="def"><span lang="en"><strong>The cookie attributes that decide whether a session cookie is safe</strong> — how it's transmitted, who can read it, and when the browser attaches it.</span><span lang="hu"><strong>A cookie-attribútumok, amelyek eldöntik, biztonságos-e egy session cookie</strong> — hogyan továbbítódik, ki olvashatja, és mikor csatolja a böngésző.</span></p>
     <table class="t">
       <tr><th><span lang="en">Attribute</span><span lang="hu">Attribútum</span></th><th><span lang="en">Effect</span><span lang="hu">Hatás</span></th></tr>
@@ -976,8 +1047,8 @@ app.get('/api/orders/:id',
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Set cookie flags on the logout/clear path too, and rotate the session ID on login (session fixation: an attacker plants a known session ID, then waits for the victim to authenticate it). Regenerating the ID at every privilege change closes that.</span><span lang="hu">Állítsd a cookie flageket a kijelentkezési/törlési úton is, és forgasd a session ID-t bejelentkezéskor (session fixation: a támadó elültet egy ismert session ID-t, majd megvárja, hogy az áldozat autentikálja). Az ID újragenerálása minden jogosultság-változáskor ezt lezárja.</span></p>
   </section>
-<section class="concept" id="c24">
-    <div class="concept__head"><span class="num">24</span><h2><span lang="en">Access & Refresh Tokens</span><span lang="hu">Access & refresh tokenek</span></h2><span class="src">Auth</span></div>
+<section class="concept" id="c26">
+    <div class="concept__head"><span class="num">26</span><h2><span lang="en">Access & Refresh Tokens</span><span lang="hu">Access & refresh tokenek</span></h2><span class="src">Auth</span></div>
     <p class="def"><span lang="en"><strong>A short-lived access token for calling APIs, plus a long-lived refresh token used only to obtain new access tokens</strong> — limiting the damage window of a stolen credential.</span><span lang="hu"><strong>Egy rövid életű access token az API-hívásokhoz, plusz egy hosszú életű refresh token, amit csak új access tokenek szerzésére használsz</strong> — korlátozva egy ellopott hitelesítő adat kárablakát.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">Why split them?</span><span lang="hu">Miért kettéválasztva?</span></p>
@@ -991,8 +1062,8 @@ app.get('/api/orders/:id',
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Storing a refresh token in <code>localStorage</code> defeats the point — it's the credential most worth stealing. Keep it in an <code>HttpOnly</code>, <code>Secure</code>, <code>SameSite</code> cookie scoped to the refresh endpoint.</span><span lang="hu">Egy refresh token <code>localStorage</code>-ban tárolása meghiúsítja a lényeget — ez a leginkább ellopásra érdemes hitelesítő adat. Tartsd <code>HttpOnly</code>, <code>Secure</code>, <code>SameSite</code> cookie-ban, a refresh endpointra szűkítve.</span></p>
   </section>
-<section class="concept" id="c25">
-    <div class="concept__head"><span class="num">25</span><h2><span lang="en">OAuth 2.0</span><span lang="hu">OAuth 2.0</span></h2><span class="src">Auth</span></div>
+<section class="concept" id="c27">
+    <div class="concept__head"><span class="num">27</span><h2><span lang="en">OAuth 2.0</span><span lang="hu">OAuth 2.0</span></h2><span class="src">Auth</span></div>
     <p class="def"><span lang="en"><strong>A delegated authorization framework:</strong> it lets an application obtain limited access to a user's resources on another service, without the user handing over their password.</span><span lang="hu"><strong>Egy delegált autorizációs keretrendszer:</strong> lehetővé teszi, hogy egy alkalmazás korlátozott hozzáférést kapjon egy user erőforrásaihoz egy másik szolgáltatáson, anélkül hogy a user átadná a jelszavát.</span></p>
     <div class="dia">
       <svg viewBox="0 0 680 230" role="img" aria-label="OAuth2 authorization code flow">
@@ -1041,8 +1112,8 @@ app.get('/api/orders/:id',
     <h2><span lang="en">Distributed Systems</span><span lang="hu">Elosztott rendszerek</span></h2>
     <span class="cnt">5</span>
   </div>
-<section class="concept" id="c26">
-    <div class="concept__head"><span class="num">26</span><h2>CAP Theorem</h2><span class="src">Distributed</span></div>
+<section class="concept" id="c28">
+    <div class="concept__head"><span class="num">28</span><h2>CAP Theorem</h2><span class="src">Distributed</span></div>
     <p class="def"><span lang="en"><strong>During a network partition, a distributed system can guarantee at most two of Consistency, Availability, Partition tolerance</strong> — and since partitions are unavoidable, the real choice under one is C vs A.</span><span lang="hu"><strong>Hálózati partíció alatt egy elosztott rendszer a Consistency, Availability, Partition tolerance közül legfeljebb kettőt garantálhat</strong> — és mivel a partíció elkerülhetetlen, a valódi választás alatta C vs A.</span></p>
     <div class="dia">
       <svg viewBox="0 0 680 280" role="img" aria-label="CAP theorem triangle">
@@ -1069,8 +1140,8 @@ app.get('/api/orders/:id',
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">CAP only applies <em>during</em> a partition — a healthy network gives you both C and A. Real systems are tunable per-operation, not globally “CP” or “AP.”</span><span lang="hu">A CAP csak <em>partíció alatt</em> érvényes — egészséges hálón C és A is megvan. A valós rendszerek műveletenként hangolhatók, nem globálisan „CP" vagy „AP".</span></p>
   </section>
-<section class="concept" id="c27">
-    <div class="concept__head"><span class="num">27</span><h2>Idempotency &amp; Exactly-Once</h2><span class="src">Distributed</span></div>
+<section class="concept" id="c29">
+    <div class="concept__head"><span class="num">29</span><h2>Idempotency &amp; Exactly-Once</h2><span class="src">Distributed</span></div>
     <p class="def"><span lang="en"><strong>An idempotent operation has the same effect applied once or many times</strong> — the foundation for safe retries over an unreliable network.</span><span lang="hu"><strong>Egy idempotens művelet hatása ugyanaz egyszer vagy sokszor alkalmazva</strong> — a biztonságos retry alapja megbízhatatlan hálón.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">Is “exactly-once delivery” real?</span><span lang="hu">Létezik az „exactly-once delivery"?</span></p>
@@ -1084,8 +1155,8 @@ app.get('/api/orders/:id',
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">“Exactly-once” in messaging means exactly-once <em>effect</em> via dedup, not magic delivery. If someone claims exactly-once delivery, ask how they handle a broker crash after send but before ack.</span><span lang="hu">Az „exactly-once" a messagingben exactly-once <em>hatást</em> jelent deduppal, nem varázslatos deliveryt. Ha valaki exactly-once deliveryt állít, kérdezd meg, hogyan kezeli, ha a broker küldés után, de ack előtt összeomlik.</span></p>
   </section>
-<section class="concept" id="c28">
-    <div class="concept__head"><span class="num">28</span><h2>Retries, Backoff &amp; Jitter</h2><span class="src">Distributed</span></div>
+<section class="concept" id="c30">
+    <div class="concept__head"><span class="num">30</span><h2>Retries, Backoff &amp; Jitter</h2><span class="src">Distributed</span></div>
     <p class="def"><span lang="en"><strong>Re-attempting failed operations, spaced out to avoid overloading a struggling service.</strong></span><span lang="hu"><strong>Sikertelen műveletek újrapróbálása, időben szétosztva, hogy ne terheld túl a küszködő szolgáltatást.</strong></span></p>
     <div class="qa">
       <p class="q"><span lang="en">Why exponential backoff + jitter?</span><span lang="hu">Miért exponenciális backoff + jitter?</span></p>
@@ -1099,8 +1170,8 @@ app.get('/api/orders/:id',
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Retries amplify load during an outage (retry storms). Cap attempts, add a deadline/budget, and combine with a circuit breaker so you stop hammering a dead dependency.</span><span lang="hu">A retry felerősíti a terhelést kiesés alatt (retry storm). Korlátozd a próbálkozásokat, adj deadline-t/budgetet, és kombináld circuit breakerrel, hogy ne döngesd tovább a halott függőséget.</span></p>
   </section>
-<section class="concept" id="c29">
-    <div class="concept__head"><span class="num">29</span><h2>Message Queues &amp; Pub/Sub</h2><span class="src">Distributed</span></div>
+<section class="concept" id="c31">
+    <div class="concept__head"><span class="num">31</span><h2>Message Queues &amp; Pub/Sub</h2><span class="src">Distributed</span></div>
     <p class="def"><span lang="en"><strong>Async messaging decouples producers from consumers.</strong> Queues (one consumer per message, work distribution) vs pub/sub (topics, every subscriber gets a copy, fan-out).</span><span lang="hu"><strong>Az async messaging leválasztja a producereket a consumerekről.</strong> Queue (üzenetenként egy consumer, munkaelosztás) vs pub/sub (topicok, minden subscriber kap egy másolatot, fan-out).</span></p>
     <div class="qa">
       <p class="q"><span lang="en">Why use them?</span><span lang="hu">Miért használjuk őket?</span></p>
@@ -1114,8 +1185,8 @@ app.get('/api/orders/:id',
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">A queue adds a component to operate — dead-letter queues, backlog, poison messages. And async breaks request/response: you need correlation IDs and idempotent consumers.</span><span lang="hu">A queue egy üzemeltetendő komponenst ad hozzá — dead-letter queue, backlog, poison message. És az async megtöri a request/response-t: correlation ID-k és idempotens consumerek kellenek.</span></p>
   </section>
-<section class="concept" id="c30">
-    <div class="concept__head"><span class="num">30</span><h2>Delivery Semantics</h2><span class="src">Distributed</span></div>
+<section class="concept" id="c32">
+    <div class="concept__head"><span class="num">32</span><h2>Delivery Semantics</h2><span class="src">Distributed</span></div>
     <p class="def"><span lang="en"><strong>The guarantee about how many times a message is delivered/processed.</strong></span><span lang="hu"><strong>A garancia arról, hányszor kézbesítenek/dolgoznak fel egy üzenetet.</strong></span></p>
     <table class="t">
       <tr><th><span lang="en">Semantic</span><span lang="hu">Szemantika</span></th><th><span lang="en">Meaning</span><span lang="hu">Jelentés</span></th><th><span lang="en">Use</span><span lang="hu">Használat</span></th></tr>
@@ -1133,11 +1204,191 @@ app.get('/api/orders/:id',
   </section>
 
   <div class="areahead">
-    <h2><span lang="en">Architecture</span><span lang="hu">Architektúra</span></h2>
-    <span class="cnt">4</span>
+    <h2><span lang="en">Realtime & Messaging</span><span lang="hu">Realtime &amp; üzenetkezelés</span></h2>
+    <span class="cnt">5</span>
   </div>
-<section class="concept" id="c31">
-    <div class="concept__head"><span class="num">31</span><h2><span lang="en">Layered Architecture</span><span lang="hu">Rétegzett architektúra</span></h2><span class="src">Architecture</span></div>
+<section class="concept" id="c33">
+    <div class="concept__head"><span class="num">33</span><h2><span lang="en">WebSocket Handshake &amp; Lifecycle</span><span lang="hu">WebSocket handshake &amp; életciklus</span></h2><span class="src">Realtime</span></div>
+    <p class="def"><span lang="en"><strong>A WebSocket starts as an HTTP request that asks to switch protocols.</strong> The server answers <code>101 Switching Protocols</code>, and from that point the same TCP connection carries frames in both directions instead of request/response.</span><span lang="hu"><strong>A WebSocket HTTP-kérésként indul, amely protokollváltást kér.</strong> A szerver <code>101 Switching Protocols</code>-szal válaszol, és onnantól ugyanaz a TCP-kapcsolat kereteket szállít mindkét irányban, request/response helyett.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 230" role="img" aria-label="WebSocket handshake and lifecycle">
+        <text lang="en" x="110" y="20" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">Client</text><text lang="hu" x="110" y="20" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">Kliens</text>
+        <text lang="en" x="570" y="20" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">Server</text><text lang="hu" x="570" y="20" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">Szerver</text>
+        <line x1="110" y1="28" x2="110" y2="215" stroke="var(--line)" stroke-width="1.4"/>
+        <line x1="570" y1="28" x2="570" y2="215" stroke="var(--line)" stroke-width="1.4"/>
+        <line x1="112" y1="52" x2="566" y2="52" stroke="#94A3B8" stroke-width="1.3" marker-end="url(#arrow)"/>
+        <text x="340" y="46" text-anchor="middle" font-size="10" fill="var(--slate)">GET /ws · Upgrade: websocket · Sec-WebSocket-Key</text>
+        <line x1="568" y1="82" x2="114" y2="82" stroke="var(--safe,#16A34A)" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="340" y="76" text-anchor="middle" font-size="10" fill="var(--safe,#16A34A)" font-weight="600">101 Switching Protocols · Sec-WebSocket-Accept</text>
+        <rect x="150" y="98" width="380" height="44" rx="7" fill="#F0FDF4" stroke="var(--safe,#16A34A)" stroke-width="1.4"/>
+        <text lang="en" x="340" y="118" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">OPEN — frames flow both ways</text><text lang="hu" x="340" y="118" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">OPEN — a keretek mindkét irányba folynak</text>
+        <text lang="en" x="340" y="134" text-anchor="middle" font-size="9" fill="var(--muted)">ping / pong keeps it alive</text><text lang="hu" x="340" y="134" text-anchor="middle" font-size="9" fill="var(--muted)">a ping / pong tartja életben</text>
+        <line x1="112" y1="164" x2="566" y2="164" stroke="#94A3B8" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+        <text lang="en" x="340" y="158" text-anchor="middle" font-size="10" fill="var(--slate)">close frame (code + reason)</text><text lang="hu" x="340" y="158" text-anchor="middle" font-size="10" fill="var(--slate)">close keret (kód + indok)</text>
+        <rect x="190" y="180" width="300" height="34" rx="7" fill="#FFFBEB" stroke="var(--put)" stroke-width="1.4"/>
+        <text lang="en" x="340" y="201" text-anchor="middle" font-size="10" fill="var(--ink)">CLOSED — client decides whether to reconnect</text><text lang="hu" x="340" y="201" text-anchor="middle" font-size="10" fill="var(--ink)">CLOSED — a kliens dönt az újracsatlakozásról</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">The handshake is ordinary HTTP, which is why WebSockets pass through most proxies — and why cookies and auth headers are available exactly once, at upgrade time.</span><span lang="hu">A handshake közönséges HTTP, ezért mennek át a WebSocketek a legtöbb proxyn — és ezért érhetők el a sütik és auth headerek pontosan egyszer, az upgrade pillanatában.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">How do you authenticate a WebSocket?</span><span lang="hu">Hogyan autentikálsz egy WebSocketet?</span></p>
+      <ul class="a">
+        <li><span lang="en">At the handshake, because the browser <code>WebSocket</code> API can't set custom headers — so it's a cookie, or a short-lived ticket in the query string that the server exchanges for a session. After the upgrade there are no more HTTP requests to attach a token to, which means expiry needs handling in-band: the server tracks the session's lifetime and closes the socket when it lapses, rather than relying on a per-request check that no longer happens.</span><span lang="hu">A handshake-nél, mert a böngésző <code>WebSocket</code> API-ja nem tud egyedi headereket beállítani — tehát süti, vagy egy rövid életű ticket a query stringben, amit a szerver session-re vált. Az upgrade után nincs több HTTP-kérés, amihez tokent lehetne csatolni, így a lejáratot a csatornán belül kell kezelni: a szerver követi a session élettartamát, és lezárja a socketet, amikor lejár — nem támaszkodhat kérésenkénti ellenőrzésre, ami már nem történik meg.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why do you need ping/pong if TCP already detects failure?</span><span lang="hu">Miért kell ping/pong, ha a TCP már észleli a hibát?</span></p>
+      <ul class="a">
+        <li><span lang="en">Because TCP only notices when someone actively closes. A laptop that sleeps, a phone that loses signal, or a proxy that silently drops an idle connection leaves a <em>half-open</em> socket: your server still thinks the client is there and keeps queueing messages for it. Protocol-level ping/pong with a timeout is what turns that into a detected disconnect, usually within 30–60 seconds.</span><span lang="hu">Mert a TCP csak azt veszi észre, ha valaki aktívan lezár. Egy elalvó laptop, egy térerőt vesztő telefon, vagy egy tétlen kapcsolatot csendben eldobó proxy <em>félig nyitott</em> socketet hagy maga után: a szervered még azt hiszi, ott a kliens, és tovább sorakoztatja neki az üzeneteket. A protokoll-szintű ping/pong timeouttal ezt alakítja észlelt bontássá, jellemzően 30–60 másodpercen belül.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What does a correct reconnect strategy look like?</span><span lang="hu">Hogyan néz ki egy helyes újracsatlakozási stratégia?</span></p>
+      <ul class="a">
+        <li><span lang="en">Exponential backoff with jitter, capped — without jitter, a server restart brings every client back simultaneously and knocks it over again. On reconnect the client must also <em>resynchronise</em>: it missed everything sent while offline, so either it re-fetches current state or replays from a last-seen message id. Treating reconnection as merely reopening the socket is the common bug; the connection comes back, the state is silently stale.</span><span lang="hu">Exponenciális backoff jitterrel, felső korláttal — jitter nélkül egy szerver-újraindítás után minden kliens egyszerre tér vissza, és megint ledönti. Újracsatlakozáskor a kliensnek <em>újra is kell szinkronizálnia</em>: kimaradt minden, amit offline töltött ideje alatt küldtek, tehát vagy újratölti az aktuális állapotot, vagy egy utoljára látott üzenet-azonosítótól visszajátszik. A gyakori hiba az, ha az újracsatlakozást puszta socket-újranyitásnak tekintik: a kapcsolat visszajön, az állapot csendben elavult marad.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Load balancers and proxies close idle connections on their own timer — often 60 seconds — regardless of your application. If your heartbeat interval is longer than theirs, connections drop mysteriously in production and never in local development, where no proxy sits in between.</span><span lang="hu">A load balancerek és proxyk saját időzítővel zárják a tétlen kapcsolatokat — gyakran 60 másodperc —, függetlenül az alkalmazásodtól. Ha a heartbeat intervallumod hosszabb az övéknél, a kapcsolatok rejtélyesen szakadnak meg produkcióban, lokálisan viszont soha, ahol nincs köztes proxy.</span></p>
+  </section>
+<section class="concept" id="c34">
+    <div class="concept__head"><span class="num">34</span><h2><span lang="en">Scaling WebSockets</span><span lang="hu">WebSocketek skálázása</span></h2><span class="src">Realtime</span></div>
+    <p class="def"><span lang="en"><strong>A WebSocket lives on exactly one server process.</strong> The moment you run two instances, a message published on one has no way to reach clients connected to the other — unless you add something between them.</span><span lang="hu"><strong>Egy WebSocket pontosan egy szerverfolyamaton él.</strong> Amint két instance fut, az egyiken publikált üzenet sehogy nem éri el a másikhoz csatlakozott klienseket — hacsak nem teszel közéjük valamit.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 220" role="img" aria-label="Fan-out across instances via a shared bus">
+        <rect x="30" y="30" width="120" height="40" rx="7" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.4"/>
+        <text lang="en" x="90" y="55" text-anchor="middle" font-size="11" fill="var(--ink)">client A</text><text lang="hu" x="90" y="55" text-anchor="middle" font-size="11" fill="var(--ink)">A kliens</text>
+        <rect x="30" y="150" width="120" height="40" rx="7" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.4"/>
+        <text lang="en" x="90" y="175" text-anchor="middle" font-size="11" fill="var(--ink)">client B</text><text lang="hu" x="90" y="175" text-anchor="middle" font-size="11" fill="var(--ink)">B kliens</text>
+        <rect x="210" y="30" width="120" height="40" rx="7" fill="#F8FAFC" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="270" y="55" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">node 1</text>
+        <rect x="210" y="150" width="120" height="40" rx="7" fill="#F8FAFC" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="270" y="175" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">node 2</text>
+        <line x1="152" y1="50" x2="206" y2="50" stroke="#94A3B8" stroke-width="1.3"/>
+        <line x1="152" y1="170" x2="206" y2="170" stroke="#94A3B8" stroke-width="1.3"/>
+        <rect x="410" y="86" width="160" height="48" rx="9" fill="#F0FDF4" stroke="var(--safe,#16A34A)" stroke-width="1.6"/>
+        <text lang="en" x="490" y="106" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">shared pub/sub</text><text lang="hu" x="490" y="106" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">közös pub/sub</text>
+        <text x="490" y="123" text-anchor="middle" font-size="10" fill="var(--muted)">Redis · NATS · Kafka</text>
+        <path d="M334 54 Q 380 70 408 96" stroke="var(--safe,#16A34A)" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+        <path d="M408 124 Q 380 152 334 166" stroke="var(--safe,#16A34A)" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+        <text lang="en" x="340" y="212" text-anchor="middle" font-size="10" fill="var(--slate)">each node subscribes and forwards to its own sockets</text><text lang="hu" x="340" y="212" text-anchor="middle" font-size="10" fill="var(--slate)">minden node feliratkozik, és továbbít a saját socketjeire</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">The bus carries messages between instances; each instance owns only the sockets it accepted.</span><span lang="hu">A busz az instance-ok között szállítja az üzeneteket; minden instance csak az általa elfogadott socketeket birtokolja.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Sticky sessions or a shared bus?</span><span lang="hu">Sticky session vagy közös busz?</span></p>
+      <ul class="a">
+        <li><span lang="en">They solve different halves. Sticky sessions keep a client pinned to the instance holding its socket — necessary if you use a transport that falls back to HTTP polling, since those requests must land on the same node. A shared bus solves the actual problem: getting a message to whichever instance holds the recipient. Stickiness alone doesn't give you cross-instance delivery, and it makes deployments worse by concentrating reconnect storms.</span><span lang="hu">Két különböző felét oldják meg. A sticky session az adott instance-hoz szögezi a klienst, amelyik a socketjét tartja — szükséges, ha a transzport HTTP-pollingra vált vissza, mert azoknak a kéréseknek ugyanarra a node-ra kell érkezniük. A közös busz a valódi problémát oldja meg: eljuttatni az üzenetet ahhoz az instance-hoz, amelyik a címzettet tartja. Önmagában a stickiness nem ad instance-ok közti kézbesítést, és a deploymentet is rontja azzal, hogy koncentrálja az újracsatlakozás-viharokat.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What breaks first as connection count grows?</span><span lang="hu">Mi törik el először, ahogy nő a kapcsolatszám?</span></p>
+      <ul class="a">
+        <li><span lang="en">Memory and file descriptors, not CPU — each connection holds a socket plus its send buffer, so tens of thousands of mostly-idle clients are a memory problem. Then the fan-out multiplier: broadcasting one message to 10,000 subscribers is 10,000 writes, and doing that per event is what saturates a node. The usual answers are batching, sending deltas instead of full state, and sharding rooms across instances so no single node owns a hot topic.</span><span lang="hu">A memória és a fájlleírók, nem a CPU — minden kapcsolat egy socketet és a küldőpufferét tartja, így több tízezer, jórészt tétlen kliens memóriaprobléma. Utána a fan-out szorzó: egy üzenet szórása 10 000 feliratkozónak 10 000 írás, és ha ez eseményenként megtörténik, az telíti a node-ot. A szokásos válaszok: kötegelés, teljes állapot helyett delták küldése, és a szobák szétosztása az instance-ok között, hogy egy node se birtokoljon forró topicot.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What happens to connections during a deploy?</span><span lang="hu">Mi történik a kapcsolatokkal deploy közben?</span></p>
+      <ul class="a">
+        <li><span lang="en">They all drop at once, and every client reconnects simultaneously — a thundering herd against the instances that are still starting. Mitigations: drain gracefully by sending close frames with a reason before shutdown, stagger rollout across instances, and rely on client-side jittered backoff. Rolling deploys make this routine rather than exceptional, so it has to be designed for rather than treated as an incident.</span><span lang="hu">Egyszerre mind megszakad, és minden kliens egyidejűleg csatlakozik újra — thundering herd a még induló instance-ok ellen. Enyhítés: szabályos leürítés close keretekkel és indokkal leállás előtt, a rollout lépcsőzetes elosztása az instance-ok között, és kliensoldali jitteres backoff. A rolling deploy ezt rutinná teszi, nem kivétellé, tehát tervezni kell rá, nem incidensként kezelni.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Redis pub/sub is fire-and-forget: a subscriber that is momentarily disconnected simply misses those messages, with no replay. That's fine for presence or typing indicators and wrong for anything that must arrive — those need a durable stream (Redis Streams, Kafka, or a queue) behind the socket layer.</span><span lang="hu">A Redis pub/sub fire-and-forget: egy pillanatra lecsatlakozott feliratkozó egyszerűen lemarad azokról az üzenetekről, visszajátszás nélkül. Ez rendben van jelenlét- vagy gépelésjelzéshez, és hibás bármihez, aminek meg kell érkeznie — ahhoz tartós stream kell (Redis Streams, Kafka vagy queue) a socket-réteg mögött.</span></p>
+  </section>
+<section class="concept" id="c35">
+    <div class="concept__head"><span class="num">35</span><h2><span lang="en">Acks, Nacks &amp; Visibility Timeout</span><span lang="hu">Ack, nack &amp; visibility timeout</span></h2><span class="src">Realtime</span></div>
+    <p class="def"><span lang="en"><strong>An acknowledgement is a consumer telling the broker "this message is done".</strong> Until then the message isn't gone — it's reserved, and it comes back if the consumer dies. When you ack is what decides your delivery semantics.</span><span lang="hu"><strong>Az ack az, amikor a fogyasztó közli a brokerrel, hogy „ez az üzenet kész".</strong> Addig az üzenet nincs elveszve — foglalt, és visszajön, ha a fogyasztó meghal. Az, hogy mikor ackelsz, dönti el a kézbesítési szemantikádat.</span></p>
+    <div class="codepair">
+      <div class="cbox cbox--bad"><div class="cbox__h"><span lang="en">Ack first — at-most-once</span><span lang="hu">Előbb ack — at-most-once</span></div><pre>const msg = await queue.receive();
+await msg.ack();        // ← released
+await processOrder(msg); // crash here
+// message is gone. work never done.</pre></div>
+      <div class="cbox cbox--good"><div class="cbox__h"><span lang="en">Ack last — at-least-once</span><span lang="hu">Utoljára ack — at-least-once</span></div><pre>const msg = await queue.receive();
+try {
+  await processOrder(msg); // crash here
+  await msg.ack();         // ← only now
+} catch { await msg.nack(); }
+// redelivered. consumer must be idempotent.</pre></div>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">What is a visibility timeout?</span><span lang="hu">Mi a visibility timeout?</span></p>
+      <ul class="a">
+        <li><span lang="en">The window during which a received message is hidden from other consumers. Ack inside it and the message is deleted; let it expire and the broker assumes you died and hands the message to someone else. It's SQS's term, but the mechanism is universal — RabbitMQ ties it to the channel's lifetime, Kafka to the consumer group's session timeout.</span><span lang="hu">Az az ablak, amíg egy fogadott üzenet rejtve van a többi fogyasztó elől. Ackelj ezen belül, és az üzenet törlődik; hagyd lejárni, és a broker feltételezi, hogy meghaltál, és másnak adja az üzenetet. Ez az SQS terminológiája, de a mechanizmus általános — a RabbitMQ a csatorna élettartamához, a Kafka a fogyasztói csoport session timeoutjához köti.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What goes wrong if the timeout is too short?</span><span lang="hu">Mi romlik el, ha túl rövid a timeout?</span></p>
+      <ul class="a">
+        <li><span lang="en">You get duplicate processing that looks like a bug in your code. A job that usually takes 20 seconds against a 30-second timeout will, on a slow day, get redelivered while the first consumer is still working — so two workers process the same order and neither has crashed. Either raise the timeout above your worst case, or extend the lease periodically from the consumer (a heartbeat for the message) while work continues.</span><span lang="hu">Duplikált feldolgozást kapsz, ami a kódod hibájának látszik. Egy általában 20 másodperces feladat 30 másodperces timeouttal egy lassú napon újrakézbesítődik, miközben az első fogyasztó még dolgozik — így két worker dolgozza fel ugyanazt a rendelést, és egyik sem omlott össze. Vagy emeld a timeoutot a legrosszabb eseted fölé, vagy hosszabbítsd a bérletet periodikusan a fogyasztóból (heartbeat az üzenethez), amíg tart a munka.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Nack, or just let it time out?</span><span lang="hu">Nack, vagy hagyd lejárni?</span></p>
+      <ul class="a">
+        <li><span lang="en">Nack when you know immediately that this consumer can't handle it — it returns the message straight away instead of blocking a slot for the full timeout. But an immediate nack-and-retry on a message that always fails becomes a hot loop hammering the broker, so nack should either carry a delay or be paired with a retry counter that routes to a dead-letter queue. Letting it time out is the correct behaviour only for actual crashes.</span><span lang="hu">Nackelj, ha azonnal tudod, hogy ez a fogyasztó nem tudja kezelni — így az üzenet rögtön visszakerül, ahelyett hogy a teljes timeoutra lefoglalna egy helyet. De az azonnali nack-és-újrapróbálás egy mindig hibázó üzeneten forró ciklussá válik, ami ostromolja a brokert, ezért a nack vagy késleltetést hordozzon, vagy párosuljon újrapróbálkozás-számlálóval, ami dead-letter queue-ba irányít. A lejáratni hagyás csak valódi összeomlásoknál helyes viselkedés.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Prefetch (how many unacked messages a consumer holds) defaults high in some clients, which means one slow worker reserves a large batch it can't get through while other idle workers starve. Setting prefetch to a small number is often the single biggest throughput fix in a queue-based system.</span><span lang="hu">A prefetch (hány ackeletlen üzenetet tart egy fogyasztó) egyes kliensekben magas alapértékű, ami azt jelenti, hogy egy lassú worker olyan nagy köteget foglal le, amivel nem végez, miközben más tétlen workerek éheznek. A prefetch kis értékre állítása gyakran a legnagyobb áteresztőképesség-javítás egy queue-alapú rendszerben.</span></p>
+  </section>
+<section class="concept" id="c36">
+    <div class="concept__head"><span class="num">36</span><h2><span lang="en">Dead-Letter Queues &amp; Poison Messages</span><span lang="hu">Dead-letter queue-k &amp; mérgezett üzenetek</span></h2><span class="src">Realtime</span></div>
+    <p class="def"><span lang="en"><strong>A poison message is one that fails every time it's processed.</strong> With at-least-once delivery and unlimited retries it never leaves the queue, blocking or degrading everything behind it. A dead-letter queue is where it goes instead.</span><span lang="hu"><strong>A mérgezett üzenet az, amely minden feldolgozáskor hibázik.</strong> At-least-once kézbesítéssel és korlátlan újrapróbálkozással sosem hagyja el a sort, blokkolva vagy rontva mindent, ami mögötte van. A dead-letter queue az a hely, ahová helyette kerül.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 180" role="img" aria-label="Dead-letter routing">
+        <rect x="30" y="60" width="120" height="46" rx="8" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/>
+        <text lang="en" x="90" y="88" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">main queue</text><text lang="hu" x="90" y="88" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">fő sor</text>
+        <rect x="230" y="60" width="130" height="46" rx="8" fill="#F8FAFC" stroke="var(--line)" stroke-width="1.5"/>
+        <text lang="en" x="295" y="82" text-anchor="middle" font-size="11" fill="var(--ink)">consumer</text><text lang="hu" x="295" y="82" text-anchor="middle" font-size="11" fill="var(--ink)">fogyasztó</text>
+        <text lang="en" x="295" y="98" text-anchor="middle" font-size="9" fill="var(--muted)">attempt n of 5</text><text lang="hu" x="295" y="98" text-anchor="middle" font-size="9" fill="var(--muted)">n. kísérlet az 5-ből</text>
+        <line x1="152" y1="83" x2="226" y2="83" stroke="#94A3B8" stroke-width="1.3" marker-end="url(#arrow)"/>
+        <path d="M295 56 Q 295 24 180 24 Q 90 24 90 56" stroke="var(--put)" stroke-width="1.4" fill="none" marker-end="url(#arrow)"/>
+        <text lang="en" x="200" y="18" text-anchor="middle" font-size="10" fill="var(--put)">nack → retry with backoff</text><text lang="hu" x="200" y="18" text-anchor="middle" font-size="10" fill="var(--put)">nack → újra, backoffal</text>
+        <line x1="362" y1="83" x2="466" y2="83" stroke="var(--vuln,#DC2626)" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text lang="en" x="414" y="76" text-anchor="middle" font-size="9" fill="var(--vuln,#DC2626)">max attempts</text><text lang="hu" x="414" y="76" text-anchor="middle" font-size="9" fill="var(--vuln,#DC2626)">max kísérlet</text>
+        <rect x="470" y="60" width="180" height="46" rx="8" fill="#FEF2F2" stroke="var(--vuln,#DC2626)" stroke-width="1.5"/>
+        <text lang="en" x="560" y="82" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">dead-letter queue</text><text lang="hu" x="560" y="82" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">dead-letter queue</text>
+        <text lang="en" x="560" y="98" text-anchor="middle" font-size="9" fill="var(--muted)">alert · inspect · replay</text><text lang="hu" x="560" y="98" text-anchor="middle" font-size="9" fill="var(--muted)">riaszt · vizsgál · visszajátszik</text>
+        <text lang="en" x="340" y="150" text-anchor="middle" font-size="10" fill="var(--slate)">a DLQ with no alert on it is a silent data-loss channel</text><text lang="hu" x="340" y="150" text-anchor="middle" font-size="10" fill="var(--slate)">a riasztás nélküli DLQ csendes adatvesztési csatorna</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">Retry a bounded number of times, then divert — so one bad message can't consume the consumer's capacity indefinitely.</span><span lang="hu">Próbáld újra korlátozott számban, aztán tereld el — így egy rossz üzenet nem foglalhatja le korlátlanul a fogyasztó kapacitását.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Which failures should retry, and which shouldn't?</span><span lang="hu">Mely hibák próbálkozzanak újra, és melyek ne?</span></p>
+      <ul class="a">
+        <li><span lang="en">Retry <em>transient</em> failures — a timeout, a 503, a deadlock, a briefly unavailable dependency. Don't retry <em>deterministic</em> ones: malformed payload, validation failure, a referenced record that will never exist. Retrying those burns capacity to reach the same conclusion five times. Distinguishing them in the consumer, and dead-lettering the second class immediately, is what separates a queue that self-heals from one that just accumulates.</span><span lang="hu">Az <em>átmeneti</em> hibákat próbáld újra — timeout, 503, deadlock, rövid ideig elérhetetlen függőség. A <em>determinisztikusakat</em> ne: hibás formátumú payload, validációs hiba, olyan hivatkozott rekord, ami sosem fog létezni. Ezek újrapróbálása kapacitást éget, hogy ötször ugyanarra a következtetésre jusson. A kettő megkülönböztetése a fogyasztóban, és a második osztály azonnali dead-letterezése az, ami elválasztja az öngyógyító sort a puszta halmozótól.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What do you do with the DLQ afterwards?</span><span lang="hu">Mit kezdesz utána a DLQ-val?</span></p>
+      <ul class="a">
+        <li><span lang="en">It needs an owner, an alert on depth, and a replay path — otherwise it's just where messages go to be forgotten, which is data loss with extra steps. The workflow that actually functions: alert fires, someone inspects the message and the failure reason it was stored with, fixes the bug or the data, and replays the batch back to the main queue. That last step must be idempotent, since some of those messages may have partially succeeded.</span><span lang="hu">Kell hozzá gazda, riasztás a mélységre, és visszajátszási út — különben csak az a hely, ahová az üzenetek elfelejtődni mennek, ami adatvesztés extra lépésekkel. A ténylegesen működő folyamat: megszólal a riasztás, valaki megnézi az üzenetet és a vele eltárolt hibaokot, javítja a hibát vagy az adatot, és visszajátssza a köteget a fő sorba. Ez az utolsó lépés legyen idempotens, mert néhány üzenet részben sikeres lehetett.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Where does the retry count live?</span><span lang="hu">Hol él az újrapróbálkozás-számláló?</span></p>
+      <ul class="a">
+        <li><span lang="en">Ideally in the broker — SQS tracks <code>ApproximateReceiveCount</code> and moves the message after a configured maximum, RabbitMQ uses a DLX with a per-queue policy. Tracking it in the message body works too but is fragile, since a consumer that crashes before writing the increment loses the count and the message retries forever. Broker-side is both simpler and harder to get wrong.</span><span lang="hu">Ideális esetben a brokerben — az SQS követi az <code>ApproximateReceiveCount</code>-ot, és beállított maximum után átmozgatja az üzenetet, a RabbitMQ DLX-et használ soronkénti szabállyal. Az üzenettörzsben követés is működik, de törékeny, mert egy a növelés kiírása előtt összeomló fogyasztó elveszíti a számlálót, és az üzenet örökké újrapróbálkozik. A broker-oldal egyszerre egyszerűbb és nehezebben elrontható.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Store the failure reason alongside the message when dead-lettering. A DLQ full of payloads with no indication of <em>why</em> each failed turns every investigation into a re-run of the bug, and by then the surrounding state has usually changed.</span><span lang="hu">Dead-letterezéskor tárold a hiba okát az üzenet mellett. Egy payloadokkal teli DLQ, amiből nem derül ki, <em>miért</em> hibázott mindegyik, minden vizsgálatot a hiba újrajátszásává tesz — és addigra a környező állapot általában megváltozott.</span></p>
+  </section>
+<section class="concept" id="c37">
+    <div class="concept__head"><span class="num">37</span><h2><span lang="en">Designing a Realtime Feature</span><span lang="hu">Realtime funkció tervezése</span></h2><span class="src">Realtime</span></div>
+    <p class="def"><span lang="en"><strong>The questions to answer before choosing a transport</strong> — asked in this order, they usually determine the design rather than leaving it to preference.</span><span lang="hu"><strong>A transzport kiválasztása előtt megválaszolandó kérdések</strong> — ebben a sorrendben feltéve általában meghatározzák a tervet, ahelyett hogy ízlésre bíznák.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Question</span><span lang="hu">Kérdés</span></th><th><span lang="en">If yes</span><span lang="hu">Ha igen</span></th></tr>
+      <tr><td><span lang="en">Does the client need to send too?</span><span lang="hu">A kliensnek is kell küldenie?</span></td><td><span lang="en">WebSocket — otherwise SSE</span><span lang="hu">WebSocket — különben SSE</span></td></tr>
+      <tr><td><span lang="en">Must every message arrive?</span><span lang="hu">Minden üzenetnek meg kell érkeznie?</span></td><td><span lang="en">durable stream behind the socket</span><span lang="hu">tartós stream a socket mögött</span></td></tr>
+      <tr><td><span lang="en">Does order matter?</span><span lang="hu">Számít a sorrend?</span></td><td><span lang="en">partition by entity key</span><span lang="hu">partícionálás entitáskulcs szerint</span></td></tr>
+      <tr><td><span lang="en">More than one server instance?</span><span lang="hu">Egynél több szerver instance?</span></td><td><span lang="en">shared pub/sub bus</span><span lang="hu">közös pub/sub busz</span></td></tr>
+      <tr><td><span lang="en">Can a client fall behind?</span><span lang="hu">Lemaradhat egy kliens?</span></td><td><span lang="en">decide: drop, coalesce or disconnect</span><span lang="hu">dönts: eldobás, összevonás vagy bontás</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">What's the most common design mistake here?</span><span lang="hu">Mi itt a leggyakoribb tervezési hiba?</span></p>
+      <ul class="a">
+        <li><span lang="en">Using the socket as the source of truth. The connection is a <em>delivery</em> mechanism, not storage — anything sent while a client was disconnected is gone unless it also exists somewhere durable. The robust shape is: write the change, publish the event, and let the socket deliver a notification that state changed; the client can always fall back to fetching. That also makes reconnection trivial, because there's a defined way to catch up.</span><span lang="hu">Ha a socketet tekinted az igazság forrásának. A kapcsolat <em>kézbesítési</em> mechanizmus, nem tároló — bármi, amit egy lecsatlakozott kliensnek küldtek, odavan, hacsak nem létezik valahol tartósan is. A robusztus forma: írd le a változást, publikáld az eseményt, és hagyd, hogy a socket értesítést kézbesítsen az állapotváltozásról; a kliens mindig visszaeshet lekérésre. Ettől az újracsatlakozás is triviális lesz, mert van definiált mód a felzárkózásra.</span></li>
+      </ul>
+      <p class="q"><span lang="en">When is polling the right answer?</span><span lang="hu">Mikor a polling a helyes válasz?</span></p>
+      <ul class="a">
+        <li><span lang="en">More often than realtime enthusiasm suggests. If updates are infrequent, or a few seconds of staleness is acceptable, polling with a sensible interval and conditional requests (<code>ETag</code>, <code>304</code>) costs almost nothing and removes the entire class of problems in this file — no connection state, no sticky sessions, no fan-out bus, no reconnection logic. Choosing WebSockets for a dashboard that updates once a minute is paying a large operational bill for nothing.</span><span lang="hu">Gyakrabban, mint azt a realtime iránti lelkesedés sugallja. Ha a frissítések ritkák, vagy néhány másodperc elavultság elfogadható, az értelmes intervallumú polling feltételes kérésekkel (<code>ETag</code>, <code>304</code>) szinte semmibe nem kerül, és eltünteti az ebben a fájlban tárgyalt problémák teljes osztályát — nincs kapcsolatállapot, nincs sticky session, nincs fan-out busz, nincs újracsatlakozási logika. WebSocketet választani egy percenként frissülő dashboardhoz nagy üzemeltetési számla a semmiért.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you test any of this?</span><span lang="hu">Hogyan teszteled mindezt?</span></p>
+      <ul class="a">
+        <li><span lang="en">The failure modes are the point, so test them explicitly: kill a consumer mid-processing and assert the message is redelivered; disconnect a client and assert it resynchronises rather than silently missing data; send duplicates and assert the handler is idempotent; and load-test fan-out at realistic subscriber counts, since that's where the cost is non-linear. A test suite that only covers the happy path tells you nothing about a realtime system.</span><span lang="hu">A hibamódok a lényeg, tehát teszteld őket kifejezetten: ölj meg egy fogyasztót feldolgozás közben, és ellenőrizd, hogy az üzenet újrakézbesítődik; bonts egy klienst, és ellenőrizd, hogy újraszinkronizál, nem pedig csendben adatot veszít; küldj duplikátumokat, és ellenőrizd, hogy a handler idempotens; és terheléstesztelj fan-outot realisztikus feliratkozószámmal, mert ott nemlineáris a költség. A csak boldog utat lefedő tesztkészlet semmit nem mond egy realtime rendszerről.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">"Realtime" in a requirements document usually means "fast enough that it feels live", not milliseconds. Establishing the actual latency budget early frequently turns a WebSocket architecture into a two-second poll — and the honest version of that conversation is itself a strong interview answer.</span><span lang="hu">A követelménydokumentumban a „realtime" általában azt jelenti, „elég gyors ahhoz, hogy élőnek érződjön", nem ezredmásodperceket. A tényleges késleltetési keret korai tisztázása gyakran kétmásodperces pollinggá alakít egy WebSocket-architektúrát — és ennek a beszélgetésnek az őszinte változata önmagában erős interjús válasz.</span></p>
+  </section>
+
+  <div class="areahead">
+    <h2><span lang="en">Architecture</span><span lang="hu">Architektúra</span></h2>
+    <span class="cnt">7</span>
+  </div>
+<section class="concept" id="c38">
+    <div class="concept__head"><span class="num">38</span><h2><span lang="en">Layered Architecture</span><span lang="hu">Rétegzett architektúra</span></h2><span class="src">Architecture</span></div>
     <p class="def"><span lang="en"><strong>Organizing code into horizontal layers</strong> — typically routes/controllers, services (business logic), and repositories (data access) — with dependencies pointing in one direction only.</span><span lang="hu"><strong>A kód vízszintes rétegekbe szervezése</strong> — tipikusan route-ok/controllerek, szolgáltatások (üzleti logika), és repository-k (adathozzáférés) — a függőségek csak egy irányba mutatnak.</span></p>
     <div class="dia">
       <svg viewBox="0 0 680 220" role="img" aria-label="Layered architecture">
@@ -1207,8 +1458,8 @@ async create(userId, items) {
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Layers only help if the dependency direction is enforced. A repository that imports a service, or a service that reads <code>req.headers</code>, collapses the structure back into a tangle while keeping the folder names that suggest otherwise.</span><span lang="hu">A rétegek csak akkor segítenek, ha a függőségi irány kikényszerített. Egy repository, amely szolgáltatást importál, vagy egy szolgáltatás, amely <code>req.headers</code>-t olvas, visszaomlasztja a szerkezetet kuszasággá, miközben megtartja a mást sugalló mappaneveket.</span></p>
   </section>
-<section class="concept" id="c32">
-    <div class="concept__head"><span class="num">32</span><h2><span lang="en">Dependency Injection</span><span lang="hu">Dependency injection</span></h2><span class="src">Architecture</span></div>
+<section class="concept" id="c39">
+    <div class="concept__head"><span class="num">39</span><h2><span lang="en">Dependency Injection</span><span lang="hu">Dependency injection</span></h2><span class="src">Architecture</span></div>
     <p class="def"><span lang="en"><strong>Passing a module its dependencies instead of letting it construct or import them</strong> — the single most practical technique for testable, swappable code.</span><span lang="hu"><strong>A függőségek átadása egy modulnak ahelyett, hogy maga építené vagy importálná őket</strong> — a legpraktikusabb technika tesztelhető, cserélhető kódhoz.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">What problem does it solve?</span><span lang="hu">Milyen problémát old meg?</span></p>
@@ -1245,8 +1496,8 @@ const svc = makeOrderService({
 });</pre></div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Injecting everything makes wiring noisy — you don't need to inject a pure utility like <code>lodash</code> or a date formatter. Inject the things that touch the outside world (I/O, time, randomness) or that you'd want to swap; import the rest directly.</span><span lang="hu">Ha mindent injektálsz, zajos lesz a bekötés — nem kell injektálnod egy tiszta segédeszközt, mint a <code>lodash</code> vagy egy dátumformázó. Azt injektáld, ami a külvilághoz nyúl (I/O, idő, véletlen), vagy amit cserélni akarnál; a többit importáld közvetlenül.</span></p>
   </section>
-<section class="concept" id="c33">
-    <div class="concept__head"><span class="num">33</span><h2><span lang="en">Monolith vs Microservices</span><span lang="hu">Monolit vs microservices</span></h2><span class="src">Architecture</span></div>
+<section class="concept" id="c40">
+    <div class="concept__head"><span class="num">40</span><h2><span lang="en">Monolith vs Microservices</span><span lang="hu">Monolit vs microservices</span></h2><span class="src">Architecture</span></div>
     <p class="def"><span lang="en"><strong>One deployable unit versus many independently deployable services.</strong> The decision is organizational as much as technical — it's about team autonomy and failure isolation, not code elegance.</span><span lang="hu"><strong>Egy deployolható egység vs sok, egymástól függetlenül deployolható szolgáltatás.</strong> A döntés legalább annyira szervezeti, mint technikai — a csapat-autonómiáról és hiba-izolációról szól, nem kód-eleganciáról.</span></p>
     <table class="t">
       <tr><th><span lang="en">Dimension</span><span lang="hu">Dimenzió</span></th><th><span lang="en">Monolith</span><span lang="hu">Monolit</span></th><th><span lang="en">Microservices</span><span lang="hu">Microservices</span></th></tr>
@@ -1273,8 +1524,8 @@ const svc = makeOrderService({
     <p class="note"><span class="note__tag"><span lang="en">Note</span><span lang="hu">Megjegyzés</span></span><span lang="en">The failure modes of the microservices side are covered in the Distributed Systems deck — sagas, idempotency, circuit breakers and the rest.</span><span lang="hu">A microservices oldal hibamódjait a Distributed Systems deck fedi le — sagák, idempotency, circuit breakerek és a többi.</span></p>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Splitting a system you don't yet understand produces a distributed monolith: services that must be deployed together, share a database, and chat constantly over the network. That's strictly worse than the monolith it replaced.</span><span lang="hu">Egy még nem értett rendszer szétbontása elosztott monolitot szül: szolgáltatásokat, amiket együtt kell deployolni, közös adatbázison osztoznak, és folyamatosan csevegnek a hálózaton. Ez szigorúan rosszabb, mint a monolit, amit leváltott.</span></p>
   </section>
-<section class="concept" id="c34">
-    <div class="concept__head"><span class="num">34</span><h2><span lang="en">Trade-offs & Communicating Design</span><span lang="hu">Trade-offök & a terv kommunikálása</span></h2><span class="src">Architecture</span></div>
+<section class="concept" id="c41">
+    <div class="concept__head"><span class="num">41</span><h2><span lang="en">Trade-offs & Communicating Design</span><span lang="hu">Trade-offök & a terv kommunikálása</span></h2><span class="src">Architecture</span></div>
     <p class="def"><span lang="en"><strong>How to justify an architectural decision</strong> — the actual interview skill. There's rarely a correct answer; there's a defensible one with its costs acknowledged.</span><span lang="hu"><strong>Hogyan indokolj egy architekturális döntést</strong> — ez a tényleges interjú-készség. Ritkán van helyes válasz; van védhető, a költségeit felvállalva.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">How should you answer “how would you structure this?”</span><span lang="hu">Hogyan válaszolj arra, hogy „hogyan strukturálnád ezt?”</span></p>
@@ -1292,13 +1543,97 @@ const svc = makeOrderService({
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Answering with an unconditional “microservices” or “clean architecture” signals pattern-matching rather than judgement. Every structure is right for some context and wrong for others — say which context you're assuming.</span><span lang="hu">A feltétel nélküli „microservices” vagy „clean architecture” válasz minta-illesztést jelez, nem ítélőképességet. Minden szerkezet helyes valamely kontextusban és helytelen másokban — mondd ki, melyik kontextust feltételezed.</span></p>
   </section>
+<section class="concept" id="c42">
+    <div class="concept__head"><span class="num">42</span><h2><span lang="en">Strangler Fig Migration</span><span lang="hu">Strangler fig migráció</span></h2><span class="src">Architecture</span></div>
+    <p class="def"><span lang="en"><strong>Replace a legacy system incrementally by routing traffic away from it, feature by feature, until nothing is left.</strong> The alternative — a rewrite that ships in one release — is the failure mode this pattern exists to avoid.</span><span lang="hu"><strong>A legacy rendszert fokozatosan váltod ki: funkcióról funkcióra tereled el róla a forgalmat, míg semmi nem marad belőle.</strong> Az alternatíva — egyetlen release-ben szállított újraírás — az a hibamód, aminek elkerülésére ez a minta létezik.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 200" role="img" aria-label="Strangler facade routing">
+        <rect x="30" y="72" width="110" height="44" rx="8" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.5"/>
+        <text lang="en" x="85" y="99" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">clients</text><text lang="hu" x="85" y="99" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">kliensek</text>
+        <line x1="142" y1="94" x2="196" y2="94" stroke="#94A3B8" stroke-width="1.3" marker-end="url(#arrow)"/>
+        <rect x="200" y="60" width="130" height="68" rx="8" fill="#FFFBEB" stroke="var(--put)" stroke-width="1.6"/>
+        <text lang="en" x="265" y="88" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">facade</text><text lang="hu" x="265" y="88" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">homlokzat</text>
+        <text lang="en" x="265" y="106" text-anchor="middle" font-size="9" fill="var(--muted)">routes per feature</text><text lang="hu" x="265" y="106" text-anchor="middle" font-size="9" fill="var(--muted)">funkciónként útválaszt</text>
+        <line x1="332" y1="78" x2="446" y2="52" stroke="var(--safe,#16A34A)" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="332" y1="110" x2="446" y2="146" stroke="#94A3B8" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+        <rect x="450" y="30" width="200" height="44" rx="8" fill="#F0FDF4" stroke="var(--safe,#16A34A)" stroke-width="1.6"/>
+        <text lang="en" x="550" y="52" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">new service</text><text lang="hu" x="550" y="52" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">új szolgáltatás</text>
+        <text lang="en" x="550" y="66" text-anchor="middle" font-size="9" fill="var(--muted)">grows with each cutover</text><text lang="hu" x="550" y="66" text-anchor="middle" font-size="9" fill="var(--muted)">minden átállással nő</text>
+        <rect x="450" y="126" width="200" height="44" rx="8" fill="#F8FAFC" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text lang="en" x="550" y="148" text-anchor="middle" font-size="11" fill="var(--ink)">legacy monolith</text><text lang="hu" x="550" y="148" text-anchor="middle" font-size="11" fill="var(--ink)">legacy monolit</text>
+        <text lang="en" x="550" y="162" text-anchor="middle" font-size="9" fill="var(--muted)">shrinks, then retires</text><text lang="hu" x="550" y="162" text-anchor="middle" font-size="9" fill="var(--muted)">zsugorodik, majd nyugdíjba megy</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">The facade is the only thing clients see, so each feature can move independently — and move back if it misbehaves.</span><span lang="hu">A homlokzat az egyetlen, amit a kliensek látnak, így minden funkció önállóan költözhet — és vissza is, ha rosszul viselkedik.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Why not just rewrite it?</span><span lang="hu">Miért ne írjuk egyszerűen újra?</span></p>
+      <ul class="a">
+        <li><span lang="en">Because a big-bang rewrite delivers no value until the very end, while the legacy system keeps changing underneath you — so you're chasing a moving target with a growing divergence and a single, unrehearsed cutover at the end. The strangler approach ships value continuously, keeps rollback cheap because only one feature moved, and forces you to understand the legacy behaviour piece by piece rather than all at once.</span><span lang="hu">Mert a big-bang újraírás egészen a végéig nem szállít értéket, miközben a legacy rendszer közben folyamatosan változik alattad — így mozgó célpontot üldözöl növekvő eltéréssel, és a végén egyetlen, be nem gyakorolt átállással. A strangler megközelítés folyamatosan szállít értéket, olcsón tartja a visszagörgetést, mert csak egy funkció költözött, és arra kényszerít, hogy darabonként értsd meg a legacy viselkedést, ne egyszerre.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Where do you make the first cut?</span><span lang="hu">Hol vágsz először?</span></p>
+      <ul class="a">
+        <li><span lang="en">Somewhere with a clear boundary and low blast radius — ideally a read-mostly capability that owns little shared data. Starting with the hardest, most entangled core is a common mistake: you get no early wins, no proven cutover process, and the team's confidence in the migration erodes before it produces anything. The first slice's real job is to prove the routing, monitoring and rollback machinery works.</span><span lang="hu">Ott, ahol tiszta a határ és kicsi a robbanási sugár — ideálisan egy jórészt olvasó képesség, ami kevés megosztott adatot birtokol. Gyakori hiba a legnehezebb, legjobban összegabalyodott maggal kezdeni: nincs korai siker, nincs bizonyított átállási folyamat, és a csapat bizalma a migrációban elfogy, mielőtt bármit termelne. Az első szelet valódi dolga az, hogy bizonyítsa: az útválasztás, a monitorozás és a visszagörgetés gépezete működik.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What makes a strangler migration stall?</span><span lang="hu">Mitől akad el egy strangler migráció?</span></p>
+      <ul class="a">
+        <li><span lang="en">Running out of political will before the legacy system is switched off — leaving two systems to maintain forever, which is worse than either alone. The defences are: a named owner, a decommissioning date treated as a deliverable rather than an aspiration, and refusing to add new features to the legacy path. If everything easy has moved and the last 20% never does, you've paid the full cost and collected half the benefit.</span><span lang="hu">Ha a politikai akarat elfogy, mielőtt a legacy rendszert kikapcsolnák — így örökre két karbantartandó rendszer marad, ami rosszabb bármelyiknél önmagában. A védekezés: nevesített gazda, szállítandóként (nem vágyként) kezelt kivezetési dátum, és annak megtagadása, hogy új funkció kerüljön a legacy útra. Ha minden könnyű átköltözött, és az utolsó 20% soha, akkor a teljes költséget kifizetted, és a haszon felét szedted be.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">The facade becomes a single point of failure and a place where logic quietly accumulates. Keep it dumb — routing and nothing else. Once it contains business rules, it's a third system you now have to migrate too.</span><span lang="hu">A homlokzat egyetlen hibaponttá válik, és olyan hellyé, ahol csendben logika gyűlik fel. Tartsd butának — útválasztás és semmi más. Amint üzleti szabályokat tartalmaz, egy harmadik rendszer lesz, amit szintén migrálnod kell.</span></p>
+  </section>
+<section class="concept" id="c43">
+    <div class="concept__head"><span class="num">43</span><h2><span lang="en">Zero-Downtime Schema Migration</span><span lang="hu">Leállás nélküli séma-migráció</span></h2><span class="src">Architecture</span></div>
+    <p class="def"><span lang="en"><strong>Changing a schema while the old and new code are both running requires every intermediate state to be valid for both.</strong> The technique is expand–migrate–contract: add, backfill, switch, then remove — never in one step.</span><span lang="hu"><strong>Séma megváltoztatása úgy, hogy a régi és az új kód is fut, megköveteli, hogy minden köztes állapot érvényes legyen mindkettőnek.</strong> A technika: expand–migrate–contract — hozzáad, feltölt, átkapcsol, majd eltávolít — sosem egy lépésben.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Phase</span><span lang="hu">Fázis</span></th><th><span lang="en">Schema</span><span lang="hu">Séma</span></th><th><span lang="en">Code</span><span lang="hu">Kód</span></th></tr>
+      <tr><td>1 — expand</td><td><span lang="en">add new column, nullable</span><span lang="hu">új oszlop hozzáadása, nullable</span></td><td><span lang="en">old code unaffected</span><span lang="hu">a régi kódot nem érinti</span></td></tr>
+      <tr><td>2 — <span lang="en">dual write</span><span lang="hu">dual write</span></td><td><span lang="en">both columns exist</span><span lang="hu">mindkét oszlop létezik</span></td><td><span lang="en">writes both, reads old</span><span lang="hu">mindkettőbe ír, régit olvas</span></td></tr>
+      <tr><td>3 — <span lang="en">backfill</span><span lang="hu">backfill</span></td><td><span lang="en">unchanged</span><span lang="hu">változatlan</span></td><td><span lang="en">batch job fills history</span><span lang="hu">kötegelt job tölti a történetet</span></td></tr>
+      <tr><td>4 — <span lang="en">switch reads</span><span lang="hu">olvasás átkapcsolása</span></td><td><span lang="en">unchanged</span><span lang="hu">változatlan</span></td><td><span lang="en">reads new, still writes both</span><span lang="hu">újat olvas, még mindkettőbe ír</span></td></tr>
+      <tr><td>5 — contract</td><td><span lang="en">drop old column</span><span lang="hu">régi oszlop eldobása</span></td><td><span lang="en">writes new only</span><span lang="hu">csak újba ír</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">Why can't you just rename the column?</span><span lang="hu">Miért nem lehet egyszerűen átnevezni az oszlopot?</span></p>
+      <ul class="a">
+        <li><span lang="en">Because during a rolling deploy both versions of the code run simultaneously, and a rename is instantly breaking for whichever half hasn't updated. The same applies to changing a type, adding a <code>NOT NULL</code> constraint, or removing a field from an API response. Every one of those has an expand–contract equivalent that takes several deploys instead of one — the extra deploys are the price of not having downtime.</span><span lang="hu">Mert a rolling deploy alatt a kód mindkét verziója egyszerre fut, és az átnevezés azonnal töri azt a felet, amelyik még nem frissült. Ugyanez vonatkozik a típusváltoztatásra, a <code>NOT NULL</code> megkötés hozzáadására, vagy egy mező eltávolítására egy API-válaszból. Mindegyiknek van expand–contract megfelelője, ami több deployt igényel egy helyett — a plusz deployok a leállás elkerülésének ára.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Which migrations lock the table?</span><span lang="hu">Mely migrációk lockolják a táblát?</span></p>
+      <ul class="a">
+        <li><span lang="en">This is where the theory meets the specific database. In Postgres, adding a nullable column is instant, but adding one with a volatile default rewrites the table on older versions; creating an index locks writes unless you use <code>CREATE INDEX CONCURRENTLY</code>; adding a <code>NOT NULL</code> constraint scans the whole table. Knowing that a migration which passed in staging on 10,000 rows will lock production for minutes on 100 million is the difference between a planned change and an incident.</span><span lang="hu">Itt találkozik az elmélet a konkrét adatbázissal. Postgresben egy nullable oszlop hozzáadása azonnali, de volatilis alapértékkel régebbi verziókon újraírja a táblát; index létrehozása lockolja az írásokat, hacsak nem <code>CREATE INDEX CONCURRENTLY</code>-t használsz; a <code>NOT NULL</code> megkötés hozzáadása végigolvassa a teljes táblát. Annak ismerete, hogy egy stagingen 10 000 soron átment migráció produkcióban 100 millión percekre lockol, a különbség egy tervezett változtatás és egy incidens között.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How does this interact with rollback?</span><span lang="hu">Hogyan viszonyul ez a visszagörgetéshez?</span></p>
+      <ul class="a">
+        <li><span lang="en">It's the main reason for the sequence. Because each step leaves the schema compatible with the previous code version, you can roll back a deploy without rolling back the database — which matters, since restoring a database is slow and lossy. Only the final contract step is irreversible, which is why it happens last and only after the new path has been running successfully for a while.</span><span lang="hu">Ez a fő oka a sorrendnek. Mivel minden lépés a korábbi kódverzióval kompatibilis sémát hagy hátra, visszagörgethetsz egy deployt anélkül, hogy az adatbázist görgetnéd vissza — ami számít, mert egy adatbázis visszaállítása lassú és veszteséges. Csak az utolsó contract lépés visszafordíthatatlan, ezért történik utoljára, és csak azután, hogy az új út egy ideje sikeresen fut.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">A long-running migration inside one transaction holds locks for its entire duration and can block the application while appearing to be "just running". Batch it, commit per batch, and check whether your migration tool wraps everything in a single transaction by default — many do.</span><span lang="hu">Egy hosszan futó migráció egyetlen tranzakción belül a teljes időtartamra tartja a lockokat, és blokkolhatja az alkalmazást, miközben úgy tűnik, „csak fut". Kötegeld, kötegenként commitolj, és nézd meg, hogy a migrációs eszközöd alapból egyetlen tranzakcióba csomagol-e mindent — sok igen.</span></p>
+  </section>
+<section class="concept" id="c44">
+    <div class="concept__head"><span class="num">44</span><h2><span lang="en">Rollout, Flags &amp; Rollback</span><span lang="hu">Rollout, flagek &amp; visszagörgetés</span></h2><span class="src">Architecture</span></div>
+    <p class="def"><span lang="en"><strong>Separating deployment from release: ship the code dark, then turn it on for a slice of traffic.</strong> The goal is to make every change reversible in seconds rather than requiring a redeploy.</span><span lang="hu"><strong>A deployment és a release szétválasztása: szállítsd a kódot sötéten, majd kapcsold be a forgalom egy szeletére.</strong> A cél az, hogy minden változtatás másodpercek alatt visszafordítható legyen, ne új deployt igényeljen.</span></p>
+    <div class="qa">
+      <p class="q"><span lang="en">What is shadow traffic for?</span><span lang="hu">Mire való a shadow traffic?</span></p>
+      <ul class="a">
+        <li><span lang="en">Sending a copy of real production requests to the new implementation while still serving responses from the old one, then comparing outputs. It's the only way to test a migration against genuine traffic shape — the volume, the weird inputs, the long tail of cases nobody wrote a test for — with zero user risk. The catch is side effects: the shadow path must not write, send email or charge cards, so it usually needs a read-only mode built in rather than bolted on.</span><span lang="hu">Valós produkciós kérések másolatát küldöd az új implementációnak, miközben a válaszokat még a régi szolgáltatja, majd összehasonlítod a kimeneteket. Ez az egyetlen mód a migráció tesztelésére valódi forgalmi alakon — a volumenen, a fura inputokon, azon eseteken, amikre senki nem írt tesztet — nulla felhasználói kockázattal. A bökkenő a mellékhatás: az árnyék-út nem írhat, nem küldhet e-mailt, nem terhelhet kártyát, tehát általában beépített, nem utólag ráaggatott csak-olvasható módra van szüksége.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Canary or blue-green?</span><span lang="hu">Canary vagy blue-green?</span></p>
+      <ul class="a">
+        <li><span lang="en">Canary shifts a small percentage of traffic to the new version and increases it as metrics stay healthy — cheap, gradual, and it exposes problems that only appear under partial load. Blue-green runs two full environments and switches all at once, giving instant rollback but requiring double the capacity and offering no gradual signal. Canary is the usual default; blue-green suits changes that can't be partially applied.</span><span lang="hu">A canary a forgalom kis százalékát tereli az új verzióra, és növeli, amíg a metrikák egészségesek maradnak — olcsó, fokozatos, és olyan problémákat hoz elő, amelyek csak részleges terhelésnél jelentkeznek. A blue-green két teljes környezetet futtat, és egyszerre kapcsol át: azonnali visszagörgetést ad, de dupla kapacitást igényel, és nem ad fokozatos jelzést. A canary a szokásos alapértelmezés; a blue-green olyan változtatásokhoz illik, amiket nem lehet részlegesen alkalmazni.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What makes a rollback plan real rather than theoretical?</span><span lang="hu">Mitől valódi egy visszagörgetési terv, nem elméleti?</span></p>
+      <ul class="a">
+        <li><span lang="en">Having rehearsed it, and knowing what it can't undo. Code rolls back cleanly; data written by the new version does not, which is why schema changes are sequenced so the old code can still run. Define the trigger in advance — the specific metric and threshold that means abort — because deciding mid-incident, with people watching, reliably takes longer than it should.</span><span lang="hu">Az, hogy begyakoroltad, és tudod, mit nem tud visszacsinálni. A kód tisztán visszagörög; az új verzió által írt adat nem, ezért van úgy sorrendezve a séma-változtatás, hogy a régi kód még futhasson. Definiáld előre a kiváltó okot — azt a konkrét metrikát és küszöböt, ami leállítást jelent —, mert incidens közben, közönség előtt dönteni megbízhatóan tovább tart a kelleténél.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Feature flags are debt with an expiry date. Each one doubles the paths through the code, and a codebase with hundreds of stale flags has a combinatorial test surface nobody understands. Give every flag an owner and a removal date at creation, and delete it once the rollout is complete.</span><span lang="hu">A feature flag lejárati dátummal rendelkező adósság. Mindegyik megduplázza a kódon átvezető utakat, és egy több száz elavult flaget tartalmazó kódbázisnak olyan kombinatorikus tesztfelülete lesz, amit senki nem ért. Adj minden flagnek gazdát és eltávolítási dátumot már létrehozáskor, és töröld, amint a rollout lezárult.</span></p>
+  </section>
 
   <div class="areahead">
     <h2><span lang="en">Testing</span><span lang="hu">Tesztelés</span></h2>
     <span class="cnt">3</span>
   </div>
-<section class="concept" id="c35">
-    <div class="concept__head"><span class="num">35</span><h2><span lang="en">Integration Testing</span><span lang="hu">Integrációs tesztelés</span></h2><span class="src">Testing</span></div>
+<section class="concept" id="c45">
+    <div class="concept__head"><span class="num">45</span><h2><span lang="en">Integration Testing</span><span lang="hu">Integrációs tesztelés</span></h2><span class="src">Testing</span></div>
     <p class="def"><span lang="en"><strong>Testing several units together, including real collaborators</strong> — a route with its service and database, or a component with its store. Where most real bugs are actually caught.</span><span lang="hu"><strong>Több egység együttes tesztelése, valódi közreműködőkkel</strong> — egy route a szolgáltatásával és adatbázisával, vagy egy komponens a store-jával. Itt fogódik meg a legtöbb valódi bug.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">Why do integration tests catch what unit tests miss?</span><span lang="hu">Miért fogják meg az integrációs tesztek azt, amit a unit tesztek nem?</span></p>
@@ -1340,8 +1675,8 @@ describe('POST /api/orders', () =&gt; {
 });</pre></div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Tests that share mutable state (a seeded row, a global counter) pass alone and fail when run together or in a different order. Each test must set up and tear down its own data — and never depend on execution order.</span><span lang="hu">Azok a tesztek, amelyek mutálható állapoton osztoznak (egy beszúrt sor, egy globális számláló), egyedül átmennek, és együtt vagy más sorrendben futtatva elbuknak. Minden tesztnek a saját adatát kell felépítenie és lebontania — és sosem függhet a végrehajtási sorrendtől.</span></p>
   </section>
-<section class="concept" id="c36">
-    <div class="concept__head"><span class="num">36</span><h2><span lang="en">Testing React Components</span><span lang="hu">React komponensek tesztelése</span></h2><span class="src">Testing</span></div>
+<section class="concept" id="c46">
+    <div class="concept__head"><span class="num">46</span><h2><span lang="en">Testing React Components</span><span lang="hu">React komponensek tesztelése</span></h2><span class="src">Testing</span></div>
     <p class="def"><span lang="en"><strong>Testing components the way a user interacts with them</strong> — querying by visible text and roles, firing real events, asserting on what's rendered rather than on internal state.</span><span lang="hu"><strong>Komponensek tesztelése úgy, ahogy egy user használja őket</strong> — látható szöveg és szerepek szerint keresve, valódi eseményeket kiváltva, a renderelt dologra állítva, nem a belső állapotra.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">What's the guiding principle of React Testing Library?</span><span lang="hu">Mi a React Testing Library vezérelve?</span></p>
@@ -1373,8 +1708,8 @@ it('shows an error when the email is invalid', async () =&gt; {
 });</pre></div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Asserting on internal state or calling a component's methods directly means the test breaks whenever you refactor, even if the UI is identical. And <code>userEvent</code> is preferable to <code>fireEvent</code>: it simulates the full interaction (focus, keydown, input) rather than dispatching a single synthetic event.</span><span lang="hu">A belső állapotra állítás vagy egy komponens metódusainak közvetlen hívása azt jelenti, a teszt minden refaktornál eltörik, akkor is, ha a UI azonos. És a <code>userEvent</code> jobb a <code>fireEvent</code>-nél: a teljes interakciót szimulálja (fókusz, keydown, input), nem egyetlen szintetikus eseményt küld.</span></p>
   </section>
-<section class="concept" id="c37">
-    <div class="concept__head"><span class="num">37</span><h2><span lang="en">End-to-End Testing</span><span lang="hu">End-to-end tesztelés</span></h2><span class="src">Testing</span></div>
+<section class="concept" id="c47">
+    <div class="concept__head"><span class="num">47</span><h2><span lang="en">End-to-End Testing</span><span lang="hu">End-to-end tesztelés</span></h2><span class="src">Testing</span></div>
     <p class="def"><span lang="en"><strong>Driving the real application through the UI as a user would</strong> — a browser against a running stack. The highest confidence and the highest cost.</span><span lang="hu"><strong>A valódi alkalmazás vezérlése a UI-on át, ahogy egy user tenné</strong> — egy böngésző egy futó stack ellen. A legmagasabb bizalom és a legmagasabb költség.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">What should E2E tests cover?</span><span lang="hu">Mit fedjenek le az E2E tesztek?</span></p>
@@ -1397,8 +1732,8 @@ it('shows an error when the email is invalid', async () =&gt; {
     <h2><span lang="en">DevOps & Cloud</span><span lang="hu">DevOps &amp; felhő</span></h2>
     <span class="cnt">4</span>
   </div>
-<section class="concept" id="c38">
-    <div class="concept__head"><span class="num">38</span><h2><span lang="en">Containers & Docker</span><span lang="hu">Konténerek & Docker</span></h2><span class="src">DevOps</span></div>
+<section class="concept" id="c48">
+    <div class="concept__head"><span class="num">48</span><h2><span lang="en">Containers & Docker</span><span lang="hu">Konténerek & Docker</span></h2><span class="src">DevOps</span></div>
     <p class="def"><span lang="en"><strong>Packaging an application with its dependencies into an isolated, portable unit</strong> that runs identically anywhere — solving “works on my machine” by shipping the environment with the code.</span><span lang="hu"><strong>Egy alkalmazás becsomagolása a függőségeivel egy izolált, hordozható egységbe</strong>, amely mindenhol azonosan fut — a „nálam működik” problémát oldja meg azzal, hogy a környezetet a kóddal együtt szállítja.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">Container vs virtual machine?</span><span lang="hu">Konténer vs virtuális gép?</span></p>
@@ -1436,8 +1771,8 @@ CMD ["node", "server.js"]</pre></div>
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Running as root inside a container is the default and a real risk — a container escape then lands on the host with root. Also, secrets passed as build args or copied in end up in image layers and are readable by anyone who pulls the image, even if a later layer deletes the file.</span><span lang="hu">A rootként futás a konténeren belül alapértelmezett és valódi kockázat — egy konténer-kitörés így rootként landol a hoston. És a build-argumentumként átadott vagy bemásolt titkok az image-rétegekben maradnak, és olvashatók bárkinek, aki lehúzza az image-et, akkor is, ha egy későbbi réteg törli a fájlt.</span></p>
   </section>
-<section class="concept" id="c39">
-    <div class="concept__head"><span class="num">39</span><h2><span lang="en">CI/CD Pipelines</span><span lang="hu">CI/CD pipeline-ok</span></h2><span class="src">DevOps</span></div>
+<section class="concept" id="c49">
+    <div class="concept__head"><span class="num">49</span><h2><span lang="en">CI/CD Pipelines</span><span lang="hu">CI/CD pipeline-ok</span></h2><span class="src">DevOps</span></div>
     <p class="def"><span lang="en"><strong>Continuous Integration</strong> merges and verifies every change automatically; <strong>Continuous Delivery</strong> keeps every verified build releasable; <strong>Continuous Deployment</strong> releases it automatically.</span><span lang="hu"><strong>A Continuous Integration</strong> automatikusan mergeli és ellenőrzi minden változtatást; a <strong>Continuous Delivery</strong> kiadhatóan tart minden ellenőrzött buildet; a <strong>Continuous Deployment</strong> automatikusan ki is adja.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">What does a pipeline actually run?</span><span lang="hu">Mit futtat ténylegesen egy pipeline?</span></p>
@@ -1455,8 +1790,8 @@ CMD ["node", "server.js"]</pre></div>
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">A pipeline nobody trusts gets bypassed. If the suite is flaky or takes 40 minutes, people will merge around it or rubber-stamp red builds — the process becomes theatre. Speed and reliability of the pipeline are features, not polish.</span><span lang="hu">Egy pipeline, amiben senki nem bízik, meg lesz kerülve. Ha a suite flaky vagy 40 percig tart, az emberek megkerülik vagy lepecsételik a piros buildeket — a folyamat színházzá válik. A pipeline sebessége és megbízhatósága feature, nem fényezés.</span></p>
   </section>
-<section class="concept" id="c40">
-    <div class="concept__head"><span class="num">40</span><h2><span lang="en">Scaling & Load Balancing</span><span lang="hu">Skálázás & load balancing</span></h2><span class="src">DevOps</span></div>
+<section class="concept" id="c50">
+    <div class="concept__head"><span class="num">50</span><h2><span lang="en">Scaling & Load Balancing</span><span lang="hu">Skálázás & load balancing</span></h2><span class="src">DevOps</span></div>
     <p class="def"><span lang="en"><strong>Adding capacity to meet load</strong> — vertically by making instances bigger, or horizontally by adding more of them behind a load balancer.</span><span lang="hu"><strong>Kapacitás hozzáadása a terhelés kiszolgálásához</strong> — vertikálisan nagyobb példányokkal, vagy horizontálisan több példánnyal egy load balancer mögött.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">Vertical vs horizontal?</span><span lang="hu">Vertikális vs horizontális?</span></p>
@@ -1474,8 +1809,8 @@ CMD ["node", "server.js"]</pre></div>
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Adding app instances without checking the database connection limit makes things worse — each instance opens a pool, and you exhaust the database's connections. Use a connection pooler (PgBouncer) and size pools against the DB limit, not per instance.</span><span lang="hu">App-példányok hozzáadása az adatbázis kapcsolat-limitjének ellenőrzése nélkül rontja a helyzetet — minden példány nyit egy poolt, és kimeríted az adatbázis kapcsolatait. Használj connection poolert (PgBouncer), és a poolokat a DB-limithez méretezd, ne példányonként.</span></p>
   </section>
-<section class="concept" id="c41">
-    <div class="concept__head"><span class="num">41</span><h2><span lang="en">Monitoring & Observability</span><span lang="hu">Monitoring & observability</span></h2><span class="src">DevOps</span></div>
+<section class="concept" id="c51">
+    <div class="concept__head"><span class="num">51</span><h2><span lang="en">Monitoring & Observability</span><span lang="hu">Monitoring & observability</span></h2><span class="src">DevOps</span></div>
     <p class="def"><span lang="en"><strong>Knowing what a running system is doing</strong> through logs, metrics and traces — and being alerted when it stops doing it correctly.</span><span lang="hu"><strong>Annak ismerete, mit csinál egy futó rendszer</strong> logokon, metrikákon és trace-eken át — és riasztás, amikor abbahagyja a helyes működést.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">What should you actually alert on?</span><span lang="hu">Mire riassz ténylegesen?</span></p>
@@ -1495,11 +1830,324 @@ CMD ["node", "server.js"]</pre></div>
   </section>
 
   <div class="areahead">
+    <h2><span lang="en">TypeScript</span><span lang="hu">TypeScript</span></h2>
+    <span class="cnt">5</span>
+  </div>
+<section class="concept" id="c52">
+    <div class="concept__head"><span class="num">52</span><h2><span lang="en">Structural Typing</span><span lang="hu">Strukturális típusosság</span></h2><span class="src">TypeScript</span></div>
+    <p class="def"><span lang="en"><strong>TypeScript compares types by shape, not by name.</strong> If an object has the required members, it is assignable — regardless of which class or interface it was declared from.</span><span lang="hu"><strong>A TypeScript alak szerint hasonlítja a típusokat, nem név szerint.</strong> Ha egy objektumnak megvannak a szükséges tagjai, akkor értékül adható — függetlenül attól, melyik osztályból vagy interface-ből származik.</span></p>
+    <div class="codepair">
+      <div class="cbox cbox--good"><div class="cbox__h"><span lang="en">Assignable — shapes match</span><span lang="hu">Értékül adható — az alak egyezik</span></div><pre>interface Point { x: number; y: number }
+
+class Vec { constructor(
+  public x: number,
+  public y: number
+) {} }
+
+// never declared as Point, still fits
+const p: Point = new Vec(1, 2);</pre></div>
+      <div class="cbox cbox--bad"><div class="cbox__h"><span lang="en">The downside — no nominal safety</span><span lang="hu">Az árnyoldal — nincs névbeli védelem</span></div><pre>type UserId  = string;
+type OrderId = string;
+
+function get(id: UserId) { /* … */ }
+
+const order: OrderId = 'o-1';
+get(order); // compiles — both are string</pre></div>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Structural vs nominal typing — what's the practical difference?</span><span lang="hu">Strukturális vs nominális típusosság — mi a gyakorlati különbség?</span></p>
+      <ul class="a">
+        <li><span lang="en">In nominal systems (Java, C#) a type matches only if you declared that relationship. In TypeScript the declaration is irrelevant — only the members count. This makes typing existing JS painless, and lets you type a function's parameter without importing the class the caller happens to use.</span><span lang="hu">Nominális rendszerekben (Java, C#) egy típus csak akkor illeszkedik, ha kimondtad a kapcsolatot. A TypeScriptben a deklaráció lényegtelen — csak a tagok számítanak. Ettől fájdalommentes a meglévő JS típusozása, és úgy tudsz paramétert típusozni, hogy nem importálod a hívó által épp használt osztályt.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you get nominal behaviour when you need it?</span><span lang="hu">Hogyan érsz el nominális viselkedést, ha kell?</span></p>
+      <ul class="a">
+        <li><span lang="en">A <strong>branded</strong> (or "opaque") type: intersect the primitive with a marker that has no runtime existence — <code>type UserId = string &amp; { readonly __brand: unique symbol }</code>. Now a raw <code>string</code> won't pass, and a <code>UserId</code> won't be accepted where an <code>OrderId</code> is expected. It costs a cast at the boundary where you create one.</span><span lang="hu"><strong>Branded</strong> (vagy „opaque") típus: metszed a primitívet egy futásidőben nem létező jelölővel — <code>type UserId = string &amp; { readonly __brand: unique symbol }</code>. Így egy nyers <code>string</code> nem megy át, és egy <code>UserId</code> sem fogadható el ott, ahol <code>OrderId</code> a várt. Cserébe egy cast kell a határon, ahol létrehozod.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Does an object with extra properties fit?</span><span lang="hu">Belefér egy plusz property-vel rendelkező objektum?</span></p>
+      <ul class="a">
+        <li><span lang="en">Yes, when it arrives through a variable — extra members are allowed. But an <em>object literal</em> assigned directly triggers <strong>excess property checking</strong> and errors. The check exists to catch typos; assigning through a variable is the documented escape hatch.</span><span lang="hu">Igen, ha változón keresztül érkezik — a plusz tagok megengedettek. De egy közvetlenül értékül adott <em>objektum-literál</em> aktiválja az <strong>excess property checkinget</strong>, és hibát dob. Az ellenőrzés az elgépeléseket célozza; a változón át adás a dokumentált kiskapu.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Structural typing means <code>{}</code> and <code>object</code> are far wider than people expect — <code>{}</code> accepts anything except <code>null</code>/<code>undefined</code>, including numbers and strings. If you mean "some object", write <code>Record&lt;string, unknown&gt;</code>.</span><span lang="hu">A strukturális típusosság miatt a <code>{}</code> és az <code>object</code> sokkal tágabb, mint hinnéd — a <code>{}</code> a <code>null</code>/<code>undefined</code> kivételével mindent elfogad, számot és stringet is. Ha „valamilyen objektumra" gondolsz, írj <code>Record&lt;string, unknown&gt;</code>-t.</span></p>
+  </section>
+<section class="concept" id="c53">
+    <div class="concept__head"><span class="num">53</span><h2><span lang="en">Utility Types</span><span lang="hu">Utility típusok</span></h2><span class="src">TypeScript</span></div>
+    <p class="def"><span lang="en"><strong>Built-in generic types that derive one type from another</strong> — so a change to the source type propagates instead of drifting out of sync with a hand-maintained copy.</span><span lang="hu"><strong>Beépített generikus típusok, amelyek egy típust egy másikból származtatnak</strong> — így a forrástípus változása továbbterjed, ahelyett hogy egy kézzel karbantartott másolat elcsúszna tőle.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Utility</span><span lang="hu">Utility</span></th><th><span lang="en">Does</span><span lang="hu">Mit csinál</span></th><th><span lang="en">Typical use</span><span lang="hu">Tipikus használat</span></th></tr>
+      <tr><td><code>Partial&lt;T&gt;</code></td><td><span lang="en">all optional</span><span lang="hu">mind opcionális</span></td><td><span lang="en">PATCH payloads</span><span lang="hu">PATCH payloadok</span></td></tr>
+      <tr><td><code>Required&lt;T&gt;</code></td><td><span lang="en">all required</span><span lang="hu">mind kötelező</span></td><td><span lang="en">after defaults applied</span><span lang="hu">alapértékek után</span></td></tr>
+      <tr><td><code>Pick&lt;T,K&gt;</code> / <code>Omit&lt;T,K&gt;</code></td><td><span lang="en">select / exclude keys</span><span lang="hu">kulcsok kiválasztása / kizárása</span></td><td><span lang="en">public DTO from an entity</span><span lang="hu">publikus DTO egy entitásból</span></td></tr>
+      <tr><td><code>Record&lt;K,V&gt;</code></td><td><span lang="en">keyed map</span><span lang="hu">kulcsolt map</span></td><td><span lang="en">lookup tables</span><span lang="hu">lookup táblák</span></td></tr>
+      <tr><td><code>Readonly&lt;T&gt;</code></td><td><span lang="en">no reassignment</span><span lang="hu">nincs újraértékadás</span></td><td><span lang="en">frozen config, props</span><span lang="hu">fagyasztott config, propok</span></td></tr>
+      <tr><td><code>ReturnType&lt;F&gt;</code> / <code>Parameters&lt;F&gt;</code></td><td><span lang="en">read a function's types</span><span lang="hu">függvénytípusok kiolvasása</span></td><td><span lang="en">wrapping, mocking</span><span lang="hu">wrapping, mockolás</span></td></tr>
+      <tr><td><code>Awaited&lt;T&gt;</code></td><td><span lang="en">unwrap a Promise</span><span lang="hu">Promise kicsomagolása</span></td><td><span lang="en">async return types</span><span lang="hu">async visszatérési típusok</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">Why derive instead of writing the second type by hand?</span><span lang="hu">Miért származtass, ahelyett hogy kézzel írnád a második típust?</span></p>
+      <ul class="a">
+        <li><span lang="en">Because hand-written copies rot. If <code>User</code> gains a field and <code>PublicUser</code> was <code>Omit&lt;User, 'passwordHash'&gt;</code>, the new field appears automatically — and, importantly, if someone renames <code>passwordHash</code>, the <code>Omit</code> fails to compile rather than silently leaking it.</span><span lang="hu">Mert a kézzel írt másolatok elrohadnak. Ha a <code>User</code> új mezőt kap, és a <code>PublicUser</code> egy <code>Omit&lt;User, 'passwordHash'&gt;</code> volt, az új mező automatikusan megjelenik — és ami fontosabb, ha valaki átnevezi a <code>passwordHash</code>-t, az <code>Omit</code> fordítási hibát dob, nem pedig csendben kiszivárogtatja.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How would you build one yourself?</span><span lang="hu">Hogyan építenél sajátot?</span></p>
+      <ul class="a">
+        <li><span lang="en">With a mapped type plus modifiers: <code>type Partial&lt;T&gt; = { [K in keyof T]?: T[K] }</code>. Add <code>readonly</code>, or remove modifiers with <code>-?</code> and <code>-readonly</code>. Being able to write <code>Partial</code> from memory is a reasonable proxy for understanding mapped types at all.</span><span lang="hu">Mapped típussal és módosítókkal: <code>type Partial&lt;T&gt; = { [K in keyof T]?: T[K] }</code>. Adj hozzá <code>readonly</code>-t, vagy vedd el a módosítókat <code>-?</code> és <code>-readonly</code> segítségével. A <code>Partial</code> fejből leírása jó közelítés arra, hogy érti-e valaki egyáltalán a mapped típusokat.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What's the catch with <code>Omit</code>?</span><span lang="hu">Mi a csapda az <code>Omit</code>-tal?</span></p>
+      <ul class="a">
+        <li><span lang="en">It doesn't validate that the key exists — <code>Omit&lt;User, 'typo'&gt;</code> compiles fine and quietly omits nothing. <code>Pick</code> does check. If you rely on <code>Omit</code> for security-relevant fields, add a test or use a checked variant that constrains <code>K extends keyof T</code>.</span><span lang="hu">Nem ellenőrzi, hogy a kulcs létezik-e — az <code>Omit&lt;User, 'typo'&gt;</code> hiba nélkül lefordul, és csendben semmit nem hagy ki. A <code>Pick</code> viszont ellenőriz. Ha biztonsági szempontból fontos mezőknél támaszkodsz az <code>Omit</code>-ra, tegyél mellé tesztet, vagy használj ellenőrzött változatot, ami <code>K extends keyof T</code>-t köt ki.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>Partial&lt;T&gt;</code> is shallow — nested objects stay required. And it's frequently misused on function arguments: making every field optional to avoid writing a constructor turns a compile-time guarantee into a pile of runtime <code>undefined</code> checks.</span><span lang="hu">A <code>Partial&lt;T&gt;</code> sekély — a beágyazott objektumok kötelezők maradnak. És gyakran visszaélnek vele függvényargumentumoknál: minden mező opcionálissá tétele, hogy ne kelljen konstruktort írni, fordítási idejű garanciát cserél futásidejű <code>undefined</code>-ellenőrzések halmazára.</span></p>
+  </section>
+<section class="concept" id="c54">
+    <div class="concept__head"><span class="num">54</span><h2><span lang="en">Runtime vs Compile-time</span><span lang="hu">Futásidő vs fordítási idő</span></h2><span class="src">TypeScript</span></div>
+    <p class="def"><span lang="en"><strong>Types are erased at build time — none of them exist when the code runs.</strong> Anything crossing a boundary (HTTP, database, file, message queue) is unvalidated until you validate it yourself.</span><span lang="hu"><strong>A típusok build időben eltűnnek — futáskor egyikük sem létezik.</strong> Bármi, ami határon lép át (HTTP, adatbázis, fájl, message queue), validálatlan, amíg te nem validálod.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 180" role="img" aria-label="Type erasure at the boundary">
+        <rect x="20" y="40" width="180" height="86" rx="10" fill="#F0FDF4" stroke="var(--safe,#16A34A)" stroke-width="1.6"/>
+        <text lang="en" x="110" y="66" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">Your code</text><text lang="hu" x="110" y="66" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">A te kódod</text>
+        <text lang="en" x="110" y="88" text-anchor="middle" font-size="10" fill="var(--muted)">types checked</text><text lang="hu" x="110" y="88" text-anchor="middle" font-size="10" fill="var(--muted)">típusok ellenőrizve</text>
+        <text lang="en" x="110" y="104" text-anchor="middle" font-size="10" fill="var(--muted)">at compile time</text><text lang="hu" x="110" y="104" text-anchor="middle" font-size="10" fill="var(--muted)">fordítási időben</text>
+        <line x1="340" y1="20" x2="340" y2="160" stroke="var(--vuln,#DC2626)" stroke-width="1.6" stroke-dasharray="5 4"/>
+        <text lang="en" x="340" y="16" text-anchor="middle" font-size="10" fill="var(--vuln,#DC2626)" font-weight="600">boundary</text><text lang="hu" x="340" y="16" text-anchor="middle" font-size="10" fill="var(--vuln,#DC2626)" font-weight="600">határ</text>
+        <rect x="248" y="66" width="184" height="34" rx="8" fill="#FFFBEB" stroke="var(--put)" stroke-width="1.5"/>
+        <text lang="en" x="340" y="87" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">validate here</text><text lang="hu" x="340" y="87" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">itt validálj</text>
+        <rect x="480" y="40" width="180" height="86" rx="10" fill="#FEF2F2" stroke="var(--vuln,#DC2626)" stroke-width="1.6"/>
+        <text lang="en" x="570" y="66" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">Outside world</text><text lang="hu" x="570" y="66" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">Külvilág</text>
+        <text lang="en" x="570" y="88" text-anchor="middle" font-size="10" fill="var(--muted)">API, DB, queue, file</text><text lang="hu" x="570" y="88" text-anchor="middle" font-size="10" fill="var(--muted)">API, DB, queue, fájl</text>
+        <text lang="en" x="570" y="104" text-anchor="middle" font-size="10" fill="var(--muted)">no guarantees</text><text lang="hu" x="570" y="104" text-anchor="middle" font-size="10" fill="var(--muted)">semmi garancia</text>
+        <line x1="478" y1="150" x2="202" y2="150" stroke="#94A3B8" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <text lang="en" x="340" y="146" text-anchor="middle" font-size="9" fill="var(--slate)">an annotation here is a claim, not a check</text><text lang="hu" x="340" y="146" text-anchor="middle" font-size="9" fill="var(--slate)">az annotáció itt állítás, nem ellenőrzés</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">Annotating a fetch result as <code>User</code> asserts a fact about data you haven't checked. Only a runtime validator makes it true.</span><span lang="hu">Egy fetch-eredmény <code>User</code>-ként annotálása olyan tényt állít, amit nem ellenőriztél. Csak futásidejű validátor teszi igazzá.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">What survives compilation, and what doesn't?</span><span lang="hu">Mi éli túl a fordítást, és mi nem?</span></p>
+      <ul class="a">
+        <li><span lang="en">Erased: types, interfaces, generics, <code>as</code> casts, <code>private</code>/<code>public</code> modifiers. Kept, because they emit real JavaScript: <code>enum</code> (a runtime object), classes, and parameter properties. This is why you can't do <code>if (x instanceof MyInterface)</code> — there's nothing there at runtime.</span><span lang="hu">Eltűnik: típusok, interface-ek, generikusok, <code>as</code> castok, <code>private</code>/<code>public</code> módosítók. Megmarad, mert valódi JavaScriptet generál: az <code>enum</code> (futásidejű objektum), az osztályok és a paraméter-property-k. Ezért nem írhatsz <code>if (x instanceof MyInterface)</code>-t — futásidőben nincs ott semmi.</span></li>
+      </ul>
+      <p class="q"><span lang="en">So how do you get real safety at the boundary?</span><span lang="hu">Akkor hogyan érsz el valódi biztonságot a határon?</span></p>
+      <ul class="a">
+        <li><span lang="en">Parse, don't assert. A schema validator (Zod, Valibot, io-ts, AJV) checks the value at runtime <em>and</em> infers the static type from the same schema, so there's one source of truth. <code>const user = UserSchema.parse(json)</code> gives you a checked value and a typed one from a single declaration.</span><span lang="hu">Parse-olj, ne állíts. Egy séma-validátor (Zod, Valibot, io-ts, AJV) futásidőben ellenőrzi az értéket, <em>és</em> ugyanabból a sémából származtatja a statikus típust, így egyetlen igazságforrás van. A <code>const user = UserSchema.parse(json)</code> egyetlen deklarációból ad ellenőrzött és típusozott értéket is.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What's wrong with <code>as</code>?</span><span lang="hu">Mi a baj az <code>as</code>-szel?</span></p>
+      <ul class="a">
+        <li><span lang="en">It's an assertion, not a conversion — it changes what the compiler believes without changing the value or checking anything. It's occasionally necessary (branded types, narrowing the compiler can't follow), but each one is a place where a runtime error can originate with no compile-time trace. <code>as unknown as T</code> is a double assertion and almost always a smell.</span><span lang="hu">Ez állítás, nem konverzió — megváltoztatja, mit hisz a fordító, anélkül hogy az értéket megváltoztatná vagy bármit ellenőrizne. Néha szükséges (branded típusok, olyan narrowing, amit a fordító nem tud követni), de mindegyik olyan hely, ahonnan futásidejű hiba indulhat fordítási nyom nélkül. Az <code>as unknown as T</code> dupla állítás, és szinte mindig szagos.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">This is the single most common source of production bugs in typed codebases: an API changes shape, the annotation still claims the old one, and TypeScript reports nothing because it never looked. Validate at every boundary you don't control — including your own database rows after a migration.</span><span lang="hu">Ez a típusozott kódbázisok leggyakoribb produkciós hibaforrása: az API alakja megváltozik, az annotáció még a régit állítja, és a TypeScript semmit nem jelez, mert sosem nézte meg. Validálj minden határon, amit nem te felügyelsz — beleértve a saját adatbázis-soraidat is egy migráció után.</span></p>
+  </section>
+<section class="concept" id="c55">
+    <div class="concept__head"><span class="num">55</span><h2><span lang="en">Typing Node &amp; Express</span><span lang="hu">Node &amp; Express típusozása</span></h2><span class="src">TypeScript</span></div>
+    <p class="def"><span lang="en"><strong>Server-side TypeScript concentrates on three things:</strong> typing the request/response cycle, keeping validated input and static types in sync, and handling errors — which arrive as <code>unknown</code>.</span><span lang="hu"><strong>A szerveroldali TypeScript három dologra koncentrál:</strong> a request/response ciklus típusozása, a validált input és a statikus típusok szinkronban tartása, és a hibakezelés — a hibák ugyanis <code>unknown</code>-ként érkeznek.</span></p>
+    <div class="codepair">
+      <div class="cbox cbox--bad"><div class="cbox__h"><span lang="en">Asserted — a lie the compiler believes</span><span lang="hu">Állítás — hazugság, amit a fordító elhisz</span></div><pre>app.post('/users', (req, res) =&gt; {
+  const body = req.body as CreateUser;
+  // req.body is `any`; the cast checks
+  // nothing. Malformed input flows on.
+  save(body);
+});</pre></div>
+      <div class="cbox cbox--good"><div class="cbox__h"><span lang="en">Parsed — one source of truth</span><span lang="hu">Parse-olva — egyetlen igazságforrás</span></div><pre>const CreateUser = z.object({
+  email: z.string().email(),
+  age:   z.number().int().positive()
+});
+type CreateUser = z.infer&lt;typeof CreateUser&gt;;
+
+app.post('/users', (req, res) =&gt; {
+  const body = CreateUser.parse(req.body);
+  save(body); // checked AND typed
+});</pre></div>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Why is <code>catch (e)</code> typed <code>unknown</code>?</span><span lang="hu">Miért <code>unknown</code> típusú a <code>catch (e)</code>?</span></p>
+      <ul class="a">
+        <li><span lang="en">Because JavaScript lets you throw anything — a string, a number, <code>undefined</code>. Under <code>useUnknownInCatchVariables</code> (part of <code>strict</code>), TypeScript reflects that honestly, so you must narrow with <code>e instanceof Error</code> before reading <code>e.message</code>. Older code annotated it <code>any</code> and read <code>.message</code> off a string.</span><span lang="hu">Mert a JavaScriptben bármit dobhatsz — stringet, számot, <code>undefined</code>-ot. A <code>useUnknownInCatchVariables</code> alatt (a <code>strict</code> része) a TypeScript ezt őszintén tükrözi, így <code>e instanceof Error</code>-ral kell szűkítened, mielőtt olvasnád az <code>e.message</code>-et. A régebbi kód <code>any</code>-vel annotálta, és stringről olvasta a <code>.message</code>-et.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you type <code>req.user</code> added by auth middleware?</span><span lang="hu">Hogyan típusozod az auth middleware által hozzáadott <code>req.user</code>-t?</span></p>
+      <ul class="a">
+        <li><span lang="en">Declaration merging into Express's namespace — <code>declare global { namespace Express { interface Request { user?: User } } }</code>. Note the <code>?</code>: it's genuinely absent before the middleware runs, and typing it as required is a lie that bites on unauthenticated routes. The stricter alternative is a separate <code>AuthedRequest</code> type used only on guarded handlers.</span><span lang="hu">Declaration merging az Express névterébe — <code>declare global { namespace Express { interface Request { user?: User } } }</code>. Figyeld a <code>?</code>-et: a middleware lefutása előtt tényleg nincs ott, és kötelezőként típusozni olyan hazugság, ami a nem autentikált route-okon üt vissza. A szigorúbb alternatíva egy külön <code>AuthedRequest</code> típus, csak a védett handlereken.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What about types from the database layer?</span><span lang="hu">Mi a helyzet az adatbázis-réteg típusaival?</span></p>
+      <ul class="a">
+        <li><span lang="en">Prefer generated over hand-written: Prisma, Kysely and drizzle derive types from the schema, so a migration that renames a column breaks the build instead of production. Where types are hand-written (raw SQL, older ORMs), they are an assumption about the database — the same boundary problem as an HTTP response.</span><span lang="hu">Inkább generált, mint kézzel írt: a Prisma, a Kysely és a drizzle a sémából származtatja a típusokat, így egy oszlopot átnevező migráció a buildet töri el, nem a produkciót. Ahol kézzel írtak (nyers SQL, régebbi ORM-ek), ott a típus feltételezés az adatbázisról — ugyanaz a határprobléma, mint egy HTTP-válasznál.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">An <code>async</code> Express handler that rejects does not reach your error middleware before Express 5 — the promise is unhandled and the request hangs. Wrap handlers, or upgrade. This is a favourite interview question precisely because the type system cannot warn you about it.</span><span lang="hu">Egy elutasító <code>async</code> Express handler az Express 5 előtt nem éri el a hibakezelő middleware-t — a promise kezeletlen marad, és a kérés lefagy. Csomagold be a handlereket, vagy frissíts. Pont azért kedvelt interjúkérdés, mert a típusrendszer nem tud figyelmeztetni rá.</span></p>
+  </section>
+<section class="concept" id="c56">
+    <div class="concept__head"><span class="num">56</span><h2><span lang="en">Typing React</span><span lang="hu">React típusozása</span></h2><span class="src">TypeScript</span></div>
+    <p class="def"><span lang="en"><strong>In React, TypeScript's job is mostly props, state and events</strong> — plus making invalid prop combinations impossible rather than merely documented.</span><span lang="hu"><strong>Reactben a TypeScript dolga főként a propok, a state és az események típusozása</strong> — plusz az érvénytelen prop-kombinációk lehetetlenné tétele, nem csak dokumentálása.</span></p>
+    <div class="codepair">
+      <div class="cbox cbox--bad"><div class="cbox__h"><span lang="en">Documented, not enforced</span><span lang="hu">Dokumentált, nem kikényszerített</span></div><pre>interface Props {
+  variant: 'link' | 'button';
+  href?: string;   // "required if link"
+  onClick?: () =&gt; void;
+}
+// nothing stops variant='link' with no href</pre></div>
+      <div class="cbox cbox--good"><div class="cbox__h"><span lang="en">Impossible to misuse</span><span lang="hu">Lehetetlen rosszul használni</span></div><pre>type Props =
+  | { variant: 'link';   href: string }
+  | { variant: 'button'; onClick: () =&gt; void };
+
+// omitting href on a link is now
+// a compile error at the call site</pre></div>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">How do you type children, events and refs?</span><span lang="hu">Hogyan típusozod a childrent, az eseményeket és a refeket?</span></p>
+      <ul class="a">
+        <li><span lang="en">Children as <code>React.ReactNode</code>. Events by their specific type — <code>React.ChangeEvent&lt;HTMLInputElement&gt;</code>, <code>React.FormEvent&lt;HTMLFormElement&gt;</code> — which gives you a typed <code>e.target.value</code>. Refs as <code>useRef&lt;HTMLDivElement&gt;(null)</code>, remembering <code>.current</code> is nullable until mount.</span><span lang="hu">A children <code>React.ReactNode</code>. Az események a saját típusukkal — <code>React.ChangeEvent&lt;HTMLInputElement&gt;</code>, <code>React.FormEvent&lt;HTMLFormElement&gt;</code> —, ami típusozott <code>e.target.value</code>-t ad. A refek <code>useRef&lt;HTMLDivElement&gt;(null)</code>, észben tartva, hogy a <code>.current</code> mountig nullable.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why did <code>React.FC</code> fall out of favour?</span><span lang="hu">Miért ment ki a divatból a <code>React.FC</code>?</span></p>
+      <ul class="a">
+        <li><span lang="en">It used to add an implicit <code>children</code> prop to every component, including ones that should reject children — removed in React 18's types. It also complicates generic components. The current convention is to annotate the props parameter and let the return type infer: <code>function Card(props: Props)</code>.</span><span lang="hu">Régen minden komponenshez implicit <code>children</code> propot adott, azokhoz is, amelyeknek el kellene utasítaniuk — a React 18 típusaiban eltávolították. A generikus komponenseket is bonyolítja. A mai konvenció: annotáld a props paramétert, és hagyd a visszatérési típust következtetni — <code>function Card(props: Props)</code>.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you extend a native element's props?</span><span lang="hu">Hogyan bővíted egy natív elem propjait?</span></p>
+      <ul class="a">
+        <li><span lang="en"><code>ComponentPropsWithoutRef&lt;'button'&gt;</code> — it picks up every valid attribute, so consumers can pass <code>aria-label</code>, <code>disabled</code> or <code>type</code> without you enumerating them. Combine with <code>Omit</code> when you're overriding one, and use the <code>WithRef</code> variant when forwarding a ref.</span><span lang="hu"><code>ComponentPropsWithoutRef&lt;'button'&gt;</code> — felveszi az összes érvényes attribútumot, így a fogyasztók átadhatnak <code>aria-label</code>-t, <code>disabled</code>-t vagy <code>type</code>-ot anélkül, hogy felsorolnád őket. Kombináld <code>Omit</code>-tal, ha felülírsz egyet, és használd a <code>WithRef</code> változatot ref továbbításánál.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>useState([])</code> infers <code>never[]</code>, so every later push fails — annotate as <code>useState&lt;Item[]&gt;([])</code>. Same trap with <code>useState(null)</code>, which infers <code>null</code> rather than <code>T | null</code>.</span><span lang="hu">A <code>useState([])</code> <code>never[]</code>-et következtet, így minden későbbi push hibázik — annotáld <code>useState&lt;Item[]&gt;([])</code>-ként. Ugyanez a csapda a <code>useState(null)</code>-lal, ami <code>null</code>-t következtet <code>T | null</code> helyett.</span></p>
+  </section>
+
+  <div class="areahead">
+    <h2><span lang="en">CSS & Layout</span><span lang="hu">CSS &amp; elrendezés</span></h2>
+    <span class="cnt">4</span>
+  </div>
+<section class="concept" id="c57">
+    <div class="concept__head"><span class="num">57</span><h2><span lang="en">Positioning</span><span lang="hu">Pozicionálás</span></h2><span class="src">CSS</span></div>
+    <p class="def"><span lang="en"><strong><code>position</code> decides what an element is offset from — and whether it still occupies space in the flow.</strong> Most positioning bugs are really about which ancestor is acting as the reference.</span><span lang="hu"><strong>A <code>position</code> dönti el, mihez képest tolódik el az elem — és hogy továbbra is helyet foglal-e a folyamban.</strong> A legtöbb pozicionálási hiba valójában arról szól, melyik ős szolgál referenciaként.</span></p>
+    <table class="t">
+      <tr><th>position</th><th><span lang="en">Offset from</span><span lang="hu">Mihez képest</span></th><th><span lang="en">In flow?</span><span lang="hu">Folyamban?</span></th></tr>
+      <tr><td><code>static</code></td><td><span lang="en">— (default)</span><span lang="hu">— (alapértelmezett)</span></td><td><span lang="en">yes</span><span lang="hu">igen</span></td></tr>
+      <tr><td><code>relative</code></td><td><span lang="en">its own normal position</span><span lang="hu">a saját normál pozíciója</span></td><td><span lang="en">yes — space kept</span><span lang="hu">igen — a hely megmarad</span></td></tr>
+      <tr><td><code>absolute</code></td><td><span lang="en">nearest positioned ancestor</span><span lang="hu">a legközelebbi pozicionált ős</span></td><td><span lang="en">no</span><span lang="hu">nem</span></td></tr>
+      <tr><td><code>fixed</code></td><td><span lang="en">the viewport</span><span lang="hu">a viewport</span></td><td><span lang="en">no</span><span lang="hu">nem</span></td></tr>
+      <tr><td><code>sticky</code></td><td><span lang="en">scroll position, within its parent</span><span lang="hu">görgetési pozíció, a szülőjén belül</span></td><td><span lang="en">yes</span><span lang="hu">igen</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">What does "nearest positioned ancestor" mean exactly?</span><span lang="hu">Mit jelent pontosan a „legközelebbi pozicionált ős"?</span></p>
+      <ul class="a">
+        <li><span lang="en">The closest ancestor whose <code>position</code> is anything other than <code>static</code>. If none exists, the element positions against the initial containing block — effectively the page. This is why the fix for a stray absolute element is almost always adding <code>position: relative</code> to the intended parent, with no offsets: it establishes the reference without moving anything.</span><span lang="hu">A legközelebbi ős, amelynek a <code>position</code>-je nem <code>static</code>. Ha nincs ilyen, az elem a kezdeti tartalmazó blokkhoz igazodik — gyakorlatilag az oldalhoz. Ezért az elkóborolt abszolút elem javítása szinte mindig az, hogy <code>position: relative</code>-t adsz a szánt szülőnek, eltolás nélkül: ez létrehozza a referenciát anélkül, hogy bármit elmozdítana.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why does <code>position: sticky</code> so often do nothing?</span><span lang="hu">Miért nem csinál semmit gyakran a <code>position: sticky</code>?</span></p>
+      <ul class="a">
+        <li><span lang="en">Three usual causes: no threshold was set (it needs at least one of <code>top</code>/<code>bottom</code>/<code>left</code>/<code>right</code>); an ancestor has <code>overflow: hidden</code>, <code>auto</code> or <code>scroll</code>, which makes that the scroll container instead of the page; or the parent is exactly as tall as the sticky element, leaving no distance to travel. The second is the one that wastes the most time.</span><span lang="hu">Három szokásos ok: nincs küszöb beállítva (kell legalább egy <code>top</code>/<code>bottom</code>/<code>left</code>/<code>right</code>); valamelyik ősön <code>overflow: hidden</code>, <code>auto</code> vagy <code>scroll</code> van, amitől az lesz a görgetési konténer az oldal helyett; vagy a szülő pontosan olyan magas, mint a sticky elem, így nincs bejárható táv. A második viszi el a legtöbb időt.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you center an absolutely positioned element?</span><span lang="hu">Hogyan igazítasz középre egy abszolút pozicionált elemet?</span></p>
+      <ul class="a">
+        <li><span lang="en">Classic: <code>top: 50%; left: 50%; transform: translate(-50%, -50%)</code> — the percentages resolve against the parent, the transform against the element's own size, so it works without knowing dimensions. Modern alternative: <code>inset: 0; margin: auto</code>, which needs a defined size but avoids the transform (and its stacking-context side effect).</span><span lang="hu">Klasszikus: <code>top: 50%; left: 50%; transform: translate(-50%, -50%)</code> — a százalékok a szülőhöz, a transform az elem saját méretéhez viszonyul, így méretek ismerete nélkül működik. Modern alternatíva: <code>inset: 0; margin: auto</code>, ami definiált méretet igényel, de elkerüli a transformot (és annak stacking context mellékhatását).</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>position: fixed</code> stops being fixed to the viewport if any ancestor has <code>transform</code>, <code>filter</code>, <code>backdrop-filter</code> or <code>will-change</code> — that ancestor becomes the containing block instead. A CSS animation on a wrapper can therefore break a modal that worked yesterday.</span><span lang="hu">A <code>position: fixed</code> megszűnik a viewporthoz rögzülni, ha bármely ősön <code>transform</code>, <code>filter</code>, <code>backdrop-filter</code> vagy <code>will-change</code> van — helyette az az ős lesz a tartalmazó blokk. Egy wrapperre tett CSS-animáció így eltörhet egy tegnap még működő modált.</span></p>
+  </section>
+<section class="concept" id="c58">
+    <div class="concept__head"><span class="num">58</span><h2><span lang="en">Stacking Context &amp; z-index</span><span lang="hu">Stacking context &amp; z-index</span></h2><span class="src">CSS</span></div>
+    <p class="def"><span lang="en"><strong><code>z-index</code> only compares siblings inside the same stacking context.</strong> A high value can't lift an element above something in a different context — which is why <code>z-index: 9999</code> so often does nothing.</span><span lang="hu"><strong>A <code>z-index</code> csak az azonos stacking contexten belüli testvéreket hasonlítja össze.</strong> Egy magas érték nem tud elemet más contextben lévő dolog fölé emelni — ezért nem csinál gyakran semmit a <code>z-index: 9999</code>.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 220" role="img" aria-label="Stacking context nesting">
+        <rect x="40" y="24" width="280" height="170" rx="10" fill="#F8FAFC" stroke="var(--line)" stroke-width="1.5"/>
+        <text lang="en" x="180" y="46" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">.header — z-index: 1</text><text lang="hu" x="180" y="46" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">.header — z-index: 1</text>
+        <rect x="66" y="60" width="228" height="52" rx="7" fill="#FEF2F2" stroke="var(--vuln,#DC2626)" stroke-width="1.5"/>
+        <text lang="en" x="180" y="82" text-anchor="middle" font-size="11" fill="var(--ink)">.dropdown</text><text lang="hu" x="180" y="82" text-anchor="middle" font-size="11" fill="var(--ink)">.dropdown</text>
+        <text x="180" y="99" text-anchor="middle" font-size="11" fill="var(--vuln,#DC2626)" font-weight="600">z-index: 9999</text>
+        <text lang="en" x="180" y="140" text-anchor="middle" font-size="10" fill="var(--muted)">trapped — cannot escape</text><text lang="hu" x="180" y="140" text-anchor="middle" font-size="10" fill="var(--muted)">csapdában — nem tud kitörni</text>
+        <text lang="en" x="180" y="158" text-anchor="middle" font-size="10" fill="var(--muted)">its parent's context</text><text lang="hu" x="180" y="158" text-anchor="middle" font-size="10" fill="var(--muted)">a szülője contextjéből</text>
+        <rect x="380" y="24" width="260" height="170" rx="10" fill="#F0FDF4" stroke="var(--safe,#16A34A)" stroke-width="1.5"/>
+        <text lang="en" x="510" y="46" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">.modal — z-index: 2</text><text lang="hu" x="510" y="46" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">.modal — z-index: 2</text>
+        <text lang="en" x="510" y="112" text-anchor="middle" font-size="11" fill="var(--ink)">wins — sibling of .header</text><text lang="hu" x="510" y="112" text-anchor="middle" font-size="11" fill="var(--ink)">nyer — a .header testvére</text>
+        <text lang="en" x="510" y="132" text-anchor="middle" font-size="10" fill="var(--muted)">2 &gt; 1 at the same level</text><text lang="hu" x="510" y="132" text-anchor="middle" font-size="10" fill="var(--muted)">2 &gt; 1 ugyanazon a szinten</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">The dropdown's 9999 is compared only against its siblings. Against <code>.modal</code>, what counts is its parent's 1.</span><span lang="hu">A dropdown 9999-e csak a testvéreivel van összehasonlítva. A <code>.modal</code>-lal szemben a szülője 1-ese számít.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">What creates a stacking context?</span><span lang="hu">Mi hoz létre stacking contextet?</span></p>
+      <ul class="a">
+        <li><span lang="en">The root element; any positioned element with a <code>z-index</code> other than <code>auto</code>; <code>opacity</code> below 1; <code>transform</code>, <code>filter</code>, <code>backdrop-filter</code>, <code>will-change</code>, <code>isolation: isolate</code>; and flex/grid children with a <code>z-index</code>. The surprising ones are <code>opacity: 0.99</code> and <code>transform</code>, because they're usually added for visual reasons by someone not thinking about layering.</span><span lang="hu">A gyökérelem; bármely pozicionált elem <code>auto</code>-tól eltérő <code>z-index</code>-szel; az 1 alatti <code>opacity</code>; a <code>transform</code>, <code>filter</code>, <code>backdrop-filter</code>, <code>will-change</code>, <code>isolation: isolate</code>; és a <code>z-index</code>-szel rendelkező flex/grid gyermekek. A meglepők az <code>opacity: 0.99</code> és a <code>transform</code>, mert ezeket általában vizuális okból teszi be valaki, aki nem a rétegzésre gondol.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you debug a layering problem?</span><span lang="hu">Hogyan debuggolsz egy rétegzési problémát?</span></p>
+      <ul class="a">
+        <li><span lang="en">Walk up the DOM from the element that won't come forward and find the first ancestor that creates a context — that's your real competitor, not the element you're fighting with. DevTools shows this in the Layers panel. The fix is usually structural: move the element out (a portal), or remove the ancestor's context-creating property.</span><span lang="hu">Menj fel a DOM-ban attól az elemtől, amelyik nem jön előre, és keresd meg az első contextet létrehozó őst — az a valódi versenytárs, nem az az elem, amivel küzdesz. A DevTools ezt a Layers panelen mutatja. A javítás általában szerkezeti: vidd ki az elemet (portál), vagy távolítsd el az ős contextet létrehozó tulajdonságát.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why do modals get rendered through a portal?</span><span lang="hu">Miért portálon keresztül renderelődnek a modálok?</span></p>
+      <ul class="a">
+        <li><span lang="en">Precisely to escape this. Rendering into <code>document.body</code> puts the modal in the root stacking context, where it can actually sit above everything, and it also escapes any ancestor's <code>overflow: hidden</code>. That's why React's <code>createPortal</code> exists — it's a layout fix as much as a DOM-structure one.</span><span lang="hu">Pontosan azért, hogy elkerüljék ezt. A <code>document.body</code>-ba renderelés a gyökér stacking contextbe teszi a modált, ahol tényleg mindenek fölé kerülhet, és kikerül minden ős <code>overflow: hidden</code>-je alól is. Ezért létezik a React <code>createPortal</code>-ja — ez legalább annyira elrendezési javítás, mint DOM-szerkezeti.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>z-index</code> is ignored entirely on <code>position: static</code> elements — no context, no effect, and no error to tell you. If a <code>z-index</code> appears to do nothing, check <code>position</code> before adding zeros.</span><span lang="hu">A <code>z-index</code>-et teljesen figyelmen kívül hagyja a <code>position: static</code> elemeknél — nincs context, nincs hatás, és nincs hibaüzenet sem. Ha egy <code>z-index</code> nem csinál semmit, előbb a <code>position</code>-t nézd meg, ne nullákat adj hozzá.</span></p>
+  </section>
+<section class="concept" id="c59">
+    <div class="concept__head"><span class="num">59</span><h2><span lang="en">Responsive Design</span><span lang="hu">Reszponzív design</span></h2><span class="src">CSS</span></div>
+    <p class="def"><span lang="en"><strong>Layouts that adapt to the space available</strong> — increasingly through intrinsically flexible sizing rather than a ladder of breakpoints.</span><span lang="hu"><strong>Az elérhető helyhez alkalmazkodó elrendezések</strong> — egyre inkább belsőleg rugalmas méretezéssel, nem töréspontok létrájával.</span></p>
+    <div class="codepair">
+      <div class="cbox cbox--bad"><div class="cbox__h"><span lang="en">Breakpoint ladder</span><span lang="hu">Töréspont-létra</span></div><pre>.grid { grid-template-columns: 1fr; }
+@media (min-width: 600px) {
+  .grid { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 900px) {
+  .grid { grid-template-columns: repeat(3,1fr); }
+}</pre></div>
+      <div class="cbox cbox--good"><div class="cbox__h"><span lang="en">Intrinsic — no breakpoints</span><span lang="hu">Belsőleg rugalmas — töréspont nélkül</span></div><pre>.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns:
+    repeat(auto-fit, minmax(240px, 1fr));
+}
+/* adapts at every width, not three */</pre></div>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Which units should you actually use?</span><span lang="hu">Milyen egységeket használj valójában?</span></p>
+      <ul class="a">
+        <li><span lang="en"><code>rem</code> for type and spacing, because it scales with the user's browser font size — <code>px</code> ignores that preference, which is an accessibility problem, not just a stylistic one. <code>ch</code> for text measure, <code>%</code> and <code>fr</code> for layout shares, <code>vw</code>/<code>vh</code> sparingly. <code>clamp(1rem, 2.5vw, 1.5rem)</code> gives fluid sizing with hard limits and removes a lot of breakpoints on its own.</span><span lang="hu"><code>rem</code> a betűkhöz és térközökhöz, mert a felhasználó böngésző-betűméretével skálázódik — a <code>px</code> figyelmen kívül hagyja ezt a beállítást, ami akadálymentesítési probléma, nem csak stiláris. <code>ch</code> a szövegszélességhez, <code>%</code> és <code>fr</code> az elrendezési arányokhoz, <code>vw</code>/<code>vh</code> mértékkel. A <code>clamp(1rem, 2.5vw, 1.5rem)</code> folyékony méretezést ad kemény határokkal, és önmagában sok töréspontot kivált.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why mobile-first?</span><span lang="hu">Miért mobile-first?</span></p>
+      <ul class="a">
+        <li><span lang="en">Writing base styles for the smallest screen and layering <code>min-width</code> queries on top means each query only <em>adds</em>. The reverse — <code>max-width</code> queries — requires each breakpoint to undo the previous one, and undoing is where the specificity fights and the forgotten resets come from.</span><span lang="hu">Ha az alapstílusokat a legkisebb képernyőre írod, és <code>min-width</code> query-ket rétegzel rá, minden query csak <em>hozzáad</em>. A fordítottja — <code>max-width</code> query-k — megköveteli, hogy minden töréspont visszavonja az előzőt, és a visszavonásból erednek a specificitási harcok és az elfelejtett resetek.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What do container queries change?</span><span lang="hu">Min változtatnak a container query-k?</span></p>
+      <ul class="a">
+        <li><span lang="en">They let a component respond to <em>its own</em> available width rather than the viewport's — <code>container-type: inline-size</code> on the parent, then <code>@container (min-width: 400px)</code>. This is what media queries could never do: the same card can lay out one way in a sidebar and another in a main column, with no knowledge of the page. For component libraries it's the more correct tool, and it's now broadly supported.</span><span lang="hu">Lehetővé teszik, hogy egy komponens a <em>saját</em> rendelkezésre álló szélességére reagáljon, ne a viewportéra — <code>container-type: inline-size</code> a szülőn, majd <code>@container (min-width: 400px)</code>. Ezt a media query-k sosem tudták: ugyanaz a kártya másképp rendeződik egy oldalsávban és másképp egy fő oszlopban, az oldal ismerete nélkül. Komponenskönyvtárakhoz ez a helyesebb eszköz, és mára széles körben támogatott.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>100vh</code> on mobile includes the area behind the browser's collapsing toolbar, so a "full height" section jumps as you scroll. Use <code>100dvh</code> (dynamic viewport height) instead. And missing <code>&lt;meta name="viewport"&gt;</code> makes every media query behave as if the phone were a desktop.</span><span lang="hu">A <code>100vh</code> mobilon beleszámítja a böngésző összecsukódó eszköztára mögötti területet, így egy „teljes magasságú" szakasz ugrál görgetés közben. Használj helyette <code>100dvh</code>-t (dinamikus viewport magasság). A hiányzó <code>&lt;meta name="viewport"&gt;</code> pedig minden media query-t úgy működtet, mintha a telefon asztali gép lenne.</span></p>
+  </section>
+<section class="concept" id="c60">
+    <div class="concept__head"><span class="num">60</span><h2><span lang="en">Semantic HTML &amp; Accessibility</span><span lang="hu">Szemantikus HTML &amp; akadálymentesítés</span></h2><span class="src">CSS</span></div>
+    <p class="def"><span lang="en"><strong>Using the element that means what you intend</strong> — which gives you keyboard behaviour, focus handling and screen-reader semantics for free, instead of rebuilding them on a <code>div</code>.</span><span lang="hu"><strong>Azt az elemet használod, ami azt jelenti, amit szánsz</strong> — ezzel ingyen kapod a billentyűzetes viselkedést, a fókuszkezelést és a képernyőolvasó-szemantikát, ahelyett hogy egy <code>div</code>-en építenéd újra.</span></p>
+    <div class="codepair">
+      <div class="cbox cbox--bad"><div class="cbox__h"><span lang="en">Rebuilding what exists</span><span lang="hu">A meglévő újraépítése</span></div><pre>&lt;div class="btn"
+     onclick="submit()"&gt;
+  Save
+&lt;/div&gt;
+&lt;!-- no focus, no Enter/Space,
+     no role, not in tab order --&gt;</pre></div>
+      <div class="cbox cbox--good"><div class="cbox__h"><span lang="en">The element that means it</span><span lang="hu">Az elem, ami ezt jelenti</span></div><pre>&lt;button type="submit"&gt;
+  Save
+&lt;/button&gt;
+&lt;!-- focusable, keyboard-activated,
+     announced as a button --&gt;</pre></div>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Which semantics actually earn their keep?</span><span lang="hu">Mely szemantikai elemek térülnek meg valóban?</span></p>
+      <ul class="a">
+        <li><span lang="en">Landmarks (<code>header</code>, <code>nav</code>, <code>main</code>, <code>footer</code>, <code>aside</code>) give screen-reader users a way to jump around the page. A correct heading order (<code>h1</code>–<code>h6</code>, no skipping) is the document outline they navigate by. <code>button</code> versus <code>a</code> is the one people get wrong most: links navigate, buttons act — and swapping them breaks both keyboard behaviour and the user's expectations.</span><span lang="hu">A landmarkok (<code>header</code>, <code>nav</code>, <code>main</code>, <code>footer</code>, <code>aside</code>) a képernyőolvasót használóknak adnak módot az oldalon való ugrálásra. A helyes fejléc-sorrend (<code>h1</code>–<code>h6</code>, kihagyás nélkül) az a dokumentum-vázlat, ami mentén navigálnak. A <code>button</code> és az <code>a</code> az, amit a legtöbben elrontanak: a link navigál, a gomb cselekszik — a felcserélésük mind a billentyűzetes viselkedést, mind a felhasználó elvárásait eltöri.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What are the first rules of ARIA?</span><span lang="hu">Mik az ARIA első szabályai?</span></p>
+      <ul class="a">
+        <li><span lang="en">Don't use it if a native element will do — <code>role="button"</code> on a <code>div</code> announces correctly but still has no keyboard behaviour, so it's half a solution that looks complete. And don't change native semantics. ARIA is for things HTML has no element for (tabs, comboboxes, live regions), where you must also implement the expected keyboard interaction yourself.</span><span lang="hu">Ne használd, ha natív elem is megteszi — egy <code>div</code>-en a <code>role="button"</code> helyesen mondja be, de billentyűzetes viselkedése továbbra sincs, tehát fél megoldás, ami késznek látszik. És ne írd felül a natív szemantikát. Az ARIA azokra való, amikre a HTML-ben nincs elem (tabok, comboboxok, élő régiók), ahol az elvárt billentyűzetes interakciót is neked kell megvalósítanod.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What breaks keyboard users most often?</span><span lang="hu">Mi töri el leggyakrabban a billentyűzetes használatot?</span></p>
+      <ul class="a">
+        <li><span lang="en">Removing focus outlines with <code>outline: none</code> and replacing them with nothing — use <code>:focus-visible</code> to style them instead of deleting them. Also: click handlers on non-interactive elements, modals that don't trap focus or return it on close, and positive <code>tabindex</code> values, which scramble the natural tab order. Tabbing through your own feature once catches most of this.</span><span lang="hu">A fókuszkeret eltávolítása <code>outline: none</code>-nal, pótlás nélkül — használj inkább <code>:focus-visible</code>-t a stílusozáshoz, ne töröld. Továbbá: kattintáskezelők nem interaktív elemeken, modálok, amelyek nem fogják meg a fókuszt vagy nem adják vissza záráskor, és a pozitív <code>tabindex</code> értékek, amelyek összekeverik a természetes tab-sorrendet. Ha egyszer végigtabbolod a saját funkciódat, ennek nagy részét elkapod.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>display: none</code> and <code>visibility: hidden</code> remove content from screen readers too — correct for genuinely hidden things, wrong for visually-hidden labels, which need a clip-based utility class instead. And placeholder text is not a label: it disappears on input and is often announced inconsistently.</span><span lang="hu">A <code>display: none</code> és a <code>visibility: hidden</code> a képernyőolvasók elől is elrejti a tartalmat — ez helyes a valóban rejtett dolgoknál, de hibás a csak vizuálisan rejtett címkéknél, amelyekhez clip-alapú segédosztály kell. A placeholder szöveg pedig nem címke: gépeléskor eltűnik, és gyakran következetlenül hangzik el.</span></p>
+  </section>
+
+  <div class="areahead">
     <h2><span lang="en">Data Structures & Algorithms</span><span lang="hu">Adatszerkezetek &amp; algoritmusok</span></h2>
     <span class="cnt">5</span>
   </div>
-<section class="concept" id="c42">
-    <div class="concept__head"><span class="num">42</span><h2><span lang="en">Interview Strategy</span><span lang="hu">Interjú-stratégia</span></h2><span class="src">DS&amp;A</span></div>
+<section class="concept" id="c61">
+    <div class="concept__head"><span class="num">61</span><h2><span lang="en">Interview Strategy</span><span lang="hu">Interjú-stratégia</span></h2><span class="src">DS&amp;A</span></div>
     <p class="def"><span lang="en"><strong>How to run the 45 minutes</strong> — the process interviewers grade alongside the code. Silence and a sudden optimal solution score worse than a narrated brute-force that you improve.</span><span lang="hu"><strong>Hogyan vezesd a 45 percet</strong> — a folyamat, amit az interjúztatók a kód mellett értékelnek. A csend és egy hirtelen optimális megoldás rosszabb pontot ér, mint egy hangosan végigvezetett nyers erejű, amit aztán javítasz.</span></p>
     <p class="step"><span lang="en">The sequence</span><span lang="hu">A sorrend</span></p>
       <ul class="a">
@@ -1521,8 +2169,8 @@ CMD ["node", "server.js"]</pre></div>
     </div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Don't jump straight to the optimal solution in silence — the interviewer is evaluating your reasoning, and a correct answer with no explanation reads as memorized. State the brute force first, then improve it out loud.</span><span lang="hu">Ne ugorj csendben egyből az optimális megoldásra — az interjúztató a gondolkodásodat értékeli, és egy magyarázat nélküli helyes válasz bemagoltnak hat. Előbb mondd ki a nyers erejűt, aztán javítsd hangosan.</span></p>
   </section>
-<section class="concept" id="c43">
-    <div class="concept__head"><span class="num">43</span><h2><span lang="en">Two Pointers</span><span lang="hu">Two pointers</span></h2><span class="src">DS&amp;A</span></div>
+<section class="concept" id="c62">
+    <div class="concept__head"><span class="num">62</span><h2><span lang="en">Two Pointers</span><span lang="hu">Two pointers</span></h2><span class="src">DS&amp;A</span></div>
     <p class="def"><span lang="en"><strong>Two indices moving through the data, usually from opposite ends or at different speeds</strong> — replacing a nested loop with a single pass. The first thing to try on a sorted array.</span><span lang="hu"><strong>Két index mozog az adaton át, általában ellentétes végekről vagy eltérő sebességgel</strong> — egy egymásba ágyazott ciklust egyetlen végigmenéssel helyettesítve. Rendezett tömbön ezt próbáld először.</span></p>
     <div class="cx"><span class="good"><span lang="en">O(n) time</span><span lang="hu">O(n) idő</span></span><span class="good"><span lang="en">O(1) space</span><span lang="hu">O(1) tár</span></span><span class="k"><span lang="en">needs sorted input (often)</span><span lang="hu">rendezett input kell (gyakran)</span></span></div>
     <div class="qa">
@@ -1547,8 +2195,8 @@ CMD ["node", "server.js"]</pre></div>
 }</pre></div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">If the input isn't sorted and you sort it yourself, the solution becomes O(n log n) and the original indices are lost — if the answer needs indices, a hash map in O(n) is the better trade.</span><span lang="hu">Ha az input nem rendezett és te rendezed, a megoldás O(n log n) lesz, és az eredeti indexek elvesznek — ha a válaszhoz indexek kellenek, egy hash map O(n)-ben jobb csere.</span></p>
   </section>
-<section class="concept" id="c44">
-    <div class="concept__head"><span class="num">44</span><h2><span lang="en">Sliding Window</span><span lang="hu">Sliding window</span></h2><span class="src">DS&amp;A</span></div>
+<section class="concept" id="c63">
+    <div class="concept__head"><span class="num">63</span><h2><span lang="en">Sliding Window</span><span lang="hu">Sliding window</span></h2><span class="src">DS&amp;A</span></div>
     <p class="def"><span lang="en"><strong>A window over a contiguous range that expands and contracts</strong>, maintaining a running state instead of recomputing — turning O(n·k) or O(n²) into O(n).</span><span lang="hu"><strong>Egy ablak egy összefüggő tartomány felett, amely tágul és szűkül</strong>, futó állapotot tartva újraszámítás helyett — O(n·k)-t vagy O(n²)-t alakítva O(n)-né.</span></p>
     <div class="cx"><span class="good"><span lang="en">O(n) time</span><span lang="hu">O(n) idő</span></span><span class="s"><span lang="en">O(k) space</span><span lang="hu">O(k) tár</span></span><span class="k"><span lang="en">contiguous subarray/substring</span><span lang="hu">összefüggő résztömb/részstring</span></span></div>
     <div class="qa">
@@ -1577,8 +2225,8 @@ CMD ["node", "server.js"]</pre></div>
 }</pre></div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">The left pointer must only ever move forward — resetting or moving it backwards breaks the O(n) guarantee and usually the correctness too. Note the <code>&gt;= start</code> guard above: a stale index from before the window must be ignored.</span><span lang="hu">A bal mutató csak előre mozoghat — visszaállítása vagy visszaléptetése megtöri az O(n) garanciát, és általában a helyességet is. Figyeld a fenti <code>&gt;= start</code> őrt: egy elavult, ablak előtti indexet figyelmen kívül kell hagyni.</span></p>
   </section>
-<section class="concept" id="c45">
-    <div class="concept__head"><span class="num">45</span><h2><span lang="en">Binary Search</span><span lang="hu">Bináris keresés</span></h2><span class="src">DS&amp;A</span></div>
+<section class="concept" id="c64">
+    <div class="concept__head"><span class="num">64</span><h2><span lang="en">Binary Search</span><span lang="hu">Bináris keresés</span></h2><span class="src">DS&amp;A</span></div>
     <p class="def"><span lang="en"><strong>Halving the search space each step</strong> — O(log n). Applies to sorted arrays, but more powerfully to <em>any</em> monotonic predicate, including searching over an answer range.</span><span lang="hu"><strong>A keresési tér felezése minden lépésben</strong> — O(log n). Rendezett tömbökre alkalmazható, de erősebben <em>bármely</em> monoton predikátumra, beleértve a válasz-tartomány feletti keresést.</span></p>
     <div class="cx"><span class="good"><span lang="en">O(log n) time</span><span lang="hu">O(log n) idő</span></span><span class="good"><span lang="en">O(1) space</span><span lang="hu">O(1) tár</span></span><span class="k"><span lang="en">needs monotonicity</span><span lang="hu">monotonitás kell</span></span></div>
     <div class="qa">
@@ -1602,8 +2250,8 @@ CMD ["node", "server.js"]</pre></div>
 }</pre></div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">In other languages <code>(l+r)/2</code> can overflow; in JS the real trap is different — <code>(l+r)&gt;&gt;1</code> uses 32-bit ints, so it breaks above ~2³¹. Use <code>Math.floor((l+r)/2)</code> or <code>l + ((r-l)&gt;&gt;1)</code> for very large ranges (common in binary-search-on-answer problems).</span><span lang="hu">Más nyelvekben az <code>(l+r)/2</code> túlcsordulhat; JS-ben a valódi csapda más — az <code>(l+r)&gt;&gt;1</code> 32 bites egészeket használ, szóval ~2³¹ felett elromlik. Nagyon nagy tartományokhoz (gyakori a válaszon-bináris-keresés feladatoknál) használj <code>Math.floor((l+r)/2)</code>-t vagy <code>l + ((r-l)&gt;&gt;1)</code>-et.</span></p>
   </section>
-<section class="concept" id="c46">
-    <div class="concept__head"><span class="num">46</span><h2><span lang="en">Stacks & Queues</span><span lang="hu">Veremek & sorok</span></h2><span class="src">DS&amp;A</span></div>
+<section class="concept" id="c65">
+    <div class="concept__head"><span class="num">65</span><h2><span lang="en">Stacks & Queues</span><span lang="hu">Veremek & sorok</span></h2><span class="src">DS&amp;A</span></div>
     <p class="def"><span lang="en"><strong>Order-restricted collections:</strong> a stack is last-in-first-out (LIFO), a queue is first-in-first-out (FIFO). Both give O(1) insert and remove at their designated end.</span><span lang="hu"><strong>Sorrend-korlátozott gyűjtemények:</strong> a verem last-in-first-out (LIFO), a sor first-in-first-out (FIFO). Mindkettő O(1) beszúrást és eltávolítást ad a kijelölt végén.</span></p>
     <div class="cx"><span class="good"><span lang="en">push/pop O(1)</span><span lang="hu">push/pop O(1)</span></span><span class="good"><span lang="en">peek O(1)</span><span lang="hu">peek O(1)</span></span><span class="s"><span lang="en">space O(n)</span><span lang="hu">tár O(n)</span></span></div>
     <div class="qa">
@@ -1634,7 +2282,7 @@ CMD ["node", "server.js"]</pre></div>
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Using <code>array.shift()</code> as a queue is the most common hidden-quadratic bug in interview code — it looks like the obvious dequeue but copies the whole array each call.</span><span lang="hu">Az <code>array.shift()</code> sorként használata a leggyakoribb rejtett-négyzetes bug az interjúkódban — a kézenfekvő dequeue-nak tűnik, de minden hívásnál lemásolja az egész tömböt.</span></p>
   </section>
 
-  <p class="foot"><span lang="en">Tier 2 · 46 concepts · <b>Q&amp;A knowledge base</b></span><span lang="hu">2. tier · 46 fogalom · <b>Q&amp;A tudásbázis</b></span></p>
+  <p class="foot"><span lang="en">Tier 2 · 65 concepts · <b>Q&amp;A knowledge base</b></span><span lang="hu">2. tier · 65 fogalom · <b>Q&amp;A tudásbázis</b></span></p>
 
 </div>
 

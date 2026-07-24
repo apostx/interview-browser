@@ -9,6 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
+  --safe:#16A34A;
+  --vuln:#DC2626;
+
   --ink:#111827; --muted:#6B7280; --line:#E5E7EB; --paper:#EDF0F3; --card:#FFFFFF;
   --accent:#2563EB;
   --get:#16A34A; --post:#2563EB; --put:#D97706; --patch:#0D9488; --del:#DC2626;
@@ -132,6 +135,16 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+/* borrowed for the SQL comparison blocks */
+.codepair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 2px}
+.cbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}
+.cbox__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600}
+.cbox pre{margin:0;padding:10px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.55;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+.cbox--bad .cbox__h{background:#FEF2F2;color:var(--vuln);border-bottom:1px solid #FECACA}
+.cbox--good .cbox__h{background:#F0FDF4;color:var(--safe);border-bottom:1px solid #BBF7D0}
 </style>
 </head>
 <body>
@@ -178,13 +191,17 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
       <a class="idx" href="#c13"><span class="idx__n">13</span><span class="idx__t"><span lang="en">Database Indexing</span><span lang="hu">Adatbázis-indexelés</span></span></a>
       <a class="idx" href="#c14"><span class="idx__n">14</span><span class="idx__t">Transactions &amp; ACID</span></a>
       <a class="idx" href="#c15"><span class="idx__n">15</span><span class="idx__t">N+1 Query Problem</span></a>
-      <a class="idx" href="#c16"><span class="idx__n">16</span><span class="idx__t">Connection Pooling</span></a>
-      <a class="idx" href="#c17"><span class="idx__n">17</span><span class="idx__t"><span lang="en">Caching Strategies</span><span lang="hu">Caching stratégiák</span></span></a>
-      <a class="idx" href="#c18"><span class="idx__n">18</span><span class="idx__t">WebSockets vs SSE</span></a>
-      <a class="idx" href="#c19"><span class="idx__n">19</span><span class="idx__t">gRPC</span></a>
-      <a class="idx" href="#c20"><span class="idx__n">20</span><span class="idx__t">Graceful Shutdown</span></a>
-      <a class="idx" href="#c21"><span class="idx__n">21</span><span class="idx__t">Logging &amp; Observability</span></a>
-      <a class="idx" href="#c22"><span class="idx__n">22</span><span class="idx__t">Env Config &amp; 12-Factor</span></a>
+      <a class="idx" href="#c16"><span class="idx__n">16</span><span class="idx__t"><span lang="en">Query Plans &amp; EXPLAIN</span><span lang="hu">Query planek &amp; EXPLAIN</span></span></a>
+      <a class="idx" href="#c17"><span class="idx__n">17</span><span class="idx__t"><span lang="en">JOINs, Aggregation &amp; CTEs</span><span lang="hu">JOIN-ok, aggregáció &amp; CTE-k</span></span></a>
+      <a class="idx" href="#c18"><span class="idx__n">18</span><span class="idx__t"><span lang="en">Locking &amp; Deadlocks</span><span lang="hu">Lockolás &amp; deadlockok</span></span></a>
+      <a class="idx" href="#c19"><span class="idx__n">19</span><span class="idx__t"><span lang="en">PostgreSQL vs Oracle</span><span lang="hu">PostgreSQL vs Oracle</span></span></a>
+      <a class="idx" href="#c20"><span class="idx__n">20</span><span class="idx__t">Connection Pooling</span></a>
+      <a class="idx" href="#c21"><span class="idx__n">21</span><span class="idx__t"><span lang="en">Caching Strategies</span><span lang="hu">Caching stratégiák</span></span></a>
+      <a class="idx" href="#c22"><span class="idx__n">22</span><span class="idx__t">WebSockets vs SSE</span></a>
+      <a class="idx" href="#c23"><span class="idx__n">23</span><span class="idx__t">gRPC</span></a>
+      <a class="idx" href="#c24"><span class="idx__n">24</span><span class="idx__t">Graceful Shutdown</span></a>
+      <a class="idx" href="#c25"><span class="idx__n">25</span><span class="idx__t">Logging &amp; Observability</span></a>
+      <a class="idx" href="#c26"><span class="idx__n">26</span><span class="idx__t">Env Config &amp; 12-Factor</span></a>
     </div>
   </nav>
 
@@ -610,7 +627,139 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
 
   <!-- 16 -->
   <section class="concept" id="c16">
-    <div class="concept__head"><span class="num">16</span><h2>Connection Pooling</h2></div>
+    <div class="concept__head"><span class="num">16</span><h2><span lang="en">Query Plans &amp; EXPLAIN</span><span lang="hu">Query planek &amp; EXPLAIN</span></h2></div>
+    <p class="def"><span lang="en"><strong>The planner turns your SQL into an execution strategy, and <code>EXPLAIN</code> shows you which one it picked.</strong> SQL says <em>what</em> you want; the plan is <em>how</em> the database decided to get it — and that decision is cost-based, not fixed.</span><span lang="hu"><strong>A planner végrehajtási stratégiává alakítja az SQL-edet, az <code>EXPLAIN</code> pedig megmutatja, melyiket választotta.</strong> Az SQL azt mondja meg, <em>mit</em> akarsz; a plan azt, <em>hogyan</em> döntött az adatbázis — és ez a döntés költségalapú, nem rögzített.</span></p>
+    <table class="t">
+      <tr><th><span lang="en">Node</span><span lang="hu">Csomópont</span></th><th><span lang="en">Means</span><span lang="hu">Mit jelent</span></th><th><span lang="en">Usually fine when</span><span lang="hu">Általában rendben, ha</span></th></tr>
+      <tr><td>Seq Scan</td><td><span lang="en">reads every row</span><span lang="hu">minden sort beolvas</span></td><td><span lang="en">table is small, or you want most rows</span><span lang="hu">a tábla kicsi, vagy a sorok nagy részét kéred</span></td></tr>
+      <tr><td>Index Scan</td><td><span lang="en">walks the index, fetches rows</span><span lang="hu">végigmegy az indexen, majd sorokat olvas</span></td><td><span lang="en">selective filter</span><span lang="hu">szelektív szűrés</span></td></tr>
+      <tr><td>Index Only Scan</td><td><span lang="en">answers from the index alone</span><span lang="hu">csak az indexből válaszol</span></td><td><span lang="en">covering index — the ideal</span><span lang="hu">covering index — ez az ideális</span></td></tr>
+      <tr><td>Nested Loop</td><td><span lang="en">per outer row, probe inner</span><span lang="hu">külső soronként keresés a belsőben</span></td><td><span lang="en">outer side is small</span><span lang="hu">a külső oldal kicsi</span></td></tr>
+      <tr><td>Hash Join</td><td><span lang="en">builds a hash table, probes it</span><span lang="hu">hash táblát épít, majd abban keres</span></td><td><span lang="en">large unsorted joins</span><span lang="hu">nagy, rendezetlen joinok</span></td></tr>
+      <tr><td>Merge Join</td><td><span lang="en">both sides sorted, zipped</span><span lang="hu">mindkét oldal rendezve, összefésülve</span></td><td><span lang="en">inputs already ordered</span><span lang="hu">az inputok már rendezettek</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">Why <code>EXPLAIN ANALYZE</code> rather than plain <code>EXPLAIN</code>?</span><span lang="hu">Miért <code>EXPLAIN ANALYZE</code> a sima <code>EXPLAIN</code> helyett?</span></p>
+      <ul class="a">
+        <li><span lang="en">Plain <code>EXPLAIN</code> shows only the planner's <em>estimate</em>. <code>ANALYZE</code> actually runs the query and reports real timings and real row counts, so you can compare them. The single most useful signal is a large gap between estimated and actual rows — that means the statistics are stale or the planner misjudged selectivity, and every choice above that node is likely wrong too.</span><span lang="hu">A sima <code>EXPLAIN</code> csak a planner <em>becslését</em> mutatja. Az <code>ANALYZE</code> ténylegesen lefuttatja a lekérdezést, és valós időket és sorszámokat jelent, így összevetheted őket. A leghasznosabb jel a becsült és tényleges sorszám közti nagy eltérés — ez azt jelenti, hogy a statisztikák elavultak, vagy a planner félrebecsülte a szelektivitást, és akkor az adott csomópont feletti döntések is valószínűleg rosszak.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Why would the database ignore an index you created?</span><span lang="hu">Miért hagyná figyelmen kívül az adatbázis az általad létrehozott indexet?</span></p>
+      <ul class="a">
+        <li><span lang="en">Common causes: the query returns a large fraction of the table (a scan is genuinely cheaper); a function or cast on the column (<code>WHERE lower(email) = …</code> can't use a plain index on <code>email</code>); a type mismatch between the parameter and the column; leading-wildcard <code>LIKE</code>; or stale statistics after a bulk load. The fix depends on which — an expression index for the first, <code>ANALYZE</code> for the last.</span><span lang="hu">Gyakori okok: a lekérdezés a tábla nagy hányadát adja vissza (a scan tényleg olcsóbb); függvény vagy cast az oszlopon (a <code>WHERE lower(email) = …</code> nem tud sima <code>email</code> indexet használni); típuseltérés a paraméter és az oszlop között; vezető joker karakteres <code>LIKE</code>; vagy elavult statisztikák tömeges betöltés után. A javítás az októl függ — az elsőre kifejezés-index, az utolsóra <code>ANALYZE</code>.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you read a plan without drowning in it?</span><span lang="hu">Hogyan olvasol planet anélkül, hogy belefulladnál?</span></p>
+      <ul class="a">
+        <li><span lang="en">Read innermost-outward — nodes execute bottom-up. Look for three things in order: the node with the largest actual time, any estimate-vs-actual mismatch above ~10×, and unexpected <code>Seq Scan</code> on a big table. Also check <code>loops</code> — a fast node run 50,000 times is the real cost, and that is often an N+1 in disguise.</span><span lang="hu">Belülről kifelé olvasd — a csomópontok alulról felfelé hajtódnak végre. Három dolgot keress ebben a sorrendben: a legnagyobb tényleges idejű csomópontot, a ~10× feletti becslés-tényleges eltérést, és a váratlan <code>Seq Scan</code>-t nagy táblán. Nézd a <code>loops</code> értéket is — egy gyors, de 50 000-szer lefutó csomópont a valódi költség, és ez gyakran álcázott N+1.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>EXPLAIN ANALYZE</code> executes the statement — on an <code>UPDATE</code> or <code>DELETE</code> it really writes. Wrap it in a transaction and roll back. Also, plans differ between dev and production because they depend on data volume and statistics: a plan that looks fine on 100 rows tells you almost nothing about 10 million.</span><span lang="hu">Az <code>EXPLAIN ANALYZE</code> végrehajtja az utasítást — egy <code>UPDATE</code>-nél vagy <code>DELETE</code>-nél ténylegesen ír. Csomagold tranzakcióba, és görgesd vissza. Továbbá a planek eltérnek dev és produkció között, mert az adatmennyiségtől és a statisztikáktól függenek: egy 100 soron jól kinéző plan szinte semmit nem mond 10 millióról.</span></p>
+  </section>
+
+  <!-- 17 -->
+  <section class="concept" id="c17">
+    <div class="concept__head"><span class="num">17</span><h2><span lang="en">JOINs, Aggregation &amp; CTEs</span><span lang="hu">JOIN-ok, aggregáció &amp; CTE-k</span></h2></div>
+    <p class="def"><span lang="en"><strong>The query constructs interviews actually test:</strong> which join keeps which rows, why filtering in <code>WHERE</code> versus <code>ON</code> changes the result, and when a CTE or window function replaces application-side looping.</span><span lang="hu"><strong>Azok a lekérdezés-szerkezetek, amiket az interjúk tényleg kérdeznek:</strong> melyik join mely sorokat tartja meg, miért változtat az eredményen a <code>WHERE</code> vagy <code>ON</code> szerinti szűrés, és mikor vált ki egy CTE vagy ablakfüggvény alkalmazásoldali ciklust.</span></p>
+    <div class="codepair">
+      <div class="cbox cbox--bad"><div class="cbox__h"><span lang="en">Silently an INNER JOIN</span><span lang="hu">Csendben INNER JOIN</span></div><pre>SELECT u.id, o.total
+FROM users u
+LEFT JOIN orders o ON o.user_id = u.id
+WHERE o.status = 'paid';
+-- users with no orders have
+-- o.status = NULL → filtered out</pre></div>
+      <div class="cbox cbox--good"><div class="cbox__h"><span lang="en">Filter belongs in ON</span><span lang="hu">A szűrés az ON-ba tartozik</span></div><pre>SELECT u.id, o.total
+FROM users u
+LEFT JOIN orders o
+  ON o.user_id = u.id
+ AND o.status  = 'paid';
+-- unmatched users kept, o.total NULL</pre></div>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">What's the actual difference between the join types?</span><span lang="hu">Mi a tényleges különbség a join-típusok között?</span></p>
+      <ul class="a">
+        <li><span lang="en"><code>INNER</code> keeps only matching pairs. <code>LEFT</code> keeps all left rows, padding the right with <code>NULL</code>. <code>RIGHT</code> is the mirror image and is rarely worth using — flip the tables instead and keep every join in the codebase reading the same direction. <code>FULL OUTER</code> keeps both sides. <code>CROSS</code> is the cartesian product, occasionally deliberate (generating date series), usually a missing join condition.</span><span lang="hu">Az <code>INNER</code> csak az illeszkedő párokat tartja meg. A <code>LEFT</code> az összes bal oldali sort megtartja, a jobb oldalt <code>NULL</code>-lal tölti. A <code>RIGHT</code> ennek tükörképe, és ritkán érdemes használni — inkább fordítsd meg a táblákat, hogy a kódbázisban minden join ugyanabba az irányba olvasson. A <code>FULL OUTER</code> mindkét oldalt megtartja. A <code>CROSS</code> a descartes-szorzat, néha szándékos (dátumsorok generálása), általában hiányzó join-feltétel.</span></li>
+      </ul>
+      <p class="q"><span lang="en">When does a CTE help, and does it cost anything?</span><span lang="hu">Mikor segít egy CTE, és van-e költsége?</span></p>
+      <ul class="a">
+        <li><span lang="en">CTEs (<code>WITH x AS (…)</code>) name intermediate steps, making a multi-stage query readable, and <code>WITH RECURSIVE</code> handles trees and graphs — org charts, category hierarchies, threaded comments — in one statement rather than a loop of queries. Historically in Postgres a CTE was an <em>optimisation fence</em> (materialised, never inlined); since Postgres 12 it can be inlined, and you can force either with <code>MATERIALIZED</code> / <code>NOT MATERIALIZED</code>. Knowing that shift is a good depth signal.</span><span lang="hu">A CTE-k (<code>WITH x AS (…)</code>) elnevezik a köztes lépéseket, olvashatóvá téve a többlépcsős lekérdezést, a <code>WITH RECURSIVE</code> pedig fákat és gráfokat kezel — szervezeti ábrák, kategória-hierarchiák, szálas kommentek — egyetlen utasításban, lekérdezés-ciklus helyett. A Postgresben a CTE korábban <em>optimalizációs kerítés</em> volt (materializált, sosem beágyazott); a Postgres 12 óta beágyazható, és a <code>MATERIALIZED</code> / <code>NOT MATERIALIZED</code> kulcsszóval bármelyik kikényszeríthető. Ennek a váltásnak az ismerete jó mélységi jelzés.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What do window functions give you over <code>GROUP BY</code>?</span><span lang="hu">Mit adnak az ablakfüggvények a <code>GROUP BY</code>-hoz képest?</span></p>
+      <ul class="a">
+        <li><span lang="en"><code>GROUP BY</code> collapses rows; a window function computes across a set of rows <em>while keeping every row</em>. That's how you get "each order plus its rank within the customer" or a running total in one pass. <code>ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at DESC)</code> filtered to <code>= 1</code> is the standard "latest row per group" solution — a very common interview question, and much faster than a correlated subquery.</span><span lang="hu">A <code>GROUP BY</code> összevonja a sorokat; az ablakfüggvény sorok halmazán számol, <em>miközben minden sort megtart</em>. Így kapod meg egy menetben, hogy „minden rendelés a vevőn belüli rangsorával együtt", vagy a futó összeget. A <code>ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at DESC)</code> <code>= 1</code>-re szűrve a bevett „csoportonkénti legutolsó sor" megoldás — nagyon gyakori interjúkérdés, és jóval gyorsabb, mint egy korrelált alkérdés.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Aggregates skip <code>NULL</code>, and this bites: <code>COUNT(col)</code> counts non-null values while <code>COUNT(*)</code> counts rows, so a <code>LEFT JOIN</code> plus <code>COUNT(*)</code> reports 1 for parents with zero children. Use <code>COUNT(child.id)</code>. Also, a join that multiplies rows silently inflates every <code>SUM</code> above it — aggregate in a subquery before joining.</span><span lang="hu">Az aggregátumok kihagyják a <code>NULL</code>-t, és ez visszaüt: a <code>COUNT(col)</code> a nem-null értékeket számolja, a <code>COUNT(*)</code> a sorokat, így egy <code>LEFT JOIN</code> plusz <code>COUNT(*)</code> 1-et jelent a gyermek nélküli szülőkre. Használj <code>COUNT(child.id)</code>-t. Továbbá egy sorokat sokszorozó join csendben felfújja a felette lévő összes <code>SUM</code>-ot — aggregálj alkérdésben, mielőtt joinolnál.</span></p>
+  </section>
+
+  <!-- 18 -->
+  <section class="concept" id="c18">
+    <div class="concept__head"><span class="num">18</span><h2><span lang="en">Locking &amp; Deadlocks</span><span lang="hu">Lockolás &amp; deadlockok</span></h2></div>
+    <p class="def"><span lang="en"><strong>Locks are how a database enforces isolation:</strong> a writer blocks other writers on the same row until it commits. A deadlock is two transactions each holding what the other needs — a cycle no amount of waiting resolves.</span><span lang="hu"><strong>A lockok révén kényszeríti ki az adatbázis az izolációt:</strong> egy író blokkolja a többi írót ugyanazon a soron, amíg nem commitol. A deadlock az, amikor két tranzakció mindegyike azt tartja, amire a másiknak szüksége van — olyan kör, amit semennyi várakozás nem old fel.</span></p>
+    <div class="dia">
+      <svg viewBox="0 0 680 200" role="img" aria-label="Deadlock cycle">
+        <rect x="60" y="30" width="200" height="60" rx="10" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.6"/>
+        <text lang="en" x="160" y="52" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">Txn A</text><text lang="hu" x="160" y="52" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">A tranzakció</text>
+        <text lang="en" x="160" y="72" text-anchor="middle" font-size="10" fill="var(--muted)">holds row 1, wants row 2</text><text lang="hu" x="160" y="72" text-anchor="middle" font-size="10" fill="var(--muted)">tartja az 1. sort, kell a 2.</text>
+        <rect x="420" y="30" width="200" height="60" rx="10" fill="#EFF6FF" stroke="var(--post)" stroke-width="1.6"/>
+        <text lang="en" x="520" y="52" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">Txn B</text><text lang="hu" x="520" y="52" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">B tranzakció</text>
+        <text lang="en" x="520" y="72" text-anchor="middle" font-size="10" fill="var(--muted)">holds row 2, wants row 1</text><text lang="hu" x="520" y="72" text-anchor="middle" font-size="10" fill="var(--muted)">tartja a 2. sort, kell az 1.</text>
+        <path d="M262 48 L418 48" stroke="var(--vuln,#DC2626)" stroke-width="1.8" fill="none" marker-end="url(#arrow)"/>
+        <path d="M418 74 L262 74" stroke="var(--vuln,#DC2626)" stroke-width="1.8" fill="none" marker-end="url(#arrow)"/>
+        <rect x="230" y="120" width="220" height="52" rx="9" fill="#FEF2F2" stroke="var(--vuln,#DC2626)" stroke-width="1.6"/>
+        <text lang="en" x="340" y="141" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">DB detects the cycle</text><text lang="hu" x="340" y="141" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">A DB észleli a kört</text>
+        <text lang="en" x="340" y="159" text-anchor="middle" font-size="10" fill="var(--muted)">kills one — the app must retry</text><text lang="hu" x="340" y="159" text-anchor="middle" font-size="10" fill="var(--muted)">egyiket megöli — az appnak újra kell próbálnia</text>
+      </svg>
+      <p class="dia__cap"><span lang="en">Deadlocks are detected, not prevented: the database picks a victim and aborts it. Handling that error is the application's job.</span><span lang="hu">A deadlockokat észlelik, nem előzik meg: az adatbázis kiválaszt egy áldozatot, és megszakítja. A hiba kezelése az alkalmazás dolga.</span></p>
+    </div>
+    <div class="qa">
+      <p class="q"><span lang="en">Optimistic or pessimistic locking — how do you choose?</span><span lang="hu">Optimista vagy pesszimista lockolás — hogyan választasz?</span></p>
+      <ul class="a">
+        <li><span lang="en"><strong>Pessimistic</strong> takes the lock up front (<code>SELECT … FOR UPDATE</code>) — correct under real contention, but holds the lock for the whole transaction and can queue everyone behind a slow request. <strong>Optimistic</strong> takes no lock and checks a <code>version</code> column on write (<code>WHERE id = ? AND version = ?</code>); if zero rows updated, someone beat you and you retry. Optimistic wins when conflicts are rare; pessimistic wins when they're common, because retry storms cost more than waiting.</span><span lang="hu">A <strong>pesszimista</strong> előre megszerzi a lockot (<code>SELECT … FOR UPDATE</code>) — valós versengésnél helyes, de a teljes tranzakció idejére tartja a lockot, és mindenkit besorolhat egy lassú kérés mögé. Az <strong>optimista</strong> nem lockol, hanem íráskor ellenőriz egy <code>version</code> oszlopot (<code>WHERE id = ? AND version = ?</code>); ha nulla sor frissült, valaki megelőzött, és újrapróbálsz. Az optimista akkor nyer, ha a konfliktus ritka; a pesszimista akkor, ha gyakori, mert az újrapróbálkozás-viharok többe kerülnek, mint a várakozás.</span></li>
+      </ul>
+      <p class="q"><span lang="en">How do you actually avoid deadlocks?</span><span lang="hu">Hogyan kerülöd el ténylegesen a deadlockokat?</span></p>
+      <ul class="a">
+        <li><span lang="en">The one reliable rule: <strong>acquire locks in a consistent order everywhere</strong> — if every transaction touches accounts in ascending id order, the cycle can't form. Beyond that: keep transactions short, don't do network calls or user interaction inside one, and touch the fewest rows you can. Then still handle the deadlock error and retry, because you cannot eliminate them entirely.</span><span lang="hu">Az egyetlen megbízható szabály: <strong>mindenhol konzisztens sorrendben szerezd meg a lockokat</strong> — ha minden tranzakció növekvő id-sorrendben nyúl a számlákhoz, a kör nem alakulhat ki. Ezen túl: tartsd rövidre a tranzakciókat, ne legyen bennük hálózati hívás vagy felhasználói interakció, és a lehető legkevesebb sort érintsd. Aztán a deadlock-hibát így is kezeld és próbáld újra, mert teljesen kiiktatni nem lehet.</span></li>
+      </ul>
+      <p class="q"><span lang="en">What are <code>FOR UPDATE</code> and <code>SKIP LOCKED</code> for?</span><span lang="hu">Mire való a <code>FOR UPDATE</code> és a <code>SKIP LOCKED</code>?</span></p>
+      <ul class="a">
+        <li><span lang="en"><code>SELECT … FOR UPDATE</code> locks the selected rows so a concurrent transaction can't change them before you write — the standard read-modify-write guard. <code>FOR UPDATE SKIP LOCKED</code> steps over rows someone else already locked, which turns a table into a work queue: many workers each grab different jobs with no coordination and no double-processing. It's the simplest correct job queue you can build without adding a broker.</span><span lang="hu">A <code>SELECT … FOR UPDATE</code> lockolja a kiválasztott sorokat, hogy egy párhuzamos tranzakció ne módosíthassa őket az írásod előtt — ez a bevett read-modify-write védelem. A <code>FOR UPDATE SKIP LOCKED</code> átlép a más által már lockolt sorokon, ami munkasorrá alakítja a táblát: sok worker mindegyike más feladatot ragad meg, koordináció és kettős feldolgozás nélkül. Ez a legegyszerűbb helyes job queue, amit broker hozzáadása nélkül építhetsz.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">An ORM can create lock ordering you never wrote — <code>saveAll</code> on a collection may update rows in hash order, differing per process. Also, a deadlock error is <em>retryable</em> and a lock <em>timeout</em> usually isn't; treating them identically either loses work or hammers the database. And an unindexed foreign key makes a delete on the parent lock far more of the child table than expected.</span><span lang="hu">Egy ORM olyan lock-sorrendet hozhat létre, amit sosem írtál — egy kollekción futó <code>saveAll</code> hash-sorrendben frissíthet, ami processzenként eltér. Továbbá a deadlock-hiba <em>újrapróbálható</em>, a lock <em>timeout</em> általában nem; ha azonosan kezeled őket, vagy munkát veszítesz, vagy az adatbázist ostromolod. Egy indexeletlen idegen kulcs pedig a szülőn futó törléskor a vártnál sokkal nagyobb részét lockolja a gyermektáblának.</span></p>
+  </section>
+
+  <!-- 19 -->
+  <section class="concept" id="c19">
+    <div class="concept__head"><span class="num">19</span><h2><span lang="en">PostgreSQL vs Oracle</span><span lang="hu">PostgreSQL vs Oracle</span></h2></div>
+    <p class="def"><span lang="en"><strong>Both are mature relational databases with MVCC, but they differ in defaults and dialect in ways that bite during a migration</strong> — and those differences, not licensing, are what an interview asks about.</span><span lang="hu"><strong>Mindkettő érett, MVCC-alapú relációs adatbázis, de az alapértelmezéseik és a dialektusuk úgy térnek el, ami migráció közben visszaüt</strong> — és interjún ezek a különbségek jönnek elő, nem a licencelés.</span></p>
+    <table class="t">
+      <tr><th></th><th>PostgreSQL</th><th>Oracle</th></tr>
+      <tr><td><span lang="en">Empty string</span><span lang="hu">Üres string</span></td><td><span lang="en">distinct from NULL</span><span lang="hu">különbözik a NULL-tól</span></td><td><span lang="en">treated as NULL</span><span lang="hu">NULL-ként kezelve</span></td></tr>
+      <tr><td><span lang="en">Auto ids</span><span lang="hu">Automatikus id-k</span></td><td><code>GENERATED … IDENTITY</code>, <code>serial</code></td><td><span lang="en">sequence (+ IDENTITY since 12c)</span><span lang="hu">sequence (+ IDENTITY 12c óta)</span></td></tr>
+      <tr><td><span lang="en">Upsert</span><span lang="hu">Upsert</span></td><td><code>ON CONFLICT</code></td><td><code>MERGE</code></td></tr>
+      <tr><td><span lang="en">Row limit</span><span lang="hu">Sorkorlát</span></td><td><code>LIMIT / OFFSET</code></td><td><code>FETCH FIRST</code>, <code>ROWNUM</code></td></tr>
+      <tr><td><span lang="en">Procedural</span><span lang="hu">Procedurális</span></td><td>PL/pgSQL</td><td>PL/SQL</td></tr>
+      <tr><td><span lang="en">DDL in transactions</span><span lang="hu">DDL tranzakcióban</span></td><td><span lang="en">transactional</span><span lang="hu">tranzakcionális</span></td><td><span lang="en">implicit commit</span><span lang="hu">implicit commit</span></td></tr>
+    </table>
+    <div class="qa">
+      <p class="q"><span lang="en">Which difference causes the most damage in practice?</span><span lang="hu">Melyik különbség okozza a legtöbb kárt a gyakorlatban?</span></p>
+      <ul class="a">
+        <li><span lang="en">Oracle treating <code>''</code> as <code>NULL</code>. Logic that distinguishes "not provided" from "provided but blank" silently changes meaning on migration, and <code>WHERE col = ''</code> matches nothing in Oracle. It's a data-semantics difference, not a syntax one, so it survives a mechanical dialect translation and surfaces later as wrong results rather than errors.</span><span lang="hu">Az, hogy az Oracle <code>NULL</code>-ként kezeli a <code>''</code>-t. Az a logika, ami megkülönbözteti a „nincs megadva"-t a „megadva, de üres"-től, csendben jelentést vált migrációkor, és a <code>WHERE col = ''</code> semmire nem illeszkedik Oracle-ben. Ez adatszemantikai különbség, nem szintaktikai, így túléli a gépies dialektus-fordítást, és később rossz eredményként bukkan fel, nem hibaként.</span></li>
+      </ul>
+      <p class="q"><span lang="en">And the transaction defaults?</span><span lang="hu">És a tranzakciós alapértelmezések?</span></p>
+      <ul class="a">
+        <li><span lang="en">Oracle opens a transaction implicitly and requires an explicit <code>COMMIT</code>; Postgres autocommits each statement unless you open a block. DDL is the sharper edge: Postgres can roll back a <code>CREATE TABLE</code> inside a transaction, Oracle commits implicitly around DDL — so a migration script that assumes all-or-nothing behaves very differently on each.</span><span lang="hu">Az Oracle implicit nyit tranzakciót, és explicit <code>COMMIT</code>-ot vár; a Postgres minden utasítást autocommitál, hacsak nem nyitsz blokkot. A DDL az élesebb különbség: a Postgres vissza tud görgetni egy tranzakción belüli <code>CREATE TABLE</code>-t, az Oracle implicit commitál a DDL körül — így egy mindent-vagy-semmit feltételező migrációs script nagyon eltérően viselkedik a kettőn.</span></li>
+      </ul>
+      <p class="q"><span lang="en">Do you need to rewrite application code, or just SQL?</span><span lang="hu">Az alkalmazáskódot is át kell írni, vagy csak az SQL-t?</span></p>
+      <ul class="a">
+        <li><span lang="en">Usually more than SQL. Identifier case folding differs (Postgres folds to lower, Oracle to upper, both fold unless quoted), so a driver returning <code>ID</code> instead of <code>id</code> breaks object mapping across the whole codebase. Date and <code>NUMBER</code> handling differ. And anything in PL/SQL — packages, triggers, stored logic — has no automatic equivalent; that's typically the largest and least visible part of the estimate.</span><span lang="hu">Általában többet az SQL-nél. Az azonosítók kis/nagybetű-kezelése eltér (a Postgres kisbetűre, az Oracle nagybetűre hajt, idézőjel nélkül mindkettő hajt), így egy <code>id</code> helyett <code>ID</code>-t visszaadó driver az egész kódbázisban töri az objektum-leképezést. A dátum- és <code>NUMBER</code>-kezelés eltér. És bármi, ami PL/SQL-ben van — csomagok, triggerek, tárolt logika — nem rendelkezik automatikus megfelelővel; jellemzően ez a becslés legnagyobb és legkevésbé látható része.</span></li>
+      </ul>
+    </div>
+    <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Both use MVCC, but Oracle's default isolation is Read Committed with statement-level consistency and no reader-blocks-writer, while Postgres implements Repeatable Read as snapshot isolation — so a workload tuned against one may see different anomalies on the other even at a nominally identical isolation level.</span><span lang="hu">Mindkettő MVCC-t használ, de az Oracle alapértelmezett izolációja Read Committed utasítás-szintű konzisztenciával és olvasó-nem-blokkol-írót viselkedéssel, míg a Postgres a Repeatable Read-et snapshot izolációként valósítja meg — így egy az egyikre hangolt terhelés a másikon névlegesen azonos izolációs szinten is más anomáliákat láthat.</span></p>
+  </section>
+
+  <!-- 20 -->
+  <section class="concept" id="c20">
+    <div class="concept__head"><span class="num">20</span><h2>Connection Pooling</h2></div>
     <p class="def"><span lang="en"><strong>Reusing a fixed set of open DB connections across requests</strong> instead of opening/closing one per query.</span><span lang="hu"><strong>Egy fix készletnyi nyitott adatbázis-kapcsolat újrahasznosítása a kérések között</strong> ahelyett, hogy lekérdezésenként nyitnánk/zárnánk egyet.</span></p>
     <div class="dia">
       <svg viewBox="0 0 680 210" role="img" aria-label="Requests borrowing connections from a pool to reach the database">
@@ -653,9 +802,9 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Pool exhaustion (all borrowed, none returned) makes requests hang — usually from leaked connections or long queries. In serverless, use a pooler like PgBouncer to avoid connection storms.</span><span lang="hu">A pool kimerülése (minden kikölcsönözve, semmi visszaadva) függő kéréseket okoz — általában elszivárgott kapcsolatok vagy hosszú lekérdezések miatt. Serverlessben használj poolert (pl. PgBouncer), hogy elkerüld a kapcsolat-viharokat.</span></p>
   </section>
 
-  <!-- 17 -->
-  <section class="concept" id="c17">
-    <div class="concept__head"><span class="num">17</span><h2><span lang="en">Caching Strategies</span><span lang="hu">Caching stratégiák</span></h2></div>
+  <!-- 21 -->
+  <section class="concept" id="c21">
+    <div class="concept__head"><span class="num">21</span><h2><span lang="en">Caching Strategies</span><span lang="hu">Caching stratégiák</span></h2></div>
     <p class="def"><span lang="en"><strong>Storing hot data in a fast store (Redis/in-memory) to cut DB load and latency.</strong> This is application-level caching — distinct from HTTP caching.</span><span lang="hu"><strong>A gyakran használt adat gyors tárban (Redis/memória) tartása az adatbázis-terhelés és a latencia csökkentésére.</strong> Ez alkalmazás-szintű caching — külön dolog a HTTP cachingtől.</span></p>
     <div class="dia">
       <svg viewBox="0 0 680 250" role="img" aria-label="Cache-aside read path">
@@ -695,9 +844,9 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
 
   <div class="sec"><span class="sec__l"><span lang="en">Communication &amp; Reliability</span><span lang="hu">Kommunikáció &amp; megbízhatóság</span></span><span class="sec__r"></span></div>
 
-  <!-- 18 -->
-  <section class="concept" id="c18">
-    <div class="concept__head"><span class="num">18</span><h2>WebSockets vs SSE</h2></div>
+  <!-- 22 -->
+  <section class="concept" id="c22">
+    <div class="concept__head"><span class="num">22</span><h2>WebSockets vs SSE</h2></div>
     <p class="def"><span lang="en"><strong>Ways to push server data to clients in real time</strong> — polling, Server-Sent Events, and WebSockets.</span><span lang="hu"><strong>Módok arra, hogy a szerver valós időben toljon adatot a klienseknek</strong> — polling, Server-Sent Events és WebSocketek.</span></p>
     <div class="dia">
       <svg viewBox="0 0 680 240" role="img" aria-label="Polling versus SSE versus WebSockets">
@@ -735,9 +884,9 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">A WebSocket connection lives on one server — scaling across instances needs sticky sessions or a shared pub/sub (Redis).</span><span lang="hu">Egy WebSocket kapcsolat egyetlen szerveren él — a több instance-ra skálázáshoz sticky session vagy közös pub/sub kell (Redis).</span></p>
   </section>
 
-  <!-- 19 -->
-  <section class="concept" id="c19">
-    <div class="concept__head"><span class="num">19</span><h2>gRPC</h2></div>
+  <!-- 23 -->
+  <section class="concept" id="c23">
+    <div class="concept__head"><span class="num">23</span><h2>gRPC</h2></div>
     <p class="def"><span lang="en"><strong>A high-performance RPC framework over HTTP/2 with Protocol Buffers</strong> (binary, schema-defined) for service-to-service communication.</span><span lang="hu"><strong>Nagy teljesítményű RPC keretrendszer HTTP/2 fölött, Protocol Buffersszel</strong> (bináris, sémával definiált) szolgáltatások közötti kommunikációhoz.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">Why gRPC over REST for internal services?</span><span lang="hu">Miért gRPC REST helyett belső szolgáltatásokhoz?</span></p>
@@ -752,9 +901,9 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">gRPC shines for internal microservice-to-microservice traffic; for public APIs consumed by browsers or third parties, REST or GraphQL is usually the better fit.</span><span lang="hu">A gRPC belső, microservice-microservice forgalomnál ragyog; böngészők vagy harmadik felek által használt publikus API-khoz általában a REST vagy a GraphQL illik jobban.</span></p>
   </section>
 
-  <!-- 20 -->
-  <section class="concept" id="c20">
-    <div class="concept__head"><span class="num">20</span><h2>Graceful Shutdown</h2></div>
+  <!-- 24 -->
+  <section class="concept" id="c24">
+    <div class="concept__head"><span class="num">24</span><h2>Graceful Shutdown</h2></div>
     <p class="def"><span lang="en"><strong>On a termination signal, stop taking new work, finish in-flight requests, close resources, then exit</strong> — instead of dropping connections mid-flight.</span><span lang="hu"><strong>Leállító szignálra ne vegyél fel új munkát, fejezd be a folyamatban lévő kéréseket, zárd le az erőforrásokat, majd lépj ki</strong> — ahelyett, hogy menet közben ejtenéd a kapcsolatokat.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">What's the sequence?</span><span lang="hu">Mi a sorrend?</span></p>
@@ -769,9 +918,9 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en">Always include a hard timeout — a hung connection shouldn't block shutdown forever (the orchestrator will <code>SIGKILL</code> after the grace period anyway).</span><span lang="hu">Mindig tegyél bele kemény timeoutot — egy beragadt kapcsolat ne blokkolja örökre a leállást (az orchestrator a grace period után úgyis <code>SIGKILL</code>-t küld).</span></p>
   </section>
 
-  <!-- 21 -->
-  <section class="concept" id="c21">
-    <div class="concept__head"><span class="num">21</span><h2>Logging &amp; Observability</h2></div>
+  <!-- 25 -->
+  <section class="concept" id="c25">
+    <div class="concept__head"><span class="num">25</span><h2>Logging &amp; Observability</h2></div>
     <p class="def"><span lang="en"><strong>The three pillars:</strong> logs (events), metrics (numbers over time), traces (a request's path across services).</span><span lang="hu"><strong>A három pillér:</strong> logok (események), metrikák (számok az idő függvényében), trace-ek (egy kérés útja a szolgáltatásokon át).</span></p>
     <div class="qa">
       <p class="q"><span lang="en">Logging best practices in Node?</span><span lang="hu">Logging best practice-ek Node-ban?</span></p>
@@ -786,9 +935,9 @@ svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
     <p class="watch"><span class="watch__tag"><span lang="en">Watch out</span><span lang="hu">Buktató</span></span><span lang="en"><code>console.log</code> is synchronous and can block under load, and unstructured logs are hard to query — use a proper structured logger to stdout.</span><span lang="hu">A <code>console.log</code> szinkron, és terhelés alatt blokkolhat, a strukturálatlan logokat pedig nehéz lekérdezni — használj rendes strukturált loggert stdout-ra.</span></p>
   </section>
 
-  <!-- 22 -->
-  <section class="concept" id="c22">
-    <div class="concept__head"><span class="num">22</span><h2>Env Config &amp; 12-Factor</h2></div>
+  <!-- 26 -->
+  <section class="concept" id="c26">
+    <div class="concept__head"><span class="num">26</span><h2>Env Config &amp; 12-Factor</h2></div>
     <p class="def"><span lang="en"><strong>Config (secrets, URLs, flags) belongs in the environment, not in code</strong> — one build runs unchanged in every environment.</span><span lang="hu"><strong>A konfiguráció (titkok, URL-ek, flagek) a környezetbe való, nem a kódba</strong> — ugyanaz a build fut változtatás nélkül minden környezetben.</span></p>
     <div class="qa">
       <p class="q"><span lang="en">Key principles?</span><span lang="hu">Fő elvek?</span></p>
