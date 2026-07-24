@@ -1,0 +1,19 @@
+{
+  "out": "backend_focus.html",
+  "title": "Backend / API <span lang=\"en\">focus</span><span lang=\"hu\">fókusz</span>",
+  "eyebrow": "<span lang=\"en\">Role-targeted set</span><span lang=\"hu\">Pozíció-célzott válogatás</span>",
+  "lede": "<span lang=\"en\">A cross-topic selection for a senior backend interview — API design, Node.js internals, auth, distributed systems and testing.</span><span lang=\"hu\">Több témából összeállított válogatás egy senior backend interjúhoz — API-tervezés, Node.js belsők, auth, elosztott rendszerek és tesztelés.</span>",
+  "concepts": [
+    "general/api/1",
+    "general/api/2",
+    "general/api/9",
+    "general/api/13",
+    "general/nodejs_&_backend_topics/1",
+    "general/nodejs_&_backend_topics/2",
+    "general/authentication/1",
+    "general/authentication/3",
+    "general/distributed_systems/1",
+    "general/distributed_systems/3",
+    "general/testing/1"
+  ]
+}

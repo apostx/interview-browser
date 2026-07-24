@@ -1,0 +1,17 @@
+{
+  "out": "frontend_focus.html",
+  "title": "Frontend / React <span lang=\"en\">focus</span><span lang=\"hu\">fókusz</span>",
+  "eyebrow": "<span lang=\"en\">Role-targeted set</span><span lang=\"hu\">Pozíció-célzott válogatás</span>",
+  "lede": "<span lang=\"en\">A cross-topic selection for a frontend interview — React internals, TypeScript, CSS layout and testing.</span><span lang=\"hu\">Több témából összeállított válogatás egy frontend interjúhoz — React belsők, TypeScript, CSS layout és tesztelés.</span>",
+  "concepts": [
+    "general/react_&_frontend_topics/1",
+    "general/react_&_frontend_topics/2",
+    "general/react_&_frontend_topics/3",
+    "general/react_&_frontend_topics/6",
+    "general/typescript/1",
+    "general/typescript/2",
+    "general/css_layout/1",
+    "general/css_layout/2",
+    "general/testing/1"
+  ]
+}
