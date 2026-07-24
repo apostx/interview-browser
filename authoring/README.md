@@ -69,8 +69,11 @@ A page is a spec in `authoring/pages/*.json`:
 - Titles/lede/eyebrow may contain bilingual `<span lang="…">` markup.
 - `pageSize` (default `6`) sets the initial page size — only that many concepts
   show at once, with a prev/next pager and index links that jump to the right
-  page. The reader can change it in-page via the **per-page** dropdown (options
-  incl. *All*), and the choice is remembered across pages. `0` starts on *All*.
+  page. The reader changes it in-page via the editable **per-page** box — pick a
+  preset from the dropdown or type any number (or *All*); the choice is
+  remembered across pages. `0` starts on *All*.
+- The **Jump to** index is collapsible (its header toggles it); long indexes
+  (like the All page) start collapsed so the page isn't an endless list.
 
 ## Run it
 

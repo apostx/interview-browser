@@ -68,8 +68,13 @@ const PAGER_CSS = `
 .pager button:disabled{opacity:.35;cursor:default}
 .pager__info{font-size:13px;color:var(--muted);min-width:56px;text-align:center}
 .pager__per{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:500}
-.pager__per select{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line);
-  border-radius:8px;background:var(--card,#fff);color:var(--ink)}`;
+.pager__per input{font:inherit;font-size:13px;width:58px;padding:5px 8px;border:1px solid var(--line);
+  border-radius:8px;background:var(--card,#fff);color:var(--ink)}
+/* collapsible index */
+.index h3.index__toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  cursor:pointer;user-select:none}
+.index__caret{transition:transform .15s;color:var(--muted);font-size:.7em;font-weight:400}
+.index h3.index__toggle[aria-expanded="false"] .index__caret{transform:rotate(-90deg)}`;
 
 // Splits the concepts into pages, shows one at a time, and lets the reader
 // change how many show per page (persisted). Prev/next pager top + bottom, and
@@ -97,20 +102,31 @@ function pagerScript(size) {
   function eff() { return size > 0 && size < total ? size : total; }
   function pageCount() { return Math.max(1, Math.ceil(total / eff())); }
 
+  // An editable dropdown: pick a preset from the list, or type any number
+  // (or "All"). datalist gives the dropdown; the input allows free entry.
+  function label(v) { return v > 0 && v < total ? String(v) : 'All'; }
   function makeSelect() {
     var lbl = document.createElement('label'); lbl.className = 'pager__per';
     lbl.innerHTML = '<span lang="en">per page</span><span lang="hu">oldalanként</span>';
-    var sel = document.createElement('select');
-    sel.setAttribute('aria-label', 'Concepts per page');
-    var isAll = !(size > 0 && size < total);
-    options.forEach(function (n) {
-      var o = document.createElement('option');
-      o.value = String(n); o.textContent = n === 0 ? 'All' : String(n);
-      if ((n === 0 && isAll) || (n !== 0 && n === size)) o.selected = true;
-      sel.appendChild(o);
-    });
-    sel.onchange = function () { size = Number(sel.value); writePref(size); current = 0; render(true); };
-    lbl.appendChild(sel);
+    if (!document.getElementById('ib_pp_opts')) {
+      var dl = document.createElement('datalist'); dl.id = 'ib_pp_opts';
+      options.forEach(function (n) { var o = document.createElement('option'); o.value = n === 0 ? 'All' : String(n); dl.appendChild(o); });
+      document.body.appendChild(dl);
+    }
+    var input = document.createElement('input');
+    input.type = 'text'; input.setAttribute('list', 'ib_pp_opts');
+    input.setAttribute('aria-label', 'Concepts per page');
+    input.value = label(size);
+    function commit() {
+      var v = input.value.trim().toLowerCase(), ns;
+      if (v === 'all' || v === '0' || v === '') ns = 0;
+      else { ns = parseInt(v, 10); if (isNaN(ns)) { input.value = label(size); return; } ns = Math.max(1, Math.min(total, ns)); }
+      size = ns; writePref(size); current = 0; render(true);
+      input.value = label(size);
+    }
+    input.addEventListener('change', commit);
+    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); commit(); input.blur(); } });
+    lbl.appendChild(input);
     return lbl;
   }
 
@@ -191,6 +207,33 @@ function renderHero(spec, topics) {
   return parts.join('\n');
 }
 
+// Makes the "Jump to" index collapsible (its header toggles the list). Long
+// indexes (e.g. the All page) start collapsed; the choice is remembered.
+function indexScript() {
+  return `<script>
+(function () {
+  var nav = document.querySelector('.index');
+  if (!nav) return;
+  var head = nav.querySelector('h3'), grid = nav.querySelector('.grid');
+  if (!head || !grid) return;
+  var count = grid.querySelectorAll('a.idx').length;
+  function readPref() { try { return localStorage.getItem('ib_indexOpen'); } catch (e) { return null; } }
+  function writePref(v) { try { localStorage.setItem('ib_indexOpen', v ? '1' : '0'); } catch (e) {} }
+  var pref = readPref();
+  var open = pref == null ? count <= 20 : pref === '1';
+  head.className = (head.className ? head.className + ' ' : '') + 'index__toggle';
+  head.setAttribute('role', 'button');
+  head.setAttribute('tabindex', '0');
+  var caret = document.createElement('span'); caret.className = 'index__caret'; caret.textContent = '\\u25BE';
+  head.appendChild(caret);
+  function apply() { grid.style.display = open ? '' : 'none'; head.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+  head.addEventListener('click', function () { open = !open; writePref(open); apply(); });
+  head.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open = !open; writePref(open); apply(); } });
+  apply();
+})();
+</script>`;
+}
+
 // A spec's concept list may contain single ids ("general/api/1"), a whole topic
 // ("@general/api"), or a whole collection ("@general" -> every concept in it,
 // in topic then order).
@@ -252,6 +295,7 @@ ${concepts.map((c, i) => renderConcept(c, i + 1)).join('\n\n')}
 
 </div>
 ${SCRIPT}
+${indexScript()}
 ${pagerScript(pageSize)}
 </body>
 </html>`;
