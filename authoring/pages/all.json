@@ -1,0 +1,7 @@
+{
+  "out": "all.html",
+  "title": "All <span lang=\"en\">concepts</span><span lang=\"hu\">koncepció</span>",
+  "eyebrow": "<span lang=\"en\">The full set</span><span lang=\"hu\">A teljes gyűjtemény</span>",
+  "lede": "<span lang=\"en\">Every concept in one place — use “per page” to browse in chunks or show them all at once.</span><span lang=\"hu\">Minden koncepció egy helyen — az „oldalanként” beállítással darabolhatod, vagy megmutathatod mind egyszerre.</span>",
+  "concepts": ["@general"]
+}

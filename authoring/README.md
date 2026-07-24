@@ -61,14 +61,16 @@ A page is a spec in `authoring/pages/*.json`:
 }
 ```
 
-- `concepts` entries are ids, or `"@<collection>/<topic>"` to pull a whole topic
-  in order (e.g. `"@general/api"`).
+- `concepts` entries are ids, `"@<collection>/<topic>"` for a whole topic in
+  order (e.g. `"@general/api"`), or `"@<collection>"` for an entire collection
+  (e.g. `"@general"` — every concept, used by the *All* page).
 - `hero: "@general/api"` reuses that topic's original hero; otherwise a hero is
   built from title/eyebrow/lede.
 - Titles/lede/eyebrow may contain bilingual `<span lang="…">` markup.
-- `pageSize` (default `6`) paginates the page — only that many concepts show at
-  once, with a prev/next pager and index links that jump to the right page. Set
-  `0` for one long page.
+- `pageSize` (default `6`) sets the initial page size — only that many concepts
+  show at once, with a prev/next pager and index links that jump to the right
+  page. The reader can change it in-page via the **per-page** dropdown (options
+  incl. *All*), and the choice is remembered across pages. `0` starts on *All*.
 
 ## Run it
 
