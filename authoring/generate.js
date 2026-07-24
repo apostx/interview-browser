@@ -69,11 +69,13 @@ const PAGER_CSS = `
 .pager__info{font-size:13px;color:var(--muted);min-width:56px;text-align:center}
 .pager__per{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:500}
 /* editable dropdown (type a number, or open the preset menu) */
-.pager__combo{position:relative;display:inline-flex;align-items:stretch}
-.pager__combo input{width:44px;font:inherit;font-size:13px;text-align:center;padding:5px 4px;
-  border:1px solid var(--line);border-right:0;border-radius:8px 0 0 8px;background:var(--card,#fff);color:var(--ink)}
-.pager__toggle{font:inherit;font-size:10px;line-height:1;padding:0 9px;border:1px solid var(--line);
-  border-radius:0 8px 8px 0;background:var(--card,#fff);color:var(--muted);cursor:pointer}
+.pager__combo{position:relative;display:inline-flex;align-items:stretch;border:1px solid var(--line);
+  border-radius:8px;background:var(--card,#fff)}
+.pager__combo:focus-within{border-color:var(--accent,#2563eb)}
+.pager__combo input{width:44px;font:inherit;font-size:13px;text-align:center;padding:5px 4px;border:0;
+  border-radius:8px 0 0 8px;background:transparent;color:var(--ink);outline:none}
+.pager__toggle{font:inherit;font-size:10px;line-height:1;padding:0 9px;border:0;border-left:1px solid var(--line);
+  border-radius:0 8px 8px 0;background:transparent;color:var(--muted);cursor:pointer;outline:none}
 .pager__menu{position:absolute;top:calc(100% + 5px);right:0;z-index:5;min-width:100%;background:var(--card,#fff);
   border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.16);padding:4px;
   display:flex;flex-direction:column}
