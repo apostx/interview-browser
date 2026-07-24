@@ -66,6 +66,9 @@ A page is a spec in `authoring/pages/*.json`:
 - `hero: "@general/api"` reuses that topic's original hero; otherwise a hero is
   built from title/eyebrow/lede.
 - Titles/lede/eyebrow may contain bilingual `<span lang="…">` markup.
+- `pageSize` (default `6`) paginates the page — only that many concepts show at
+  once, with a prev/next pager and index links that jump to the right page. Set
+  `0` for one long page.
 
 ## Run it
 
