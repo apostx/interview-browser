@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS Cloud Architect — Experience Stories — Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111827;
+  --muted:#6B7280;
+  --line:#E5E7EB;
+  --paper:#EDF0F3;
+  --card:#FFFFFF;
+  --accent:#2563EB;
+  --get:#16A34A;
+  --post:#2563EB;
+  --put:#D97706;
+  --patch:#0D9488;
+  --del:#DC2626;
+  --s2:#16A34A;
+  --s3:#7C3AED;
+  --s4:#D97706;
+  --s5:#DC2626;
+  --node:#FFFFFF;
+  --nodeline:#94A3B8;
+  --slate:#334155;
+  --safe:#16A34A;
+  --vuln:#DC2626;
+}
+:root[data-lang="hu"] [lang="en"]{display:none}
+:root[data-lang="en"] [lang="hu"]{display:none}
+:root[data-lang="hu"] svg text[lang="en"]{display:none}
+:root[data-lang="en"] svg text[lang="hu"]{display:none}
+/* ── language toggling ─────────────────────────────────────────
+   Both languages live in the DOM; only the attribute changes.
+   No network requests, no re-render, so switching cannot fail.  */
+:root[data-lang="hu"] [lang="en"]{display:none}
+/* SVG text nodes need the rule stated on the element itself */
+:root[data-lang="hu"] svg text[lang="en"]{display:none}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+a{color:inherit}
+code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+code{background:#EEF2F7;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:.86em}
+.bar{position:sticky;top:0;z-index:20;background:rgba(237,240,243,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar__in{max-width:900px;margin:0 auto;padding:10px 20px;display:flex;
+  align-items:center;justify-content:space-between;gap:12px}
+.bar__t{font-family:'Space Grotesk';font-weight:600;font-size:14px;letter-spacing:-.01em}
+.bar__t b{color:var(--accent)}
+.bar__r{display:flex;align-items:center;gap:8px}
+.bar a.up{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);
+  text-decoration:none;border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:#fff}
+.bar a.up:hover{color:var(--ink);border-color:var(--accent)}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;background:#fff;overflow:hidden}
+.lang button{font-family:'JetBrains Mono';font-size:12px;padding:4px 11px;border:0;
+  background:transparent;color:var(--muted);cursor:pointer;line-height:1.5;
+  transition:background .15s,color .15s}
+.lang button:hover{color:var(--ink)}
+.lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.hero{padding:44px 0 8px}
+.eyebrow{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,6vw,50px);
+  line-height:1.02;letter-spacing:-.025em;margin:0 0 12px}
+.lede{color:var(--muted);max-width:62ch;margin:0}
+.sec{display:flex;align-items:center;gap:14px;margin:36px 4px 2px}
+.sec__l{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--accent);white-space:nowrap}
+.sec__r{height:1px;background:var(--line);flex:1}
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:24px 0 2px}
+.legend .lbl{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-right:2px}
+.chip{font-family:'JetBrains Mono';font-size:12px;padding:3px 8px;border-radius:6px;
+  border:1px solid var(--line);background:#fff}
+.chip--2{color:var(--s2);border-color:#BBF7D0;background:#F0FDF4}
+.chip--4{color:var(--s4);border-color:#FDE68A;background:#FFFBEB}
+.chip--5{color:var(--s5);border-color:#FECACA;background:#FEF2F2}
+.index{margin:30px 0 8px}
+.index h3{font-family:'Space Grotesk';font-size:13px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+a.idx{display:flex;align-items:baseline;gap:10px;text-decoration:none;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  transition:border-color .15s,transform .15s}
+a.idx:hover{border-color:var(--accent);transform:translateY(-1px)}
+.idx__n{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);font-weight:500}
+.idx__t{font-size:13.5px;font-weight:500}
+.concept{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:26px 26px 22px;margin-top:16px;scroll-margin-top:64px}
+.concept__head{display:flex;align-items:center;gap:14px;margin:0 0 12px}
+.concept__head .num{font-family:'JetBrains Mono';font-weight:500;font-size:15px;color:#fff;
+  background:var(--ink);width:38px;height:38px;border-radius:10px;display:grid;
+  place-items:center;flex:0 0 auto}
+.concept__head h2{font-family:'Space Grotesk';font-weight:600;font-size:22px;
+  letter-spacing:-.015em;margin:0}
+.def{margin:0 0 16px}
+.def strong{font-weight:600}
+.qa{border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
+.q{font-weight:600;margin:0 0 6px}
+.q::before{content:"Q";font-family:'JetBrains Mono';color:var(--accent);font-weight:600;
+  margin-right:9px;font-size:13px}
+ul.a,p.a{margin:0 0 2px}
+ul.a{padding-left:20px}
+ul.a li{margin:3px 0}
+.watch{margin:18px 0 0;background:#FFFBEB;border:1px solid #FDE68A;
+  border-left:3px solid var(--put);border-radius:8px;padding:10px 14px;font-size:14px}
+.watch__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--put);font-weight:600;display:block;margin-bottom:3px}
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 2px}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+table.t th{background:#F8FAFC;font-weight:600;font-family:'Space Grotesk';font-size:12px}
+table.t td:first-child{font-family:'JetBrains Mono';white-space:nowrap}
+.dia{margin:16px 0 4px;background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px}
+.dia svg{width:100%;height:auto;display:block}
+.dia__cap{font-family:'JetBrains Mono';font-size:11.5px;color:var(--muted);margin:8px 2px 0}
+svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
+.foot{margin-top:44px;text-align:center;color:var(--muted);font-size:12.5px}
+.foot b{font-family:'Space Grotesk';color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.src{margin-top:14px;font-size:12.5px;color:var(--muted)}
+.m{font-family:'JetBrains Mono';font-weight:500;font-size:12px;padding:3px 8px;
+  border-radius:6px;color:#fff;letter-spacing:.02em;white-space:nowrap}
+.m--get{background:var(--get)}
+.m--post{background:var(--post)}
+.m--put{background:var(--put)}
+.m--patch{background:var(--patch)}
+.m--del{background:var(--del)}
+.chip--3{color:var(--s3);border-color:#DDD6FE;background:#F5F3FF}
+.yes{color:var(--get);font-weight:600}
+.no{color:var(--muted)}
+/* ── language toggling ─────────────────────────────────────────
+   Both languages live in the DOM; only the [data-lang] attribute on
+   <html> changes. No network requests, no re-render — switching can't fail. */
+[lang="hu"]{display:none}
+html[data-lang="hu"] [lang="en"]{display:none}
+html[data-lang="hu"] [lang="hu"]{display:inline}
+html[data-lang="hu"] li[lang="hu"]{display:list-item}
+html[data-lang="hu"] p[lang="hu"],
+html[data-lang="hu"] div[lang="hu"]{display:block}
+/* SVG <text>: display:none inheritance is unreliable across browsers with
+   a generic selector, so target text nodes explicitly. */
+svg text[lang="hu"]{display:none}
+html[data-lang="hu"] svg text[lang="en"]{display:none}
+html[data-lang="hu"] svg text[lang="hu"]{display:inline}
+/* header language switch */
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+.lang button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+/* ── language toggling ───────────────────────────────────────── */
+[lang="hu"]{display:none}
+svg text[lang="hu"]{display:none}
+.depth-note{margin:16px 0 0;font-size:13px;color:var(--muted);background:#fff;border:1px solid var(--line);
+  border-radius:10px;padding:11px 14px}
+.depth-note b{color:var(--ink);font-weight:600}
+.concept__head .num.pr{background:var(--accent)}
+.q:first-child{margin-top:0}
+.step{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--slate);margin:18px 0 6px;display:flex;align-items:center;gap:8px}
+.step::before{content:"";width:16px;height:2px;background:var(--accent);display:inline-block}
+.note{margin:14px 0 0;background:#EFF6FF;border:1px solid #BFDBFE;border-left:3px solid var(--post);
+  border-radius:8px;padding:10px 14px;font-size:14px}
+.note__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--post);font-weight:600;display:block;margin-bottom:3px}
+/* vulnerable vs fixed code pair */
+.codepair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 2px}
+.cbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}
+.cbox__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600}
+.cbox--bad .cbox__h{background:#FEF2F2;color:var(--vuln);border-bottom:1px solid #FECACA}
+.cbox--good .cbox__h{background:#F0FDF4;color:var(--safe);border-bottom:1px solid #BBF7D0}
+.cbox pre{margin:0;padding:10px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.55;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+/* ── complexity badges ───────────────────────────────────────── */
+.cx{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.cx span{font-family:'JetBrains Mono';font-size:11.5px;padding:3px 9px;border-radius:6px;
+  border:1px solid var(--line);background:#fff;white-space:nowrap}
+.cx .k{color:var(--muted)}
+.cx .t{color:var(--post);border-color:#BFDBFE;background:#EFF6FF}
+.cx .s{color:var(--patch);border-color:#99F6E4;background:#F0FDFA}
+.cx .good{color:var(--safe);border-color:#BBF7D0;background:#F0FDF4}
+.cx .bad{color:var(--vuln);border-color:#FECACA;background:#FEF2F2}
+/* ── single code block ───────────────────────────────────────── */
+.code{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;margin:12px 0 2px}
+.code__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600;background:#F8FAFC;color:var(--slate);border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.code__cx{font-size:10px;color:var(--post);text-transform:none;letter-spacing:0}
+.code pre{margin:0;padding:11px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.6;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+  .bar__t{font-size:12.5px}
+}
+@media print{
+  .bar{display:none} body{background:#fff}
+  .concept{break-inside:avoid;border-color:#ccc} a.idx{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr 1fr}
+  .concept__head h2{font-size:19px}
+  .bar__t{font-size:12.5px}
+}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+}
+@media (max-width:620px){.codepair{grid-template-columns:1fr}}
+
+.scenario{margin:0 0 10px;padding:13px 15px;background:#EFF6FF;border:1px solid #BFDBFE;border-left:3px solid var(--post);border-radius:8px;font-size:15px;line-height:1.55}
+.scenario__tag{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--post);margin-bottom:5px}
+.note{margin:0 0 14px;font-size:14.5px;line-height:1.6;color:var(--slate)}
+.fill{margin:0;padding:14px 16px;background:#FFFDF7;border:1px dashed #E0C990;border-radius:10px}
+.fill__tag{margin:0 0 10px;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#B7791F}
+.fill__list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:13px}
+.fill__list li{font-size:14px;line-height:1.55}
+.blank{display:block;margin-top:7px;border-bottom:1.5px dotted #CBB77E;height:26px}
+.dims{margin:14px 0 0;padding:11px 14px;background:#F0FDF4;border:1px solid #BBF7D0;border-left:3px solid var(--safe);border-radius:8px;font-size:13.5px;line-height:1.5;color:var(--slate)}
+.dims__tag{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--safe);margin-bottom:4px}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+  </marker>
+</defs></svg>
+
+<div class="wrap" id="top">
+
+  <div class="hero">
+    <p class="eyebrow"><span lang="en">Technical Q&amp;A Knowledge Base</span><span lang="hu">Technikai Q&amp;A tudásbázis</span></p>
+    <h1>AWS Cloud Architect — Experience Stories</h1>
+    <p class="lede"><span lang="en">A personal worksheet, separate from the technical material: the six experience questions this interview is likely to ask, each with a STAR skeleton for you to fill with your own concrete story. These aren't answers to memorise — they're frames to prepare real examples against, so that when "tell me about a time you..." comes, you have a specific, structured story ready instead of reaching. Fill the blanks from your actual projects at Docler and before; the "land these points" note under each is what a strong version of that story demonstrates.</span><span lang="hu">Egy személyes munkalap, a technikai anyagtól elkülönítve: a hat tapasztalati kérdés, amit ez az interjú valószínűleg feltesz, mindegyik egy STAR-vázzal, amit a saját konkrét sztoriddal töltesz ki. Ezek nem bemagolandó válaszok — keretek, amikhez valós példákat készítesz elő, hogy amikor jön a „mesélj egy esetről, amikor...", legyen kész egy konkrét, strukturált sztorid, ahelyett hogy kapkodnál. Töltsd ki a helyeket a tényleges Docler-es és korábbi projektjeidből; az „ezeket vidd át" jegyzet mindegyik alatt az, amit a sztori erős változata demonstrál.</span></p>
+    <div class="legend">
+      <span class="lbl"><span lang="en">Diagrams</span><span lang="hu">Diagramok</span></span>
+      <span class="chip chip--2"><span lang="en">green · preferred</span><span lang="hu">zöld · ajánlott</span></span>
+      <span class="chip chip--5"><span lang="en">red · pitfall</span><span lang="hu">piros · hibalehetőség</span></span>
+      <span class="chip chip--4"><span lang="en">amber · watch out</span><span lang="hu">sárga · buktató</span></span>
+    </div>
+  </div>
+
+  <nav class="index">
+    <h3><span lang="en">Jump to</span><span lang="hu">Ugrás</span></h3>
+    <div class="grid"><a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t"><span lang="en">An Architecture Decision You Owned</span><span lang="hu">Egy architektúra-döntés, amit te birtokoltál</span></span></a><a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t"><span lang="en">A Legacy System You Modernised</span><span lang="hu">Egy legacy rendszer, amit modernizáltál</span></span></a><a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t"><span lang="en">A Difficult Production Issue</span><span lang="hu">Egy nehéz produkciós probléma</span></span></a><a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t"><span lang="en">A Technical Disagreement with Stakeholders</span><span lang="hu">Technikai nézeteltérés stakeholderekkel</span></span></a><a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t"><span lang="en">A Time You Reduced Cost</span><span lang="hu">Amikor költséget csökkentettél</span></span></a><a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t"><span lang="en">A Technology You Learned Quickly</span><span lang="hu">Egy technológia, amit gyorsan megtanultál</span></span></a></div>
+  </nav>
+
+  <div class="sec"><span class="sec__l"><span lang="en">Ownership &amp; Design</span><span lang="hu">Felelősség &amp; tervezés</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c01">
+    <div class="concept__head"><span class="num">01</span><h2><span lang="en">An Architecture Decision You Owned</span><span lang="hu">Egy architektúra-döntés, amit te birtokoltál</span></h2></div>
+    <p class="scenario"><span class="scenario__tag"><span lang="en">Likely question</span><span lang="hu">Valószínű kérdés</span></span><span lang="en">"Tell me about an architecture decision you owned from design through production."</span><span lang="hu">„Mesélj egy architektúra-döntésről, amit a tervezéstől a produkcióig te birtokoltál."</span></p>
+    <p class="note"><span lang="en">They're checking whether you can own a decision end to end — not just design it, but justify the trade-off, ship it, and live with the consequences. Pick a story where <em>you</em> made the call, there were real alternatives, and you can speak to how it turned out.</span><span lang="hu">Azt ellenőrzik, tudsz-e egy döntést végig birtokolni — nem csak megtervezni, hanem indokolni a trade-offot, kiszállítani, és együtt élni a következményekkel. Válassz egy sztorit, ahol <em>te</em> döntöttél, voltak valódi alternatívák, és tudsz beszélni arról, hogy sült el.</span></p>
+    <div class="fill">
+      <p class="fill__tag"><span lang="en">Your story — fill in (STAR)</span><span lang="hu">A te sztorid — töltsd ki (STAR)</span></p>
+      <ul class="fill__list">
+        <li><b><span lang="en">Situation</span><span lang="hu">Helyzet</span></b><span lang="en"> — what system, what constraint forced a decision? </span><span lang="hu"> — milyen rendszer, milyen megkötés kényszerített döntést? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Task</span><span lang="hu">Feladat</span></b><span lang="en"> — what was yours to decide, and what were the alternatives? </span><span lang="hu"> — mi volt a tiéd eldönteni, és mik voltak az alternatívák? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Action</span><span lang="hu">Cselekvés</span></b><span lang="en"> — what did you choose and why; what trade-off did you accept? </span><span lang="hu"> — mit választottál és miért; milyen trade-offot fogadtál el? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Result</span><span lang="hu">Eredmény</span></b><span lang="en"> — how did it perform in production; what would you do differently? </span><span lang="hu"> — hogy teljesített produkcióban; mit csinálnál másképp? </span><span class="blank"></span></li>
+      </ul>
+    </div>
+    <p class="dims"><span class="dims__tag"><span lang="en">Land these points</span><span lang="hu">Ezeket vidd át</span></span><span lang="en">you made the call · real alternatives existed · you named the trade-off · you shipped and owned the outcome · honest reflection on what you'd change</span><span lang="hu">te döntöttél · voltak valódi alternatívák · megnevezted a trade-offot · kiszállítottad és birtokoltad az eredményt · őszinte reflexió, mit változtatnál</span></p>
+  </section>
+
+  <section class="concept" id="c02">
+    <div class="concept__head"><span class="num">02</span><h2><span lang="en">A Legacy System You Modernised</span><span lang="hu">Egy legacy rendszer, amit modernizáltál</span></h2></div>
+    <p class="scenario"><span class="scenario__tag"><span lang="en">Likely question</span><span lang="hu">Valószínű kérdés</span></span><span lang="en">"Tell me about a legacy system you modernised or replaced."</span><span lang="hu">„Mesélj egy legacy rendszerről, amit modernizáltál vagy lecseréltél."</span></p>
+    <p class="note"><span lang="en">This is the core of the Cheppers role — migrations and modernisation. They want to see you sequenced it safely (incremental, reversible), managed risk, and delivered value, not that you did a risky big-bang rewrite. Tie it to the migration vocabulary if you can (strangler, phased cutover, rollback).</span><span lang="hu">Ez a Cheppers-szerep magja — migrációk és modernizáció. Azt akarják látni, hogy biztonságosan sorrendezted (inkrementális, visszafordítható), kezelted a kockázatot, és értéket szállítottál, nem hogy kockázatos big-bang újraírást csináltál. Kösd a migrációs szókészlethez, ha tudod (strangler, fázisos átállás, rollback).</span></p>
+    <div class="fill">
+      <p class="fill__tag"><span lang="en">Your story — fill in (STAR)</span><span lang="hu">A te sztorid — töltsd ki (STAR)</span></p>
+      <ul class="fill__list">
+        <li><b><span lang="en">Situation</span><span lang="hu">Helyzet</span></b><span lang="en"> — what was the legacy system and why did it need changing? </span><span lang="hu"> — mi volt a legacy rendszer, és miért kellett változtatni? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Task</span><span lang="hu">Feladat</span></b><span lang="en"> — what was the goal and the risk you had to manage? </span><span lang="hu"> — mi volt a cél és a kockázat, amit kezelned kellett? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Action</span><span lang="hu">Cselekvés</span></b><span lang="en"> — how did you sequence it, keep it reversible, avoid downtime? </span><span lang="hu"> — hogyan sorrendezted, tartottad visszafordíthatóan, kerülted a leállást? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Result</span><span lang="hu">Eredmény</span></b><span lang="en"> — what improved (cost, reliability, speed), and how did you validate it? </span><span lang="hu"> — mi javult (költség, megbízhatóság, sebesség), és hogyan validáltad? </span><span class="blank"></span></li>
+      </ul>
+    </div>
+    <p class="dims"><span class="dims__tag"><span lang="en">Land these points</span><span lang="hu">Ezeket vidd át</span></span><span lang="en">incremental, not big-bang · rollback path existed · downtime minimised · measurable improvement · you introduced something the legacy lacked (IaC, monitoring, DR)</span><span lang="hu">inkrementális, nem big-bang · volt rollback-út · minimalizált leállás · mérhető javulás · bevezettél valamit, ami a legacyből hiányzott (IaC, monitoring, DR)</span></p>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Operations &amp; Judgement</span><span lang="hu">Üzemeltetés &amp; ítélőképesség</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c03">
+    <div class="concept__head"><span class="num">03</span><h2><span lang="en">A Difficult Production Issue</span><span lang="hu">Egy nehéz produkciós probléma</span></h2></div>
+    <p class="scenario"><span class="scenario__tag"><span lang="en">Likely question</span><span lang="hu">Valószínű kérdés</span></span><span lang="en">"Tell me about a difficult production issue you investigated."</span><span lang="hu">„Mesélj egy nehéz produkciós problémáról, amit kivizsgáltál."</span></p>
+    <p class="note"><span lang="en">They want your debugging method under pressure: did you mitigate first, reason from evidence, find the real root cause, and prevent recurrence. A story where you stayed systematic — not one where you got lucky guessing — is the one to tell. Bonus if you ran a blameless post-mortem.</span><span lang="hu">A debug-módszeredet akarják nyomás alatt: enyhítettél-e először, bizonyítékból következtettél, megtaláltad a valódi gyökérokot, és megelőzted az ismétlődést. Egy sztori, ahol szisztematikus maradtál — nem ahol szerencsés tippel jártál — az, amit mesélni kell. Bónusz, ha hibáztatás-mentes post-mortemet csináltál.</span></p>
+    <div class="fill">
+      <p class="fill__tag"><span lang="en">Your story — fill in (STAR)</span><span lang="hu">A te sztorid — töltsd ki (STAR)</span></p>
+      <ul class="fill__list">
+        <li><b><span lang="en">Situation</span><span lang="hu">Helyzet</span></b><span lang="en"> — what broke, what was the impact, how urgent? </span><span lang="hu"> — mi tört el, mi volt a hatás, mennyire sürgős? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Task</span><span lang="hu">Feladat</span></b><span lang="en"> — what did you need to restore and understand? </span><span lang="hu"> — mit kellett helyreállítanod és megértened? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Action</span><span lang="hu">Cselekvés</span></b><span lang="en"> — how did you mitigate, then trace the root cause from evidence? </span><span lang="hu"> — hogyan enyhítettél, majd követted a gyökérokot bizonyítékból? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Result</span><span lang="hu">Eredmény</span></b><span lang="en"> — what was the cause, and what did you change so it can't recur? </span><span lang="hu"> — mi volt az ok, és mit változtattál, hogy ne ismétlődhessen? </span><span class="blank"></span></li>
+      </ul>
+    </div>
+    <p class="dims"><span class="dims__tag"><span lang="en">Land these points</span><span lang="hu">Ezeket vidd át</span></span><span lang="en">mitigated before full diagnosis · evidence-based, not guessing · found the true root cause · corrective + preventive action · blameless framing</span><span lang="hu">enyhítettél a teljes diagnózis előtt · bizonyíték-alapú, nem tippelés · megtaláltad a valódi gyökérokot · javító + megelőző cselekvés · hibáztatás-mentes keret</span></p>
+  </section>
+
+  <section class="concept" id="c04">
+    <div class="concept__head"><span class="num">04</span><h2><span lang="en">A Technical Disagreement with Stakeholders</span><span lang="hu">Technikai nézeteltérés stakeholderekkel</span></h2></div>
+    <p class="scenario"><span class="scenario__tag"><span lang="en">Likely question</span><span lang="hu">Valószínű kérdés</span></span><span lang="en">"Tell me about a technical disagreement with stakeholders."</span><span lang="hu">„Mesélj egy technikai nézeteltérésről stakeholderekkel."</span></p>
+    <p class="note"><span lang="en">For a client-facing role this is about how you disagree — do you advise clearly, back it with reasoning, and then either persuade or commit to the client's informed call. They're wary of someone who steamrolls <em>and</em> someone who caves silently. Show judgement and professionalism, not that you "won".</span><span lang="hu">Egy ügyfélközeli szerepnél ez arról szól, hogyan nem értesz egyet — világosan tanácsolsz-e, indoklással alátámasztod, majd vagy meggyőzöl, vagy elköteleződsz az ügyfél tájékozott döntése mellett. Óvakodnak attól, aki átgázol <em>és</em> attól, aki csendben behódol. Mutass ítélőképességet és profizmust, ne azt, hogy „nyertél".</span></p>
+    <div class="fill">
+      <p class="fill__tag"><span lang="en">Your story — fill in (STAR)</span><span lang="hu">A te sztorid — töltsd ki (STAR)</span></p>
+      <ul class="fill__list">
+        <li><b><span lang="en">Situation</span><span lang="hu">Helyzet</span></b><span lang="en"> — what was the disagreement, and who held the other view? </span><span lang="hu"> — mi volt a nézeteltérés, és ki képviselte a másik nézetet? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Task</span><span lang="hu">Feladat</span></b><span lang="en"> — what was at stake in getting it right? </span><span lang="hu"> — mi forgott kockán abban, hogy jól döntsetek? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Action</span><span lang="hu">Cselekvés</span></b><span lang="en"> — how did you make your case; did you seek data or a middle ground? </span><span lang="hu"> — hogyan érveltél; kerestél adatot vagy középutat? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Result</span><span lang="hu">Eredmény</span></b><span lang="en"> — how was it resolved, and how was the relationship afterward? </span><span lang="hu"> — hogyan oldódott meg, és milyen volt a kapcsolat utána? </span><span class="blank"></span></li>
+      </ul>
+    </div>
+    <p class="dims"><span class="dims__tag"><span lang="en">Land these points</span><span lang="hu">Ezeket vidd át</span></span><span lang="en">advised clearly with reasoning · listened to their side · sought evidence or compromise · committed professionally to the outcome · relationship stayed intact</span><span lang="hu">világosan tanácsoltál indoklással · meghallgattad az ő oldalukat · kerestél bizonyítékot vagy kompromisszumot · profin elköteleződtél az eredmény mellett · a kapcsolat épen maradt</span></p>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Impact</span><span lang="hu">Hatás</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c05">
+    <div class="concept__head"><span class="num">05</span><h2><span lang="en">A Time You Reduced Cost</span><span lang="hu">Amikor költséget csökkentettél</span></h2></div>
+    <p class="scenario"><span class="scenario__tag"><span lang="en">Likely question</span><span lang="hu">Valószínű kérdés</span></span><span lang="en">"Tell me about a time you reduced infrastructure or operational cost."</span><span lang="hu">„Mesélj egy esetről, amikor infrastruktúra- vagy üzemeltetési költséget csökkentettél."</span></p>
+    <p class="note"><span lang="en">Cost optimisation is stressed repeatedly in this role, so a concrete number here is gold. They want to see you found the saving through analysis (not just turning things off recklessly) and kept availability and performance intact. Quantify it if you possibly can — "cut the monthly bill by X%".</span><span lang="hu">A költségoptimalizáció ismételten hangsúlyos ebben a szerepben, tehát egy konkrét szám itt arany. Azt akarják látni, hogy elemzéssel találtad a megtakarítást (nem csak vakon lekapcsoltál dolgokat), és a rendelkezésre állást és teljesítményt épen tartottad. Számszerűsítsd, ha csak lehet — „a havi számlát X%-kal vágtam".</span></p>
+    <div class="fill">
+      <p class="fill__tag"><span lang="en">Your story — fill in (STAR)</span><span lang="hu">A te sztorid — töltsd ki (STAR)</span></p>
+      <ul class="fill__list">
+        <li><b><span lang="en">Situation</span><span lang="hu">Helyzet</span></b><span lang="en"> — where was the cost, and how did you notice it? </span><span lang="hu"> — hol volt a költség, és hogyan vetted észre? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Task</span><span lang="hu">Feladat</span></b><span lang="en"> — what was the target, with what constraints (don't break anything)? </span><span lang="hu"> — mi volt a cél, milyen megkötésekkel (ne törj el semmit)? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Action</span><span lang="hu">Cselekvés</span></b><span lang="en"> — how did you analyse it and what levers did you pull? </span><span lang="hu"> — hogyan elemezted, és milyen eszközöket használtál? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Result</span><span lang="hu">Eredmény</span></b><span lang="en"> — how much did you save, and did availability/performance hold? </span><span lang="hu"> — mennyit spóroltál, és tartott a rendelkezésre állás/teljesítmény? </span><span class="blank"></span></li>
+      </ul>
+    </div>
+    <p class="dims"><span class="dims__tag"><span lang="en">Land these points</span><span lang="hu">Ezeket vidd át</span></span><span lang="en">a concrete number · found via analysis (Cost Explorer, right-sizing, data transfer) · availability/performance preserved · made it repeatable (tagging, alerts) not a one-off</span><span lang="hu">egy konkrét szám · elemzéssel találva (Cost Explorer, right-sizing, adatátvitel) · rendelkezésre állás/teljesítmény megőrizve · ismételhetővé tetted (címkézés, riasztás), nem egyszeri</span></p>
+  </section>
+
+  <section class="concept" id="c06">
+    <div class="concept__head"><span class="num">06</span><h2><span lang="en">A Technology You Learned Quickly</span><span lang="hu">Egy technológia, amit gyorsan megtanultál</span></h2></div>
+    <p class="scenario"><span class="scenario__tag"><span lang="en">Likely question</span><span lang="hu">Valószínű kérdés</span></span><span lang="en">"Tell me about a technology you had to learn quickly."</span><span lang="hu">„Mesélj egy technológiáról, amit gyorsan meg kellett tanulnod."</span></p>
+    <p class="note"><span lang="en">A consultancy touches varied client stacks, so they want evidence you can ramp fast and be productive on something new. Show your learning method — how you got from zero to shipping — and ideally that you then applied it well. Your AI/GenAI self-teaching, or picking up a new AWS service on a project, fits perfectly here.</span><span lang="hu">Egy tanácsadó változatos ügyfél-stackeket érint, tehát bizonyítékot akarnak, hogy gyorsan fel tudsz pörögni és produktív lenni valami újon. Mutasd a tanulási módszered — hogyan jutottál a nulláról a szállításig — és ideálisan hogy aztán jól alkalmaztad. Az AI/GenAI önképzésed, vagy egy új AWS-szolgáltatás felvétele egy projekten, pont ide illik.</span></p>
+    <div class="fill">
+      <p class="fill__tag"><span lang="en">Your story — fill in (STAR)</span><span lang="hu">A te sztorid — töltsd ki (STAR)</span></p>
+      <ul class="fill__list">
+        <li><b><span lang="en">Situation</span><span lang="hu">Helyzet</span></b><span lang="en"> — what did you need to learn, and why the time pressure? </span><span lang="hu"> — mit kellett megtanulnod, és miért az időnyomás? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Task</span><span lang="hu">Feladat</span></b><span lang="en"> — what did you have to deliver with it? </span><span lang="hu"> — mit kellett vele szállítanod? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Action</span><span lang="hu">Cselekvés</span></b><span lang="en"> — how did you learn it fast — docs, a spike, mentors, building? </span><span lang="hu"> — hogyan tanultad meg gyorsan — dokumentáció, spike, mentorok, építés? </span><span class="blank"></span></li>
+        <li><b><span lang="en">Result</span><span lang="hu">Eredmény</span></b><span lang="en"> — what did you ship, and how confident are you with it now? </span><span lang="hu"> — mit szállítottál, és mennyire vagy magabiztos vele most? </span><span class="blank"></span></li>
+      </ul>
+    </div>
+    <p class="dims"><span class="dims__tag"><span lang="en">Land these points</span><span lang="hu">Ezeket vidd át</span></span><span lang="en">a clear learning method · zero-to-productive fast · you shipped something real with it · self-directed (fits the AI interest) · you can go deep when needed</span><span lang="hu">tiszta tanulási módszer · nulláról-produktívra gyorsan · szállítottál vele valami valósat · önvezérelt (illik az AI-érdeklődéshez) · tudsz mélyre menni, ha kell</span></p>
+  </section>
+
+
+  <p class="foot"><span lang="en">AWS Cloud Architect — Experience Stories · technical interview prep · <b>Q&amp;A knowledge base</b></span><span lang="hu">AWS Cloud Architect — Experience Stories · technikai interjú-felkészítő · <b>Q&amp;A tudásbázis</b></span></p>
+
+</div>
+
+<script>
+(function () {
+  var SUPPORTED = ['en', 'hu'];
+  var root = document.documentElement;
+
+  // The smallest block element at the top-centre of the viewport (where the
+  // text is) that exists in both languages — used to hold the reading position
+  // steady across a switch. Sampling the centre, not the edge, lands on a
+  // paragraph rather than a large container, so the visible line stays put.
+  function anchor() {
+    var el = document.elementFromPoint(window.innerWidth / 2, 8);
+    while (el && el !== document.body &&
+           (el.hasAttribute('lang') || getComputedStyle(el).display === 'inline')) {
+      el = el.parentElement;
+    }
+    return el && el !== document.body ? el : null;
+  }
+
+  function applyLang(lang) {
+    if (SUPPORTED.indexOf(lang) === -1) lang = 'en';
+    if (root.dataset.lang === lang) return;
+    var a = window.scrollY > 0 ? anchor() : null;
+    var before = a ? a.getBoundingClientRect().top : 0;
+    // Toggle via data-lang only. Deliberately NOT setting root.lang: some pages
+    // hide the other language with a bare [lang="…"]{display:none} rule, which
+    // would then match <html lang="…"> and hide the whole page. Visible spans
+    // still carry their own lang attribute for assistive tech.
+    root.dataset.lang = lang;
+    if (a) window.scrollBy(0, a.getBoundingClientRect().top - before);
+  }
+
+  // In-place switch for the shell (synchronous, same-origin).
+  window.interviewBrowser = {
+    setParams: function (params) { applyLang(params && params.lang); }
+  };
+
+  applyLang(new URLSearchParams(location.search).get('lang') || 'en');
+})();
+</script>
+</body>
+</html>
