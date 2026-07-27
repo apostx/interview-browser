@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS Fundamentals — Core — Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111827;
+  --muted:#6B7280;
+  --line:#E5E7EB;
+  --paper:#EDF0F3;
+  --card:#FFFFFF;
+  --accent:#2563EB;
+  --get:#16A34A;
+  --post:#2563EB;
+  --put:#D97706;
+  --patch:#0D9488;
+  --del:#DC2626;
+  --s2:#16A34A;
+  --s3:#7C3AED;
+  --s4:#D97706;
+  --s5:#DC2626;
+  --node:#FFFFFF;
+  --nodeline:#94A3B8;
+  --slate:#334155;
+  --safe:#16A34A;
+  --vuln:#DC2626;
+}
+:root[data-lang="hu"] [lang="en"]{display:none}
+:root[data-lang="en"] [lang="hu"]{display:none}
+:root[data-lang="hu"] svg text[lang="en"]{display:none}
+:root[data-lang="en"] svg text[lang="hu"]{display:none}
+/* ── language toggling ─────────────────────────────────────────
+   Both languages live in the DOM; only the attribute changes.
+   No network requests, no re-render, so switching cannot fail.  */
+:root[data-lang="hu"] [lang="en"]{display:none}
+/* SVG text nodes need the rule stated on the element itself */
+:root[data-lang="hu"] svg text[lang="en"]{display:none}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+a{color:inherit}
+code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+code{background:#EEF2F7;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:.86em}
+.bar{position:sticky;top:0;z-index:20;background:rgba(237,240,243,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar__in{max-width:900px;margin:0 auto;padding:10px 20px;display:flex;
+  align-items:center;justify-content:space-between;gap:12px}
+.bar__t{font-family:'Space Grotesk';font-weight:600;font-size:14px;letter-spacing:-.01em}
+.bar__t b{color:var(--accent)}
+.bar__r{display:flex;align-items:center;gap:8px}
+.bar a.up{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);
+  text-decoration:none;border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:#fff}
+.bar a.up:hover{color:var(--ink);border-color:var(--accent)}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;background:#fff;overflow:hidden}
+.lang button{font-family:'JetBrains Mono';font-size:12px;padding:4px 11px;border:0;
+  background:transparent;color:var(--muted);cursor:pointer;line-height:1.5;
+  transition:background .15s,color .15s}
+.lang button:hover{color:var(--ink)}
+.lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.hero{padding:44px 0 8px}
+.eyebrow{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,6vw,50px);
+  line-height:1.02;letter-spacing:-.025em;margin:0 0 12px}
+.lede{color:var(--muted);max-width:62ch;margin:0}
+.sec{display:flex;align-items:center;gap:14px;margin:36px 4px 2px}
+.sec__l{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--accent);white-space:nowrap}
+.sec__r{height:1px;background:var(--line);flex:1}
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:24px 0 2px}
+.legend .lbl{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-right:2px}
+.chip{font-family:'JetBrains Mono';font-size:12px;padding:3px 8px;border-radius:6px;
+  border:1px solid var(--line);background:#fff}
+.chip--2{color:var(--s2);border-color:#BBF7D0;background:#F0FDF4}
+.chip--4{color:var(--s4);border-color:#FDE68A;background:#FFFBEB}
+.chip--5{color:var(--s5);border-color:#FECACA;background:#FEF2F2}
+.index{margin:30px 0 8px}
+.index h3{font-family:'Space Grotesk';font-size:13px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+a.idx{display:flex;align-items:baseline;gap:10px;text-decoration:none;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  transition:border-color .15s,transform .15s}
+a.idx:hover{border-color:var(--accent);transform:translateY(-1px)}
+.idx__n{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);font-weight:500}
+.idx__t{font-size:13.5px;font-weight:500}
+.concept{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:26px 26px 22px;margin-top:16px;scroll-margin-top:64px}
+.concept__head{display:flex;align-items:center;gap:14px;margin:0 0 12px}
+.concept__head .num{font-family:'JetBrains Mono';font-weight:500;font-size:15px;color:#fff;
+  background:var(--ink);width:38px;height:38px;border-radius:10px;display:grid;
+  place-items:center;flex:0 0 auto}
+.concept__head h2{font-family:'Space Grotesk';font-weight:600;font-size:22px;
+  letter-spacing:-.015em;margin:0}
+.def{margin:0 0 16px}
+.def strong{font-weight:600}
+.qa{border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
+.q{font-weight:600;margin:0 0 6px}
+.q::before{content:"Q";font-family:'JetBrains Mono';color:var(--accent);font-weight:600;
+  margin-right:9px;font-size:13px}
+ul.a,p.a{margin:0 0 2px}
+ul.a{padding-left:20px}
+ul.a li{margin:3px 0}
+.watch{margin:18px 0 0;background:#FFFBEB;border:1px solid #FDE68A;
+  border-left:3px solid var(--put);border-radius:8px;padding:10px 14px;font-size:14px}
+.watch__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--put);font-weight:600;display:block;margin-bottom:3px}
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 2px}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+table.t th{background:#F8FAFC;font-weight:600;font-family:'Space Grotesk';font-size:12px}
+table.t td:first-child{font-family:'JetBrains Mono';white-space:nowrap}
+.dia{margin:16px 0 4px;background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px}
+.dia svg{width:100%;height:auto;display:block}
+.dia__cap{font-family:'JetBrains Mono';font-size:11.5px;color:var(--muted);margin:8px 2px 0}
+svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
+.foot{margin-top:44px;text-align:center;color:var(--muted);font-size:12.5px}
+.foot b{font-family:'Space Grotesk';color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.src{margin-top:14px;font-size:12.5px;color:var(--muted)}
+.m{font-family:'JetBrains Mono';font-weight:500;font-size:12px;padding:3px 8px;
+  border-radius:6px;color:#fff;letter-spacing:.02em;white-space:nowrap}
+.m--get{background:var(--get)}
+.m--post{background:var(--post)}
+.m--put{background:var(--put)}
+.m--patch{background:var(--patch)}
+.m--del{background:var(--del)}
+.chip--3{color:var(--s3);border-color:#DDD6FE;background:#F5F3FF}
+.yes{color:var(--get);font-weight:600}
+.no{color:var(--muted)}
+/* ── language toggling ─────────────────────────────────────────
+   Both languages live in the DOM; only the [data-lang] attribute on
+   <html> changes. No network requests, no re-render — switching can't fail. */
+[lang="hu"]{display:none}
+html[data-lang="hu"] [lang="en"]{display:none}
+html[data-lang="hu"] [lang="hu"]{display:inline}
+html[data-lang="hu"] li[lang="hu"]{display:list-item}
+html[data-lang="hu"] p[lang="hu"],
+html[data-lang="hu"] div[lang="hu"]{display:block}
+/* SVG <text>: display:none inheritance is unreliable across browsers with
+   a generic selector, so target text nodes explicitly. */
+svg text[lang="hu"]{display:none}
+html[data-lang="hu"] svg text[lang="en"]{display:none}
+html[data-lang="hu"] svg text[lang="hu"]{display:inline}
+/* header language switch */
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+.lang button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+/* ── language toggling ───────────────────────────────────────── */
+[lang="hu"]{display:none}
+svg text[lang="hu"]{display:none}
+.depth-note{margin:16px 0 0;font-size:13px;color:var(--muted);background:#fff;border:1px solid var(--line);
+  border-radius:10px;padding:11px 14px}
+.depth-note b{color:var(--ink);font-weight:600}
+.concept__head .num.pr{background:var(--accent)}
+.q:first-child{margin-top:0}
+.step{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--slate);margin:18px 0 6px;display:flex;align-items:center;gap:8px}
+.step::before{content:"";width:16px;height:2px;background:var(--accent);display:inline-block}
+.note{margin:14px 0 0;background:#EFF6FF;border:1px solid #BFDBFE;border-left:3px solid var(--post);
+  border-radius:8px;padding:10px 14px;font-size:14px}
+.note__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--post);font-weight:600;display:block;margin-bottom:3px}
+/* vulnerable vs fixed code pair */
+.codepair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 2px}
+.cbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}
+.cbox__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600}
+.cbox--bad .cbox__h{background:#FEF2F2;color:var(--vuln);border-bottom:1px solid #FECACA}
+.cbox--good .cbox__h{background:#F0FDF4;color:var(--safe);border-bottom:1px solid #BBF7D0}
+.cbox pre{margin:0;padding:10px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.55;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+/* ── complexity badges ───────────────────────────────────────── */
+.cx{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.cx span{font-family:'JetBrains Mono';font-size:11.5px;padding:3px 9px;border-radius:6px;
+  border:1px solid var(--line);background:#fff;white-space:nowrap}
+.cx .k{color:var(--muted)}
+.cx .t{color:var(--post);border-color:#BFDBFE;background:#EFF6FF}
+.cx .s{color:var(--patch);border-color:#99F6E4;background:#F0FDFA}
+.cx .good{color:var(--safe);border-color:#BBF7D0;background:#F0FDF4}
+.cx .bad{color:var(--vuln);border-color:#FECACA;background:#FEF2F2}
+/* ── single code block ───────────────────────────────────────── */
+.code{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;margin:12px 0 2px}
+.code__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600;background:#F8FAFC;color:var(--slate);border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.code__cx{font-size:10px;color:var(--post);text-transform:none;letter-spacing:0}
+.code pre{margin:0;padding:11px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.6;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+  .bar__t{font-size:12.5px}
+}
+@media print{
+  .bar{display:none} body{background:#fff}
+  .concept{break-inside:avoid;border-color:#ccc} a.idx{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr 1fr}
+  .concept__head h2{font-size:19px}
+  .bar__t{font-size:12.5px}
+}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+}
+@media (max-width:620px){.codepair{grid-template-columns:1fr}}
+
+.def{margin:0 0 12px;font-size:15px;line-height:1.55}
+.pts{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:11px}
+.pts li{font-size:14px;line-height:1.55;padding-left:0}
+.k{display:inline-block;min-width:118px;font-family:'JetBrains Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--post);font-weight:600;vertical-align:top;margin-right:4px}
+@media(max-width:640px){.k{display:block;margin-bottom:2px}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+  </marker>
+</defs></svg>
+
+<div class="wrap" id="top">
+
+  <div class="hero">
+    <p class="eyebrow"><span lang="en">Technical Q&amp;A Knowledge Base</span><span lang="hu">Technikai Q&amp;A tudásbázis</span></p>
+    <h1>AWS Fundamentals — Core</h1>
+    <p class="lede"><span lang="en">The refresher layer under the rest of the prep: the essential AWS services and concepts, each explained briefly. Ordered by how foundational it is — what to relearn first — not alphabetically, so you can read top to bottom and build up. Networking and IAM come first because nothing else makes sense without them, then compute, storage, databases, and resilience. Each card gives what it is, what it's for, and the one point that tends to come up in interviews. The Extended sheet covers the rest; the Q&A sheet drills the common questions.</span><span lang="hu">A felfrissítő réteg a többi felkészítő alatt: az esszenciális AWS szolgáltatások és fogalmak, mindegyik röviden elmagyarázva. Aszerint rendezve, mennyire alapvető — mit érdemes először újratanulni — nem ABC-ben, hogy fentről lefelé olvasva építkezhess. A hálózat és az IAM jön először, mert semmi más nincs értelme nélkülük, aztán a számítás, tárolás, adatbázisok, és reziliencia. Minden kártya megadja, mi ez, mire való, és az egy pontot, ami interjún elő szokott jönni. A Bővített lap a többit fedi; a Q&A lap a gyakori kérdéseket gyakoroltatja.</span></p>
+    <div class="legend">
+      <span class="lbl"><span lang="en">Diagrams</span><span lang="hu">Diagramok</span></span>
+      <span class="chip chip--2"><span lang="en">green · preferred</span><span lang="hu">zöld · ajánlott</span></span>
+      <span class="chip chip--5"><span lang="en">red · pitfall</span><span lang="hu">piros · hibalehetőség</span></span>
+      <span class="chip chip--4"><span lang="en">amber · watch out</span><span lang="hu">sárga · buktató</span></span>
+    </div>
+  </div>
+
+  <nav class="index">
+    <h3><span lang="en">Jump to</span><span lang="hu">Ugrás</span></h3>
+    <div class="grid"><a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t"><span lang="en">Region &amp; Availability Zone</span><span lang="hu">Régió &amp; Availability Zone</span></span></a><a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t"><span lang="en">VPC (Virtual Private Cloud)</span><span lang="hu">VPC (Virtual Private Cloud)</span></span></a><a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t"><span lang="en">Subnet</span><span lang="hu">Subnet</span></span></a><a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t"><span lang="en">Route Table</span><span lang="hu">Route table</span></span></a><a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t"><span lang="en">Internet Gateway &amp; NAT Gateway</span><span lang="hu">Internet Gateway &amp; NAT Gateway</span></span></a><a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t"><span lang="en">Security Group</span><span lang="hu">Security Group</span></span></a><a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t"><span lang="en">NACL (Network ACL)</span><span lang="hu">NACL (Network ACL)</span></span></a><a class="idx" href="#c08"><span class="idx__n">08</span><span class="idx__t"><span lang="en">VPC Endpoint &amp; PrivateLink</span><span lang="hu">VPC Endpoint &amp; PrivateLink</span></span></a><a class="idx" href="#c09"><span class="idx__n">09</span><span class="idx__t"><span lang="en">Route 53 (DNS)</span><span lang="hu">Route 53 (DNS)</span></span></a><a class="idx" href="#c10"><span class="idx__n">10</span><span class="idx__t"><span lang="en">CloudFront (CDN)</span><span lang="hu">CloudFront (CDN)</span></span></a><a class="idx" href="#c11"><span class="idx__n">11</span><span class="idx__t"><span lang="en">IAM &amp; the Shared Responsibility Model</span><span lang="hu">IAM &amp; a megosztott felelősség modell</span></span></a><a class="idx" href="#c12"><span class="idx__n">12</span><span class="idx__t"><span lang="en">IAM Roles vs Users vs Policies</span><span lang="hu">IAM role-ok vs userek vs policy-k</span></span></a><a class="idx" href="#c13"><span class="idx__n">13</span><span class="idx__t"><span lang="en">How IAM Policies Resolve</span><span lang="hu">Hogyan dőlnek el az IAM policy-k</span></span></a><a class="idx" href="#c14"><span class="idx__n">14</span><span class="idx__t"><span lang="en">EC2 (Elastic Compute Cloud)</span><span lang="hu">EC2 (Elastic Compute Cloud)</span></span></a><a class="idx" href="#c15"><span class="idx__n">15</span><span class="idx__t"><span lang="en">Containers: ECS, EKS &amp; Fargate</span><span lang="hu">Konténerek: ECS, EKS &amp; Fargate</span></span></a><a class="idx" href="#c16"><span class="idx__n">16</span><span class="idx__t"><span lang="en">Lambda (Serverless Functions)</span><span lang="hu">Lambda (serverless függvények)</span></span></a><a class="idx" href="#c17"><span class="idx__n">17</span><span class="idx__t"><span lang="en">Load Balancers (ALB &amp; NLB)</span><span lang="hu">Load balancerek (ALB &amp; NLB)</span></span></a><a class="idx" href="#c18"><span class="idx__n">18</span><span class="idx__t"><span lang="en">Auto Scaling</span><span lang="hu">Auto Scaling</span></span></a><a class="idx" href="#c19"><span class="idx__n">19</span><span class="idx__t"><span lang="en">S3 (Simple Storage Service)</span><span lang="hu">S3 (Simple Storage Service)</span></span></a><a class="idx" href="#c20"><span class="idx__n">20</span><span class="idx__t"><span lang="en">EBS vs EFS (Block vs File)</span><span lang="hu">EBS vs EFS (blokk vs fájl)</span></span></a><a class="idx" href="#c21"><span class="idx__n">21</span><span class="idx__t"><span lang="en">RDS &amp; Aurora (Managed SQL)</span><span lang="hu">RDS &amp; Aurora (menedzselt SQL)</span></span></a><a class="idx" href="#c22"><span class="idx__n">22</span><span class="idx__t"><span lang="en">DynamoDB (NoSQL)</span><span lang="hu">DynamoDB (NoSQL)</span></span></a><a class="idx" href="#c23"><span class="idx__n">23</span><span class="idx__t"><span lang="en">ElastiCache (Redis / Memcached)</span><span lang="hu">ElastiCache (Redis / Memcached)</span></span></a><a class="idx" href="#c24"><span class="idx__n">24</span><span class="idx__t"><span lang="en">Multi-AZ &amp; High Availability</span><span lang="hu">Multi-AZ &amp; magas rendelkezésre állás</span></span></a><a class="idx" href="#c25"><span class="idx__n">25</span><span class="idx__t"><span lang="en">Disaster Recovery: RTO &amp; RPO</span><span lang="hu">Katasztrófa-helyreállítás: RTO &amp; RPO</span></span></a><a class="idx" href="#c26"><span class="idx__n">26</span><span class="idx__t"><span lang="en">Backups &amp; Snapshots</span><span lang="hu">Mentések &amp; snapshotok</span></span></a></div>
+  </nav>
+
+  <div class="sec"><span class="sec__l"><span lang="en">The Global Model</span><span lang="hu">A globális modell</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c01">
+    <div class="concept__head"><span class="num">01</span><h2><span lang="en">Region &amp; Availability Zone</span><span lang="hu">Régió &amp; Availability Zone</span></h2></div>
+    <p class="def"><span lang="en"><strong>A Region is a geographic location (eu-central-1 = Frankfurt); an Availability Zone (AZ) is one of several isolated fault domains inside it.</strong></span><span lang="hu"><strong>A régió egy földrajzi hely (eu-central-1 = Frankfurt); egy Availability Zone (AZ) az azon belüli több izolált fault domain egyike.</strong></span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it is</span><span lang="hu">Mi ez</span></span><span lang="en">An AZ is one or more discrete data centres with independent power and networking. A region has several (usually 3+). Your resources live in a specific region and AZ.</span><span lang="hu">Egy AZ egy vagy több különálló adatközpont független áramellátással és hálózattal. Egy régióban több van (általában 3+). Az erőforrásaid egy konkrét régióban és AZ-ban élnek.</span></li>
+      <li><span class="k"><span lang="en">What it's for</span><span lang="hu">Mire való</span></span><span lang="en">Spreading across AZs is how you survive a data-centre failure. This is the foundation of all high availability on AWS.</span><span lang="hu">Az AZ-k közti szétosztás az, ahogy túléled egy adatközpont hibáját. Ez minden AWS magas rendelkezésre állás alapja.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">Multi-AZ = surviving an AZ outage within one region (the default for production). Multi-region = surviving a whole-region outage (rare, expensive). Don't confuse them.</span><span lang="hu">Multi-AZ = egy AZ-kiesés túlélése egy régión belül (a produkciós alapértelmezés). Multi-region = egy teljes régió-kiesés túlélése (ritka, drága). Ne keverd őket.</span></li>
+    </ul>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Networking</span><span lang="hu">Hálózat</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c02">
+    <div class="concept__head"><span class="num">02</span><h2><span lang="en">VPC (Virtual Private Cloud)</span><span lang="hu">VPC (Virtual Private Cloud)</span></h2></div>
+    <p class="def"><span lang="en"><strong>Your own private, isolated network inside AWS</strong> — you define its IP address range and carve it into subnets.</span><span lang="hu"><strong>A saját privát, izolált hálózatod az AWS-en belül</strong> — te definiálod az IP-tartományát, és subnetekre osztod.</span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it is</span><span lang="hu">Mi ez</span></span><span lang="en">A logically isolated section of AWS where you launch resources. You give it a CIDR block (e.g. <code>10.0.0.0/16</code>) that defines its private IP range.</span><span lang="hu">Az AWS logikailag izolált szelete, ahol erőforrásokat indítasz. Adsz neki egy CIDR blokkot (pl. <code>10.0.0.0/16</code>), ami a privát IP-tartományát definiálja.</span></li>
+      <li><span class="k"><span lang="en">What it's for</span><span lang="hu">Mire való</span></span><span lang="en">It's the network boundary around everything: which resources can talk to each other, what's reachable from the internet, and what stays private is all decided here.</span><span lang="hu">Ez a hálózati határ minden körül: mely erőforrások beszélhetnek egymással, mi érhető el az internetről, és mi marad privát — mind itt dől el.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">A VPC spans a region and contains subnets, each of which lives in one AZ. The standard design: public subnets for internet-facing bits, private subnets for everything else, spread across AZs.</span><span lang="hu">Egy VPC egy régiót fed le, és subneteket tartalmaz, amelyek mindegyike egy AZ-ban él. A standard terv: publikus subnetek az internet felé néző részeknek, privát subnetek minden másnak, AZ-k között szétosztva.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c03">
+    <div class="concept__head"><span class="num">03</span><h2><span lang="en">Subnet</span><span lang="hu">Subnet</span></h2></div>
+    <p class="def"><span lang="en"><strong>A slice of a VPC's IP range that lives in one AZ.</strong> "Public" or "private" depending on whether it can route to the internet.</span><span lang="hu"><strong>Egy VPC IP-tartományának egy szelete, ami egy AZ-ban él.</strong> „Publikus" vagy „privát" attól függően, tud-e az internetre útvonalazni.</span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it is</span><span lang="hu">Mi ez</span></span><span lang="en">A sub-range of the VPC CIDR (e.g. <code>10.0.1.0/24</code>) tied to a single AZ. Every resource with a network interface sits in a subnet.</span><span lang="hu">A VPC CIDR egy al-tartománya (pl. <code>10.0.1.0/24</code>) egyetlen AZ-hoz kötve. Minden hálózati interfésszel rendelkező erőforrás egy subnetben ül.</span></li>
+      <li><span class="k"><span lang="en">Public vs private</span><span lang="hu">Publikus vs privát</span></span><span lang="en">The difference is the route table: a public subnet has a route to an Internet Gateway; a private one doesn't (it reaches out via NAT instead). Nothing else distinguishes them.</span><span lang="hu">A különbség a route table: egy publikus subnetnek van útvonala egy Internet Gateway-hez; egy privátnak nincs (helyette NAT-on át nyúl ki). Semmi más nem különbözteti meg őket.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">Put only internet-facing resources (load balancer, NAT) in public subnets; put app servers and databases in private ones. And spread each tier across at least two AZs.</span><span lang="hu">Csak internet felé néző erőforrásokat (load balancer, NAT) tegyél publikus subnetbe; az app-szervereket és adatbázisokat privátba. És minden réteget osszp szét legalább két AZ között.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c04">
+    <div class="concept__head"><span class="num">04</span><h2><span lang="en">Route Table</span><span lang="hu">Route table</span></h2></div>
+    <p class="def"><span lang="en"><strong>The rules that decide where network traffic goes</strong> — attached to subnets, it maps destination IP ranges to targets (a gateway, an endpoint, etc.).</span><span lang="hu"><strong>A szabályok, amelyek eldöntik, hova megy a hálózati forgalom</strong> — subnetekhez kapcsolva, cél-IP-tartományokat célokhoz (gateway, endpoint, stb.) rendel.</span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it is</span><span lang="hu">Mi ez</span></span><span lang="en">A set of routes: "traffic for this IP range goes to that target." Each subnet is associated with one route table. A local route for the VPC's own range always exists.</span><span lang="hu">Útvonalak halmaza: „az erre az IP-tartományra menő forgalom arra a célra megy." Minden subnet egy route table-höz van társítva. A VPC saját tartományához mindig van egy local útvonal.</span></li>
+      <li><span class="k"><span lang="en">What it's for</span><span lang="hu">Mire való</span></span><span lang="en">This is literally what makes a subnet public or private — a route <code>0.0.0.0/0 → Internet Gateway</code> makes it public. A route to a NAT gateway gives private subnets outbound-only internet.</span><span lang="hu">Ez szó szerint az, ami egy subnetet publikussá vagy priváttá tesz — egy <code>0.0.0.0/0 → Internet Gateway</code> útvonal publikussá teszi. Egy NAT gateway-hez menő útvonal csak-kimenő internetet ad a privát subneteknek.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">"Why can't my private instance reach the internet?" is very often a missing or wrong route table entry. It's the first thing to check on a connectivity problem, right after security groups.</span><span lang="hu">A „miért nem éri el a privát instance-om az internetet?" nagyon gyakran egy hiányzó vagy rossz route table bejegyzés. Ez az első, amit ellenőrzöl egy kapcsolat-problémánál, rögtön a security groupok után.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c05">
+    <div class="concept__head"><span class="num">05</span><h2><span lang="en">Internet Gateway &amp; NAT Gateway</span><span lang="hu">Internet Gateway &amp; NAT Gateway</span></h2></div>
+    <p class="def"><span lang="en"><strong>The Internet Gateway (IGW) connects a VPC to the internet; a NAT Gateway lets private subnets reach out without being reachable.</strong></span><span lang="hu"><strong>Az Internet Gateway (IGW) összeköti a VPC-t az internettel; egy NAT Gateway lehetővé teszi, hogy a privát subnetek kinyúljanak anélkül, hogy elérhetők lennének.</strong></span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">Internet Gateway</span><span lang="hu">Internet Gateway</span></span><span lang="en">One per VPC, it's the door to the internet. A resource is internet-reachable only if it's in a subnet whose route table points to the IGW <em>and</em> it has a public IP.</span><span lang="hu">Egy VPC-nként, ez az ajtó az internetre. Egy erőforrás csak akkor érhető el az internetről, ha olyan subnetben van, aminek a route table-je az IGW-re mutat, <em>és</em> van publikus IP-je.</span></li>
+      <li><span class="k"><span lang="en">NAT Gateway</span><span lang="hu">NAT Gateway</span></span><span lang="en">Sits in a public subnet; lets private-subnet resources make outbound connections (download updates, call APIs) while staying unreachable from the internet. Outbound only.</span><span lang="hu">Egy publikus subnetben ül; lehetővé teszi a privát-subnet erőforrásoknak a kimenő kapcsolatokat (frissítések letöltése, API-hívás), miközben elérhetetlenek maradnak az internetről. Csak kimenő.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">NAT gateways cost money (per hour + per GB), so in production you run one per AZ (to avoid cross-AZ cost and an AZ dependency), and use VPC endpoints for AWS-bound traffic to skip NAT entirely.</span><span lang="hu">A NAT gateway-ek pénzbe kerülnek (óránként + GB-onként), tehát produkcióban AZ-nként egyet futtatsz (a cross-AZ költség és az AZ-függőség elkerülésére), és VPC endpointot használsz az AWS felé menő forgalomhoz, hogy teljesen kihagyd a NAT-ot.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c06">
+    <div class="concept__head"><span class="num">06</span><h2><span lang="en">Security Group</span><span lang="hu">Security Group</span></h2></div>
+    <p class="def"><span lang="en"><strong>A stateful virtual firewall attached to a resource (like an EC2 instance)</strong> — allow rules only, and return traffic is automatic.</span><span lang="hu"><strong>Egy állapottartó virtuális tűzfal egy erőforráshoz (pl. egy EC2 instance-hoz) kapcsolva</strong> — csak allow szabályok, és a visszatérő forgalom automatikus.</span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it is</span><span lang="hu">Mi ez</span></span><span lang="en">A set of rules controlling inbound and outbound traffic for the resources it's attached to. You only write <em>allow</em> rules — anything not allowed is denied.</span><span lang="hu">Szabályok halmaza, amely a hozzá kapcsolt erőforrások bejövő és kimenő forgalmát vezérli. Csak <em>allow</em> szabályokat írsz — ami nincs engedélyezve, az tiltott.</span></li>
+      <li><span class="k"><span lang="en">Stateful</span><span lang="hu">Állapottartó</span></span><span lang="en">"Stateful" means if you allow an inbound request, the response is allowed back automatically — you don't write a return rule. This is the key difference from a NACL.</span><span lang="hu">Az „állapottartó" azt jelenti, hogy ha engedélyezel egy bejövő kérést, a válasz automatikusan visszaengedett — nem írsz visszatérési szabályt. Ez a kulcskülönbség egy NACL-lel szemben.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">Security groups do ~all the real access control. A clean pattern: the app's SG allows inbound only from the load balancer's SG, and the database's SG allows inbound only from the app's SG — referencing SGs, not IP ranges.</span><span lang="hu">A security groupok végzik ~az összes valódi hozzáférés-vezérlést. Tiszta minta: az app SG-je csak a load balancer SG-jéből enged bejövőt, és az adatbázis SG-je csak az app SG-jéből — SG-kre hivatkozva, nem IP-tartományokra.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c07">
+    <div class="concept__head"><span class="num">07</span><h2><span lang="en">NACL (Network ACL)</span><span lang="hu">NACL (Network ACL)</span></h2></div>
+    <p class="def"><span lang="en"><strong>A stateless firewall at the subnet level</strong> — has both allow and deny rules, and evaluates each direction independently.</span><span lang="hu"><strong>Egy állapotmentes tűzfal a subnet szintjén</strong> — allow és deny szabálya is van, és mindkét irányt függetlenül értékeli.</span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it is</span><span lang="hu">Mi ez</span></span><span lang="en">A numbered list of allow/deny rules attached to a subnet, filtering all traffic in and out of it. Rules are evaluated in order until one matches.</span><span lang="hu">Számozott allow/deny szabályok listája egy subnethez kapcsolva, amely szűri a be- és kimenő forgalmat. A szabályok sorrendben értékelődnek, míg egy nem illik.</span></li>
+      <li><span class="k"><span lang="en">Stateless</span><span lang="hu">Állapotmentes</span></span><span lang="en">Unlike a security group, return traffic is <em>not</em> automatic — if you allow an inbound request, you must also explicitly allow the outbound response (on the ephemeral port range). Forgetting this is a classic bug.</span><span lang="hu">Egy security grouppal ellentétben a visszatérő forgalom <em>nem</em> automatikus — ha engedélyezel egy bejövő kérést, explicit engedélyezned kell a kimenő választ is (az ephemeral port-tartományon). Ennek elfelejtése klasszikus hiba.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">SG vs NACL is a favourite question: security group = stateful, instance-level, allow-only; NACL = stateless, subnet-level, allow + deny. In practice SGs do the work; NACLs are a coarse backstop, often to block a specific bad IP.</span><span lang="hu">Az SG vs NACL kedvenc kérdés: security group = állapottartó, instance-szintű, csak-allow; NACL = állapotmentes, subnet-szintű, allow + deny. A gyakorlatban az SG-k végzik a munkát; a NACL-ök durva tartalék, gyakran egy konkrét rossz IP blokkolására.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c08">
+    <div class="concept__head"><span class="num">08</span><h2><span lang="en">VPC Endpoint &amp; PrivateLink</span><span lang="hu">VPC Endpoint &amp; PrivateLink</span></h2></div>
+    <p class="def"><span lang="en"><strong>A private door from your VPC to an AWS service, so the traffic never touches the public internet.</strong></span><span lang="hu"><strong>Egy privát ajtó a VPC-dből egy AWS szolgáltatáshoz, hogy a forgalom sose érintse a nyilvános internetet.</strong></span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">Two types</span><span lang="hu">Két típus</span></span><span lang="en">A <em>gateway endpoint</em> (for S3 and DynamoDB) adds a route so traffic to them stays internal — free. An <em>interface endpoint</em> (for most other services, powered by PrivateLink) puts a private IP in your subnet for the service.</span><span lang="hu">Egy <em>gateway endpoint</em> (S3-hoz és DynamoDB-hez) hozzáad egy útvonalat, hogy a hozzájuk menő forgalom belül maradjon — ingyenes. Egy <em>interface endpoint</em> (a legtöbb más szolgáltatáshoz, PrivateLinkkel hajtva) egy privát IP-t tesz a subnetedbe a szolgáltatásnak.</span></li>
+      <li><span class="k"><span lang="en">What it's for</span><span lang="hu">Mire való</span></span><span lang="en">Two wins: it keeps data off the public internet (a compliance requirement), and it removes NAT gateway cost for that traffic — reaching S3 without a NAT is the canonical example.</span><span lang="hu">Két nyereség: távol tartja az adatot a nyilvános internettől (compliance-követelmény), és megszünteti a NAT gateway költséget arra a forgalomra — az S3 elérése NAT nélkül a kanonikus példa.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">If someone mentions high NAT cost from private instances pulling from S3, the answer is a gateway endpoint. PrivateLink is also how you reach Bedrock and other services privately.</span><span lang="hu">Ha valaki magas NAT-költséget említ privát instance-okból, amelyek S3-ból húznak, a válasz egy gateway endpoint. A PrivateLink az is, ahogy a Bedrockot és más szolgáltatásokat privátan elérsz.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c09">
+    <div class="concept__head"><span class="num">09</span><h2><span lang="en">Route 53 (DNS)</span><span lang="hu">Route 53 (DNS)</span></h2></div>
+    <p class="def"><span lang="en"><strong>AWS's DNS service</strong> — turns names (yoursite.com) into addresses, and can route traffic intelligently.</span><span lang="hu"><strong>Az AWS DNS-szolgáltatása</strong> — neveket (yoursite.com) címekké alakít, és intelligensen tud forgalmat irányítani.</span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it is</span><span lang="hu">Mi ez</span></span><span lang="en">A managed, highly available DNS. You host a domain's records here; it answers DNS queries and can do health checks and failover.</span><span lang="hu">Egy menedzselt, magasan rendelkezésre álló DNS. Egy domain rekordjait itt tárolod; megválaszolja a DNS-lekérdezéseket, és tud health checket és failovert.</span></li>
+      <li><span class="k"><span lang="en">Routing policies</span><span lang="hu">Útválasztási policy-k</span></span><span lang="en">Beyond simple lookups: <em>weighted</em> (send X% of traffic to one target — used for gradual rollouts), <em>latency-based</em>, <em>failover</em> (switch to a backup if the primary is unhealthy), and <em>geolocation</em>.</span><span lang="hu">Az egyszerű kereséseken túl: <em>weighted</em> (a forgalom X%-át egy célra küldi — fokozatos kiadáshoz), <em>latency-alapú</em>, <em>failover</em> (átvált egy tartalékra, ha a primary beteg), és <em>geolokáció</em>.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">In a migration, a low DNS TTL makes cutover and rollback fast (records propagate quickly). But a low TTL alone doesn't shift traffic gradually — that needs weighted records.</span><span lang="hu">Egy migrációban egy alacsony DNS TTL gyorssá teszi az átállást és a visszagörgetést (a rekordok gyorsan propagálódnak). De egy alacsony TTL önmagában nem tolja a forgalmat fokozatosan — ahhoz weighted rekordok kellenek.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c10">
+    <div class="concept__head"><span class="num">10</span><h2><span lang="en">CloudFront (CDN)</span><span lang="hu">CloudFront (CDN)</span></h2></div>
+    <p class="def"><span lang="en"><strong>AWS's content delivery network</strong> — caches content at edge locations worldwide so users get it from somewhere near them.</span><span lang="hu"><strong>Az AWS tartalomkézbesítő hálózata</strong> — edge helyeken cache-eli a tartalmat világszerte, hogy a felhasználók egy közeli helyről kapják.</span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it is</span><span lang="hu">Mi ez</span></span><span lang="en">A CDN with a global network of edge caches. It sits in front of an origin (S3, a load balancer) and serves cached copies from the edge closest to each user.</span><span lang="hu">Egy CDN globális edge-cache hálózattal. Egy origin (S3, egy load balancer) elé ül, és a gyorsítótárazott másolatokat a minden felhasználóhoz legközelebbi edge-ről szolgálja.</span></li>
+      <li><span class="k"><span lang="en">What it's for</span><span lang="hu">Mire való</span></span><span lang="en">Lower latency (content is physically closer), less load on your origin, and lower cost (edge cache hits are cheaper than origin fetches). Also a security layer (it can sit in front with WAF).</span><span lang="hu">Alacsonyabb késleltetés (a tartalom fizikailag közelebb), kevesebb terhelés az originen, és alacsonyabb költség (az edge-cache találatok olcsóbbak, mint az origin-lekérések). Egyben biztonsági réteg is (WAF-fal elé ülhet).</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">The right way to serve public content from S3: don't make the bucket public — put CloudFront in front with Origin Access Control so the bucket only trusts CloudFront.</span><span lang="hu">A helyes mód publikus tartalmat S3-ból kiszolgálni: ne tedd publikussá a bucketet — tegyél elé CloudFrontot Origin Access Controllal, hogy a bucket csak a CloudFrontban bízzon.</span></li>
+    </ul>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Identity &amp; Access</span><span lang="hu">Identitás &amp; hozzáférés</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c11">
+    <div class="concept__head"><span class="num">11</span><h2><span lang="en">IAM &amp; the Shared Responsibility Model</span><span lang="hu">IAM &amp; a megosztott felelősség modell</span></h2></div>
+    <p class="def"><span lang="en"><strong>IAM controls who can do what in your account. The shared responsibility model splits security: AWS secures the cloud, you secure what's in it.</strong></span><span lang="hu"><strong>Az IAM vezérli, ki mit tehet az accountodban. A megosztott felelősség modell felosztja a biztonságot: az AWS a felhőt biztosítja, te azt, ami benne van.</strong></span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">IAM</span><span lang="hu">IAM</span></span><span lang="en">Identity and Access Management: the system of users, roles, and policies that grant or deny permissions to every action and resource in AWS.</span><span lang="hu">Identity and Access Management: a userek, role-ok és policy-k rendszere, amely minden AWS-műveletre és -erőforrásra megad vagy megtagad jogosultságot.</span></li>
+      <li><span class="k"><span lang="en">Shared responsibility</span><span lang="hu">Megosztott felelősség</span></span><span lang="en">AWS handles the hardware, data centres, and managed-service internals. You handle IAM, data encryption, network config, and (on EC2) OS patching. Most breaches are on the customer's side of this line.</span><span lang="hu">Az AWS kezeli a hardvert, adatközpontokat, és a menedzselt-szolgáltatás belsőket. Te kezeled az IAM-et, adattitkosítást, hálózati konfigot, és (EC2-n) az OS-patchelést. A legtöbb betörés a vonal ügyfél-oldalán van.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">The line moves with the service: on EC2 you patch the OS; on Fargate or Lambda, AWS does. Knowing where the responsibility sits per service is the point.</span><span lang="hu">A vonal a szolgáltatással mozog: EC2-n te patcheled az OS-t; Fargate-en vagy Lambdán az AWS. A lényeg tudni, hol a felelősség szolgáltatásonként.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c12">
+    <div class="concept__head"><span class="num">12</span><h2><span lang="en">IAM Roles vs Users vs Policies</span><span lang="hu">IAM role-ok vs userek vs policy-k</span></h2></div>
+    <p class="def"><span lang="en"><strong>A policy is a document granting permissions; a user is a person with long-lived credentials; a role is an identity assumed temporarily (no stored keys).</strong></span><span lang="hu"><strong>Egy policy egy jogosultságot adó dokumentum; egy user egy személy hosszú életű hitelesítő adatokkal; egy role egy ideiglenesen felvett identitás (nincs tárolt kulcs).</strong></span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">Policy</span><span lang="hu">Policy</span></span><span lang="en">A JSON document listing allowed/denied actions on resources. Attached to a user, role, or resource. This is where permissions actually live.</span><span lang="hu">Egy JSON dokumentum, amely engedélyezett/tiltott műveleteket sorol fel erőforrásokon. Userhez, role-hoz vagy erőforráshoz kapcsolva. Itt laknak valójában a jogosultságok.</span></li>
+      <li><span class="k"><span lang="en">Role vs user</span><span lang="hu">Role vs user</span></span><span lang="en">A role grants <em>temporary</em> credentials — assumed by a service, an EC2 instance, or a pipeline, with no long-lived keys to leak. A user has permanent access keys. Prefer roles for workloads, and federation (SSO) for humans.</span><span lang="hu">Egy role <em>ideiglenes</em> hitelesítő adatokat ad — egy szolgáltatás, EC2 instance vagy pipeline veszi fel, hosszú életű kulcs nélkül, ami kiszivároghatna. Egy usernek állandó access key-e van. Preferáld a role-okat workloadokhoz, és a föderációt (SSO) embereknek.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">"Roles over users" is the standard modern answer. Access keys stored somewhere are the source of most credential leaks — a role hands out short-lived credentials instead.</span><span lang="hu">A „role-ok user helyett" a standard modern válasz. A valahol tárolt access key-ek a legtöbb credential-szivárgás forrása — egy role helyette rövid életű hitelesítő adatokat oszt.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c13">
+    <div class="concept__head"><span class="num">13</span><h2><span lang="en">How IAM Policies Resolve</span><span lang="hu">Hogyan dőlnek el az IAM policy-k</span></h2></div>
+    <p class="def"><span lang="en"><strong>Default deny. An explicit allow grants; an explicit deny overrides everything. Within an account, identity and resource policies combine; boundaries and SCPs only restrict.</strong></span><span lang="hu"><strong>Alapból deny. Egy explicit allow ad; egy explicit deny mindent felülír. Egy accounton belül az identity- és resource-policy-k kombinálódnak; a boundary-k és SCP-k csak korlátoznak.</strong></span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">The order</span><span lang="hu">A sorrend</span></span><span lang="en">Everything is denied unless allowed. An explicit <code>Allow</code> grants access. An explicit <code>Deny</code> anywhere always wins. So: granted by identity or resource policy, capped by boundaries/SCPs, killed by any deny.</span><span lang="hu">Minden tiltott, hacsak nem engedélyezett. Egy explicit <code>Allow</code> ad hozzáférést. Egy explicit <code>Deny</code> bárhol mindig nyer. Tehát: identity- vagy resource-policy ad, boundary-k/SCP-k korlátoznak, bármely deny megöl.</span></li>
+      <li><span class="k"><span lang="en">The layers</span><span lang="hu">A rétegek</span></span><span lang="en">Identity policies (on the user/role), resource policies (on the S3 bucket, etc.), permission boundaries, and SCPs (org-wide guardrails). Within one account, identity + resource <em>combine</em> (union), the others only restrict.</span><span lang="hu">Identity policy-k (a useren/role-on), resource policy-k (az S3 bucketen, stb.), permission boundary-k, és SCP-k (org-szintű védőkorlátok). Egy accounton belül az identity + resource <em>kombinálódik</em> (unió), a többi csak korlátoz.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">The common mistake in the wild is over-broad policies: <code>"s3:*"</code> on <code>"*"</code>. Least privilege — scope to the specific actions and resources needed — is what a security review looks for.</span><span lang="hu">A gyakori hiba a vadonban a túl tág policy: <code>"s3:*"</code> a <code>"*"</code>-on. A legkisebb jogosultság — a konkrét szükséges műveletekre és erőforrásokra szűkítés — az, amit egy biztonsági review keres.</span></li>
+    </ul>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Compute</span><span lang="hu">Számítás</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c14">
+    <div class="concept__head"><span class="num">14</span><h2><span lang="en">EC2 (Elastic Compute Cloud)</span><span lang="hu">EC2 (Elastic Compute Cloud)</span></h2></div>
+    <p class="def"><span lang="en"><strong>Virtual servers in the cloud</strong> — you pick the size, OS, and count, and you manage everything on them.</span><span lang="hu"><strong>Virtuális szerverek a felhőben</strong> — kiválasztod a méretet, OS-t és darabszámot, és mindent te kezelsz rajtuk.</span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it is</span><span lang="hu">Mi ez</span></span><span lang="en">Resizable virtual machines. You choose an instance type (CPU/memory), an OS image, and networking; you're responsible for the OS, patching, scaling, and what runs on it.</span><span lang="hu">Átméretezhető virtuális gépek. Kiválasztasz egy instance-típust (CPU/memória), egy OS-image-et, és hálózatot; te felelsz az OS-ért, patchelésért, skálázásért, és azért, ami rajta fut.</span></li>
+      <li><span class="k"><span lang="en">What it's for</span><span lang="hu">Mire való</span></span><span lang="en">Maximum control and flexibility — legacy apps, special hardware needs, or anything that doesn't fit a managed service. The most "hands-on" compute option.</span><span lang="hu">Maximális kontroll és rugalmasság — legacy appok, speciális hardver-igények, vagy bármi, ami nem illik egy menedzselt szolgáltatásba. A leginkább „hands-on" számítási opció.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">EC2 is one end of a spectrum from "you manage everything" (EC2) to "you manage nothing but the function" (Lambda). Reach for it when you genuinely need the control; otherwise a managed option is usually better.</span><span lang="hu">Az EC2 egy vége egy spektrumnak a „mindent te kezelsz" (EC2) és a „semmit nem kezelsz a függvényen kívül" (Lambda) között. Akkor nyúlj hozzá, ha tényleg kell a kontroll; egyébként egy menedzselt opció általában jobb.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c15">
+    <div class="concept__head"><span class="num">15</span><h2><span lang="en">Containers: ECS, EKS &amp; Fargate</span><span lang="hu">Konténerek: ECS, EKS &amp; Fargate</span></h2></div>
+    <p class="def"><span lang="en"><strong>Ways to run containers on AWS. ECS is the simple AWS-native orchestrator; EKS is managed Kubernetes; Fargate is the "serverless" mode that removes server management.</strong></span><span lang="hu"><strong>Módok konténerek futtatására AWS-en. Az ECS az egyszerű AWS-natív orchestrator; az EKS menedzselt Kubernetes; a Fargate a „serverless" mód, ami megszünteti a szerver-kezelést.</strong></span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">ECS vs EKS</span><span lang="hu">ECS vs EKS</span></span><span lang="en">ECS = simpler, AWS-native, less to operate. EKS = Kubernetes: portable across clouds, huge ecosystem, but more operational weight. Choose EKS if you need k8s or the team already knows it; otherwise ECS is often the more defensible call.</span><span lang="hu">ECS = egyszerűbb, AWS-natív, kevesebb üzemeltetés. EKS = Kubernetes: hordozható felhők között, hatalmas ökoszisztéma, de több üzemeltetési súly. Válaszd az EKS-t, ha k8s kell vagy a csapat már ismeri; egyébként az ECS gyakran a védhetőbb döntés.</span></li>
+      <li><span class="k"><span lang="en">Fargate</span><span lang="hu">Fargate</span></span><span lang="en">A launch mode (for ECS or EKS) where AWS runs the underlying servers — you don't provision or patch nodes. Costs more per unit of compute but removes node management. The alternative is the EC2 launch type, where you own the nodes.</span><span lang="hu">Egy launch mód (ECS-hez vagy EKS-hez), ahol az AWS futtatja az alatta lévő szervereket — nem provisionálsz vagy patchelsz node-okat. Többe kerül számítási egységenként, de megszünteti a node-kezelést. Az alternatíva az EC2 launch type, ahol tiéd a node.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">Two separate decisions: <em>which orchestrator</em> (ECS vs EKS) and <em>which launch type</em> (Fargate vs EC2). Don't conflate "serverless containers" (Fargate) with the orchestrator choice.</span><span lang="hu">Két külön döntés: <em>melyik orchestrator</em> (ECS vs EKS) és <em>melyik launch type</em> (Fargate vs EC2). Ne mosd össze a „serverless konténereket" (Fargate) az orchestrator-választással.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c16">
+    <div class="concept__head"><span class="num">16</span><h2><span lang="en">Lambda (Serverless Functions)</span><span lang="hu">Lambda (serverless függvények)</span></h2></div>
+    <p class="def"><span lang="en"><strong>Run code without managing servers</strong> — you upload a function, it runs on demand in response to events, and you pay per invocation.</span><span lang="hu"><strong>Kód futtatása szerver-kezelés nélkül</strong> — feltöltesz egy függvényt, igény szerint fut eseményekre válaszul, és meghívásonként fizetsz.</span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it is</span><span lang="hu">Mi ez</span></span><span lang="en">You provide just the function code; AWS runs it when triggered (an API call, a file upload, a queue message), scales it automatically, and charges only for actual execution time.</span><span lang="hu">Csak a függvénykódot adod; az AWS futtatja, amikor triggerelődik (egy API-hívás, egy fájlfeltöltés, egy sor-üzenet), automatikusan skálázza, és csak a tényleges futásidőért számláz.</span></li>
+      <li><span class="k"><span lang="en">When it fits / doesn't</span><span lang="hu">Mikor illik / nem</span></span><span lang="en">Great for event-driven and spiky work (scaling to zero saves money). Poor for long-running jobs (15-min ceiling), steady high traffic (always-on containers are cheaper), or latency-sensitive paths (cold starts).</span><span lang="hu">Remek eseményvezérelt és csúcsos munkához (a nullára skálázás pénzt spórol). Rossz hosszan futó jobokhoz (15 perces plafon), állandó nagy forgalomhoz (a mindig futó konténerek olcsóbbak), vagy késleltetés-érzékeny utakhoz (hidegindítás).</span></li>
+      <li><span class="k"><span lang="en">Cold start</span><span lang="hu">Hidegindítás</span></span><span lang="en">The first invocation of an idle function pays init time (runtime spins up), adding latency. Mitigated with provisioned concurrency (keeps it warm, at a cost). A real reason to prefer a container for a latency-critical API.</span><span lang="hu">Egy tétlen függvény első meghívása inicializálási időt fizet (a futtatókörnyezet felpörög), késleltetést adva. Provisioned concurrency-vel enyhítve (melegen tartja, költséggel). Valós ok konténert preferálni egy késleltetés-kritikus API-hoz.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c17">
+    <div class="concept__head"><span class="num">17</span><h2><span lang="en">Load Balancers (ALB &amp; NLB)</span><span lang="hu">Load balancerek (ALB &amp; NLB)</span></h2></div>
+    <p class="def"><span lang="en"><strong>Distribute incoming traffic across multiple targets</strong> — the front that makes horizontal scaling and multi-AZ redundancy actually work.</span><span lang="hu"><strong>A bejövő forgalmat több cél között osztják el</strong> — a front, ami a vízszintes skálázást és a multi-AZ redundanciát ténylegesen működővé teszi.</span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it is</span><span lang="hu">Mi ez</span></span><span lang="en">A managed service that spreads requests across healthy targets (instances, containers) in multiple AZs, and health-checks them so a dead target or AZ is routed around automatically.</span><span lang="hu">Egy menedzselt szolgáltatás, amely a kéréseket egészséges célok (instance-ok, konténerek) között osztja el több AZ-ban, és health-checkeli őket, így egy halott cél vagy AZ automatikusan megkerülődik.</span></li>
+      <li><span class="k"><span lang="en">ALB vs NLB</span><span lang="hu">ALB vs NLB</span></span><span lang="en">ALB (Application Load Balancer) = HTTP/HTTPS, layer 7, with path- and host-based routing — the default for web apps. NLB (Network Load Balancer) = raw TCP/UDP, layer 4, extreme throughput and low latency.</span><span lang="hu">ALB (Application Load Balancer) = HTTP/HTTPS, 7. réteg, path- és host-alapú útválasztással — a webalkalmazások alapértelmezése. NLB (Network Load Balancer) = nyers TCP/UDP, 4. réteg, extrém áteresztőképesség és alacsony késleltetés.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">The load balancer plus an Auto Scaling Group across AZs = self-healing, elastic capacity. It's the standard front tier of almost every AWS web architecture.</span><span lang="hu">A load balancer plusz egy Auto Scaling Group AZ-k között = öngyógyító, elasztikus kapacitás. Ez szinte minden AWS webarchitektúra standard front rétege.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c18">
+    <div class="concept__head"><span class="num">18</span><h2><span lang="en">Auto Scaling</span><span lang="hu">Auto Scaling</span></h2></div>
+    <p class="def"><span lang="en"><strong>Automatically add or remove capacity to match demand</strong> — the core economic promise of the cloud, if you also scale down.</span><span lang="hu"><strong>Automatikusan kapacitást ad hozzá vagy vesz el a kereslethez igazodva</strong> — a felhő alapvető gazdasági ígérete, ha le is skálázol.</span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it is</span><span lang="hu">Mi ez</span></span><span lang="en">An Auto Scaling Group (ASG) keeps a set number of instances behind a load balancer, adding or removing them based on a metric (CPU, request count) or a schedule.</span><span lang="hu">Egy Auto Scaling Group (ASG) egy adott számú instance-ot tart egy load balancer mögött, hozzáadva vagy elvéve őket egy metrika (CPU, kérésszám) vagy ütemezés alapján.</span></li>
+      <li><span class="k"><span lang="en">Horizontal vs vertical</span><span lang="hu">Vízszintes vs függőleges</span></span><span lang="en">Auto scaling is <em>horizontal</em> (more instances) — this also adds fault tolerance. Vertical (a bigger instance) is simpler but has a ceiling, needs downtime to resize, and stays a single point of failure.</span><span lang="hu">Az auto scaling <em>vízszintes</em> (több instance) — ez hibatűrést is ad. A függőleges (nagyobb instance) egyszerűbb, de van plafonja, leállás kell az átméretezéshez, és egyszeres hibapont marad.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">Always set a maximum — auto scaling without a cap can turn a traffic spike or a bug into a huge bill. Stateless app tiers scale cleanly; the database is the piece that resists it.</span><span lang="hu">Mindig állíts maximumot — az auto scaling plafon nélkül egy forgalmi csúcsot vagy egy hibát hatalmas számlává alakíthat. Az állapotmentes app-rétegek tisztán skáláznak; az adatbázis az, ami ellenáll.</span></li>
+    </ul>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Storage</span><span lang="hu">Tárolás</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c19">
+    <div class="concept__head"><span class="num">19</span><h2><span lang="en">S3 (Simple Storage Service)</span><span lang="hu">S3 (Simple Storage Service)</span></h2></div>
+    <p class="def"><span lang="en"><strong>Object storage — effectively unlimited, extremely durable, cheap, reachable over HTTP.</strong> The backbone of storage on AWS.</span><span lang="hu"><strong>Objektum-tárolás — gyakorlatilag korlátlan, rendkívül tartós, olcsó, HTTP-n elérhető.</strong> Az AWS tárolás gerince.</span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it is</span><span lang="hu">Mi ez</span></span><span lang="en">You store "objects" (files) in "buckets," reachable via HTTP with the right permissions. Eleven nines of durability by design. Used for files, backups, static websites, and data lakes.</span><span lang="hu">„Objektumokat" (fájlokat) tárolsz „bucketekben", HTTP-n elérhetően a megfelelő jogosultsággal. Tizenegy kilences tartósság tervezetten. Fájlokhoz, mentésekhez, statikus oldalakhoz, és data lake-ekhez.</span></li>
+      <li><span class="k"><span lang="en">Storage classes</span><span lang="hu">Storage class-ok</span></span><span lang="en">Trade retrieval speed for cost: Standard (hot) → Infrequent Access → Glacier → Glacier Deep Archive (cold, cheapest). Lifecycle rules move objects between them automatically as they age.</span><span lang="hu">A lekérési sebességet költségre cseréled: Standard (forró) → Infrequent Access → Glacier → Glacier Deep Archive (hideg, legolcsóbb). A lifecycle szabályok automatikusan mozgatják közöttük az objektumokat, ahogy öregszenek.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">Securing S3: Block Public Access on (this setting prevents the famous leaks), encryption at rest, a scoped bucket policy. To serve public content, use CloudFront in front — don't make the bucket public.</span><span lang="hu">S3 biztosítása: Block Public Access bekapcsolva (ez a beállítás megelőzi a híres szivárgásokat), titkosítás nyugalmi állapotban, szűkített bucket policy. Publikus tartalomhoz CloudFront elé — ne tedd publikussá a bucketet.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c20">
+    <div class="concept__head"><span class="num">20</span><h2><span lang="en">EBS vs EFS (Block vs File)</span><span lang="hu">EBS vs EFS (blokk vs fájl)</span></h2></div>
+    <p class="def"><span lang="en"><strong>EBS is a virtual hard disk for one instance (block storage); EFS is a shared filesystem many instances can mount at once (file storage).</strong></span><span lang="hu"><strong>Az EBS egy virtuális merevlemez egy instance-nak (blokk-tárolás); az EFS egy megosztott fájlrendszer, amit sok instance mountolhat egyszerre (fájl-tárolás).</strong></span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">EBS</span><span lang="hu">EBS</span></span><span lang="en">Elastic Block Store — a durable disk volume attached to a single EC2 instance, like a hard drive. Used for the OS disk and for databases. Persists independently of the instance.</span><span lang="hu">Elastic Block Store — egy tartós lemez-volume egyetlen EC2 instance-hoz kapcsolva, mint egy merevlemez. Az OS-lemezhez és adatbázisokhoz. Az instance-tól függetlenül fennmarad.</span></li>
+      <li><span class="k"><span lang="en">EFS</span><span lang="hu">EFS</span></span><span lang="en">Elastic File System — a shared filesystem (NFS) that many instances mount simultaneously, across AZs. Used when a fleet of servers needs the same files. Costs more per GB than EBS.</span><span lang="hu">Elastic File System — egy megosztott fájlrendszer (NFS), amit sok instance mountol egyszerre, AZ-k között. Amikor egy szerver-flottának ugyanazok a fájlok kellenek. Többe kerül GB-onként, mint az EBS.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">"Many writers, one filesystem" = EFS; a single instance's disk = EBS. (Narrow exception: io1/io2 EBS volumes support Multi-Attach to a few instances in one AZ, with app-level coordination.)</span><span lang="hu">„Sok író, egy fájlrendszer" = EFS; egyetlen instance lemeze = EBS. (Szűk kivétel: az io1/io2 EBS volume-ok támogatják a Multi-Attach-et néhány instance-hoz egy AZ-ban, app-szintű koordinációval.)</span></li>
+    </ul>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Databases</span><span lang="hu">Adatbázisok</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c21">
+    <div class="concept__head"><span class="num">21</span><h2><span lang="en">RDS &amp; Aurora (Managed SQL)</span><span lang="hu">RDS &amp; Aurora (menedzselt SQL)</span></h2></div>
+    <p class="def"><span lang="en"><strong>RDS runs standard SQL databases as a managed service; Aurora is AWS's own high-performance MySQL/PostgreSQL-compatible engine.</strong></span><span lang="hu"><strong>Az RDS standard SQL adatbázisokat futtat menedzselt szolgáltatásként; az Aurora az AWS saját nagy teljesítményű MySQL/PostgreSQL-kompatibilis motorja.</strong></span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">RDS</span><span lang="hu">RDS</span></span><span lang="en">Relational Database Service — runs engines like PostgreSQL, MySQL, MariaDB, SQL Server on managed instances. AWS handles backups, patching, and failover. Scales up (bigger instance) and out (read replicas).</span><span lang="hu">Relational Database Service — motorokat futtat, mint a PostgreSQL, MySQL, MariaDB, SQL Server menedzselt instance-okon. Az AWS kezeli a mentéseket, patchelést, failovert. Felfelé (nagyobb instance) és kifelé (olvasó replikák) skálázódik.</span></li>
+      <li><span class="k"><span lang="en">Aurora</span><span lang="hu">Aurora</span></span><span lang="en">AWS's reimplementation of MySQL/PostgreSQL with a distributed storage layer: storage grows automatically, up to 15 read replicas, faster failover. Not automatically faster for every workload — the gains are in availability and read scaling.</span><span lang="hu">Az AWS MySQL/PostgreSQL-újraimplementációja elosztott tárolóréteggel: a tárhely automatikusan nő, max 15 olvasó replika, gyorsabb failover. Nem automatikusan gyorsabb minden workloadra — az előnyök a rendelkezésre állásban és olvasás-skálázásban vannak.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">Scale reads with read replicas + a cache; use Multi-AZ for failover; snapshots/point-in-time for backup. These are three different features — a replica is not a backup and not automatic failover.</span><span lang="hu">Olvasásokat olvasó replikákkal + cache-sel skálázol; Multi-AZ-t használsz failoverhez; snapshot/point-in-time a mentéshez. Ez három különböző funkció — egy replika nem mentés és nem automatikus failover.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c22">
+    <div class="concept__head"><span class="num">22</span><h2><span lang="en">DynamoDB (NoSQL)</span><span lang="hu">DynamoDB (NoSQL)</span></h2></div>
+    <p class="def"><span lang="en"><strong>A fully managed key-value / document database that scales horizontally to virtually any size</strong> with consistent low latency — when modelled correctly.</span><span lang="hu"><strong>Egy teljesen menedzselt kulcs-érték / dokumentum adatbázis, amely vízszintesen skálázódik gyakorlatilag bármilyen méretre</strong> konzisztens alacsony késleltetéssel — ha helyesen modellezed.</span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it is</span><span lang="hu">Mi ez</span></span><span lang="en">A NoSQL database with no servers to manage, that scales horizontally and delivers single-digit-millisecond latency at very large scale. You access items by key.</span><span lang="hu">Egy NoSQL adatbázis szerver-kezelés nélkül, amely vízszintesen skálázódik, és egyszámjegyű ezredmásodperces késleltetést ad nagyon nagy léptékben. Kulcs alapján érsz el elemeket.</span></li>
+      <li><span class="k"><span lang="en">When it fits / traps</span><span lang="hu">Mikor illik / csapdák</span></span><span lang="en">Right for huge scale with known, simple access patterns. A trap when access patterns aren't known upfront or you need flexible ad-hoc queries — you must model tables around your queries. "Schemaless = flexible" is backwards; it's rigid about access patterns.</span><span lang="hu">Helyes nagy léptékhez ismert, egyszerű hozzáférési mintákkal. Csapda, ha a minták nem ismertek előre, vagy rugalmas ad-hoc lekérdezés kell — a táblákat a lekérdezéseid köré kell modellezned. A „sémátlan = rugalmas" fordítva van; a hozzáférési mintákban merev.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">Choosing RDS vs DynamoDB comes down to the access pattern: relational with flexible queries → RDS/Aurora; massive scale with known key-based lookups → DynamoDB. Get the access pattern straight first.</span><span lang="hu">Az RDS vs DynamoDB választás a hozzáférési mintán múlik: relációs, rugalmas lekérdezésekkel → RDS/Aurora; hatalmas lépték ismert kulcs-alapú keresésekkel → DynamoDB. Előbb tisztázd a hozzáférési mintát.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c23">
+    <div class="concept__head"><span class="num">23</span><h2><span lang="en">ElastiCache (Redis / Memcached)</span><span lang="hu">ElastiCache (Redis / Memcached)</span></h2></div>
+    <p class="def"><span lang="en"><strong>Managed in-memory cache</strong> — sits in front of a database to absorb hot reads before they hit it, cutting latency and load.</span><span lang="hu"><strong>Menedzselt in-memory cache</strong> — egy adatbázis elé ül, hogy felszívja a forró olvasásokat, mielőtt elérnék, csökkentve a késleltetést és terhelést.</span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it is</span><span lang="hu">Mi ez</span></span><span lang="en">A managed Redis or Memcached cluster. Frequently-read data is kept in memory so requests get answered in microseconds without touching the database.</span><span lang="hu">Egy menedzselt Redis vagy Memcached klaszter. A gyakran olvasott adat memóriában marad, így a kérések mikroszekundumok alatt megválaszolódnak az adatbázis érintése nélkül.</span></li>
+      <li><span class="k"><span lang="en">What it's for</span><span lang="hu">Mire való</span></span><span lang="en">Speeding up reads and taking load off the database — session storage, leaderboards, or any hot data. Part of the standard read-scaling toolkit alongside read replicas.</span><span lang="hu">Az olvasások gyorsítása és a terhelés levétele az adatbázisról — session-tárolás, ranglisták, vagy bármely forró adat. A standard olvasás-skálázó eszközkészlet része az olvasó replikák mellett.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">The read-scaling escalation order: query tuning and indexes → caching (ElastiCache) → read replicas → vertical scaling → sharding last. Caching comes early because it's cheap and effective.</span><span lang="hu">Az olvasás-skálázás eszkalációs sorrendje: lekérdezés-hangolás és indexek → cache (ElastiCache) → olvasó replikák → függőleges skálázás → shardolás utoljára. A cache korán jön, mert olcsó és hatékony.</span></li>
+    </ul>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Resilience</span><span lang="hu">Reziliencia</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c24">
+    <div class="concept__head"><span class="num">24</span><h2><span lang="en">Multi-AZ &amp; High Availability</span><span lang="hu">Multi-AZ &amp; magas rendelkezésre állás</span></h2></div>
+    <p class="def"><span lang="en"><strong>High availability = removing single points of failure. On AWS the first move is always spreading across Availability Zones.</strong></span><span lang="hu"><strong>Magas rendelkezésre állás = az egyszeres hibapontok megszüntetése. Az AWS-en az első lépés mindig az AZ-k közti szétosztás.</strong></span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it means</span><span lang="hu">Mit jelent</span></span><span lang="en">Deploy across at least two AZs so a data-centre failure doesn't take you down. A load balancer routes around a failed AZ; an ASG keeps healthy instances in each; Multi-AZ RDS keeps a standby in another AZ.</span><span lang="hu">Telepíts legalább két AZ-ba, hogy egy adatközpont-hiba ne vigyen le. Egy load balancer megkerül egy hibás AZ-t; egy ASG egészséges instance-okat tart mindegyikben; a Multi-AZ RDS egy standbyt tart egy másik AZ-ban.</span></li>
+      <li><span class="k"><span lang="en">Availability vs durability</span><span lang="hu">Rendelkezésre állás vs tartósság</span></span><span lang="en">Durability = your data survives (S3 essentially never loses an object). Availability = you can reach it right now (Multi-AZ failover keeps it reachable). Different problems; you often need both.</span><span lang="hu">Tartósság = az adatod túléli (az S3 lényegében sosem veszít objektumot). Rendelkezésre állás = most el tudod érni (a Multi-AZ failover elérhetően tartja). Különböző problémák; gyakran mindkettő kell.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">A single-AZ deployment is a single point of failure no matter how many instances are in it — if the AZ goes, everything goes. At least two AZs is the minimum bar for production.</span><span lang="hu">Egy egy-AZ-s telepítés egyszeres hibapont, akárhány instance van benne — ha az AZ elmegy, minden elmegy. A legalább két AZ a produkció minimuma.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c25">
+    <div class="concept__head"><span class="num">25</span><h2><span lang="en">Disaster Recovery: RTO &amp; RPO</span><span lang="hu">Katasztrófa-helyreállítás: RTO &amp; RPO</span></h2></div>
+    <p class="def"><span lang="en"><strong>DR strategy is a cost-versus-speed trade-off measured by two numbers: how long you can be down (RTO) and how much data you can lose (RPO).</strong></span><span lang="hu"><strong>A DR-stratégia egy költség-vs-sebesség trade-off, két számmal mérve: meddig lehetsz leállva (RTO) és mennyi adatot veszíthetsz (RPO).</strong></span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">RTO vs RPO</span><span lang="hu">RTO vs RPO</span></span><span lang="en">RTO (Recovery Time Objective) = the downtime window, how long until you're running again. RPO (Recovery Point Objective) = the data-loss window, how far back your last recoverable state is. A daily backup = up to 24h RPO.</span><span lang="hu">RTO (Recovery Time Objective) = a leállási ablak, meddig tart, míg újra futsz. RPO (Recovery Point Objective) = az adatvesztési ablak, meddig nyúlik vissza az utolsó helyreállítható állapotod. Egy napi mentés = akár 24h RPO.</span></li>
+      <li><span class="k"><span lang="en">The four strategies</span><span lang="hu">A négy stratégia</span></span><span lang="en">By cost and speed: Backup &amp; Restore (cheapest, hours) → Pilot Light (core running, scale up) → Warm Standby (scaled-down live copy) → Active-Active (multi-region, near-zero RTO, priciest).</span><span lang="hu">Költség és sebesség szerint: Backup &amp; Restore (legolcsóbb, órák) → Pilot Light (mag fut, felskálázás) → Warm Standby (kicsinyített élő másolat) → Active-Active (multi-region, közel nulla RTO, legdrágább).</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">Let the requirement pick the strategy: "how long can this be down, how much data can we lose?" then match the cheapest option that meets it. And a DR plan that's never been tested is a hypothesis, not a plan.</span><span lang="hu">Hagyd, hogy a követelmény válassza a stratégiát: „meddig lehet ez leállva, mennyi adatot veszíthetünk?" majd illeszd a legolcsóbb megfelelő opciót. És egy soha nem tesztelt DR-terv egy hipotézis, nem terv.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept" id="c26">
+    <div class="concept__head"><span class="num">26</span><h2><span lang="en">Backups &amp; Snapshots</span><span lang="hu">Mentések &amp; snapshotok</span></h2></div>
+    <p class="def"><span lang="en"><strong>Point-in-time copies of your data for recovery</strong> — the durability axis, separate from availability.</span><span lang="hu"><strong>Időpont-pillanatképek az adatodról a helyreállításhoz</strong> — a tartóssági tengely, a rendelkezésre állástól elkülönítve.</span></p>
+    <ul class="pts">
+      <li><span class="k"><span lang="en">What it is</span><span lang="hu">Mi ez</span></span><span lang="en">A snapshot is a copy of an EBS volume or database at a moment in time, stored in S3. RDS also offers point-in-time recovery (restore to any second within the retention window).</span><span lang="hu">Egy snapshot egy EBS volume vagy adatbázis másolata egy adott pillanatban, S3-ban tárolva. Az RDS point-in-time recovery-t is kínál (visszaállítás bármely másodpercre a megőrzési ablakon belül).</span></li>
+      <li><span class="k"><span lang="en">What it's for</span><span lang="hu">Mire való</span></span><span lang="en">Recovering from data loss, corruption, or a mistake — the thing that sets your RPO. For DR, snapshots can be copied cross-region so a regional failure doesn't lose them.</span><span lang="hu">Adatvesztésből, sérülésből vagy hibából való helyreállítás — az, ami az RPO-dat beállítja. DR-hez a snapshotok régiók között másolhatók, hogy egy regionális hiba ne veszítse el őket.</span></li>
+      <li><span class="k"><span lang="en">Interview point</span><span lang="hu">Interjú-lényeg</span></span><span lang="en">Backups solve a different problem from Multi-AZ: Multi-AZ keeps you <em>available</em> during a failure, backups let you <em>recover</em> lost or corrupted data. "It's replicated so it's backed up" is wrong — replication is availability, backup is durability.</span><span lang="hu">A mentések más problémát oldanak meg, mint a Multi-AZ: a Multi-AZ <em>elérhetően</em> tart egy hiba alatt, a mentések lehetővé teszik az elveszett vagy sérült adat <em>helyreállítását</em>. A „replikált, tehát mentve van" hibás — a replikáció rendelkezésre állás, a mentés tartósság.</span></li>
+    </ul>
+  </section>
+
+
+  <p class="foot"><span lang="en">AWS Fundamentals — Core · technical interview prep · <b>Q&amp;A knowledge base</b></span><span lang="hu">AWS Fundamentals — Core · technikai interjú-felkészítő · <b>Q&amp;A tudásbázis</b></span></p>
+
+</div>
+
+<script>
+(function () {
+  var SUPPORTED = ['en', 'hu'];
+  var root = document.documentElement;
+
+  // The smallest block element at the top-centre of the viewport (where the
+  // text is) that exists in both languages — used to hold the reading position
+  // steady across a switch. Sampling the centre, not the edge, lands on a
+  // paragraph rather than a large container, so the visible line stays put.
+  function anchor() {
+    var el = document.elementFromPoint(window.innerWidth / 2, 8);
+    while (el && el !== document.body &&
+           (el.hasAttribute('lang') || getComputedStyle(el).display === 'inline')) {
+      el = el.parentElement;
+    }
+    return el && el !== document.body ? el : null;
+  }
+
+  function applyLang(lang) {
+    if (SUPPORTED.indexOf(lang) === -1) lang = 'en';
+    if (root.dataset.lang === lang) return;
+    var a = window.scrollY > 0 ? anchor() : null;
+    var before = a ? a.getBoundingClientRect().top : 0;
+    // Toggle via data-lang only. Deliberately NOT setting root.lang: some pages
+    // hide the other language with a bare [lang="…"]{display:none} rule, which
+    // would then match <html lang="…"> and hide the whole page. Visible spans
+    // still carry their own lang attribute for assistive tech.
+    root.dataset.lang = lang;
+    if (a) window.scrollBy(0, a.getBoundingClientRect().top - before);
+  }
+
+  // In-place switch for the shell (synchronous, same-origin).
+  window.interviewBrowser = {
+    setParams: function (params) { applyLang(params && params.lang); }
+  };
+
+  applyLang(new URLSearchParams(location.search).get('lang') || 'en');
+})();
+</script>
+</body>
+</html>

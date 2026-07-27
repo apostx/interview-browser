@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS Fundamentals — Q&amp;A — Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111827;
+  --muted:#6B7280;
+  --line:#E5E7EB;
+  --paper:#EDF0F3;
+  --card:#FFFFFF;
+  --accent:#2563EB;
+  --get:#16A34A;
+  --post:#2563EB;
+  --put:#D97706;
+  --patch:#0D9488;
+  --del:#DC2626;
+  --s2:#16A34A;
+  --s3:#7C3AED;
+  --s4:#D97706;
+  --s5:#DC2626;
+  --node:#FFFFFF;
+  --nodeline:#94A3B8;
+  --slate:#334155;
+  --safe:#16A34A;
+  --vuln:#DC2626;
+}
+:root[data-lang="hu"] [lang="en"]{display:none}
+:root[data-lang="en"] [lang="hu"]{display:none}
+:root[data-lang="hu"] svg text[lang="en"]{display:none}
+:root[data-lang="en"] svg text[lang="hu"]{display:none}
+/* ── language toggling ─────────────────────────────────────────
+   Both languages live in the DOM; only the attribute changes.
+   No network requests, no re-render, so switching cannot fail.  */
+:root[data-lang="hu"] [lang="en"]{display:none}
+/* SVG text nodes need the rule stated on the element itself */
+:root[data-lang="hu"] svg text[lang="en"]{display:none}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+a{color:inherit}
+code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+code{background:#EEF2F7;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:.86em}
+.bar{position:sticky;top:0;z-index:20;background:rgba(237,240,243,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar__in{max-width:900px;margin:0 auto;padding:10px 20px;display:flex;
+  align-items:center;justify-content:space-between;gap:12px}
+.bar__t{font-family:'Space Grotesk';font-weight:600;font-size:14px;letter-spacing:-.01em}
+.bar__t b{color:var(--accent)}
+.bar__r{display:flex;align-items:center;gap:8px}
+.bar a.up{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);
+  text-decoration:none;border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:#fff}
+.bar a.up:hover{color:var(--ink);border-color:var(--accent)}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;background:#fff;overflow:hidden}
+.lang button{font-family:'JetBrains Mono';font-size:12px;padding:4px 11px;border:0;
+  background:transparent;color:var(--muted);cursor:pointer;line-height:1.5;
+  transition:background .15s,color .15s}
+.lang button:hover{color:var(--ink)}
+.lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.hero{padding:44px 0 8px}
+.eyebrow{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,6vw,50px);
+  line-height:1.02;letter-spacing:-.025em;margin:0 0 12px}
+.lede{color:var(--muted);max-width:62ch;margin:0}
+.sec{display:flex;align-items:center;gap:14px;margin:36px 4px 2px}
+.sec__l{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--accent);white-space:nowrap}
+.sec__r{height:1px;background:var(--line);flex:1}
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:24px 0 2px}
+.legend .lbl{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-right:2px}
+.chip{font-family:'JetBrains Mono';font-size:12px;padding:3px 8px;border-radius:6px;
+  border:1px solid var(--line);background:#fff}
+.chip--2{color:var(--s2);border-color:#BBF7D0;background:#F0FDF4}
+.chip--4{color:var(--s4);border-color:#FDE68A;background:#FFFBEB}
+.chip--5{color:var(--s5);border-color:#FECACA;background:#FEF2F2}
+.index{margin:30px 0 8px}
+.index h3{font-family:'Space Grotesk';font-size:13px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+a.idx{display:flex;align-items:baseline;gap:10px;text-decoration:none;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  transition:border-color .15s,transform .15s}
+a.idx:hover{border-color:var(--accent);transform:translateY(-1px)}
+.idx__n{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);font-weight:500}
+.idx__t{font-size:13.5px;font-weight:500}
+.concept{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:26px 26px 22px;margin-top:16px;scroll-margin-top:64px}
+.concept__head{display:flex;align-items:center;gap:14px;margin:0 0 12px}
+.concept__head .num{font-family:'JetBrains Mono';font-weight:500;font-size:15px;color:#fff;
+  background:var(--ink);width:38px;height:38px;border-radius:10px;display:grid;
+  place-items:center;flex:0 0 auto}
+.concept__head h2{font-family:'Space Grotesk';font-weight:600;font-size:22px;
+  letter-spacing:-.015em;margin:0}
+.def{margin:0 0 16px}
+.def strong{font-weight:600}
+.qa{border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
+.q{font-weight:600;margin:0 0 6px}
+.q::before{content:"Q";font-family:'JetBrains Mono';color:var(--accent);font-weight:600;
+  margin-right:9px;font-size:13px}
+ul.a,p.a{margin:0 0 2px}
+ul.a{padding-left:20px}
+ul.a li{margin:3px 0}
+.watch{margin:18px 0 0;background:#FFFBEB;border:1px solid #FDE68A;
+  border-left:3px solid var(--put);border-radius:8px;padding:10px 14px;font-size:14px}
+.watch__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--put);font-weight:600;display:block;margin-bottom:3px}
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 2px}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+table.t th{background:#F8FAFC;font-weight:600;font-family:'Space Grotesk';font-size:12px}
+table.t td:first-child{font-family:'JetBrains Mono';white-space:nowrap}
+.dia{margin:16px 0 4px;background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px}
+.dia svg{width:100%;height:auto;display:block}
+.dia__cap{font-family:'JetBrains Mono';font-size:11.5px;color:var(--muted);margin:8px 2px 0}
+svg text{font-family:'JetBrains Mono',ui-monospace,monospace}
+.foot{margin-top:44px;text-align:center;color:var(--muted);font-size:12.5px}
+.foot b{font-family:'Space Grotesk';color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.src{margin-top:14px;font-size:12.5px;color:var(--muted)}
+.m{font-family:'JetBrains Mono';font-weight:500;font-size:12px;padding:3px 8px;
+  border-radius:6px;color:#fff;letter-spacing:.02em;white-space:nowrap}
+.m--get{background:var(--get)}
+.m--post{background:var(--post)}
+.m--put{background:var(--put)}
+.m--patch{background:var(--patch)}
+.m--del{background:var(--del)}
+.chip--3{color:var(--s3);border-color:#DDD6FE;background:#F5F3FF}
+.yes{color:var(--get);font-weight:600}
+.no{color:var(--muted)}
+/* ── language toggling ─────────────────────────────────────────
+   Both languages live in the DOM; only the [data-lang] attribute on
+   <html> changes. No network requests, no re-render — switching can't fail. */
+[lang="hu"]{display:none}
+html[data-lang="hu"] [lang="en"]{display:none}
+html[data-lang="hu"] [lang="hu"]{display:inline}
+html[data-lang="hu"] li[lang="hu"]{display:list-item}
+html[data-lang="hu"] p[lang="hu"],
+html[data-lang="hu"] div[lang="hu"]{display:block}
+/* SVG <text>: display:none inheritance is unreliable across browsers with
+   a generic selector, so target text nodes explicitly. */
+svg text[lang="hu"]{display:none}
+html[data-lang="hu"] svg text[lang="en"]{display:none}
+html[data-lang="hu"] svg text[lang="hu"]{display:inline}
+/* header language switch */
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+.lang button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+/* ── language toggling ───────────────────────────────────────── */
+[lang="hu"]{display:none}
+svg text[lang="hu"]{display:none}
+.depth-note{margin:16px 0 0;font-size:13px;color:var(--muted);background:#fff;border:1px solid var(--line);
+  border-radius:10px;padding:11px 14px}
+.depth-note b{color:var(--ink);font-weight:600}
+.concept__head .num.pr{background:var(--accent)}
+.q:first-child{margin-top:0}
+.step{font-family:'Space Grotesk';font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--slate);margin:18px 0 6px;display:flex;align-items:center;gap:8px}
+.step::before{content:"";width:16px;height:2px;background:var(--accent);display:inline-block}
+.note{margin:14px 0 0;background:#EFF6FF;border:1px solid #BFDBFE;border-left:3px solid var(--post);
+  border-radius:8px;padding:10px 14px;font-size:14px}
+.note__tag{font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--post);font-weight:600;display:block;margin-bottom:3px}
+/* vulnerable vs fixed code pair */
+.codepair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 2px}
+.cbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}
+.cbox__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600}
+.cbox--bad .cbox__h{background:#FEF2F2;color:var(--vuln);border-bottom:1px solid #FECACA}
+.cbox--good .cbox__h{background:#F0FDF4;color:var(--safe);border-bottom:1px solid #BBF7D0}
+.cbox pre{margin:0;padding:10px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.55;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+/* ── complexity badges ───────────────────────────────────────── */
+.cx{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.cx span{font-family:'JetBrains Mono';font-size:11.5px;padding:3px 9px;border-radius:6px;
+  border:1px solid var(--line);background:#fff;white-space:nowrap}
+.cx .k{color:var(--muted)}
+.cx .t{color:var(--post);border-color:#BFDBFE;background:#EFF6FF}
+.cx .s{color:var(--patch);border-color:#99F6E4;background:#F0FDFA}
+.cx .good{color:var(--safe);border-color:#BBF7D0;background:#F0FDF4}
+.cx .bad{color:var(--vuln);border-color:#FECACA;background:#FEF2F2}
+/* ── single code block ───────────────────────────────────────── */
+.code{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;margin:12px 0 2px}
+.code__h{font-family:'JetBrains Mono';font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+  padding:5px 10px;font-weight:600;background:#F8FAFC;color:var(--slate);border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.code__cx{font-size:10px;color:var(--post);text-transform:none;letter-spacing:0}
+.code pre{margin:0;padding:11px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.6;
+  overflow-x:auto;white-space:pre;color:var(--ink)}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+  .bar__t{font-size:12.5px}
+}
+@media print{
+  .bar{display:none} body{background:#fff}
+  .concept{break-inside:avoid;border-color:#ccc} a.idx{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr 1fr}
+  .concept__head h2{font-size:19px}
+  .bar__t{font-size:12.5px}
+}
+@media (max-width:560px){
+  .concept{padding:20px 18px}
+  .grid{grid-template-columns:1fr}
+  .concept__head h2{font-size:19px}
+}
+@media (max-width:620px){.codepair{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+  </marker>
+</defs></svg>
+
+<div class="wrap" id="top">
+
+  <div class="hero">
+    <p class="eyebrow"><span lang="en">Technical Q&amp;A Knowledge Base</span><span lang="hu">Technikai Q&amp;A tudásbázis</span></p>
+    <h1>AWS Fundamentals — Q&amp;A</h1>
+    <p class="lede"><span lang="en">The third fundamentals sheet: the questions an AWS technical round actually asks on the basics, as short question-and-answer pairs you can self-test against. These are the "explain X" and "X or Y?" questions the glossary cards prepare you for — grouped by area, roughly in order of how commonly they come up. Cover the Core and Extended sheets first, then use this to check the answers land.</span><span lang="hu">A harmadik alapozó lap: a kérdések, amiket egy AWS technikai kör valójában feltesz az alapokról, rövid kérdés-válasz párokként, amiken önellenőrizhetsz. Ezek az „magyarázd el X-et" és „X vagy Y?" kérdések, amikre a glosszárium-kártyák felkészítenek — terület szerint csoportosítva, nagyjából aszerint, milyen gyakran jönnek elő. Előbb a Core és Bővített lapokat vedd át, majd ezzel ellenőrizd, hogy a válaszok ülnek-e.</span></p>
+    <div class="legend">
+      <span class="lbl"><span lang="en">Diagrams</span><span lang="hu">Diagramok</span></span>
+      <span class="chip chip--2"><span lang="en">green · preferred</span><span lang="hu">zöld · ajánlott</span></span>
+      <span class="chip chip--5"><span lang="en">red · pitfall</span><span lang="hu">piros · hibalehetőség</span></span>
+      <span class="chip chip--4"><span lang="en">amber · watch out</span><span lang="hu">sárga · buktató</span></span>
+    </div>
+  </div>
+
+  <nav class="index">
+    <h3><span lang="en">Jump to</span><span lang="hu">Ugrás</span></h3>
+    <div class="grid"><a class="idx" href="#c01"><span class="idx__n">01</span><span class="idx__t"><span lang="en">Networking Questions</span><span lang="hu">Hálózati kérdések</span></span></a><a class="idx" href="#c02"><span class="idx__n">02</span><span class="idx__t"><span lang="en">IAM &amp; Security Questions</span><span lang="hu">IAM &amp; biztonsági kérdések</span></span></a><a class="idx" href="#c03"><span class="idx__n">03</span><span class="idx__t"><span lang="en">Compute Questions</span><span lang="hu">Számítási kérdések</span></span></a><a class="idx" href="#c04"><span class="idx__n">04</span><span class="idx__t"><span lang="en">Storage &amp; Database Questions</span><span lang="hu">Tárolási &amp; adatbázis kérdések</span></span></a><a class="idx" href="#c05"><span class="idx__n">05</span><span class="idx__t"><span lang="en">Availability &amp; DR Questions</span><span lang="hu">Rendelkezésre állás &amp; DR kérdések</span></span></a><a class="idx" href="#c06"><span class="idx__n">06</span><span class="idx__t"><span lang="en">IaC, CI/CD &amp; Cost Questions</span><span lang="hu">IaC, CI/CD &amp; költség kérdések</span></span></a><a class="idx" href="#c07"><span class="idx__n">07</span><span class="idx__t"><span lang="en">GenAI Questions</span><span lang="hu">GenAI kérdések</span></span></a></div>
+  </nav>
+
+  <div class="sec"><span class="sec__l"><span lang="en">Networking</span><span lang="hu">Hálózat</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c01">
+    <div class="concept__head"><span class="num">01</span><h2><span lang="en">Networking Questions</span><span lang="hu">Hálózati kérdések</span></h2></div>
+    <div class="qa">
+      <p class="q"><span lang="en">What's the difference between a security group and a NACL?</span><span lang="hu">Mi a különbség egy security group és egy NACL között?</span></p>
+      <ul class="a"><li><span lang="en">Security group: stateful, attached to a resource (instance-level), allow rules only, return traffic automatic. NACL: stateless, attached to a subnet, allow and deny rules, each direction evaluated independently (so you must allow the return ephemeral ports). In practice SGs do the real work; NACLs are a coarse subnet backstop.</span><span lang="hu">Security group: állapottartó, egy erőforráshoz kapcsolva (instance-szintű), csak allow szabályok, a visszatérő forgalom automatikus. NACL: állapotmentes, egy subnethez kapcsolva, allow és deny szabályok, minden irány függetlenül értékelve (tehát engedélyezned kell a visszatérő ephemeral portokat). A gyakorlatban az SG-k végzik a valódi munkát; a NACL-ök durva subnet-tartalék.</span></li></ul>
+      <p class="q"><span lang="en">What makes a subnet "public"?</span><span lang="hu">Mitől lesz egy subnet „publikus"?</span></p>
+      <ul class="a"><li><span lang="en">A route in its route table pointing <code>0.0.0.0/0</code> to an Internet Gateway. That's the only thing — a "private" subnet simply lacks that route and reaches the internet (if at all) via a NAT gateway instead.</span><span lang="hu">Egy útvonal a route table-jében, ami a <code>0.0.0.0/0</code>-t egy Internet Gateway-re mutatja. Ez az egyetlen dolog — egy „privát" subnetnek egyszerűen nincs ilyen útvonala, és (ha egyáltalán) egy NAT gateway-en át éri el az internetet.</span></li></ul>
+      <p class="q"><span lang="en">How does a private instance download OS updates?</span><span lang="hu">Hogyan tölt le egy privát instance OS-frissítéseket?</span></p>
+      <ul class="a"><li><span lang="en">Through a NAT gateway in a public subnet — it lets private resources make outbound connections while staying unreachable from the internet. For AWS services specifically (like S3), a VPC endpoint is better: it avoids NAT cost and keeps traffic off the public internet.</span><span lang="hu">Egy publikus subnetben lévő NAT gateway-en át — ez hagyja a privát erőforrásokat kimenő kapcsolatokat létesíteni, míg elérhetetlenek maradnak az internetről. Kifejezetten AWS-szolgáltatásokhoz (mint az S3) egy VPC endpoint jobb: elkerüli a NAT-költséget és távol tartja a forgalmat a nyilvános internettől.</span></li></ul>
+      <p class="q"><span lang="en">When would you use a VPC endpoint?</span><span lang="hu">Mikor használnál VPC endpointot?</span></p>
+      <ul class="a"><li><span lang="en">To reach an AWS service privately without traffic leaving the AWS network. A gateway endpoint (S3, DynamoDB) is free and removes NAT cost for that traffic; an interface endpoint (PrivateLink) covers other services. Canonical use: reaching S3 from a private subnet without a NAT gateway.</span><span lang="hu">Egy AWS szolgáltatás privát elérésére úgy, hogy a forgalom nem hagyja el az AWS hálózatot. Egy gateway endpoint (S3, DynamoDB) ingyenes és megszünteti a NAT-költséget arra a forgalomra; egy interface endpoint (PrivateLink) a többi szolgáltatást fedi. Kanonikus használat: S3 elérése egy privát subnetből NAT gateway nélkül.</span></li></ul>
+    </div>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Identity &amp; Access</span><span lang="hu">Identitás &amp; hozzáférés</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c02">
+    <div class="concept__head"><span class="num">02</span><h2><span lang="en">IAM &amp; Security Questions</span><span lang="hu">IAM &amp; biztonsági kérdések</span></h2></div>
+    <div class="qa">
+      <p class="q"><span lang="en">What's the difference between an IAM role and an IAM user?</span><span lang="hu">Mi a különbség egy IAM role és egy IAM user között?</span></p>
+      <ul class="a"><li><span lang="en">A user is a permanent identity with long-lived access keys. A role is an identity assumed temporarily, handing out short-lived credentials — no stored keys to leak. Use roles for workloads (a service, an instance, a pipeline) and federation for humans; users with keys are the legacy path and the source of most credential leaks.</span><span lang="hu">Egy user egy állandó identitás hosszú életű access key-ekkel. Egy role egy ideiglenesen felvett identitás, amely rövid életű hitelesítő adatokat oszt — nincs tárolt kulcs, ami kiszivároghatna. Használj role-okat workloadokhoz (egy szolgáltatás, egy instance, egy pipeline) és föderációt embereknek; a kulcsos userek a legacy út és a legtöbb credential-szivárgás forrása.</span></li></ul>
+      <p class="q"><span lang="en">How do IAM policies get evaluated?</span><span lang="hu">Hogyan értékelődnek ki az IAM policy-k?</span></p>
+      <ul class="a"><li><span lang="en">Default deny. An explicit allow grants access; an explicit deny anywhere overrides everything. Within one account, identity-based and resource-based policies combine (union); permission boundaries and SCPs can only restrict the result. So: granted by identity or resource, capped by boundaries/SCPs, killed by any explicit deny.</span><span lang="hu">Alapból deny. Egy explicit allow ad hozzáférést; egy explicit deny bárhol mindent felülír. Egy accounton belül az identity- és resource-alapú policy-k kombinálódnak (unió); a permission boundary-k és SCP-k csak korlátozhatják az eredményt. Tehát: identity vagy resource ad, boundary-k/SCP-k korlátoznak, bármely explicit deny megöl.</span></li></ul>
+      <p class="q"><span lang="en">What's the shared responsibility model?</span><span lang="hu">Mi a megosztott felelősség modell?</span></p>
+      <ul class="a"><li><span lang="en">AWS secures the cloud (hardware, data centres, managed-service internals); you secure what's in it (IAM, data encryption, network config, and on EC2 the OS patching). The line moves with the service — on Fargate/Lambda AWS patches the runtime, on EC2 you do. Most breaches happen on the customer's side of this line.</span><span lang="hu">Az AWS a felhőt biztosítja (hardver, adatközpontok, menedzselt-szolgáltatás belsők); te azt, ami benne van (IAM, adattitkosítás, hálózati konfig, és EC2-n az OS-patchelés). A vonal a szolgáltatással mozog — Fargate/Lambdán az AWS patcheli a futtatókörnyezetet, EC2-n te. A legtöbb betörés a vonal ügyfél-oldalán történik.</span></li></ul>
+      <p class="q"><span lang="en">How do you store secrets in an AWS application?</span><span lang="hu">Hogyan tárolsz titkokat egy AWS-alkalmazásban?</span></p>
+      <ul class="a"><li><span lang="en">In Secrets Manager or Parameter Store — never in code or committed env files. Secrets Manager adds automatic rotation. The app fetches the secret at runtime via its IAM role, so it's never stored alongside the app. Encryption at rest is via KMS.</span><span lang="hu">Secrets Managerben vagy Parameter Store-ban — soha nem kódban vagy commitolt env-fájlokban. A Secrets Manager automatikus rotációt ad. Az app futásidőben kéri le a titkot az IAM role-ján át, így sosem tárolódik az app mellett. A nyugalmi titkosítás KMS-en át.</span></li></ul>
+    </div>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Compute</span><span lang="hu">Számítás</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c03">
+    <div class="concept__head"><span class="num">03</span><h2><span lang="en">Compute Questions</span><span lang="hu">Számítási kérdések</span></h2></div>
+    <div class="qa">
+      <p class="q"><span lang="en">EC2, containers, or Lambda — how do you choose?</span><span lang="hu">EC2, konténerek, vagy Lambda — hogyan választasz?</span></p>
+      <ul class="a"><li><span lang="en">A spectrum of how much you manage. EC2 = full control (legacy, special hardware). Containers (ECS/EKS) = portable, standard for most services. Lambda = event-driven and spiky, scales to zero. Match to the workload: steady high traffic favours containers, spiky event work favours Lambda, deep control needs favour EC2.</span><span lang="hu">Egy spektrum arról, mennyit kezelsz. EC2 = teljes kontroll (legacy, speciális hardver). Konténerek (ECS/EKS) = hordozható, standard a legtöbb szolgáltatáshoz. Lambda = eseményvezérelt és csúcsos, nullára skálázódik. Illeszd a workloadhoz: az állandó nagy forgalom konténereket preferál, a csúcsos esemény-munka Lambdát, a mély kontroll-igény EC2-t.</span></li></ul>
+      <p class="q"><span lang="en">ECS or EKS?</span><span lang="hu">ECS vagy EKS?</span></p>
+      <ul class="a"><li><span lang="en">ECS is simpler and AWS-native — less to operate. EKS is managed Kubernetes — portable, huge ecosystem, but more operational weight. Choose EKS if you need k8s portability or the team already knows it; otherwise ECS (with Fargate) is often the more defensible call. Don't pick EKS just for its own sake.</span><span lang="hu">Az ECS egyszerűbb és AWS-natív — kevesebb üzemeltetés. Az EKS menedzselt Kubernetes — hordozható, hatalmas ökoszisztéma, de több üzemeltetési súly. Válaszd az EKS-t, ha k8s-hordozhatóság kell vagy a csapat már ismeri; egyébként az ECS (Fargate-tel) gyakran a védhetőbb döntés. Ne válaszd az EKS-t önmagáért.</span></li></ul>
+      <p class="q"><span lang="en">What's a Lambda cold start?</span><span lang="hu">Mi egy Lambda hidegindítás?</span></p>
+      <ul class="a"><li><span lang="en">The first invocation of an idle function pays initialisation time (runtime spins up, init code runs), adding latency a warm invocation doesn't. It bites latency-sensitive paths. Mitigate with provisioned concurrency (keeps instances warm, at a cost) or a lighter runtime — or use a container for a synchronous API with tight latency needs.</span><span lang="hu">Egy tétlen függvény első meghívása inicializálási időt fizet (a futtatókörnyezet felpörög, az init-kód lefut), késleltetést adva, amit egy meleg meghívás nem. Késleltetés-érzékeny utakon üt. Provisioned concurrency-vel enyhítsd (melegen tartja az instance-okat, költséggel) vagy könnyebb futtatókörnyezettel — vagy használj konténert egy szinkron, szoros késleltetésű API-hoz.</span></li></ul>
+      <p class="q"><span lang="en">How does auto scaling work, and what's the risk?</span><span lang="hu">Hogyan működik az auto scaling, és mi a kockázat?</span></p>
+      <ul class="a"><li><span lang="en">An Auto Scaling Group adds/removes instances behind a load balancer based on a metric (CPU, request count) or schedule, giving elastic, self-healing capacity. The risk: without a maximum cap, a traffic spike or runaway bug can scale you into a huge bill. Always set a max and alert on hitting it.</span><span lang="hu">Egy Auto Scaling Group instance-okat ad/vesz egy load balancer mögött egy metrika (CPU, kérésszám) vagy ütemezés alapján, elasztikus, öngyógyító kapacitást adva. A kockázat: felső korlát nélkül egy forgalmi csúcs vagy elszabadult hiba hatalmas számlára skálázhat. Mindig állíts maximumot és riassz a beütésére.</span></li></ul>
+    </div>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Storage &amp; Data</span><span lang="hu">Tárolás &amp; adat</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c04">
+    <div class="concept__head"><span class="num">04</span><h2><span lang="en">Storage &amp; Database Questions</span><span lang="hu">Tárolási &amp; adatbázis kérdések</span></h2></div>
+    <div class="qa">
+      <p class="q"><span lang="en">When do you use S3 vs EBS vs EFS?</span><span lang="hu">Mikor használsz S3-at vs EBS-t vs EFS-t?</span></p>
+      <ul class="a"><li><span lang="en">S3 = object storage over HTTP (files, backups, static sites, data lakes). EBS = a disk for a single instance (OS disk, databases). EFS = a shared filesystem many instances mount at once. Shorthand: files-over-HTTP → S3, one instance's disk → EBS, many writers one filesystem → EFS.</span><span lang="hu">S3 = objektum-tárolás HTTP-n (fájlok, mentések, statikus oldalak, data lake-ek). EBS = lemez egyetlen instance-nak (OS-lemez, adatbázisok). EFS = megosztott fájlrendszer, amit sok instance mountol egyszerre. Röviden: fájlok-HTTP-n → S3, egy instance lemeze → EBS, sok író egy fájlrendszer → EFS.</span></li></ul>
+      <p class="q"><span lang="en">RDS or DynamoDB?</span><span lang="hu">RDS vagy DynamoDB?</span></p>
+      <ul class="a"><li><span lang="en">Down to the access pattern. Relational data with flexible, ad-hoc queries → RDS/Aurora. Massive scale with known, simple key-based access → DynamoDB. DynamoDB forces you to model tables around your queries, so "we don't know the access patterns yet" points to relational.</span><span lang="hu">A hozzáférési mintán múlik. Relációs adat rugalmas, ad-hoc lekérdezésekkel → RDS/Aurora. Hatalmas lépték ismert, egyszerű kulcs-alapú hozzáféréssel → DynamoDB. A DynamoDB arra kényszerít, hogy a táblákat a lekérdezéseid köré modellezd, tehát a „még nem tudjuk a hozzáférési mintákat" a relációsra mutat.</span></li></ul>
+      <p class="q"><span lang="en">How do you scale reads on a relational database?</span><span lang="hu">Hogyan skálázod az olvasásokat egy relációs adatbázison?</span></p>
+      <ul class="a"><li><span lang="en">Escalation order: query tuning and indexes → a cache (ElastiCache) → read replicas → vertical scaling → sharding last. Read replicas take read load off the primary; a cache absorbs hot reads before they hit the DB at all. Start cheap and simple, escalate only as needed.</span><span lang="hu">Eszkalációs sorrend: lekérdezés-hangolás és indexek → egy cache (ElastiCache) → olvasó replikák → függőleges skálázás → shardolás utoljára. Az olvasó replikák leveszik az olvasási terhelést a primaryről; egy cache felszívja a forró olvasásokat, mielőtt egyáltalán elérnék az adatbázist. Kezdd olcsón és egyszerűen, eszkalálj csak szükség szerint.</span></li></ul>
+      <p class="q"><span lang="en">Is a read replica a backup?</span><span lang="hu">Egy olvasó replika mentés?</span></p>
+      <ul class="a"><li><span lang="en">No — three different features solve three problems. Read replicas serve read traffic; a Multi-AZ standby handles failover (availability); snapshots and point-in-time recovery are the backup (durability). Conflating them ("it's replicated so it's backed up") is a common slip — replication is availability, backup is durability.</span><span lang="hu">Nem — három különböző funkció három problémát old meg. Az olvasó replikák olvasási forgalmat szolgálnak ki; egy Multi-AZ standby kezeli a failovert (rendelkezésre állás); a snapshotok és a point-in-time recovery a mentés (tartósság). Az összemosásuk („replikált, tehát mentve van") gyakori botlás — a replikáció rendelkezésre állás, a mentés tartósság.</span></li></ul>
+    </div>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Resilience</span><span lang="hu">Reziliencia</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c05">
+    <div class="concept__head"><span class="num">05</span><h2><span lang="en">Availability &amp; DR Questions</span><span lang="hu">Rendelkezésre állás &amp; DR kérdések</span></h2></div>
+    <div class="qa">
+      <p class="q"><span lang="en">What's the difference between Multi-AZ and multi-region?</span><span lang="hu">Mi a különbség a Multi-AZ és a multi-region között?</span></p>
+      <ul class="a"><li><span lang="en">Multi-AZ = spreading across Availability Zones <em>within one region</em>, to survive a data-centre (AZ) failure — the default for production, cheap. Multi-region = running across regions, to survive a whole-region outage — rare, expensive, with data-consistency complexity. Multi-AZ is the baseline; multi-region is the exception you justify with strict requirements.</span><span lang="hu">Multi-AZ = szétosztás Availability Zone-ok között <em>egy régión belül</em>, hogy túléld egy adatközpont (AZ) hibáját — a produkciós alapértelmezés, olcsó. Multi-region = régiók közti futtatás, hogy túléld egy teljes régió kiesését — ritka, drága, adatkonzisztencia-bonyolultsággal. A Multi-AZ az alapvonal; a multi-region a kivétel, amit szigorú követelményekkel indokolsz.</span></li></ul>
+      <p class="q"><span lang="en">What's the difference between RTO and RPO?</span><span lang="hu">Mi a különbség az RTO és az RPO között?</span></p>
+      <ul class="a"><li><span lang="en">RTO (Recovery Time Objective) = how long you can be down — the downtime window. RPO (Recovery Point Objective) = how much data you can lose — the data-loss window, set by backup frequency. A daily backup means an RPO of up to 24 hours regardless of how fast your RTO is. They're independent numbers.</span><span lang="hu">RTO (Recovery Time Objective) = meddig lehetsz leállva — a leállási ablak. RPO (Recovery Point Objective) = mennyi adatot veszíthetsz — az adatvesztési ablak, a mentés gyakorisága állítja. Egy napi mentés akár 24 órás RPO-t jelent, függetlenül attól, milyen gyors az RTO-d. Ezek független számok.</span></li></ul>
+      <p class="q"><span lang="en">What's the difference between availability and durability?</span><span lang="hu">Mi a különbség rendelkezésre állás és tartósság között?</span></p>
+      <ul class="a"><li><span lang="en">Durability = your data survives (S3 essentially never loses an object). Availability = you can reach it right now (Multi-AZ failover keeps it reachable). Different problems solved by different features — you often need both, and confusing them leads to gaps.</span><span lang="hu">Tartósság = az adatod túléli (az S3 lényegében sosem veszít objektumot). Rendelkezésre állás = most el tudod érni (a Multi-AZ failover elérhetően tartja). Különböző problémák, különböző funkciókkal megoldva — gyakran mindkettő kell, és az összekeverésük hiányokhoz vezet.</span></li></ul>
+      <p class="q"><span lang="en">How do you pick a DR strategy?</span><span lang="hu">Hogyan választasz DR-stratégiát?</span></p>
+      <ul class="a"><li><span lang="en">Let the RTO/RPO decide. Backup &amp; Restore (cheapest, hours of downtime) → Pilot Light (core running) → Warm Standby (scaled-down live copy) → Active-Active (multi-region, near-zero RTO, priciest). Ask "how long can this be down and how much data can we lose?" then match the cheapest strategy that meets it. And test it — an untested DR plan is a hypothesis.</span><span lang="hu">Hagyd, hogy az RTO/RPO döntsön. Backup &amp; Restore (legolcsóbb, órák leállás) → Pilot Light (mag fut) → Warm Standby (kicsinyített élő másolat) → Active-Active (multi-region, közel nulla RTO, legdrágább). Kérdezd: „meddig lehet ez leállva és mennyi adatot veszíthetünk?" majd illeszd a legolcsóbb megfelelő stratégiát. És teszteld — egy nem tesztelt DR-terv egy hipotézis.</span></li></ul>
+    </div>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">Automation &amp; Cost</span><span lang="hu">Automatizálás &amp; költség</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c06">
+    <div class="concept__head"><span class="num">06</span><h2><span lang="en">IaC, CI/CD &amp; Cost Questions</span><span lang="hu">IaC, CI/CD &amp; költség kérdések</span></h2></div>
+    <div class="qa">
+      <p class="q"><span lang="en">Terraform or CloudFormation?</span><span lang="hu">Terraform vagy CloudFormation?</span></p>
+      <ul class="a"><li><span lang="en">CloudFormation is AWS-native and AWS manages the stack state; Terraform is cloud-agnostic, the market standard, but needs explicit remote-state design. The choice is org and lifecycle fit — existing tooling, team skills, multi-cloud needs — not just portability. Know the trade-off rather than dogmatically preferring one.</span><span lang="hu">A CloudFormation AWS-natív és az AWS kezeli a stack state-et; a Terraform felhő-agnosztikus, a piaci standard, de explicit remote-state tervezést igényel. A választás org- és életciklus-illeszkedés — meglévő eszközök, csapat-készségek, multi-cloud igények — nem csak hordozhatóság. Ismerd a trade-offot, ne preferáld dogmatikusan az egyiket.</span></li></ul>
+      <p class="q"><span lang="en">Why does Terraform state matter so much?</span><span lang="hu">Miért számít ennyire a Terraform state?</span></p>
+      <ul class="a"><li><span lang="en">It's Terraform's record of what it manages, and it breaks at team scale if mishandled. Store it in an encrypted, versioned S3 bucket with native locking (<code>use_lockfile</code>; the old DynamoDB lock table is deprecated), separated per environment. It holds secrets in plaintext, so lock down access. Concurrent applies without locking corrupt it.</span><span lang="hu">Ez a Terraform feljegyzése arról, mit kezel, és csapat-léptékben eltörik, ha rosszul kezelik. Tárold titkosított, verziózott S3 bucketben natív lockinggal (<code>use_lockfile</code>; a régi DynamoDB lock-tábla deprecated), környezetenként elkülönítve. Titkokat tart sima szövegben, tehát zárd le a hozzáférést. A locking nélküli párhuzamos apply-ok megrongálják.</span></li></ul>
+      <p class="q"><span lang="en">How should a CI/CD pipeline authenticate to AWS?</span><span lang="hu">Hogyan autentikáljon egy CI/CD pipeline az AWS felé?</span></p>
+      <ul class="a"><li><span lang="en">With OIDC federation, not stored access keys. The pipeline presents a short-lived OIDC token that AWS exchanges for temporary role credentials — no long-lived secret in CI to leak. This is current best practice; storing an access key as a CI secret is the old, riskier way.</span><span lang="hu">OIDC föderációval, nem tárolt access key-ekkel. A pipeline egy rövid életű OIDC tokent mutat be, amit az AWS ideiglenes role-hitelesítő adatokra vált — nincs hosszú életű titok a CI-ban, ami kiszivároghatna. Ez a jelenlegi best practice; egy access key CI-titokként tárolása a régi, kockázatosabb mód.</span></li></ul>
+      <p class="q"><span lang="en">Where do the big AWS cost savings usually hide?</span><span lang="hu">Hol rejtőznek általában a nagy AWS-költségmegtakarítások?</span></p>
+      <ul class="a"><li><span lang="en">In data transfer (NAT gateway processing, cross-AZ and cross-region traffic, internet egress) and over-provisioning (oversized instances, dev environments left running, idle resources). Architectural fixes — VPC endpoints, right-sizing, scale-to-zero — beat hunting pennies. Plus commitment discounts (Savings Plans/Reserved) for steady load and Spot for interruptible work.</span><span lang="hu">Az adatátvitelben (NAT gateway feldolgozás, cross-AZ és cross-region forgalom, internet-kimenet) és a túlméretezésben (túl nagy instance-ok, futva hagyott dev-környezetek, tétlen erőforrások). Az architekturális javítások — VPC endpointok, right-sizing, nullára skálázás — verik a fillérvadászatot. Plusz elköteleződési kedvezmények (Savings Plan/Reserved) állandó terheléshez és Spot a megszakítható munkához.</span></li></ul>
+    </div>
+  </section>
+
+
+  <div class="sec"><span class="sec__l"><span lang="en">GenAI</span><span lang="hu">GenAI</span></span><span class="sec__r"></span></div>
+
+  <section class="concept" id="c07">
+    <div class="concept__head"><span class="num">07</span><h2><span lang="en">GenAI Questions</span><span lang="hu">GenAI kérdések</span></h2></div>
+    <div class="qa">
+      <p class="q"><span lang="en">What's the difference between RAG and fine-tuning?</span><span lang="hu">Mi a különbség a RAG és a fine-tuning között?</span></p>
+      <ul class="a"><li><span lang="en">RAG injects your data at query time — retrieve relevant chunks, put them in the prompt — so knowledge stays current (update documents, not the model), citeable, and access-controllable per user. Fine-tuning bakes knowledge into the weights: expensive, static, for changing the model's <em>behaviour or style</em>, not for feeding it facts. For a knowledge base, RAG is almost always the right first answer.</span><span lang="hu">A RAG lekérdezéskor injektálja az adatodat — releváns darabok lekérése, promptba tétele — így a tudás aktuális marad (a dokumentumokat frissíted, nem a modellt), idézhető, és felhasználónként hozzáférés-szabályozható. A fine-tuning a súlyokba süti a tudást: drága, statikus, a modell <em>viselkedésének vagy stílusának</em> megváltoztatására, nem tények betáplálására. Egy tudásbázishoz a RAG szinte mindig a helyes első válasz.</span></li></ul>
+      <p class="q"><span lang="en">Why use Bedrock instead of self-hosting a model?</span><span lang="hu">Miért Bedrock egy modell self-hostingja helyett?</span></p>
+      <ul class="a"><li><span lang="en">Managed access to foundation models through one API — no GPU fleet to run, with AWS identity, encryption, and network controls, reachable privately via PrivateLink. Model providers don't get your account or prompts. The model doesn't run in your VPC, so verify data handling for sensitive workloads. Self-host (SageMaker) only for full control or a specific fine-tuned model.</span><span lang="hu">Menedzselt hozzáférés alapmodellekhez egy API-n át — nincs futtatandó GPU-flotta, AWS identitással, titkosítással, és hálózati kontrollokkal, privátan elérhetően PrivateLinken át. A modell-szolgáltatók nem kapják az accountodat vagy promptjaidat. A modell nem a te VPC-dben fut, tehát ellenőrizd az adatkezelést érzékeny workloadoknál. Self-host (SageMaker) csak a teljes kontrollhoz vagy egy konkrét fine-tuned modellhez.</span></li></ul>
+      <p class="q"><span lang="en">Where does a vector database fit in a GenAI system?</span><span lang="hu">Hova illik egy vektoradatbázis egy GenAI-rendszerben?</span></p>
+      <ul class="a"><li><span lang="en">It's the retrieval engine behind RAG: it stores embeddings (numerical representations of your document chunks) and finds the ones most similar to a query. On AWS: OpenSearch's vector engine, RDS/Aurora PostgreSQL with <code>pgvector</code>, or a dedicated store. A normal data-layer choice — pgvector if you already run Postgres and volume is modest, OpenSearch or dedicated when scale demands it.</span><span lang="hu">Ez a RAG mögötti lekérési motor: embeddingeket tárol (a dokumentumdarabjaid numerikus reprezentációit), és megtalálja a kérdéshez leghasonlóbbakat. AWS-en: az OpenSearch vektor-motorja, RDS/Aurora PostgreSQL <code>pgvector</code>-rel, vagy egy dedikált tároló. Egy normális adatréteg-döntés — pgvector, ha már futtatsz Postgrest és a volumen szerény, OpenSearch vagy dedikált, amikor a lépték megköveteli.</span></li></ul>
+    </div>
+  </section>
+
+
+  <p class="foot"><span lang="en">AWS Fundamentals — Q&amp;A · technical interview prep · <b>Q&amp;A knowledge base</b></span><span lang="hu">AWS Fundamentals — Q&amp;A · technikai interjú-felkészítő · <b>Q&amp;A tudásbázis</b></span></p>
+
+</div>
+
+<script>
+(function () {
+  var SUPPORTED = ['en', 'hu'];
+  var root = document.documentElement;
+
+  // The smallest block element at the top-centre of the viewport (where the
+  // text is) that exists in both languages — used to hold the reading position
+  // steady across a switch. Sampling the centre, not the edge, lands on a
+  // paragraph rather than a large container, so the visible line stays put.
+  function anchor() {
+    var el = document.elementFromPoint(window.innerWidth / 2, 8);
+    while (el && el !== document.body &&
+           (el.hasAttribute('lang') || getComputedStyle(el).display === 'inline')) {
+      el = el.parentElement;
+    }
+    return el && el !== document.body ? el : null;
+  }
+
+  function applyLang(lang) {
+    if (SUPPORTED.indexOf(lang) === -1) lang = 'en';
+    if (root.dataset.lang === lang) return;
+    var a = window.scrollY > 0 ? anchor() : null;
+    var before = a ? a.getBoundingClientRect().top : 0;
+    // Toggle via data-lang only. Deliberately NOT setting root.lang: some pages
+    // hide the other language with a bare [lang="…"]{display:none} rule, which
+    // would then match <html lang="…"> and hide the whole page. Visible spans
+    // still carry their own lang attribute for assistive tech.
+    root.dataset.lang = lang;
+    if (a) window.scrollBy(0, a.getBoundingClientRect().top - before);
+  }
+
+  // In-place switch for the shell (synchronous, same-origin).
+  window.interviewBrowser = {
+    setParams: function (params) { applyLang(params && params.lang); }
+  };
+
+  applyLang(new URLSearchParams(location.search).get('lang') || 'en');
+})();
+</script>
+</body>
+</html>
