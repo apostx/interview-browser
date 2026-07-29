@@ -1,0 +1,1193 @@
+﻿<!DOCTYPE html>
+<!DOCTYPE html>
+
+<html lang="hu">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Cheppers AWS Cloud Architect – technikai interjúfelkészítő</title>
+<style>
+:root {
+  --bg:#f5f7fb; --card:#fff; --ink:#172033; --muted:#5e6b82;
+  --line:#dce3ee; --accent:#2457c5; --soft:#eef4ff;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:Inter,Segoe UI,Arial,sans-serif; line-height:1.62;
+}
+main { max-width:940px; margin:0 auto; padding:24px 18px 80px; }
+h1 { font-size:2.1rem; line-height:1.15; margin:18px 0 24px; }
+h2 {
+  margin:46px 0 18px; padding:14px 16px; border-left:5px solid var(--accent);
+  background:var(--soft); border-radius:8px; font-size:1.45rem;
+}
+h3 { margin:34px 0 12px; font-size:1.22rem; }
+h4 { margin:25px 0 8px; font-size:1.06rem; }
+p, li { font-size:1rem; }
+strong { color:#0d347f; }
+code { background:#edf1f7; padding:2px 5px; border-radius:4px; }
+pre {
+  overflow:auto; background:#101827; color:#e8edf7; padding:16px;
+  border-radius:10px; line-height:1.4;
+}
+pre code { background:transparent; padding:0; }
+blockquote {
+  margin:16px 0; padding:12px 16px; border-left:4px solid #7c9ce8;
+  background:#f1f5ff; border-radius:6px;
+}
+ul,ol { padding-left:24px; }
+hr { border:0; border-top:1px solid var(--line); margin:40px 0; }
+@media (max-width:600px) {
+  main { padding:12px 13px 50px; }
+  h1 { font-size:1.65rem; }
+  h2 { font-size:1.25rem; margin-top:34px; }
+  h3 { font-size:1.12rem; }
+  p,li { font-size:.97rem; }
+}
+@media print {
+  body { background:#fff; }
+  main { max-width:none; padding:0; }
+  h2,h3 { break-after:avoid; }
+  pre,blockquote { break-inside:avoid; }
+}
+
+.diagram {
+  margin: 18px 0 26px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: 0 5px 18px rgba(23,32,51,.06);
+  overflow-x: auto;
+}
+.diagram svg {
+  display: block;
+  width: 100%;
+  min-width: 760px;
+  height: auto;
+}
+.diagram figcaption {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: .93rem;
+}
+.diagram .box { fill:#f8fafc; stroke:#8ea4c7; stroke-width:1.5; }
+.diagram .box-blue { fill:#eef4ff; stroke:#4f75c7; stroke-width:1.6; }
+.diagram .box-green { fill:#eefbf3; stroke:#4c9b69; stroke-width:1.6; }
+.diagram .box-amber { fill:#fff8e8; stroke:#c8942f; stroke-width:1.6; }
+.diagram .box-red { fill:#fff1f1; stroke:#c96060; stroke-width:1.6; }
+.diagram .box-purple { fill:#f5f0ff; stroke:#8063b7; stroke-width:1.6; }
+.diagram .label { font: 600 14px Inter,Segoe UI,Arial,sans-serif; fill:#172033; }
+.diagram .small { font: 12px Inter,Segoe UI,Arial,sans-serif; fill:#42516b; }
+.diagram .tiny { font: 11px Inter,Segoe UI,Arial,sans-serif; fill:#5e6b82; }
+.diagram .title { font: 700 17px Inter,Segoe UI,Arial,sans-serif; fill:#172033; }
+.diagram .arrow { stroke:#52657f; stroke-width:2; fill:none; marker-end:url(#arrow); }
+.diagram .dash { stroke-dasharray:6 5; }
+.diagram .zone { fill:none; stroke:#8ea4c7; stroke-width:1.5; stroke-dasharray:7 5; }
+@media (max-width:600px) {
+  .diagram { margin-left:-4px; margin-right:-4px; padding:9px; }
+  .diagram figcaption { font-size:.88rem; }
+}
+@media print {
+  .diagram { box-shadow:none; break-inside:avoid; }
+  .diagram svg { min-width:0; }
+}
+
+</style>
+</head>
+<body><main><h1>Cheppers AWS Cloud Architect – technikai interjúfelkészítő</h1>
+<p>Ez az anyag a Cheppers job descriptionje és a korábban véglegesített AWS tudás-, scenario- és experience-story anyag alapján készült. A technikai kör pontos formátumát nem közölték, ezért a várható felépítés következtetés: rövid AWS és general technical kérdések, system design, troubleshooting, valamint client-facing és ownership témák.</p>
+<p>A pozíció szintje alapján nem az a cél, hogy minden AWS-szolgáltatás definícióját felmondd. Minden válasznál legyen világos: <strong>milyen követelmény alapján választasz, mi az alternatíva, mi a trade-off, hogyan lesz biztonságos és üzemeltethető, és mit egyeztetnél az ügyféllel.</strong></p>
+<h2>1. Hogyan válaszolj</h2>
+<h3>Rövid technikai kérdés</h3>
+<ol>
+<li>Definíció egy mondatban.</li>
+<li>Mikor használnád.</li>
+<li>Legfontosabb trade-off vagy buktató.</li>
+<li>Rövid gyakorlati példa.</li>
+</ol>
+<h3>System design feladat</h3>
+<ol>
+<li>Üzleti cél és scope.</li>
+<li>Scale, traffic, latency, availability, RTO/RPO, compliance, budget és team constraints.</li>
+<li>Kimondott assumptions.</li>
+<li>Egyszerű baseline architecture és data flow.</li>
+<li>Security, observability, deployment, DR és cost.</li>
+<li>Alternatívák és trade-offok.</li>
+<li>Mit validálnál az ügyféllel és a csapattal.</li>
+</ol>
+<h3>Hibakeresési kérdés</h3>
+<ol>
+<li>Hatókör: mely user, régió, AZ, instance vagy endpoint érintett?</li>
+<li>Mi változott közvetlenül a hiba előtt?</li>
+<li>Metrics, logs, traces, events és audit trail.</li>
+<li>Kövesd végig a request vagy packet útját rétegről rétegre.</li>
+<li>Stabilizálás először, root cause utána.</li>
+<li>Validáció, postmortem és preventive action.</li>
+</ol>
+<h2>2. Valószínű technikai kérdések és rövid válaszok</h2>
+<h3>AWS-alapok és megbízhatóság</h3>
+<p><strong>1. Mi a Well-Architected Framework hat pillére?</strong></p>
+<p>Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization és Sustainability. Ne csak sorold fel: használd checklistként a konkrét design értékelésére.</p>
+<p><strong>2. Mi a különbség egy Region és egy Availability Zone között?</strong></p>
+<p>A Region földrajzi AWS-terület. Egy AZ a régión belüli izolált fault domain, amely egy vagy több adatközpontból állhat. Multi-AZ AZ-hibát kezel, multi-region teljes régióhibát is, nagyobb költséggel és komplexitással.</p>
+<p><strong>3. Mi a különbség az availability és a durability között?</strong></p>
+<p>Availability azt jelenti, hogy az erőforrás most elérhető-e. Durability azt, hogy az adat hosszú távon megmarad-e. Multi-AZ és replikáció főleg availability; backup és snapshot recoveryt és durabilityt szolgál.</p>
+<p><strong>4. Mi a különbség az RTO és az RPO között?</strong></p>
+<p>RTO az elfogadható leállási idő, RPO az elfogadható adatvesztési ablak. Ezek üzleti követelmények, és ezek alapján választasz backup-and-restore, pilot light, warm standby vagy active-active DR stratégiát.</p>
+<p><strong>5. Hogyan mérnél fel egy meglévő AWS-környezetet?</strong></p>
+<p>Először inventory, account- és network layout, IAM, monitoring, költség, backup és kritikus workloadok. Ezután Well-Architected review és RTO/RPO gap analysis, majd kockázat alapján priorizált roadmap.</p>
+<h3>IAM és biztonság</h3>
+<p><strong>6. Mikor használsz IAM role-t, és mikor IAM usert?</strong></p>
+<p>Workloadhoz és föderált emberi hozzáféréshez role az alapértelmezett, mert rövid életű credentialt ad. Hosszú életű access key-es IAM user csak kivételes legacy esetben indokolt.</p>
+<p><strong>7. Hogyan működik az IAM policy-k kiértékelése?</strong></p>
+<p>Implicit deny-val indul. Identity- vagy resource-based policy adhat Allow-t, de bármely alkalmazandó explicit Deny felülírja. Permissions boundary, SCP, RCP és session policy tovább szűkítheti a jogosultságot.</p>
+<p><strong>8. Mi az SCP, és mire használható?</strong></p>
+<p>AWS Organizations account- vagy OU-szintű guardrail, amely a maximálisan elérhető permissionöket korlátozza. Nem ad permissiont, hanem megakadályozhat például nem engedélyezett régióhasználatot vagy a CloudTrail letiltását.</p>
+<p><strong>9. Hogyan autentikáljon egy CI/CD pipeline az AWS felé?</strong></p>
+<p>OIDC federationnel, nem tárolt access key-jel. A GitHub vagy GitLab rövid életű tokent cserél ideiglenes AWS role credentialre, pontosan a deployhoz szükséges permissionökkel.</p>
+<p><strong>10. Secrets Manager vagy Parameter Store: mikor melyiket?</strong></p>
+<p>Mindkettővel secret és konfiguráció tárolható. A Secrets Manager fejlettebb secret lifecycle-t és automatikus rotációt ad; az alkalmazás IAM role-on keresztül olvassa futásidőben.</p>
+<p><strong>11. Mi a különbség a CloudTrail, az AWS Config és a GuardDuty között?</strong></p>
+<p>CloudTrail account activityt és API eventeket rögzít. Config az erőforrások konfigurációját és compliance-ét követi. GuardDuty threat detectiont végez activity- és logjelek alapján.</p>
+<h3>VPC és hálózat</h3>
+<p><strong>12. Mi a különbség a Security Group és a NACL között?</strong></p>
+<p>A Security Group stateful, ENI- vagy resource-szintű és csak Allow szabályokat használ. A NACL stateless, subnet-szintű, Allow és Deny szabályokkal; a két irányt és a return ephemeral portokat külön kell engedni.</p>
+<p><strong>13. Mitől lesz egy subnet publikus?</strong></p>
+<p>A route table-jében van útvonal az Internet Gateway felé. Az instance vagy ENI publikus eléréséhez megfelelő publikus IP és security szabály is kell.</p>
+<p><strong>14. Mi a különbség az Internet Gateway és a NAT Gateway között?</strong></p>
+<p>Az IGW a VPC internetkapcsolata publikus erőforrásokhoz. A NAT Gateway privát subnet workloadjainak ad kimenő internetelérést anélkül, hogy kívülről közvetlenül elérhetők lennének.</p>
+<p><strong>15. Miért szokás AZ-nként külön NAT Gatewayt használni?</strong></p>
+<p>Egy shared cross-AZ NAT AZ-függőséget és cross-AZ transfer costot hoz. Produkcióban a privát subnet jellemzően a saját AZ-jának NAT Gatewayét használja.</p>
+<p><strong>16. Mi a különbség a gateway endpoint és az interface endpoint között?</strong></p>
+<p>Gateway endpoint route table-alapú, tipikusan S3 és DynamoDB elérésére. Az interface endpoint PrivateLinken keresztül privát ENI-t ad más támogatott AWS-szolgáltatásokhoz.</p>
+<p><strong>17. Mikor használnál VPC Peeringet, és mikor Transit Gatewayt?</strong></p>
+<p>Peering egyszerű one-to-one kapcsolat, de nem tranzitív és sok VPC-nél rosszul skálázódik. Transit Gateway hubként kapcsol össze sok VPC-t és on-prem hálózatot.</p>
+<p><strong>18. Mikor használnál VPN-t, és mikor Direct Connectet?</strong></p>
+<p>Site-to-Site VPN gyorsabb és olcsóbb indulás, de az interneten fut. Direct Connect dedikált privát kapcsolat stabilabb bandwidth és latency igényhez; gyakran VPN backupot is kap.</p>
+<p><strong>19. Hogyan keresnéd a hibát, ha egy privát subnet nem éri el az S3-at?</strong></p>
+<p>SG egress, route table, gateway endpoint vagy NAT route, NACL mindkét iránya, DNS és endpoint policy. VPC Flow Logs mutat ACCEPT/REJECT flow-kat, de nem teljes hop-by-hop packet trace.</p>
+<p><strong>20. Mi a különbség az ALB és az NLB között?</strong></p>
+<p>ALB Layer 7 HTTP/HTTPS load balancer host- és path-routinggal. NLB Layer 4 TCP/UDP/TLS forgalomhoz, statikus IP vagy extrém throughput igényhez.</p>
+<h3>Compute és konténerek</h3>
+<p><strong>21. Mikor választanál EC2-t, ECS/Fargate-et, EKS-t vagy Lambdát?</strong></p>
+<p>EC2 teljes kontrollt ad, de az OS és node üzemeltetése a tiéd. ECS/Fargate egyszerű AWS-native container platform. EKS Kubernetes-kompatibilitást ad több operációval. Lambda rövid, event-driven és változó terheléshez jó.</p>
+<p><strong>22. Mikor választanál ECS-t, és mikor EKS-t?</strong></p>
+<p>ECS egyszerűbb és kevesebb üzemeltetést igényel. EKS akkor éri meg, ha valódi Kubernetes-standard, meglévő k8s skill vagy portabilitási követelmény van.</p>
+<p><strong>23. Mikor rossz választás a Lambda?</strong></p>
+<p>15 percnél hosszabb munka, állandó nagy terhelés, nagyon szoros latency SLA, nagy lokális erőforrásigény vagy stateful működés esetén. Egy always-on ECS service ilyenkor gyakran jobb.</p>
+<p><strong>24. Mi a különbség az ECS execution role és a task role között?</strong></p>
+<p>Az execution role az image pullhoz és például logoláshoz kell. A task role-t maga az alkalmazás használja futásidőben S3, SQS vagy más AWS API hívásokhoz.</p>
+<p><strong>25. Egy EKS Pod Pending állapotban ragadt. Mit ellenőrzöl?</strong></p>
+<p>kubectl describe pod és events. Tipikus ok: kevés CPU/memória, autoscaler nem tud node-ot indítani, affinity vagy taint constraint, subnet IP exhaustion vagy nem bindolható volume.</p>
+<p><strong>26. Mit jelent az OOMKilled?</strong></p>
+<p>A container túllépte a memory limitet. El kell dönteni, hogy túl alacsony a limit vagy rosszak a requests/limits értékek, esetleg memory leak van; a limit emelése leak esetén csak elhalasztja a hibát.</p>
+<h3>Tárolás és adatbázisok</h3>
+<p><strong>27. Mikor használnál S3-at, EBS-t vagy EFS-t?</strong></p>
+<p>S3 object storage HTTP API-val, EBS block storage EC2 diszkhez, EFS pedig shared NFS több instance számára. A választást az access pattern és filesystem igény dönti el.</p>
+<p><strong>28. Hogyan védenél le egy S3 bucketet?</strong></p>
+<p>Block Public Access, least-privilege bucket policy, IAM role, encryption, szükség szerint versioning, Object Lock és CloudTrail data events. Publikus statikus tartalomhoz private S3 mögé CloudFront és Origin Access Control.</p>
+<p><strong>29. Mikor választanál RDS-t, Aurorát vagy DynamoDB-t?</strong></p>
+<p>RDS standard menedzselt relációs engine-ekhez jó. Aurora MySQL/PostgreSQL-kompatibilis, elosztott storage-dzsel és erősebb failover/read scalinggel. DynamoDB nagyon nagy horizontális skálához, előre ismert access patternekhez.</p>
+<p><strong>30. Mi a különbség a Multi-AZ standby, a read replica és a backup között?</strong></p>
+<p>Multi-AZ availabilityt és failovert ad. Read replica olvasási skálázást ad, általában replication laggel. Snapshot vagy PITR a backup és recovery megoldás.</p>
+<p><strong>31. Mikor válik csapdává a DynamoDB?</strong></p>
+<p>Ha az access patternek nem ismertek előre, sok ad-hoc query vagy join kell. Schemaless, de a partition key és query model szempontjából tudatos, merev tervezést igényel.</p>
+<p><strong>32. Hogyan skáláznád egy relációs adatbázis olvasási terhelését?</strong></p>
+<p>Query tuning és indexek, majd cache, például ElastiCache, aztán read replica. Ezután vertical scaling, sharding pedig csak végső lépésként.</p>
+<h3>Üzenetkezelés és elosztott rendszerek</h3>
+<p><strong>33. Mikor használnál SQS-t, Kinesist vagy MSK-t?</strong></p>
+<p>SQS egyszerű queue és producer-consumer decouplinghoz jó. Kinesis vagy Kafka/MSK streamhez kell, ha ordering, több consumer group, nagy throughput és replay fontos.</p>
+<p><strong>34. Mit jelent az at-least-once delivery a gyakorlatban?</strong></p>
+<p>Ugyanaz az üzenet többször is megérkezhet, ezért a consumernek idempotensnek kell lennie. Idempotency key, conditional write vagy processed-event store kerülheti el a duplikált üzleti hatást.</p>
+<p><strong>35. Mi a DLQ, és mire használható?</strong></p>
+<p>A többször hibázó üzenetek elkülönített queue-ja. A normál feldolgozás továbbmehet, a hibás message pedig vizsgálható és replayelhető.</p>
+<p><strong>36. Mi a backpressure?</strong></p>
+<p>A producer gyorsabban termel, mint ahogy a consumer feldolgoz. A queue bufferel, de sustained overloadnál a backlog nő, ezért consumer scaling, rate limit és queue-depth alert kell.</p>
+<p><strong>37. Miért lehetnek veszélyesek a retry-k?</strong></p>
+<p>Korlátlan azonnali retry retry stormot okozhat és tovább terhelheti a hibás dependencyt. Exponential backoff, jitter, retry limit, timeout és circuit breaker együtt kell.</p>
+<h3>IaC, CI/CD és megfigyelhetőség</h3>
+<p><strong>38. Mikor választanál Terraformot, és mikor CloudFormationt?</strong></p>
+<p>CloudFormation AWS-native, és az AWS kezeli a stack state-et. Terraform szélesebb provider/module ökoszisztémát ad, de explicit remote state, locking és lifecycle management kell. A döntés team- és lifecycle-fit legyen.</p>
+<p><strong>39. Hogyan kell tárolni a Terraform state-et?</strong></p>
+<p>Titkosított, versioned S3 backendben natív lockinggal, külön state-tel environmentenként és ügyfelenként. Szűk IAM és audit szükséges, mert a state érzékeny adatot tartalmazhat.</p>
+<p><strong>40. Mi az infrastructure drift?</strong></p>
+<p>A valódi infrastruktúra eltér az IaC kódtól, tipikusan manuális console-változás miatt. Előbb olvasd a plant; a jó változást vidd be a kódba/importba, a hibásat állítsd vissza.</p>
+<p><strong>41. Mi a különbség a rolling, blue-green és canary deployment között?</strong></p>
+<p>Rolling fokozatosan cserél. Blue-green külön régi és új környezet között vált gyors rollbackkel. Canary először kis trafficot küld az új verzióra, és csak jó metrikák esetén növeli.</p>
+<p><strong>42. Mi a metrics, logs és traces szerepe?</strong></p>
+<p>Metrics megmutatja, mi és mikor romlott el; trace megmutatja, melyik service vagy hop; logs megmutatja a részletes okot. Együtt adnak valódi observabilityt.</p>
+<p><strong>43. Milyen eseményre érdemes azonnal mérnököt riasztani?</strong></p>
+<p>User-visible symptom: error rate, p95/p99 latency, availability és valódi saturation. Ne minden CPU-tüskére riassz; SLO és error-budget burn alapján kevés, de jelentős paging alert legyen.</p>
+<p><strong>44. Mi az a runbook?</strong></p>
+<p>Konkrét, lépésről lépésre követhető eljárás ismert operációs helyzethez: trigger, diagnosztika, mitigation, rollback, escalation és validation.</p>
+<h3>Linux és ügyfélkezelés</h3>
+<p><strong>45. Egy Linux EC2 instance lassú. Hol kezded a hibakeresést?</strong></p>
+<p>top vagy htop, load average, vmstat, free -h és disk I/O. Először döntsd el, CPU-, memory-, disk I/O- vagy network-bound-e, és csak ezután változtass.</p>
+<p><strong>46. A lemez megtelt, de nem látsz nagy fájlt. Mi lehet az oka?</strong></p>
+<p>df -h mellett df -i az inode-okhoz. Lehet sok apró fájl vagy törölt, de process által még nyitva tartott file; ezt lsof | grep deleted mutatja.</p>
+<p><strong>47. Egy service fut, de nem érhető el. Mit ellenőrzöl?</strong></p>
+<p>systemctl status és journalctl, majd ss -tlnp: jó porton és 0.0.0.0 címen figyel-e. Ezután SG, NACL, route, DNS, load balancer target health és return path.</p>
+<p><strong>48. Az ügyfél EKS-hez ragaszkodik egy kis workloadnál. Hogyan kezeled?</strong></p>
+<p>Először megértem a mögöttes célt, majd bemutatom EKS és ECS/Fargate valós operációs trade-offját. Ha az ügyfél informáltan EKS-t választ, dokumentálom és guardrail-ekkel segítem a megvalósítást.</p>
+<p><strong>49. Az ügyfél fix becslést kér a discovery előtt. Mit válaszolsz?</strong></p>
+<p>Nem adok megalapozatlan egyetlen számot. Rövid, fix áras discoveryt javaslok; ha azonnal kell szám, range-et adok kimondott assumptions és riskek mellett.</p>
+<p><strong>50. Mit teszel, ha a requirements homályosak?</strong></p>
+<p>Az üzleti célt keresem a technikai jelző mögött. Scale, traffic, latency, availability, RTO/RPO, compliance, budget, timeline és team skill alapján teszem mérhetővé, majd assumptions alapján baseline-t adok.</p>
+<p><strong>51. Mit teszel, ha egy AWS-szolgáltatást nem ismersz mélyen?</strong></p>
+<p>Nem blöffölök. Fundamentumokból következtetek, kimondom, mit tudok, és mit ellenőriznék dokumentációban vagy a csapattal a végleges döntés előtt.</p>
+<h2>3. Rendszertervezés nulláról (system design)</h2>
+<p>Itt most valóban <strong>rendszertervezésről</strong> van szó, nem troubleshootingról. A legfontosabb cél, hogy ne ugorj rögtön AWS-szolgáltatásokra. Először értsd meg a problémát, utána alakíts ki egy egyszerű baseline-t, majd csak a követelmények által indokolt helyeken adj hozzá komplexitást.</p>
+<h3>3.1 Milyen sorrendben haladj?</h3>
+<figure aria-label="System design interjú folyamatábra" class="diagram">
+<svg aria-labelledby="sd-title sd-desc" role="img" viewbox="0 0 940 285">
+<title id="sd-title">System design válaszadási folyamat</title>
+<desc id="sd-desc">A probléma tisztázásától a design review-ig vezető fő lépések.</desc>
+<defs><marker id="arrow-1" markerheight="9" markerwidth="9" orient="auto" refx="8" refy="4.5"><path d="M0,0 L9,4.5 L0,9 z" fill="#52657f"></path></marker></defs>
+<text class="title" x="20" y="28">A jó system design válasz gondolatmenete</text>
+<rect class="box-blue" height="72" rx="10" width="165" x="20" y="50"></rect>
+<text class="label" text-anchor="middle" x="102" y="78">1. Cél és scope</text>
+<text class="small" text-anchor="middle" x="102" y="99">user flow, üzleti cél</text>
+<line class="arrow" x1="185" x2="218" y1="86" y2="86"></line>
+<rect class="box-green" height="72" rx="10" width="165" x="220" y="50"></rect>
+<text class="label" text-anchor="middle" x="302" y="78">2. NFR-ek</text>
+<text class="small" text-anchor="middle" x="302" y="99">terhelés, SLA, RTO/RPO</text>
+<line class="arrow" x1="385" x2="418" y1="86" y2="86"></line>
+<rect class="box-amber" height="72" rx="10" width="165" x="420" y="50"></rect>
+<text class="label" text-anchor="middle" x="502" y="78">3. Feltételezések</text>
+<text class="small" text-anchor="middle" x="502" y="99">számok és korlátok</text>
+<line class="arrow" x1="585" x2="618" y1="86" y2="86"></line>
+<rect class="box-purple" height="72" rx="10" width="165" x="620" y="50"></rect>
+<text class="label" text-anchor="middle" x="702" y="78">4. Alaparchitektúra</text>
+<text class="small" text-anchor="middle" x="702" y="99">fő komponensek és adatfolyam</text>
+<line class="arrow" x1="785" x2="818" y1="86" y2="86"></line>
+<rect class="box-red" height="72" rx="10" width="100" x="820" y="50"></rect>
+<text class="label" text-anchor="middle" x="870" y="78">5. Trade-offok</text>
+<text class="small" text-anchor="middle" x="870" y="99">alternatívák</text>
+<path class="arrow" d="M870 122 L870 150 L102 150 L102 173"></path>
+<rect class="box-blue" height="72" rx="10" width="165" x="20" y="175"></rect>
+<text class="label" text-anchor="middle" x="102" y="203">6. Megbízhatóság</text>
+<text class="small" text-anchor="middle" x="102" y="224">skálázás, hibák, DR</text>
+<line class="arrow" x1="185" x2="218" y1="211" y2="211"></line>
+<rect class="box-green" height="72" rx="10" width="165" x="220" y="175"></rect>
+<text class="label" text-anchor="middle" x="302" y="203">7. Biztonság</text>
+<text class="small" text-anchor="middle" x="302" y="224">IAM, hálózat, adat</text>
+<line class="arrow" x1="385" x2="418" y1="211" y2="211"></line>
+<rect class="box-amber" height="72" rx="10" width="165" x="420" y="175"></rect>
+<text class="label" text-anchor="middle" x="502" y="203">8. Üzemeltetés</text>
+<text class="small" text-anchor="middle" x="502" y="224">metrikák, logok, deploy</text>
+<line class="arrow" x1="585" x2="618" y1="211" y2="211"></line>
+<rect class="box-purple" height="72" rx="10" width="165" x="620" y="175"></rect>
+<text class="label" text-anchor="middle" x="702" y="203">9. Költség</text>
+<text class="small" text-anchor="middle" x="702" y="224">right-sizing, egress</text>
+<line class="arrow" x1="785" x2="818" y1="211" y2="211"></line>
+<rect class="box-red" height="72" rx="10" width="100" x="820" y="175"></rect>
+<text class="label" text-anchor="middle" x="870" y="203">10. Ellenőrzés</text>
+<text class="small" text-anchor="middle" x="870" y="224">validálás</text>
+</svg>
+<figcaption>Ne szolgáltatásnevekkel kezdj. Előbb alakítsd mérhető követelménnyé a problémát, majd a legegyszerűbb védhető baseline-ból haladj a security, reliability, operations és cost felé.</figcaption>
+</figure>
+<h4>1. Tisztázd az üzleti célt</h4>
+<p>Először azt értsd meg, mit akar elérni a rendszer, és miért épül.</p>
+<p>Kérdések:</p>
+<ul>
+<li>Ki használja?</li>
+<li>Mi a fő user journey?</li>
+<li>Mi az üzleti probléma?</li>
+<li>Mi számít sikernek?</li>
+<li>Mi a scope, és mi nincs benne?</li>
+<li>Új rendszer, modernizáció vagy migráció?</li>
+</ul>
+<p>Jó kezdőmondat:</p>
+<blockquote>
+<p>Mielőtt AWS-szolgáltatásokat választanék, tisztáznám a fő user flow-kat, a várható terhelést, az availability targetet, az adatkövetelményeket és az üzemeltetési korlátokat.</p>
+</blockquote>
+<h4>2. Gyűjtsd össze a functional requirements elemeket</h4>
+<p>Csak a legfontosabb funkciókat vedd fel.</p>
+<p>Példa egy SaaS rendszerhez:</p>
+<ul>
+<li>user authentication;</li>
+<li>tenant creation;</li>
+<li>CRUD műveletek;</li>
+<li>fájlfeltöltés;</li>
+<li>keresés;</li>
+<li>értesítések;</li>
+<li>admin funkciók.</li>
+</ul>
+<p>Ne próbálj minden lehetséges feature-t megtervezni. Mondd ki, mit hagysz ki időhiány miatt.</p>
+<h4>3. Gyűjtsd össze a non-functional requirements elemeket</h4>
+<p>Ez dönti el igazán az architektúrát.</p>
+<p>Kérdezd meg:</p>
+<ul>
+<li>Hány user van most és mennyi várható?</li>
+<li>Mennyi az átlagos és peak request/sec?</li>
+<li>Read-heavy vagy write-heavy?</li>
+<li>Mekkora a p95 vagy p99 latency cél?</li>
+<li>Milyen availability kell: 99.9%, 99.99%?</li>
+<li>Mennyi downtime tolerálható?</li>
+<li>Mennyi adatvesztés tolerálható?</li>
+<li>Mekkora az adat és milyen gyorsan nő?</li>
+<li>Kell-e strong consistency?</li>
+<li>Van-e GDPR, data residency vagy más compliance?</li>
+<li>Mekkora a budget?</li>
+<li>Mekkora és milyen tapasztalatú csapat fogja üzemeltetni?</li>
+</ul>
+<h4>4. Mondj ki számszerű feltételezéseket</h4>
+<p>Ha az interviewer nem ad számokat, ne állj meg. Mondj ki reális assumptions értékeket, és jelezd, hogy ezek alapján tervezel.</p>
+<p>Példa:</p>
+<ul>
+<li>100,000 monthly active users;</li>
+<li>5,000 concurrent users;</li>
+<li>1,000 peak requests/sec;</li>
+<li>90% read, 10% write;</li>
+<li>99.9% availability;</li>
+<li>EU-only data residency;</li>
+<li>RTO 30 minutes;</li>
+<li>RPO 5 minutes;</li>
+<li>moderate budget;</li>
+<li>small operations team.</li>
+</ul>
+<p>A pontos szám kevésbé fontos, mint az, hogy a design konzisztens legyen velük.</p>
+<h4>5. Azonosítsd a fő adatokat és access patterneket</h4>
+<p>Kérdezd meg:</p>
+<ul>
+<li>Mik a fő entity-k?</li>
+<li>Milyen kapcsolatok vannak közöttük?</li>
+<li>Milyen query-k a leggyakoribbak?</li>
+<li>Mihez kell transaction?</li>
+<li>Mihez elég eventual consistency?</li>
+<li>Mi nő a leggyorsabban?</li>
+<li>Mi archiválható?</li>
+<li>Mi cache-elhető?</li>
+</ul>
+<p>Ezután válassz adatbázist, ne fordítva.</p>
+<h4>6. Rajzold fel a fő request és data flow-t</h4>
+<p>Először csak a nagy dobozok:</p>
+<pre><code class="language-text">Client
+  |
+Entry point / CDN / Load balancer
+  |
+Alkalmazás tier
+  |
+Database / Cache / Object storage
+  |
+Async processing
+</code></pre>
+<p>Mondd el egy konkrét kérés útját elejétől a végéig.</p>
+<h4>7. Adj egy egyszerű baseline architektúrát</h4>
+<p>A baseline legyen a legegyszerűbb megoldás, amely teljesíti a követelményeket.</p>
+<p>Tipikus AWS webes baseline:</p>
+<pre><code class="language-text">Route 53
+  |
+CloudFront + WAF
+  |
+ALB across multiple AZs
+  |
+ECS/Fargate services in privát subnets
+  |
+RDS/Aurora Multi-AZ
+</code></pre>
+<p>Kiegészítések csak indokkal:</p>
+<ul>
+<li>S3 fájlokhoz;</li>
+<li>ElastiCache hot readekhez;</li>
+<li>SQS lassú vagy retry-zandó munkához;</li>
+<li>read replica olvasási skálázáshoz;</li>
+<li>multi-region csak valódi RTO/RPO igénnyel.</li>
+</ul>
+<h4>8. Indokold a szolgáltatásválasztást</h4>
+<p>Minden fontos választásnál mondd el:</p>
+<ul>
+<li>Miért ezt választottad?</li>
+<li>Mi volt az alternatíva?</li>
+<li>Miért nem az alternatívát választottad?</li>
+<li>Mi változtatná meg a döntést?</li>
+</ul>
+<p>Példa:</p>
+<blockquote>
+<p>Kiindulásként ECS-t használnék Fargate-tel, mert a workload konténerizált, a csapat kicsi, és nincs kimondott Kubernetes-követelmény. EKS-t csak akkor választanék, ha a Kubernetes-portabilitás, egy meglévő platformstandard vagy összetettebb orchestration-igény indokolja a nagyobb üzemeltetési terhet.</p>
+</blockquote>
+<h4>9. Tervezd meg a scalinget és failure handlinget</h4>
+<p>Nézd végig:</p>
+<ul>
+<li>stateless-e az app tier;</li>
+<li>horizontálisan skálázható-e;</li>
+<li>mi alapján skálázol;</li>
+<li>mi történik instance, task vagy AZ hiba esetén;</li>
+<li>mi történik dependency timeout esetén;</li>
+<li>van-e retry, timeout, circuit breaker és DLQ;</li>
+<li>hol van single point of failure;</li>
+<li>mi történik burst alatt;</li>
+<li>mi történik sustained overload alatt.</li>
+</ul>
+<h4>10. Térj ki securityre</h4>
+<p>Minimum:</p>
+<ul>
+<li>least-privilege IAM;</li>
+<li>role-based access;</li>
+<li>privát subnets;</li>
+<li>Secrets Manager vagy Parameter Store;</li>
+<li>encryption at rest és in transit;</li>
+<li>WAF és rate limiting, ahol releváns;</li>
+<li>audit trail;</li>
+<li>tenant isolation;</li>
+<li>public access minimalizálása.</li>
+</ul>
+<h4>11. Térj ki observabilityre és operationsre</h4>
+<p>Minimum:</p>
+<ul>
+<li>metrics, logs és traces;</li>
+<li>error rate, p95/p99 latency és saturation;</li>
+<li>SLO és alerting;</li>
+<li>dashboardok;</li>
+<li>runbookok;</li>
+<li>backup és restore test;</li>
+<li>incident ownership;</li>
+<li>capacity és cost monitoring.</li>
+</ul>
+<h4>12. Térj ki deliveryre és change managementre</h4>
+<ul>
+<li>Infrastructure as Code;</li>
+<li>environment separation;</li>
+<li>automated tests;</li>
+<li>CI/CD;</li>
+<li>rolling, blue-green vagy canary deployment;</li>
+<li>rollback;</li>
+<li>database migration strategy;</li>
+<li>backward-compatible change;</li>
+<li>drift detection.</li>
+</ul>
+<h4>13. Nézd meg a költséget</h4>
+<p>Tipikus költségkockázatok:</p>
+<ul>
+<li>NAT Gateway;</li>
+<li>cross-AZ és cross-region traffic;</li>
+<li>internet egress;</li>
+<li>túlméretezett compute;</li>
+<li>idle environment;</li>
+<li>túl sok custom metric vagy log;</li>
+<li>feleslegesen választott EKS vagy multi-region;</li>
+<li>rossz storage class.</li>
+</ul>
+<h4>14. Zárd le a design review-val</h4>
+<p>A végén foglald össze:</p>
+<ul>
+<li>mi a fő architecture;</li>
+<li>milyen assumptions alapján készült;</li>
+<li>melyik 2-3 trade-off a legfontosabb;</li>
+<li>melyik komponens a valószínű bottleneck;</li>
+<li>mi lenne a következő lépés;</li>
+<li>mit kell még validálni az ügyféllel.</li>
+</ul>
+<hr/>
+<h3>3.2 Időbeosztás egy 45–60 perces system design feladathoz</h3>
+<pre><code class="language-text">0-5 perc: business goal, functional scope
+5-10 perc: scale, latency, availability, RTO/RPO, compliance
+10-15 perc: data model és access patterns
+15-25 perc: high-level baseline és request flow
+25-35 perc: szolgáltatásválasztás és scaling
+35-45 perc: failure handling, security, observability
+45-50 perc: deployment, DR és cost
+50-60 perc: interviewer follow-upok és trade-offok
+</code></pre>
+<p>Nem baj, ha nem érsz minden rész végére. Fontosabb, hogy strukturáltan haladj, és tudd megmondani, mit vizsgálnál tovább.</p>
+<hr/>
+<h3>3.3 Teljes, nulláról végigvezetett példa</h3>
+<h2>Feladat: tervezz egy multi-tenant B2B projektkezelő SaaS rendszert AWS-en</h2>
+<p>A felhasználók:</p>
+<ul>
+<li>accountot és tenantot hoznak létre;</li>
+<li>projekteket és taskokat kezelnek;</li>
+<li>fájlokat töltenek fel;</li>
+<li>keresnek;</li>
+<li>email vagy in-app értesítést kapnak;</li>
+<li>több európai országból használják a rendszert.</li>
+</ul>
+<h3>Első lépés: tisztázó kérdések</h3>
+<h4>Üzlet és scope</h4>
+<ul>
+<li>Hány tenant várható?</li>
+<li>Vannak nagyon nagy enterprise tenantok?</li>
+<li>A tenantok megoszthatnak infrastruktúrát?</li>
+<li>Kell egyedi data residency tenantonként?</li>
+<li>Mely funkciók kritikusak?</li>
+<li>Kell realtime collaboration?</li>
+<li>Kell audit log?</li>
+<li>Kell public API?</li>
+</ul>
+<h4>Scale</h4>
+<ul>
+<li>Aktív user naponta és havonta?</li>
+<li>Peak concurrent user?</li>
+<li>Peak request/sec?</li>
+<li>Fájlok átlagos és maximális mérete?</li>
+<li>Mennyi notification készül?</li>
+<li>Mennyi adat nő havonta?</li>
+</ul>
+<h4>Reliability</h4>
+<ul>
+<li>Availability target?</li>
+<li>RTO és RPO?</li>
+<li>Mi történik, ha a notification késik?</li>
+<li>Mi történik, ha a file processing átmenetileg leáll?</li>
+<li>Mely funkciók igényelnek strong consistencyt?</li>
+</ul>
+<h4>Security és compliance</h4>
+<ul>
+<li>GDPR?</li>
+<li>EU-only storage?</li>
+<li>SSO vagy enterprise identity provider?</li>
+<li>Tenant isolation szintje?</li>
+<li>Encryption key requirement?</li>
+<li>Audit és retention requirement?</li>
+</ul>
+<h4>Operations</h4>
+<ul>
+<li>Mekkora csapat üzemelteti?</li>
+<li>Van Kubernetes tapasztalat?</li>
+<li>Mennyi a budget?</li>
+<li>Milyen deployment frequency várható?</li>
+</ul>
+<h3>Feltételezések</h3>
+<p>Tegyük fel:</p>
+<ul>
+<li>1,000 tenant;</li>
+<li>100,000 monthly active user;</li>
+<li>5,000 concurrent user;</li>
+<li>1,000 peak request/sec;</li>
+<li>90% read;</li>
+<li>99.9% availability;</li>
+<li>EU-only data;</li>
+<li>RTO 30 perc;</li>
+<li>RPO 5 perc;</li>
+<li>kis platformcsapat;</li>
+<li>nincs Kubernetes-standard.</li>
+</ul>
+<h3>Functional scope</h3>
+<p>Benntartjuk:</p>
+<ul>
+<li>authentication;</li>
+<li>tenant és user management;</li>
+<li>project és task CRUD;</li>
+<li>file upload;</li>
+<li>search;</li>
+<li>async notification;</li>
+<li>audit log.</li>
+</ul>
+<p>Kihagyjuk az első körből:</p>
+<ul>
+<li>realtime collaborative editing;</li>
+<li>billing;</li>
+<li>analytics platform;</li>
+<li>mobile offline sync.</li>
+</ul>
+<h3>Fő entity-k</h3>
+<pre><code class="language-text">Tenant
+User
+Membership
+Project
+Task
+Attachment
+Notification
+AuditEvent
+</code></pre>
+<p>Fontos access patternek:</p>
+<ul>
+<li>projektek tenant szerint;</li>
+<li>taskok projekt és státusz szerint;</li>
+<li>task keresése tenanton belül;</li>
+<li>user jogosultsága tenanton belül;</li>
+<li>legutóbbi audit események;</li>
+<li>notification státusz;</li>
+<li>attachment metadata.</li>
+</ul>
+<h3>Magas szintű architektúra</h3>
+<figure aria-label="Magas rendelkezésre állású multi-tenant SaaS AWS architektúra" class="diagram">
+<svg aria-labelledby="arch-title arch-desc" role="img" viewbox="0 0 960 520">
+<title id="arch-title">Multi-tenant SaaS high-level AWS architektúra</title>
+<desc id="arch-desc">Route 53, CloudFront, WAF, ALB, több Availability Zone-ban futó ECS Fargate service-ek, Aurora, Redis, S3, SQS és worker.</desc>
+<defs><marker id="arrow-2" markerheight="9" markerwidth="9" orient="auto" refx="8" refy="4.5"><path d="M0,0 L9,4.5 L0,9 z" fill="#52657f"></path></marker></defs>
+<text class="title" x="20" y="28">Multi-tenant SaaS: egyszerű, produkcióképes baseline</text>
+<rect class="box-blue" height="52" rx="9" width="110" x="25" y="55"></rect>
+<text class="label" text-anchor="middle" x="80" y="86">Felhasználók</text>
+<line class="arrow" x1="135" x2="178" y1="81" y2="81"></line>
+<rect class="box" height="52" rx="9" width="120" x="180" y="55"></rect>
+<text class="label" text-anchor="middle" x="240" y="78">Route 53</text>
+<text class="tiny" text-anchor="middle" x="240" y="96">DNS / health routing</text>
+<line class="arrow" x1="300" x2="343" y1="81" y2="81"></line>
+<rect class="box-green" height="52" rx="9" width="140" x="345" y="55"></rect>
+<text class="label" text-anchor="middle" x="415" y="78">CloudFront</text>
+<text class="tiny" text-anchor="middle" x="415" y="96">CDN + cache</text>
+<line class="arrow" x1="485" x2="528" y1="81" y2="81"></line>
+<rect class="box-red" height="52" rx="9" width="115" x="530" y="55"></rect>
+<text class="label" text-anchor="middle" x="587" y="78">AWS WAF</text>
+<text class="tiny" text-anchor="middle" x="587" y="96">L7 védelem</text>
+<line class="arrow" x1="645" x2="688" y1="81" y2="81"></line>
+<rect class="box-purple" height="52" rx="9" width="135" x="690" y="55"></rect>
+<text class="label" text-anchor="middle" x="757" y="78">ALB</text>
+<text class="tiny" text-anchor="middle" x="757" y="96">HTTPS + health checkek</text>
+<rect class="box" height="235" rx="14" width="790" x="85" y="135"></rect>
+<text class="label" x="105" y="162">VPC</text>
+<rect class="zone" height="165" rx="12" width="345" x="110" y="178"></rect>
+<text class="small" text-anchor="middle" x="282" y="201">Availability Zone A</text>
+<rect class="zone" height="165" rx="12" width="345" x="505" y="178"></rect>
+<text class="small" text-anchor="middle" x="677" y="201">Availability Zone B</text>
+<rect class="box-amber" height="55" rx="9" width="130" x="135" y="220"></rect>
+<text class="label" text-anchor="middle" x="200" y="244">NAT Gateway</text>
+<text class="tiny" text-anchor="middle" x="200" y="263">publikus subnet</text>
+<rect class="box-green" height="78" rx="9" width="130" x="300" y="220"></rect>
+<text class="label" text-anchor="middle" x="365" y="245">ECS/Fargate</text>
+<text class="tiny" text-anchor="middle" x="365" y="264">alkalmazásszolgáltatás</text>
+<text class="tiny" text-anchor="middle" x="365" y="282">privát subnet</text>
+<rect class="box-amber" height="55" rx="9" width="130" x="530" y="220"></rect>
+<text class="label" text-anchor="middle" x="595" y="244">NAT Gateway</text>
+<text class="tiny" text-anchor="middle" x="595" y="263">publikus subnet</text>
+<rect class="box-green" height="78" rx="9" width="130" x="695" y="220"></rect>
+<text class="label" text-anchor="middle" x="760" y="245">ECS/Fargate</text>
+<text class="tiny" text-anchor="middle" x="760" y="264">alkalmazásszolgáltatás</text>
+<text class="tiny" text-anchor="middle" x="760" y="282">privát subnet</text>
+<line class="arrow" x1="757" x2="757" y1="107" y2="145"></line>
+<path class="arrow" d="M757 145 L365 145 L365 218"></path>
+<path class="arrow" d="M757 145 L760 145 L760 218"></path>
+<rect class="box-blue" height="65" rx="10" width="155" x="85" y="405"></rect>
+<text class="label" text-anchor="middle" x="162" y="430">Aurora PostgreSQL</text>
+<text class="tiny" text-anchor="middle" x="162" y="449">Multi-AZ / tranzakciók</text>
+<rect class="box-red" height="65" rx="10" width="140" x="265" y="405"></rect>
+<text class="label" text-anchor="middle" x="335" y="430">ElastiCache</text>
+<text class="tiny" text-anchor="middle" x="335" y="449">Redis / gyakori olvasások</text>
+<rect class="box-green" height="65" rx="10" width="120" x="430" y="405"></rect>
+<text class="label" text-anchor="middle" x="490" y="430">Amazon S3</text>
+<text class="tiny" text-anchor="middle" x="490" y="449">csatolmányok</text>
+<rect class="box-amber" height="65" rx="10" width="115" x="575" y="405"></rect>
+<text class="label" text-anchor="middle" x="632" y="430">Amazon SQS</text>
+<text class="tiny" text-anchor="middle" x="632" y="449">aszinkron buffer</text>
+<rect class="box-purple" height="65" rx="10" width="145" x="715" y="405"></rect>
+<text class="label" text-anchor="middle" x="787" y="430">Worker szolgáltatás</text>
+<text class="tiny" text-anchor="middle" x="787" y="449">e-mail / értesítés</text>
+<path class="arrow" d="M365 298 L365 380 L162 380 L162 403"></path>
+<path class="arrow" d="M365 298 L365 380 L335 380 L335 403"></path>
+<path class="arrow" d="M760 298 L760 380 L490 380 L490 403"></path>
+<path class="arrow" d="M760 298 L760 380 L632 380 L632 403"></path>
+<line class="arrow" x1="690" x2="713" y1="438" y2="438"></line>
+</svg>
+<figcaption>A diagram egy védhető baseline, nem automatikusan a végső válasz. Az EKS, multi-region, több adatbázis vagy dedikált tenant-infrastruktúra csak konkrét követelmény alapján kerüljön hozzá.</figcaption>
+</figure>
+<h3>Miért ez?</h3>
+<h4>ECS/Fargate</h4>
+<ul>
+<li>A workload containerizált.</li>
+<li>A csapat kicsi.</li>
+<li>Nincs Kubernetes-követelmény.</li>
+<li>Nem kell node lifecycle-t kezelni.</li>
+</ul>
+<p>EKS akkor lenne jobb, ha:</p>
+<ul>
+<li>vállalati Kubernetes-standard lenne;</li>
+<li>multi-cloud portabilitás kellene;</li>
+<li>speciális Kubernetes operator vagy ecosystem requirement lenne;</li>
+<li>a csapat már erős k8s platformcsapat lenne.</li>
+</ul>
+<h4>Aurora PostgreSQL</h4>
+<p>Relációs modell, transaction és összetett query-k szükségesek. A tenant, project, task és membership kapcsolatok természetesen relációsak.</p>
+<p>Plain RDS is elég lehetne kisebb scale-nél és költségérzékenyebb környezetben. Aurora akkor indokolható, ha a gyorsabb failover, storage scaling és nagyobb read scaling értéket ad.</p>
+<h4>S3</h4>
+<p>A fájlokat nem az adatbázisban tároljuk. Az app pre-signed URL-t ad a kliensnek, így a nagy file traffic nem az application service-en keresztül megy.</p>
+<h4>SQS és worker</h4>
+<p>A notification, audit enrichment és file processing nem blokkolja a synchronous requestet. Retry és DLQ kezelhető.</p>
+<h4>ElastiCache</h4>
+<p>Nem kötelező az első verzióban. Akkor vezetném be, amikor mérés alapján hot read vagy rate-limit state indokolja.</p>
+<h3>Request flow: task létrehozása</h3>
+<ol>
+<li>A kliens HTTPS requestet küld.</li>
+<li>CloudFront és WAF ellenőrzi és továbbítja.</li>
+<li>ALB egy egészséges ECS taskhoz küldi.</li>
+<li>Az alkalmazás validálja az identityt és tenant membershipet.</li>
+<li>Transactionben létrehozza a taskot.</li>
+<li>Outbox vagy biztonságos event publication segítségével notification event készül.</li>
+<li>SQS consumer feldolgozza az értesítést.</li>
+<li>Metrics, trace és structured log készül correlation ID-val.</li>
+</ol>
+<h3>Multi-tenant isolation</h3>
+<p>Egyszerű baseline:</p>
+<ul>
+<li>shared application;</li>
+<li>shared database;</li>
+<li>minden tenant-owned sorban tenant_id;</li>
+<li>minden query tenant scope-pal fut;</li>
+<li>authorization middleware ellenőrzi a membershipet;</li>
+<li>audit logolja a privileged műveleteket.</li>
+</ul>
+<p>Erősebb isolation esetén:</p>
+<ul>
+<li>schema per tenant;</li>
+<li>database per tenant;</li>
+<li>dedicated account vagy stack nagy enterprise tenantnak.</li>
+</ul>
+<p>Trade-off:</p>
+<ul>
+<li>shared olcsóbb és egyszerűbb;</li>
+<li>dedicated erősebb isolationt ad, de drágább és nehezebb üzemeltetni.</li>
+</ul>
+<h3>Scaling</h3>
+<ul>
+<li>ECS service autoscaling request count, CPU és p95 latency alapján.</li>
+<li>Stateless service, session nem lokális memóriában.</li>
+<li>Aurora read replica csak akkor, ha mérés alapján read bottleneck van.</li>
+<li>SQS worker queue depth és age of oldest message alapján skálázódik.</li>
+<li>CloudFront leveszi a static trafficet.</li>
+<li>Pre-signed S3 upload leveszi a file trafficet az app tier-ről.</li>
+</ul>
+<h3>Availability</h3>
+<ul>
+<li>ALB és ECS taskok több AZ-ban.</li>
+<li>Aurora Multi-AZ.</li>
+<li>NAT Gateway AZ-nként.</li>
+<li>S3 regionális managed service.</li>
+<li>Health check és task replacement.</li>
+<li>Minimum két ECS task productionben.</li>
+<li>Backup és point-in-time recovery.</li>
+<li>Restore rendszeres tesztelése.</li>
+</ul>
+<h3>Hibaszituációk</h3>
+<h4>Egy ECS task meghal</h4>
+<p>ALB kiveszi, ECS új taskot indít.</p>
+<h4>Egy AZ kiesik</h4>
+<p>Másik AZ-ban marad app capacity és database failover.</p>
+<h4>Email provider nem elérhető</h4>
+<p>SQS megtartja a message-et, retry történik, majd DLQ.</p>
+<h4>Database túlterhelődik</h4>
+<p>Query tuning, index, connection pool, cache vagy read replica. Autoscaling app tier önmagában ronthatja a DB terhelést, ezért connection control kell.</p>
+<h4>Egy tenant túl nagy terhelést okoz</h4>
+<p>Tenant rate limit, quota és szükség esetén dedicated worker vagy isolated stack.</p>
+<h3>Security</h3>
+<ul>
+<li>Identity federation vagy Cognito, az ügyféligénytől függően.</li>
+<li>IAM role minden workloadhoz.</li>
+<li>Secrets Manager.</li>
+<li>TLS.</li>
+<li>KMS-backed encryption az érzékeny adathoz.</li>
+<li>DB és services privát subnetben.</li>
+<li>WAF és rate limiting.</li>
+<li>S3 Block Public Access.</li>
+<li>CloudFront OAC.</li>
+<li>CloudTrail és audit log.</li>
+<li>Least-privilege task role.</li>
+<li>Tenant-scoped authorization.</li>
+</ul>
+<h3>Observability</h3>
+<ul>
+<li>request rate;</li>
+<li>error rate;</li>
+<li>p95/p99 latency;</li>
+<li>ECS CPU, memory és task count;</li>
+<li>DB connections, CPU, latency, replica lag;</li>
+<li>SQS queue depth és oldest message age;</li>
+<li>DLQ count;</li>
+<li>S3 upload errors;</li>
+<li>tenant-level usage;</li>
+<li>distributed tracing;</li>
+<li>correlation ID;</li>
+<li>SLO-alapú alerting.</li>
+</ul>
+<h3>Deployment</h3>
+<ul>
+<li>Terraform.</li>
+<li>Dev, staging és production szeparáció.</li>
+<li>Image ECR-ben.</li>
+<li>Pipeline OIDC-vel vesz fel AWS role-t.</li>
+<li>Tests és security scanning.</li>
+<li>ECS blue-green vagy canary deployment.</li>
+<li>Database change expand-contract módszerrel.</li>
+<li>Automatikus rollback health alarm alapján.</li>
+</ul>
+<h3>DR</h3>
+<p>99.9% és RTO 30 perc esetén először regionális Multi-AZ rendszer, tested backup és IaC lehet elég. Multi-region csak akkor, ha a business valóban nem tolerál regionális kiesést.</p>
+<p>Lehetséges következő szint:</p>
+<ul>
+<li>cross-region backup;</li>
+<li>secondary region infrastruktúra IaC-ból;</li>
+<li>Route 53 failover;</li>
+<li>S3 replication;</li>
+<li>Aurora Global Database vagy más data replication csak szigorúbb RTO/RPO esetén.</li>
+</ul>
+<h3>Cost</h3>
+<p>Figyelném:</p>
+<ul>
+<li>NAT Gateway traffic;</li>
+<li>CloudWatch log retention;</li>
+<li>Aurora sizing;</li>
+<li>túl sok Fargate idle capacity;</li>
+<li>S3 request és egress;</li>
+<li>cross-AZ traffic;</li>
+<li>felesleges read replica;</li>
+<li>nem használt dev environment.</li>
+</ul>
+<h3>Záró összefoglaló</h3>
+<blockquote>
+<p>Egy Multi-AZ ECS/Fargate alkalmazással indulnék CloudFront, WAF és ALB mögött, Aurora PostgreSQL-lel a relációs adatokhoz, S3-mal a csatolmányokhoz és SQS-sel az aszinkron feldolgozáshoz. Az alkalmazásréteg stateless maradna, a tenantokat logikailag izolálnám, és az architektúra támogatná a horizontális skálázást anélkül, hogy egy kis csapatra indokolatlan Kubernetes-terhet rakna. Az ügyféllel elsősorban a tenant isolation szintjét, az RTO/RPO értékeket, az enterprise identity követelményeket és a regionális disaster recovery szükségességét validálnám.</p>
+</blockquote>
+<hr/>
+<h3>3.4 Gyakorló rendszertervezési feladatok</h3>
+<p>Mindegyiket ugyanazzal a 14 lépéses módszerrel oldd meg.</p>
+<h4>Feladat 1: nagy forgalmú tartalmi weboldal</h4>
+<p>Tervezz AWS-en egy nemzetközi tartalmi oldalt, amelynek:</p>
+<ul>
+<li>napi több millió látogatója van;</li>
+<li>az olvasások dominálnak;</li>
+<li>szerkesztők publikálnak;</li>
+<li>képeket és videókat szolgál ki;</li>
+<li>időnként hirtelen traffic spike érkezik;</li>
+<li>99.99% availability a cél.</li>
+</ul>
+<p>Gondold végig:</p>
+<ul>
+<li>CDN és cache;</li>
+<li>origin;</li>
+<li>content publishing;</li>
+<li>database;</li>
+<li>media storage;</li>
+<li>cache invalidation;</li>
+<li>WAF és DDoS;</li>
+<li>multi-region szükségessége;</li>
+<li>origin failure;</li>
+<li>cost.</li>
+</ul>
+<h4>Feladat 2: dokumentumfeldolgozó platform</h4>
+<p>A user dokumentumot tölt fel, a rendszer:</p>
+<ul>
+<li>vírust ellenőriz;</li>
+<li>szöveget nyer ki;</li>
+<li>AI segítségével kategorizál;</li>
+<li>kereshetővé tesz;</li>
+<li>státuszt mutat;</li>
+<li>hiba esetén retry-zik.</li>
+</ul>
+<p>Gondold végig:</p>
+<ul>
+<li>direct upload S3-ba;</li>
+<li>event trigger;</li>
+<li>queue vagy workflow orchestration;</li>
+<li>idempotency;</li>
+<li>status storage;</li>
+<li>DLQ;</li>
+<li>large file;</li>
+<li>timeout;</li>
+<li>scaling;</li>
+<li>Bedrock vagy más AI integration;</li>
+<li>audit és sensitive data.</li>
+</ul>
+<h4>Feladat 3: realtime notification rendszer</h4>
+<p>Tervezz rendszert, amely:</p>
+<ul>
+<li>web push, email és in-app notificationt küld;</li>
+<li>user preference-et kezel;</li>
+<li>prioritást és schedulinget támogat;</li>
+<li>több millió usert szolgál ki;</li>
+<li>duplikált küldést kerül;</li>
+<li>provider hibát kezel.</li>
+</ul>
+<p>Gondold végig:</p>
+<ul>
+<li>API;</li>
+<li>event ingestion;</li>
+<li>queue és fan-out;</li>
+<li>preference lookup;</li>
+<li>idempotency;</li>
+<li>retry és DLQ;</li>
+<li>rate limiting;</li>
+<li>provider abstraction;</li>
+<li>observability;</li>
+<li>delivery status.</li>
+</ul>
+<h4>Feladat 4: event ingestion platform</h4>
+<figure aria-label="Event ingestion AWS pipeline" class="diagram">
+<svg aria-labelledby="evt-title evt-desc" role="img" viewbox="0 0 940 330">
+<title id="evt-title">Nagy volumenű event ingestion platform</title>
+<desc id="evt-desc">Producerek, Kinesis vagy MSK stream, több consumer group, S3 data lake, analytics és DLQ útvonal.</desc>
+<defs><marker id="arrow-3" markerheight="9" markerwidth="9" orient="auto" refx="8" refy="4.5"><path d="M0,0 L9,4.5 L0,9 z" fill="#52657f"></path></marker></defs>
+<text class="title" x="20" y="28">Event ingestion: stream, replay és több független consumer</text>
+<rect class="box-blue" height="70" rx="10" width="125" x="25" y="95"></rect>
+<text class="label" text-anchor="middle" x="87" y="123">Producerek</text>
+<text class="small" text-anchor="middle" x="87" y="145">IoT- / alkalmazásesemények</text>
+<line class="arrow" x1="150" x2="205" y1="130" y2="130"></line>
+<rect class="box-purple" height="96" rx="12" width="165" x="208" y="82"></rect>
+<text class="label" text-anchor="middle" x="290" y="112">Kinesis / MSK</text>
+<text class="small" text-anchor="middle" x="290" y="134">partition key + megőrzés</text>
+<text class="tiny" text-anchor="middle" x="290" y="155">sorrendiség eszközönként</text>
+<path class="arrow" d="M373 112 L440 72"></path>
+<path class="arrow" d="M373 130 L440 130"></path>
+<path class="arrow" d="M373 148 L440 190"></path>
+<rect class="box-green" height="65" rx="10" width="145" x="442" y="38"></rect>
+<text class="label" text-anchor="middle" x="514" y="65">Valós idejű consumer</text>
+<text class="tiny" text-anchor="middle" x="514" y="85">riasztás / enrichment</text>
+<rect class="box-amber" height="65" rx="10" width="145" x="442" y="108"></rect>
+<text class="label" text-anchor="middle" x="514" y="135">Analitikai consumer</text>
+<text class="tiny" text-anchor="middle" x="514" y="155">aggregációk</text>
+<rect class="box-blue" height="65" rx="10" width="145" x="442" y="178"></rect>
+<text class="label" text-anchor="middle" x="514" y="205">Archiváló consumer</text>
+<text class="tiny" text-anchor="middle" x="514" y="225">nyers események továbbítása</text>
+<line class="arrow" x1="587" x2="650" y1="210" y2="210"></line>
+<rect class="box-green" height="66" rx="10" width="125" x="653" y="177"></rect>
+<text class="label" text-anchor="middle" x="715" y="205">Amazon S3</text>
+<text class="tiny" text-anchor="middle" x="715" y="225">data lake</text>
+<line class="arrow" x1="778" x2="828" y1="210" y2="210"></line>
+<rect class="box-purple" height="66" rx="10" width="90" x="830" y="177"></rect>
+<text class="label" text-anchor="middle" x="875" y="205">Athena</text>
+<text class="tiny" text-anchor="middle" x="875" y="225">lekérdezések</text>
+<path class="arrow dash" d="M514 103 L514 278 L650 278"></path>
+<rect class="box-red" height="55" rx="10" width="125" x="653" y="255"></rect>
+<text class="label" text-anchor="middle" x="715" y="279">DLQ / hibatároló</text>
+<text class="tiny" text-anchor="middle" x="715" y="299">hibás események</text>
+<rect class="box" height="74" rx="10" width="335" x="25" y="228"></rect>
+<text class="small" x="42" y="251">Figyeld:</text>
+<text class="tiny" x="42" y="273">beérkezési ráta, consumer lag, iterator age, hibaarány, throttling</text>
+<text class="tiny" x="42" y="293">Az idempotency és a schema evolution alkalmazásszintű felelősség.</text>
+</svg>
+<figcaption>SQS jobb egyszerű work queue-hoz. Kinesis vagy MSK akkor indokolt, ha partition ordering, több consumer group, retention és replay kell.</figcaption>
+</figure>
+<p>IoT vagy alkalmazás-eventek érkeznek nagy volumenben.</p>
+<p>Követelmények:</p>
+<ul>
+<li>peak 100,000 event/sec;</li>
+<li>ordering csak device-on belül;</li>
+<li>legalább 7 nap replay;</li>
+<li>több consumer;</li>
+<li>near-real-time analytics;</li>
+<li>nyers adat hosszú távú tárolása.</li>
+</ul>
+<p>Gondold végig:</p>
+<ul>
+<li>Kinesis vagy MSK;</li>
+<li>partition key;</li>
+<li>consumer scaling;</li>
+<li>replay;</li>
+<li>schema evolution;</li>
+<li>S3 data lake;</li>
+<li>Athena vagy analytics layer;</li>
+<li>backpressure;</li>
+<li>duplicate processing;</li>
+<li>monitoring.</li>
+</ul>
+<h4>Feladat 5: legacy monolith migráció AWS-re</h4>
+<p>A rendszer:</p>
+<ul>
+<li>egy adatbázist használ;</li>
+<li>fájlokat lokális diszken tart;</li>
+<li>nincs automatizált deployment;</li>
+<li>csak egy data centerben fut;</li>
+<li>heti release van;</li>
+<li>minimális downtime kell.</li>
+</ul>
+<p>Gondold végig:</p>
+<ul>
+<li>discovery;</li>
+<li>dependency map;</li>
+<li>7 Rs;</li>
+<li>landing zone;</li>
+<li>network;</li>
+<li>data migration;</li>
+<li>file migration;</li>
+<li>strangler pattern;</li>
+<li>parallel run;</li>
+<li>rollback;</li>
+<li>observability;</li>
+<li>phased delivery.</li>
+</ul>
+<hr/>
+<h2>4. Hibakeresési és üzemeltetési szituációk</h2>
+<p>A korábbi troubleshooting részek továbbra is hasznosak, de ezek nem helyettesítik a nulláról történő system designt.</p>
+<h3>A. Privát subnet hálózati incidens</h3>
+<figure aria-label="AWS private subnet networking troubleshooting folyamat" class="diagram">
+<svg aria-labelledby="net-title net-desc" role="img" viewbox="0 0 940 250">
+<title id="net-title">Private subnet hálózati hibakeresés</title>
+<desc id="net-desc">Az alkalmazástól a távoli cél visszatérési útjáig követendő ellenőrzési sorrend.</desc>
+<defs><marker id="arrow-4" markerheight="9" markerwidth="9" orient="auto" refx="8" refy="4.5"><path d="M0,0 L9,4.5 L0,9 z" fill="#52657f"></path></marker></defs>
+<text class="title" x="20" y="28">Kövesd a hálózati útvonalat sorrendben</text>
+<rect class="box-blue" height="70" rx="10" width="130" x="20" y="60"></rect>
+<text class="label" text-anchor="middle" x="85" y="88">Alkalmazás</text>
+<text class="small" text-anchor="middle" x="85" y="109">curl, dig, logok</text>
+<line class="arrow" x1="150" x2="180" y1="95" y2="95"></line>
+<rect class="box-green" height="70" rx="10" width="130" x="182" y="60"></rect>
+<text class="label" text-anchor="middle" x="247" y="88">Security Group</text>
+<text class="small" text-anchor="middle" x="247" y="109">kimenő szabály + cél</text>
+<line class="arrow" x1="312" x2="342" y1="95" y2="95"></line>
+<rect class="box-amber" height="70" rx="10" width="130" x="344" y="60"></rect>
+<text class="label" text-anchor="middle" x="409" y="88">Route table</text>
+<text class="small" text-anchor="middle" x="409" y="109">megfelelő route</text>
+<line class="arrow" x1="474" x2="504" y1="95" y2="95"></line>
+<rect class="box-purple" height="70" rx="10" width="150" x="506" y="60"></rect>
+<text class="label" text-anchor="middle" x="581" y="84">Gateway / endpoint</text>
+<text class="small" text-anchor="middle" x="581" y="105">NAT, VPCE, VPN, TGW</text>
+<line class="arrow" x1="656" x2="686" y1="95" y2="95"></line>
+<rect class="box-red" height="70" rx="10" width="110" x="688" y="60"></rect>
+<text class="label" text-anchor="middle" x="743" y="88">NACL</text>
+<text class="small" text-anchor="middle" x="743" y="109">mindkét irány</text>
+<line class="arrow" x1="798" x2="828" y1="95" y2="95"></line>
+<rect class="box" height="70" rx="10" width="90" x="830" y="60"></rect>
+<text class="label" text-anchor="middle" x="875" y="88">Célrendszer</text>
+<text class="small" text-anchor="middle" x="875" y="109">tűzfal</text>
+<path class="arrow dash" d="M875 130 L875 178 L85 178 L85 132"></path>
+<text class="small" text-anchor="middle" x="480" y="169">visszaút + ephemeral portok + DNS-válasz</text>
+<rect class="box" height="38" rx="8" width="530" x="205" y="198"></rect>
+<text class="small" text-anchor="middle" x="470" y="222">Bizonyíték: VPC Flow Logs, Reachability Analyzer, subnet association, endpoint policy, átfedő CIDR</text>
+</svg>
+<figcaption>A Security Group stateful, a NACL stateless. Emiatt a kimenő kérés látszólag elindulhat, miközben a NACL a visszatérő ephemeral porttartományt eldobja.</figcaption>
+</figure>
+<p>Evidence:</p>
+<ul>
+<li>curl;</li>
+<li>dig;</li>
+<li>service events;</li>
+<li>VPC Flow Logs;</li>
+<li>route és subnet association;</li>
+<li>endpoint policy;</li>
+<li>overlapping CIDR.</li>
+</ul>
+<h3>B. Legacy migration minimális downtime-mal</h3>
+<figure aria-label="Legacy AWS migráció idővonala" class="diagram">
+<svg aria-labelledby="mig-title mig-desc" role="img" viewbox="0 0 940 285">
+<title id="mig-title">Legacy migráció minimális downtime-mal</title>
+<desc id="mig-desc">Felmérés, target foundation, replication, validation, weighted cutover, hypercare és leállítás fázisok.</desc>
+<defs><marker id="arrow-5" markerheight="9" markerwidth="9" orient="auto" refx="8" refy="4.5"><path d="M0,0 L9,4.5 L0,9 z" fill="#52657f"></path></marker></defs>
+<text class="title" x="20" y="28">Migrációs hullám: visszafordítható lépések</text>
+<line class="arrow" x1="70" x2="875" y1="140" y2="140"></line>
+<circle cx="95" cy="140" fill="#4f75c7" r="13"></circle>
+<circle cx="225" cy="140" fill="#4c9b69" r="13"></circle>
+<circle cx="355" cy="140" fill="#c8942f" r="13"></circle>
+<circle cx="485" cy="140" fill="#8063b7" r="13"></circle>
+<circle cx="615" cy="140" fill="#c96060" r="13"></circle>
+<circle cx="745" cy="140" fill="#4f75c7" r="13"></circle>
+<circle cx="855" cy="140" fill="#4c9b69" r="13"></circle>
+<rect class="box-blue" height="55" rx="9" width="120" x="35" y="58"></rect>
+<text class="label" text-anchor="middle" x="95" y="82">Felmérés</text>
+<text class="tiny" text-anchor="middle" x="95" y="101">függőségek + 7 Rs</text>
+<line class="arrow" x1="95" x2="95" y1="113" y2="125"></line>
+<rect class="box-green" height="55" rx="9" width="120" x="165" y="168"></rect>
+<text class="label" text-anchor="middle" x="225" y="192">Alapok</text>
+<text class="tiny" text-anchor="middle" x="225" y="211">landing zone + IaC</text>
+<line class="arrow" x1="225" x2="225" y1="155" y2="168"></line>
+<rect class="box-amber" height="55" rx="9" width="120" x="295" y="58"></rect>
+<text class="label" text-anchor="middle" x="355" y="82">Replikáció</text>
+<text class="tiny" text-anchor="middle" x="355" y="101">kezdeti betöltés + CDC</text>
+<line class="arrow" x1="355" x2="355" y1="113" y2="125"></line>
+<rect class="box-purple" height="55" rx="9" width="120" x="425" y="168"></rect>
+<text class="label" text-anchor="middle" x="485" y="192">Validáció</text>
+<text class="tiny" text-anchor="middle" x="485" y="211">adategyeztetés + terheléses teszt</text>
+<line class="arrow" x1="485" x2="485" y1="155" y2="168"></line>
+<rect class="box-red" height="55" rx="9" width="120" x="555" y="58"></rect>
+<text class="label" text-anchor="middle" x="615" y="82">Átállás</text>
+<text class="tiny" text-anchor="middle" x="615" y="101">súlyozott forgalom</text>
+<line class="arrow" x1="615" x2="615" y1="113" y2="125"></line>
+<rect class="box-blue" height="55" rx="9" width="120" x="685" y="168"></rect>
+<text class="label" text-anchor="middle" x="745" y="192">Fokozott felügyelet</text>
+<text class="tiny" text-anchor="middle" x="745" y="211">metrikák + rollback</text>
+<line class="arrow" x1="745" x2="745" y1="155" y2="168"></line>
+<rect class="box-green" height="55" rx="9" width="100" x="805" y="58"></rect>
+<text class="label" text-anchor="middle" x="855" y="82">Kivezetés</text>
+<text class="tiny" text-anchor="middle" x="855" y="101">leállítás</text>
+<line class="arrow" x1="855" x2="855" y1="113" y2="125"></line>
+<path class="arrow dash" d="M615 125 C600 35, 420 35, 355 52"></path>
+<text class="small" text-anchor="middle" x="488" y="46">rollback: a régi rendszer használható marad, az átállás utáni írásokat egyeztetni kell</text>
+</svg>
+<figcaption>A rollback nem pusztán DNS-visszakapcsolás. Előre meg kell tervezni, hogyan kerülnek vissza vagy egyeztetésre az új rendszerbe cutover után írt adatok.</figcaption>
+</figure>
+<ol>
+<li>Current-state assessment és dependency map.</li>
+<li>Komponensenként 7 Rs.</li>
+<li>Landing zone, network, IAM, observability és IaC.</li>
+<li>Kisebb migration wave-ek.</li>
+<li>Initial load és CDC.</li>
+<li>Data reconciliation.</li>
+<li>Parallel run.</li>
+<li>Előre definiált rollback trigger.</li>
+<li>Low TTL és szükség esetén súlyozott forgalom shift.</li>
+<li>Fokozott felügyelet és csak utána leállítás.</li>
+</ol>
+<h3>C. Eseményvezérelt feldolgozási hiba</h3>
+<p>Vizsgáld:</p>
+<ul>
+<li>queue depth;</li>
+<li>age of oldest message;</li>
+<li>consumer error rate;</li>
+<li>poison message;</li>
+<li>retry storm;</li>
+<li>throttling;</li>
+<li>DLQ;</li>
+<li>idempotency;</li>
+<li>downstream dependency;</li>
+<li>sustained overload.</li>
+</ul>
+<h2>5. Saját tapasztalati történetek</h2>
+<p>Használd a <strong>Situation – Constraints – Decision – Execution – Result – Learning</strong> szerkezetet. Ne próbáld a korábbi on-prem vagy általános distributed-system munkát AWS production experience-ként bemutatni; mondd el, mely architekturális elvek vihetők át AWS-re.</p>
+<h3>Valós idejű support chat modernizáció</h3>
+<ul>
+<li>legacy protocol és migration constraints;</li>
+<li>horizontally scalable WebSocket service;</li>
+<li>Redis pub/sub és JWT;</li>
+<li>latency, reliability és cost eredmény a saját valós számaiddal;</li>
+<li>AWS mapping: ALB/NLB, ECS/EKS, ElastiCache, CloudWatch, Auto Scaling és IaC.</li>
+</ul>
+<h3>Event broadcaster modernizáció</h3>
+<ul>
+<li>nagy concurrent connection és message throughput;</li>
+<li>clustering, rolling deployment és backward compatibility;</li>
+<li>Prometheus/Grafana observability;</li>
+<li>performance és p95 javulás a saját méréseiddel.</li>
+</ul>
+<h3>Release management és CI/CD-felelősség</h3>
+<ul>
+<li>staging/production koordináció;</li>
+<li>QA, developer és business egyeztetés;</li>
+<li>health signal, rollback döntés és deploy utáni megfigyelés;</li>
+<li>ownership és kommunikáció.</li>
+</ul>
+<h3>Automatizáció és belső eszközök</h3>
+<ul>
+<li>Node.js automatizáció és REST integráció;</li>
+<li>manuális munka és hiba csökkentése;</li>
+<li>reusable tooling, dokumentáció és auditálható folyamat.</li>
+</ul>
+<h3>Őszinte AWS-tapasztalat bemutatása</h3>
+<blockquote>
+<p>A legerősebb produkciós tapasztalatom nagy terhelésű elosztott és valós idejű rendszerekhez, deployment automatizációhoz, observabilityhez és operációs felelősséghez kapcsolódik. Az AWS-tapasztalatom frissebb, amit a Solutions Architect és Developer képzések, valamint hands-on projektek támasztanak alá. Nem állítanám, hogy minden AWS-szolgáltatásnál többéves produkciós ownershipem van, de az architekturális és üzemeltetési alapelvek közvetlenül átvihetők, és egy ügyfélmegoldás véglegesítése előtt magabiztosan validálom a service-specifikus részleteket.</p>
+</blockquote>
+<h2>6. 15 perces utolsó ismétlés</h2>
+<ul>
+<li>SG stateful, NACL stateless.</li>
+<li>Public subnet = route to IGW.</li>
+<li>Private internet egress = NAT Gateway.</li>
+<li>S3 private access = gateway endpoint.</li>
+<li>IAM role és OIDC a hosszú életű access key helyett.</li>
+<li>ECS/Fargate egyszerűbb; EKS csak valódi Kubernetes indokkal.</li>
+<li>Multi-AZ availability; read replica read scaling; backup recovery.</li>
+<li>RTO downtime, RPO data loss.</li>
+<li>SQS queue; Kinesis/MSK stream.</li>
+<li>At-least-once miatt idempotency.</li>
+<li>Terraform remote encrypted versioned S3 state + locking.</li>
+<li>Metrics + logs + traces.</li>
+<li>Blue-green gyors rollback; canary kontrollált kockázat.</li>
+<li>NAT, cross-AZ és egress tipikus rejtett költség.</li>
+<li>Előbb requirements és assumptions, utána szolgáltatásválasztás.</li>
+</ul>
+<h2>7. Kérdések az interjú végére</h2>
+<ul>
+<li>Milyen típusú ügyfélprojektek lennének elsődlegesek ebben a szerepben: új platform tervezése, migráció vagy meglévő környezetek üzemeltetése?</li>
+<li>A szerep mekkora része architektúra és ügyfélkommunikáció, illetve hands-on implementation?</li>
+<li>Mely IaC- és container platformokat használjátok leggyakrabban a jelenlegi ügyfélprojekteknél?</li>
+<li>Hogyan nézne ki a siker az első három hónapban?</li>
+</ul>
+<h2>8. Felkészülési sorrend péntekig</h2>
+<ol>
+<li>Networking és IAM.</li>
+<li>Compute és database szolgáltatásválasztás.</li>
+<li>Egy teljes highly available web platform design hangosan.</li>
+<li>Terraform, containers, CI/CD és observability.</li>
+<li>Egy migration és egy troubleshooting scenario hangosan.</li>
+<li>Három saját experience story.</li>
+<li>Interjú előtt a 15 perces lista.</li>
+</ol>
+<p>Az egyszerű, indokolt baseline jobb válasz, mint egy szükségtelenül komplex, sok AWS-szolgáltatást felsoroló architektúra.</p>
+</main></body>
+</html>
